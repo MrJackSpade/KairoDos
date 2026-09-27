@@ -10,6 +10,7 @@ import android.widget.ScrollView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
 import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.PixelTextView
+import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
 import com.mrjackspade.kairo.frontend.Ui
 
 /** Development shell used to verify that this app consumes the pinned Kairo frontend. */
@@ -41,6 +42,30 @@ class MainActivity : Activity() {
             Ui.SECONDARY, Ui.TEXT_MUTED).apply {
             setPadding(0, Ui.dp(this@MainActivity, 20), 0, 0)
         })
+        val preferences = getSharedPreferences("development_settings", MODE_PRIVATE)
+        val modeNames = listOf("Auto", "Keyboard", "Mouse")
+        val modeValue = { modeNames[preferences.getInt("touch_mode", 0).coerceIn(0, 2)] +
+            if (preferences.getBoolean("direct_touch", false)) " · direct tap" else " · touchpad" }
+        lateinit var touchRow: Ui.ActionRow
+        touchRow = Ui.actionRow(this, "Touch input preview", modeValue) {
+            val selected = preferences.getInt("touch_mode", 0).coerceIn(0, 2)
+            val dialog = TouchInputSettingsDialog.builder(this, TouchInputSettingsDialog.Options(
+                title = "Touch input preview",
+                modeLabels = listOf("Auto", "Keyboard", "Mouse"),
+                modeIndex = selected,
+                directTouch = preferences.getBoolean("direct_touch", false),
+                directTouchExplanation = "These development settings are stored locally. " +
+                    "They do not control a DOS emulator yet.",
+                onSave = { mode, direct, _ ->
+                    preferences.edit().putInt("touch_mode", mode)
+                        .putBoolean("direct_touch", direct).apply()
+                    touchRow.detail.text = modeValue()
+                }
+            )).create()
+            dialog.show()
+            Ui.styleDialog(dialog)
+        }
+        content.addView(touchRow.view)
         lateinit var keyboard: GuestKeyboardPanel
         keyboard = GuestKeyboardPanel(this, keyboardInput, DosKeyboardLayout.value,
             { keyboard.close() })
