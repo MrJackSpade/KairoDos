@@ -15,7 +15,8 @@ ssh-keygen -y -f "$ssh_dir/key" > /dev/null
 # GitHub's published Ed25519 host key: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
 printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > "$ssh_dir/known_hosts"
 export GIT_SSH_COMMAND="ssh -i $ssh_dir/key -o IdentitiesOnly=yes -o UserKnownHostsFile=$ssh_dir/known_hosts"
-git submodule update --init --recursive shared
+git -c submodule.shared.url=git@github.com:MrJackSpade/Kairo.git \
+  submodule update --init --recursive shared
 
 expected="$(git rev-parse HEAD:shared)"
 actual="$(git -C shared rev-parse HEAD)"

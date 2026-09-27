@@ -3,13 +3,19 @@ package com.mrjackspade.kairodos
 import android.app.Activity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
+import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.PixelTextView
 import com.mrjackspade.kairo.frontend.Ui
 
 /** Development shell used to verify that this app consumes the pinned Kairo frontend. */
 class MainActivity : Activity() {
+    private val keyboardInput = InputRouter({ _, _ -> }, 341)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Ui.BG
@@ -35,6 +41,22 @@ class MainActivity : Activity() {
             Ui.SECONDARY, Ui.TEXT_MUTED).apply {
             setPadding(0, Ui.dp(this@MainActivity, 20), 0, 0)
         })
-        setContentView(ScrollView(this).apply { addView(content) })
+        lateinit var keyboard: GuestKeyboardPanel
+        keyboard = GuestKeyboardPanel(this, keyboardInput, DosKeyboardLayout.value,
+            { keyboard.close() })
+        content.addView(Ui.secondaryButton(this, "Preview shared keyboard") {
+            keyboard.visibility = View.VISIBLE
+        }, LinearLayout.LayoutParams(-1, Ui.dp(this, 48)).apply {
+            topMargin = Ui.dp(this@MainActivity, 24)
+        })
+        val root = FrameLayout(this)
+        root.addView(ScrollView(this).apply { addView(content) })
+        root.addView(keyboard, FrameLayout.LayoutParams(-1, Ui.dp(this, 260), Gravity.BOTTOM))
+        setContentView(root)
+    }
+
+    override fun onStop() {
+        keyboardInput.releaseAll()
+        super.onStop()
     }
 }
