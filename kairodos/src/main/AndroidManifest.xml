@@ -2,7 +2,9 @@
     <application
         android:allowBackup="false"
         android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="KairoDos"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/Theme.KairoDos">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
