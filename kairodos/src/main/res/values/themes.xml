@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.KairoDos" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:defaultFocusHighlightEnabled">false</item>
+    </style>
+</resources>
