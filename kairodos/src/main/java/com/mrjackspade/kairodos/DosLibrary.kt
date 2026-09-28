@@ -19,6 +19,15 @@ import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
 class DosLibrary(private val context: Context) {
+    companion object {
+        private val installedSuffix = Regex(" - Installed(?:\\.zip)?$", RegexOption.IGNORE_CASE)
+
+        private fun archiveStem(name: String) = name.substringBeforeLast('.')
+
+        private fun isInstalledArchive(name: String) =
+            installedSuffix.containsMatchIn(archiveStem(name))
+    }
+
     data class Game(
         override val id: String,
         val uri: String,
@@ -33,8 +42,9 @@ class DosLibrary(private val context: Context) {
     ) : LibraryItem {
         override val zipEntry: String? = null
         override val displayName: String get() = path.substringAfterLast('/').let {
-            val stem = if (folder) it else it.substringBeforeLast('.')
-            if (installer) "$stem - Installer" else stem.removeSuffix(" - Installed")
+            val stem = if (folder) it else archiveStem(it)
+            if (installer && !isInstalledArchive(it)) "$stem - Installer"
+            else stem.replace(installedSuffix, "")
         }
         val title: String get() = displayName
         override val playable: Boolean get() = contentId != null && error == null
@@ -68,7 +78,7 @@ class DosLibrary(private val context: Context) {
         } else null
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
-            !file.name.substringBeforeLast('.').endsWith(" - Installed", true)
+            !isInstalledArchive(file.name)
         return Game(sha256(file.uri.toString()), file.uri.toString(), file.name,
             false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
     }
@@ -107,7 +117,8 @@ class DosLibrary(private val context: Context) {
             val old = prior[id]
             var contentId: String?
             var failure: String?
-            var installer = old?.installer ?: false
+            var installer = old?.installer == true &&
+                !isInstalledArchive(item.path.substringAfterLast('/'))
             if (old != null && old.fingerprint == fingerprint && item.modified > 0 &&
                 old.contentId != null && old.error == null &&
                 (if (extension(item.path) in archiveExtensions)
@@ -123,8 +134,7 @@ class DosLibrary(private val context: Context) {
                             finally { temp.delete() }
                         }
                     installer = inspection.exodosSource &&
-                        !item.path.substringAfterLast('/').substringBeforeLast('.')
-                            .endsWith(" - Installed", true)
+                        !isInstalledArchive(item.path.substringAfterLast('/'))
                     inspection.contentId
                 } else hashDocument(item, cancelled)
                 failure = null

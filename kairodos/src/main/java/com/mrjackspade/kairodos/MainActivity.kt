@@ -101,6 +101,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private lateinit var firstRunScreen: FirstRunScreen
     private val firstRunBack = OnBackInvokedCallback { firstRunScreen.back() }
     private var firstRunBackRegistered = false
+    private val gameBack = OnBackInvokedCallback { handleGameBack() }
+    private var gameBackRegistered = false
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
@@ -218,6 +220,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showLibrary() {
+        unregisterGameBack()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         currentGame = null
         gameRoot?.let(appRoot::removeView)
@@ -261,7 +264,36 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     @Deprecated("Legacy Back path; API 33+ uses OnBackInvokedDispatcher")
     override fun onBackPressed() {
-        if (firstRunScreen.isOpen) firstRunScreen.back() else super.onBackPressed()
+        when {
+            firstRunScreen.isOpen -> firstRunScreen.back()
+            currentGame != null -> handleGameBack()
+            else -> super.onBackPressed()
+        }
+    }
+
+    private fun registerGameBack() {
+        if (Build.VERSION.SDK_INT >= 33 && !gameBackRegistered) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT, gameBack)
+            gameBackRegistered = true
+        }
+    }
+
+    private fun unregisterGameBack() {
+        if (Build.VERSION.SDK_INT >= 33 && gameBackRegistered) {
+            onBackInvokedDispatcher.unregisterOnBackInvokedCallback(gameBack)
+            gameBackRegistered = false
+        }
+    }
+
+    private fun handleGameBack() {
+        when {
+            controllerEditor.isOpen -> controllerEditor.back()
+            onScreenControls?.isOpen == true -> onScreenControls?.back()
+            sessionFlow?.isOpen == true -> closeMenu()
+            keyboard?.visibility == View.VISIBLE -> keyboard?.close()
+            else -> openMenu()
+        }
     }
 
     @Deprecated("The platform Activity uses onActivityResult")
@@ -504,6 +536,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
+        registerGameBack()
         sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
@@ -789,6 +822,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun leaveGame(completed: Boolean = true) {
+        unregisterGameBack()
         val returnToFrontend = completed && sessionFromFrontend
         sessionFromFrontend = false
         launchGeneration++
@@ -870,7 +904,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 return true
             }
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (keyboard?.visibility == View.VISIBLE) keyboard?.close() else openMenu()
+                handleGameBack()
                 return true
             }
             if (gamepad.key(event)) return true
@@ -887,6 +921,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         if (onScreenControls?.isOpen == true) return super.onKeyUp(keyCode, event)
         if (currentGame != null) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) return true
             if (gamepad.key(event)) return true
             mapKey(keyCode)?.let { keys.release("physical:$keyCode"); return true }
         }

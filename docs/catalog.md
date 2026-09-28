@@ -10,7 +10,7 @@ The catalog is sharded by content ID under `kairodos/src/main/assets/catalog/dos
 
 ## eXoDOS installers and startup
 
-An empty `.exo` ZIP member identifies an eXoDOS source archive even when the catalog has no matching hash. It appears with ` - Installer`. On first launch, KairoDos creates a verified ` - Installed.zip` in the writable selected folder and launches it. When the session ends, the app offers to remove the source archive. For a one-file grant from another frontend, the installed copy lives in private app storage and the source cannot be removed by the app.
+An empty `.exo` ZIP member identifies an eXoDOS source archive even when the catalog has no matching hash. It appears with ` - Installer`. On first launch, KairoDos creates a verified ` - Installed.zip` in the writable selected folder and launches it. The installed archive appears under the game title without the filename suffix. When the session ends, the app offers to remove the source archive. For a one-file grant from another frontend, the installed copy lives in private app storage and the source cannot be removed by the app.
 
 The source ZIP already holds the extracted game files; KairoDos does not run the Windows batch installer. DOSBox Pure keeps later writes in a per-game overlay. For recognized games, KairoDos adapts cataloged DOSBox configuration and startup commands to the mounted archive and any user-owned disc or dependency archives. Alternate configs can appear as startup variants. Windows exception launchers that depend on other emulators or companion programs are not executed.
 

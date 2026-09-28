@@ -8,3 +8,8 @@
 - Free GitHub and paid Google Play builds must have the same features and behavior and come from the same revision.
 - Do not claim a binary is release-ready until it boots a game on an Android device and its license audit is complete.
 - When the user asks to push a release tag, treat that as confirmation that testing is sufficient. Keep the normal tag-triggered release workflow enabled; do not bypass it or substitute manual publication to add a test gate.
+
+# Local Windows build
+
+- This workstation has the Android SDK at `D:\android-sdk` (platform 36, NDK `28.2.13676358`, CMake `3.22.1`) and a populated Gradle cache at `C:\Users\Service Account\.gradle`. Environment variables may be unset; check these locations before claiming the toolchain is unavailable.
+- The checkout path contains a space, which makes `ndk-build` reject `Android.mk`. Temporarily map the checkout to an unused drive letter (verified with `K:` here), build from that drive, and remove the mapping afterward. The exact working command is in `docs/build-windows.md`.

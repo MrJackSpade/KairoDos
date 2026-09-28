@@ -27,7 +27,8 @@ std::mutex input_mutex;
 struct KeyChange { unsigned code; bool down; };
 std::deque<KeyChange> key_changes;
 std::array<uint8_t, RETROK_LAST> keys{};
-std::array<uint8_t, 16> joypad{};
+// Libretro buttons 0-15, followed by four directions for each DOS joystick.
+std::array<uint8_t, 24> joypad{};
 std::atomic<int> mouse_x{0}, mouse_y{0};
 std::atomic<bool> mouse_left{false}, mouse_right{false};
 std::atomic<int> pointer_x{0}, pointer_y{0};
@@ -56,6 +57,7 @@ struct Core {
     decltype(&retro_set_audio_sample_batch) set_audio_sample_batch = nullptr;
     decltype(&retro_set_input_poll) set_input_poll = nullptr;
     decltype(&retro_set_input_state) set_input_state = nullptr;
+    decltype(&retro_set_controller_port_device) set_controller_port_device = nullptr;
     decltype(&retro_init) init = nullptr;
     decltype(&retro_deinit) deinit = nullptr;
     decltype(&retro_load_game) load_game = nullptr;
@@ -211,7 +213,17 @@ int16_t input_state(unsigned port, unsigned device, unsigned index, unsigned id)
     }
     std::lock_guard<std::mutex> lock(input_mutex);
     if (device == RETRO_DEVICE_KEYBOARD && id < keys.size()) return keys[id] ? 1 : 0;
-    if (device == RETRO_DEVICE_JOYPAD && id < joypad.size()) return joypad[id] ? 1 : 0;
+    if (port != 0) return 0;
+    if (device == RETRO_DEVICE_JOYPAD && id < 16) return joypad[id] ? 1 : 0;
+    if (device == RETRO_DEVICE_ANALOG &&
+        (index == RETRO_DEVICE_INDEX_ANALOG_LEFT ||
+         index == RETRO_DEVICE_INDEX_ANALOG_RIGHT) &&
+        (id == RETRO_DEVICE_ID_ANALOG_X || id == RETRO_DEVICE_ID_ANALOG_Y)) {
+        const size_t base = index == RETRO_DEVICE_INDEX_ANALOG_LEFT ? 16 : 20;
+        const size_t negative = base + (id == RETRO_DEVICE_ID_ANALOG_X ? 2 : 0);
+        return static_cast<int16_t>(32767 * (int(joypad[negative + 1]) -
+                                            int(joypad[negative])));
+    }
     return 0;
 }
 
@@ -229,6 +241,7 @@ bool load_core() {
         symbol(core.set_audio_sample_batch, "retro_set_audio_sample_batch") &&
         symbol(core.set_input_poll, "retro_set_input_poll") &&
         symbol(core.set_input_state, "retro_set_input_state") &&
+        symbol(core.set_controller_port_device, "retro_set_controller_port_device") &&
         symbol(core.init, "retro_init") && symbol(core.deinit, "retro_deinit") &&
         symbol(core.load_game, "retro_load_game") &&
         symbol(core.unload_game, "retro_unload_game") &&
@@ -285,6 +298,9 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         set_error("DOSBox Pure could not open this game file");
         core.deinit(); dlclose(core_handle); core_handle = nullptr; status.store(3); return false;
     }
+    // Two DOS joysticks: left/right analog axes and B/Y/A/X as button lines 1-4.
+    // Frontend D-pad and Enter remain independent keyboard events.
+    core.set_controller_port_device(0, RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 7));
     retro_system_av_info av{};
     core.get_system_av_info(&av);
     if (av.timing.fps > 1) fps.store(av.timing.fps);
