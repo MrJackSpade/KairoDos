@@ -14,37 +14,12 @@ An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a cata
 
 Some eXoDOS Windows launchers rely on companion programs or other emulators. Those steps are outside DOSBox Pure and may need manual setup.
 
-## Use with LaunchBox for Android
+## External frontends
 
-Import DOS games into LaunchBox's **MS-DOS** platform. Open that platform, tap the **top-right three-dot menu → Emulator Settings**, and choose **Custom Emulator** as the default emulator (without “With Code”). Enter:
+Use the [external frontend setup guide](docs/frontends.md) to launch KairoDos games from other apps:
 
-| Setting | Value |
-| --- | --- |
-| Custom Emulator Package Name | `com.loxifi.kairodos` |
-| Custom Emulator Activity Name | `com.loxifi.kairodos.Launch` |
-| Custom Emulator ROM Path Key | `ROM` |
-
-Turn **Extract ROM Archives** off. KairoDos opens ZIPs and handles installer archives itself. No launch command or initial KairoDos folder selection is needed for a game sent by LaunchBox. Choosing **Library** after an externally launched game closes KairoDos and returns to the frontend.
-
-## Use with ES-DE
-
-Add an Android package rule for KairoDos to ES-DE's custom `es_find_rules.xml`:
-
-```xml
-<emulator name="KAIRODOS">
-  <rule type="androidpackage">
-    <entry>com.loxifi.kairodos/com.loxifi.kairodos.Launch</entry>
-  </rule>
-</emulator>
-```
-
-In the MS-DOS system's custom `es_systems.xml` configuration, add this launch command and select it as the emulator:
-
-```xml
-<command label="KairoDos">%EMULATOR_KAIRODOS% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%</command>
-```
-
-See the [ES-DE Android configuration guide](https://gitlab.com/es-de/emulationstation-de/-/blob/master/INSTALL.md) for custom file locations and system override syntax. Keep ZIP extraction off in the frontend. Returning to **Library** closes a frontend-launched game and returns to ES-DE.
+- [LaunchBox for Android](docs/frontends.md#launchbox-for-android)
+- [ES-DE](docs/frontends.md#es-de)
 
 ## Build and source
 
