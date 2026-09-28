@@ -25,6 +25,7 @@
 #include "regs.h"
 #include "inout.h"
 #include "dos_inc.h"
+#include "../kairo_input_telemetry.h"
 #ifdef C_DBP_USE_SDL
 #include "SDL.h"
 #else
@@ -530,26 +531,31 @@ static Bitu INT16_Handler(void) {
 	switch (reg_ah) {
 	case 0x00: /* GET KEYSTROKE */
 		if ((get_key(temp)) && (!IsEnhancedKey(temp))) {
+			kairo_dos_keyboard_wait(false);
 			/* normal key found, return translated key in ax */
 			reg_ax=temp;
 		} else {
+			kairo_dos_keyboard_wait(true);
 			/* enter small idle loop to allow for irqs to happen */
 			reg_ip+=1;
 		}
 		break;
 	case 0x10: /* GET KEYSTROKE (enhanced keyboards only) */
 		if (get_key(temp)) {
+			kairo_dos_keyboard_wait(false);
 			if (((temp&0xff)==0xf0) && (temp>>8)) {
 				/* special enhanced key, clear low part before returning key */
 				temp&=0xff00;
 			}
 			reg_ax=temp;
 		} else {
+			kairo_dos_keyboard_wait(true);
 			/* enter small idle loop to allow for irqs to happen */
 			reg_ip+=1;
 		}
 		break;
 	case 0x01: /* CHECK FOR KEYSTROKE */
+		kairo_dos_keyboard_poll();
 		// enable interrupt-flag after IRET of this int16
 		CALLBACK_SIF(true);
 		for (;;) {
@@ -570,6 +576,7 @@ static Bitu INT16_Handler(void) {
 		reg_ax=temp;
 		break;
 	case 0x11: /* CHECK FOR KEYSTROKE (enhanced keyboards only) */
+		kairo_dos_keyboard_poll();
 		// enable interrupt-flag after IRET of this int16
 		CALLBACK_SIF(true);
 		if (check_key(temp)) { // check_key changes ZF and CF as required
@@ -706,4 +713,3 @@ void BIOS_SetupKeyboard(void) {
 		//	iret
 	}
 }
-

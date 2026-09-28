@@ -32,6 +32,7 @@
 #include "int10.h"
 #include "bios.h"
 #include "dos_inc.h"
+#include "../kairo_input_telemetry.h"
 
 static Bitu call_int33,call_int74,int74_ret_callback,call_mouse_bd;
 static Bit16u ps2cbseg,ps2cbofs;
@@ -855,6 +856,8 @@ uint32_t Mouse_VMWare_KeyboardReadP60()
 
 static Bitu INT33_Handler(void) {
 //	LOG(LOG_MOUSE,LOG_NORMAL)("MOUSE: %04X %X %X %d %d",reg_ax,reg_bx,reg_cx,POS_X,POS_Y);
+	if (reg_ax == 0x03 || reg_ax == 0x05 || reg_ax == 0x06 || reg_ax == 0x0b)
+		kairo_dos_mouse_read();
 	switch (reg_ax) {
 	case 0x00:	/* Reset Driver and Read Status */
 		Mouse_ResetHardware(); /* fallthrough */

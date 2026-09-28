@@ -26,6 +26,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
 import com.mrjackspade.kairo.frontend.InputRouter
+import com.mrjackspade.kairo.frontend.InputModeDecider
 import com.mrjackspade.kairo.frontend.MouseInputRouter
 import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
 import com.mrjackspade.kairo.frontend.Ui
@@ -65,6 +66,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativePause(value: Boolean)
     private external fun nativeReset()
     private external fun nativeStatus(): Int
+    private external fun nativeInputTelemetry(): LongArray
     private external fun nativeAudioRate(): Int
     private external fun nativeAspect(): Double
     private external fun nativeLastError(): String
@@ -89,6 +91,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { DosControllerBindings.toJson(it).toString() })
     }
     private val keys = InputRouter(::nativeKey, 341)
+    private val inputModeDecider = InputModeDecider()
     private val mouse = MouseInputRouter(::nativeMouseMove, ::nativeMouseButton)
     private val joystick = JoystickInputRouter(::nativeJoypad,
         DosControllerBindings.joystick)
@@ -112,7 +115,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val games: List<DosLibrary.Game> get() = libraryFlow.entries
     private var currentGame: DosLibrary.Game? = null
     private var sessionFromFrontend = false
-    private var pendingInstallerRemoval: Pair<DosLibrary.Game, DosLibrary.Game>? = null
+    private var installerPromptOpen = false
+    private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
     @Volatile private var launchGeneration = 0
     @Volatile private var externalLaunchGeneration = 0
@@ -129,6 +133,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var sessionFlow: SessionFlow? = null
     private var userPaused = false
     private var menuSwipeX: Float? = null
+    private var menuSwipeConsumed = false
     private var lastX = 0f
     private var lastY = 0f
     private var moved = false
@@ -448,6 +453,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         preferences.edit().putString("last_played_entry", game.id).apply()
         val oldThread = gameThread
         nativeStop()
+        inputModeDecider.reset()
         currentGame = game
         sessionFromFrontend = fromFrontend
         gamepad.bindings = loadControllerBindings(game)
@@ -495,10 +501,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 DosLaunchConfig.write(file, launch, configName, dependencies, playerName)
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
-                        pendingInstallerRemoval = game to playableGame
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
                             playableGame.displayName).title
                         preferences.edit().putString("last_played_entry", playableGame.id).apply()
+                        showInstallerRemovalPrompt(game, playableGame)
                     }
                 }
                 val enterOuterFolder = launch != null && !mountsParent && !playableGame.folder &&
@@ -546,8 +552,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun settingsEntries() = listOf(
-        SettingsEntry("Touch input", { if (preferences.getBoolean("direct_touch", false))
-            "Direct tap" else "Touchpad" }, ::showSettings),
+        SettingsEntry("Touch input", {
+            when (configuredTouchMode()) {
+                InputModeDecider.Mode.AUTO -> "Auto"
+                InputModeDecider.Mode.KEYBOARD -> "Keyboard"
+                InputModeDecider.Mode.MOUSE -> if (preferences.getBoolean("direct_touch", false))
+                    "Mouse · direct tap" else "Mouse · touchpad"
+            }
+        }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
@@ -571,6 +583,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val game = currentGame ?: return
         registerGameBack()
         sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
+        libraryScreen.dismissSystemKeyboard()
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
         libraryScreen.visibility = View.GONE
@@ -617,7 +630,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             },
             SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
                 closeMenu()
-                panel.visibility = View.VISIBLE
+                panel.open()
             }
         ), settingsEntries())
         sessionFlow = SessionFlow(sessionDrawer!!,
@@ -717,6 +730,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun pollSession(id: String) {
         handler.postDelayed({
             if (currentGame?.id != id) return@postDelayed
+            if (nativeStatus() == 2) {
+                InputModeDecider.GuestInput.fromNative(nativeInputTelemetry())?.let {
+                    inputModeDecider.observe(it, android.os.SystemClock.elapsedRealtime())
+                }
+            }
             when (nativeStatus()) {
                 1 -> statusLabel?.text = "Loading DOSBox Pure…"
                 2 -> {
@@ -747,15 +765,26 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             menuSwipeX = event.x.takeIf { it <= Ui.dp(this, 28).toFloat() }
+            menuSwipeConsumed = false
+            lastX = event.x; lastY = event.y; moved = false
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE &&
             menuSwipeX != null && event.x - menuSwipeX!! > Ui.dp(this, 60)) {
             menuSwipeX = null
+            menuSwipeConsumed = true
             openMenu()
             return true
         } else if (event.actionMasked == MotionEvent.ACTION_UP ||
             event.actionMasked == MotionEvent.ACTION_CANCEL) menuSwipeX = null
-        if (preferences.getInt("touch_mode", 0) == 1) {
-            if (event.actionMasked == MotionEvent.ACTION_UP) keyboard?.visibility = View.VISIBLE
+        if (menuSwipeConsumed) {
+            if (event.actionMasked == MotionEvent.ACTION_UP ||
+                event.actionMasked == MotionEvent.ACTION_CANCEL) menuSwipeConsumed = false
+            return true
+        }
+        if (inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD) {
+            if (event.actionMasked == MotionEvent.ACTION_MOVE &&
+                abs(event.x - lastX) + abs(event.y - lastY) > Ui.dp(this, 12)) moved = true
+            if (event.actionMasked == MotionEvent.ACTION_UP && !moved)
+                keyboard?.open()
             return true
         }
         val direct = preferences.getBoolean("direct_touch", false)
@@ -795,11 +824,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showSettings() {
-        val modeNames = listOf("Mouse", "Keyboard")
+        val modeNames = listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
+            "Auto (follows what the game reads)")
         val dialog = TouchInputSettingsDialog.builder(this, TouchInputSettingsDialog.Options(
             title = "DOS touch input",
             modeLabels = modeNames,
-            modeIndex = preferences.getInt("touch_mode", 0).coerceIn(0, 1),
+            modeIndex = preferences.getInt("touch_mode", 2).coerceIn(0, 2),
             directTouch = preferences.getBoolean("direct_touch", false),
             directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.",
             onSave = { mode, direct, _ ->
@@ -854,6 +884,44 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }.apply { name = "KairoDos-audio"; start() }
     }
 
+    private fun showInstallerRemovalPrompt(installer: DosLibrary.Game,
+                                           installed: DosLibrary.Game) {
+        installerPromptOpen = true
+        val dialog = AlertDialog.Builder(this).setTitle("Remove installer ZIP?")
+            .setMessage("The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?")
+            .setPositiveButton("Remove") { _, _ ->
+                Thread {
+                    runCatching { dosLibrary.deleteInstaller(installer, installed) }
+                        .onSuccess { runOnUiThread {
+                            installerPromptOpen = false
+                            refreshLibrary(false)
+                            if (finishAfterInstallerPrompt) {
+                                finishAfterInstallerPrompt = false
+                                finish()
+                            }
+                        } }
+                        .onFailure { failure -> runOnUiThread {
+                            installerPromptOpen = false
+                            if (finishAfterInstallerPrompt) {
+                                finishAfterInstallerPrompt = false
+                                AlertDialog.Builder(this)
+                                    .setMessage(failure.message ?: "Could not remove installer")
+                                    .setPositiveButton("Close") { _, _ -> finish() }.show()
+                            } else Ui.message(this, failure.message ?: "Could not remove installer")
+                        } }
+                }.apply { name = "KairoDos-remove-installer"; start() }
+            }.setNegativeButton("Keep") { _, _ ->
+                installerPromptOpen = false
+                refreshLibrary(false)
+                if (finishAfterInstallerPrompt) {
+                    finishAfterInstallerPrompt = false
+                    finish()
+                }
+            }.setCancelable(false).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
     private fun leaveGame(completed: Boolean = true) {
         unregisterGameBack()
         val returnToFrontend = completed && sessionFromFrontend
@@ -877,32 +945,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionGameTitle = null
         currentGame = null
         gamepad.bindings = globalControllerBindings()
-        val removal = pendingInstallerRemoval
-        if (!returnToFrontend || removal != null) showLibrary()
-        removal?.let { (installer, installed) ->
-            pendingInstallerRemoval = null
-            if (!returnToFrontend) refreshLibrary(false)
-            AlertDialog.Builder(this).setTitle("Remove installer ZIP?")
-                .setMessage("The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?")
-                .setPositiveButton("Remove") { _, _ ->
-                    Thread {
-                        runCatching { dosLibrary.deleteInstaller(installer, installed) }
-                            .onSuccess { runOnUiThread {
-                                if (returnToFrontend) finish() else refreshLibrary(false)
-                            } }
-                            .onFailure { failure -> runOnUiThread {
-                                if (returnToFrontend) AlertDialog.Builder(this)
-                                    .setMessage(failure.message ?: "Could not remove installer")
-                                    .setPositiveButton("Close") { _, _ -> finish() }.show()
-                                else Ui.message(this, failure.message ?: "Could not remove installer")
-                            } }
-                    }.apply { name = "KairoDos-remove-installer"; start() }
-                }.setNegativeButton("Keep") { _, _ ->
-                    if (returnToFrontend) finish()
-                }.show()
+        if (!returnToFrontend || installerPromptOpen) showLibrary()
+        if (returnToFrontend) {
+            if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
         }
-        if (returnToFrontend && removal == null) finish()
     }
+
+    private fun configuredTouchMode(): InputModeDecider.Mode =
+        when (preferences.getInt("touch_mode", 2)) {
+            0 -> InputModeDecider.Mode.MOUSE
+            1 -> InputModeDecider.Mode.KEYBOARD
+            else -> InputModeDecider.Mode.AUTO
+        }
 
     override fun surfaceCreated(holder: SurfaceHolder) { nativeSetSurface(holder.surface) }
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {

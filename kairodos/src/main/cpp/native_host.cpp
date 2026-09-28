@@ -45,6 +45,8 @@ std::atomic<double> aspect{4.0 / 3.0};
 std::atomic<int> video_width{640}, video_height{400};
 std::atomic<bool> stop_requested{false}, paused{false}, reset_requested{false};
 std::atomic<int> status{0}; // 0 idle, 1 loading, 2 running, 3 failed
+std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
+std::atomic<int> guest_keyboard_waiting{0};
 std::mutex error_mutex;
 std::string last_error;
 std::string save_directory, system_directory, content_directory;
@@ -66,6 +68,8 @@ struct Core {
     decltype(&retro_run) run = nullptr;
     decltype(&retro_reset) reset = nullptr;
     void (*set_zip_root)(bool) = nullptr;
+    void (*reset_input_telemetry)() = nullptr;
+    void (*input_telemetry_snapshot)(uint64_t*, uint64_t*, uint64_t*, int*) = nullptr;
 } core;
 
 void set_error(const std::string& message) {
@@ -247,7 +251,9 @@ bool load_core() {
         symbol(core.unload_game, "retro_unload_game") &&
         symbol(core.get_system_av_info, "retro_get_system_av_info") &&
         symbol(core.run, "retro_run") && symbol(core.reset, "retro_reset") &&
-        symbol(core.set_zip_root, "kairo_set_enter_solo_root_dir");
+        symbol(core.set_zip_root, "kairo_set_enter_solo_root_dir") &&
+        symbol(core.reset_input_telemetry, "kairo_dos_input_telemetry_reset") &&
+        symbol(core.input_telemetry_snapshot, "kairo_dos_input_telemetry_snapshot");
 }
 
 std::string string(JNIEnv* env, jstring value) {
@@ -283,6 +289,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     { std::lock_guard<std::mutex> lock(error_mutex); last_error.clear(); }
     { std::lock_guard<std::mutex> lock(audio_mutex); audio_read = audio_write = audio_count = 0; }
     { std::lock_guard<std::mutex> lock(input_mutex); key_changes.clear(); keys.fill(0); joypad.fill(0); }
+    guest_keyboard_waits.store(0); guest_keyboard_polls.store(0);
+    guest_mouse_reads.store(0); guest_keyboard_waiting.store(0);
     keyboard_callback = {};
     outside_conf.store(use_outside_conf);
     if (!load_core()) { if (core_handle) dlclose(core_handle); core_handle = nullptr; status.store(3); return false; }
@@ -298,6 +306,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         set_error("DOSBox Pure could not open this game file");
         core.deinit(); dlclose(core_handle); core_handle = nullptr; status.store(3); return false;
     }
+    core.reset_input_telemetry();
     // Two DOS joysticks: left/right analog axes and B/Y/A/X as button lines 1-4.
     // Frontend D-pad and Enter remain independent keyboard events.
     core.set_controller_port_device(0, RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 7));
@@ -316,6 +325,11 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
             keyboard_callback.callback(change.down, change.code, change.code < 128 ? change.code : 0, 0);
         if (reset_requested.exchange(false)) core.reset();
         core.run();
+        uint64_t waits = 0, polls = 0, reads = 0;
+        int waiting = 0;
+        core.input_telemetry_snapshot(&waits, &polls, &reads, &waiting);
+        guest_keyboard_waits.store(waits); guest_keyboard_polls.store(polls);
+        guest_mouse_reads.store(reads); guest_keyboard_waiting.store(waiting);
         double rate = std::clamp(fps.load(), 10.0, 240.0);
         next += std::chrono::nanoseconds(static_cast<long long>(1000000000.0 / rate));
         auto now = std::chrono::steady_clock::now();
@@ -337,6 +351,16 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeReset(JNIEnv*, jobject) { reset_requested.store(true); }
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeStatus(JNIEnv*, jobject) { return status.load(); }
+extern "C" JNIEXPORT jlongArray JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeInputTelemetry(JNIEnv* env, jobject) {
+    jlong values[4] = {static_cast<jlong>(guest_keyboard_waits.load()),
+                       static_cast<jlong>(guest_keyboard_polls.load()),
+                       static_cast<jlong>(guest_mouse_reads.load()),
+                       static_cast<jlong>(guest_keyboard_waiting.load())};
+    jlongArray result = env->NewLongArray(4);
+    if (result) env->SetLongArrayRegion(result, 0, 4, values);
+    return result;
+}
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAudioRate(JNIEnv*, jobject) { return sample_rate.load(); }
 extern "C" JNIEXPORT jdouble JNICALL
