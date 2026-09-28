@@ -10,8 +10,6 @@ import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
 import java.util.Locale
-import java.net.URI
-import java.util.concurrent.atomic.AtomicBoolean
 
 /** Hash-keyed, data-only game metadata. Game media is never read from these records. */
 class DosGameCatalog(private val context: Context) : LibraryCatalog {
@@ -25,16 +23,13 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         override val preview: String?,
         override val tags: List<String>,
         val launch: Launch?,
-        val controllerProfile: String?,
-        val boxArtCatalogPath: String?,
-        val previewCatalogPath: String?
+        val controllerProfile: String?
     ) : LibraryGame
 
-    data class ArtworkSource(val path: String, val url: String)
-
     private val cache = object : LruCache<String, JSONObject>(8) {}
+    private val bundledCache = object : LruCache<String, JSONObject>(8) {}
     private val online = DosCatalogUpdate(context)
-    private val artworkStore = CatalogArtworkStore(context, ::validArtworkUrl,
+    private val artworkStore = CatalogArtworkStore(context, { false },
         "art/catalog/dos/")
     private var folderIndex = readCatalog("folders.json")
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
@@ -68,15 +63,14 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     }.getOrDefault(emptySet())
 
     @Synchronized override fun resolve(contentId: String, fileName: String): Game {
-        val found = if (id.matches(contentId)) shard(contentId.substringAfter(':').take(2))
+        val prefix = contentId.substringAfter(':').take(2)
+        val found = if (id.matches(contentId)) shard(prefix)
             ?.optJSONObject("games")?.optJSONObject(contentId) else null
-        val variants = found?.optJSONObject("variants")
-        val sourceName = fileName.removeSuffix(" - Installer").lowercase(Locale.ROOT)
-        val record = variants?.optJSONObject(sourceName)
-            ?: variants?.optJSONObject("$sourceName.zip")
-            ?: variants?.optJSONObject("$sourceName.dosz")
-            ?: variants?.keys()?.asSequence()?.firstOrNull()?.let(variants::optJSONObject)
-            ?: found
+        val record = selectRecord(found, fileName)
+        val description = record?.optString("description")?.takeIf { it.isNotBlank() }
+            ?: if (found != null) selectRecord(bundledShard(prefix)
+                ?.optJSONObject("games")?.optJSONObject(contentId), fileName)
+                ?.optString("description")?.takeIf { it.isNotBlank() } else null
         val baseTitle = overrides.optJSONObject(contentId)?.optString("title")
             ?.takeIf { it.isNotBlank() }
             ?: record?.optString("title")?.takeIf { it.isNotBlank() }
@@ -91,7 +85,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             Launch(source.optString("folder"), configs.keys().asSequence()
                 .associateWith { configs.optString(it) }, source.optBoolean("exception"))
         }
-        return Game(title, record?.optString("description")?.takeIf { it.isNotBlank() },
+        return Game(title, description,
             artworkStore.availablePath(boxArtPath),
             artworkStore.availablePath(previewPath),
             record?.optJSONArray("tags")?.let { array ->
@@ -99,8 +93,17 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                     array.optString(index).takeIf { it.isNotBlank() }
                 }
             } ?: emptyList(), launch,
-            "doom-v1".takeIf { found != null && contentId in doomContentIds },
-            boxArtPath, previewPath)
+            "doom-v1".takeIf { found != null && contentId in doomContentIds })
+    }
+
+    private fun selectRecord(found: JSONObject?, fileName: String): JSONObject? {
+        val variants = found?.optJSONObject("variants")
+        val sourceName = fileName.removeSuffix(" - Installer").lowercase(Locale.ROOT)
+        return variants?.optJSONObject(sourceName)
+            ?: variants?.optJSONObject("$sourceName.zip")
+            ?: variants?.optJSONObject("$sourceName.dosz")
+            ?: variants?.keys()?.asSequence()?.firstOrNull()?.let(variants::optJSONObject)
+            ?: found
     }
 
     override fun hiddenFromLibrary(contentId: String) = false
@@ -128,32 +131,10 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     override fun openArtwork(path: String): InputStream = artworkStore.open(path)
 
-    fun missingArtworkFor(entries: List<DosLibrary.Game>): List<ArtworkSource> = entries.asSequence()
-        .filter { it.playable }
-        .flatMap { entry ->
-            val game = resolve(entry.contentId ?: "", entry.displayName)
-            listOfNotNull(game.boxArtCatalogPath, game.previewCatalogPath).asSequence()
-        }
-        .distinct()
-        .filter { artworkStore.availablePath(it) == null }
-        .map { ArtworkSource(it, "$ART_BASE_URL$it") }
-        .toList()
-
-    fun downloadArtwork(source: ArtworkSource, cancelled: AtomicBoolean) =
-        artworkStore.download(source.path, source.url, cancelled)
-
     private fun safeArtPath(path: String?): String? = path?.takeIf {
         it.length in 17..256 && it.startsWith("art/catalog/dos/") &&
             it.matches(Regex("[a-zA-Z0-9/._-]+")) && !it.contains("..")
     }
-
-    private fun validArtworkUrl(value: String): Boolean = try {
-        if (value.length !in 1..512) false else URI(value).let { uri ->
-            uri.scheme == "https" && uri.host == "raw.githubusercontent.com" &&
-                uri.port == -1 && uri.userInfo == null && uri.rawQuery == null &&
-                uri.rawFragment == null && uri.rawPath.startsWith(ART_BASE_PATH)
-        }
-    } catch (_: Exception) { false }
 
     private fun shard(prefix: String): JSONObject? {
         cache.get(prefix)?.let { return it }
@@ -162,9 +143,13 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         return parsed
     }
 
-    companion object {
-        private const val ART_BASE_PATH =
-            "/MrJackSpade/KairoDos/main/kairodos/src/main/assets/"
-        private const val ART_BASE_URL = "https://raw.githubusercontent.com$ART_BASE_PATH"
+    private fun bundledShard(prefix: String): JSONObject? {
+        bundledCache.get(prefix)?.let { return it }
+        val parsed = runCatching { context.assets.open("catalog/dos/$prefix.json").use {
+            JSONObject(it.bufferedReader().readText())
+        } }.getOrNull() ?: return null
+        bundledCache.put(prefix, parsed)
+        return parsed
     }
+
 }

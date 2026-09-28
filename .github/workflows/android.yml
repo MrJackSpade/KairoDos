@@ -22,5 +22,6 @@ jobs:
           packages: 'platform-tools platforms;android-36 build-tools;36.0.0 ndk;28.2.13676358 cmake;3.22.1'
       - uses: gradle/actions/setup-gradle@v4
       - name: Verify downloadable DOS catalog
-        run: java tools/BuildOnlineDosCatalog.java --check
+        shell: pwsh
+        run: ./tools/BuildPublicDosCatalog.ps1 -Check
       - run: ./gradlew --no-daemon :kairodos:assembleDebug

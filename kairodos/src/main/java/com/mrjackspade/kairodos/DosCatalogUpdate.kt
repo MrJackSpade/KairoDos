@@ -96,6 +96,6 @@ internal class DosCatalogUpdate(context: Context) {
         private const val MAX_ARCHIVE_BYTES = 32L * 1024 * 1024
         private const val MAX_ENTRY_BYTES = 2L * 1024 * 1024
         private const val UPDATE_URL =
-            "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/catalog/online-v1.zip"
+            "https://raw.githubusercontent.com/MrJackSpade/Kairo/main/catalog/dos/online-v1.zip"
     }
 }
