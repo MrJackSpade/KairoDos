@@ -26,4 +26,4 @@ The KairoDos launcher artwork at `kairodos/src/main/res/mipmap-nodpi/ic_launcher
 
 ## DOS catalog source
 
-The private development catalog is derived from the owner's eXoDOS v6 LaunchBox XML and image archive. Game archives and launchers are not distributed. The copied descriptions and downscaled cover/screenshot images still require creator, redistribution, and derivative-rights review before a public free or paid binary can include them. The local import manifest records source paths and checksums; see [catalog](catalog.md).
+The private development catalog is derived from the owner's eXoDOS v6 LaunchBox XML, image archive, and per-game DOSBox configs. Game archives and Windows launchers are not distributed. The copied descriptions, startup configs, and downscaled cover/screenshot images still require creator, redistribution, and derivative-rights review before a public free or paid binary can include them. The local import manifest records image source paths and checksums; see [catalog](catalog.md).

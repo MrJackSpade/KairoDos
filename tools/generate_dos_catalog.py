@@ -77,6 +77,135 @@ def game_records(metadata: zipfile.ZipFile) -> dict[str, ET.Element]:
     return records
 
 
+def launch_configs(root: Path, records: dict[str, ET.Element]) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Read launch settings separately from LaunchBox's descriptive metadata."""
+    archive_path = root / "Content" / "!DOSmetadata.zip"
+    with zipfile.ZipFile(archive_path) as archive:
+        entries = {name.casefold(): name for name in archive.namelist()}
+        by_folder: dict[str, list[str]] = {}
+        for name in entries.values():
+            if name.lower().endswith(".conf") and "/" in name:
+                by_folder.setdefault(name.rsplit("/", 1)[0].casefold(), []).append(name)
+        by_game_folder = {}
+        for folder in by_folder:
+            if "/!dos/" not in folder:
+                continue
+            prefix = folder + "/"
+            configs = {}
+            for name in by_folder.get(folder.casefold(), []):
+                configs[name[len(prefix):].casefold()] = archive.read(name).decode(
+                    "cp1252", errors="replace")
+            if "dosbox.conf" not in configs:
+                continue
+            by_game_folder[folder.rsplit("/", 1)[-1]] = {
+                "folder": folder.rsplit("/", 1)[-1],
+                "configs": configs,
+                "exception": (prefix + "exception.bat").casefold() in entries,
+            }
+        result = {}
+        for filename, game in records.items():
+            application = (game.findtext("ApplicationPath") or "").replace("\\", "/")
+            folder = application.rsplit("/", 1)[-1].casefold()
+            if folder in by_game_folder:
+                result[filename] = by_game_folder[folder]
+        return result, by_game_folder
+
+
+def import_launch_only(root: Path, catalog: Path) -> None:
+    """Add launch configs to existing hash shards without rebuilding artwork."""
+    with zipfile.ZipFile(root / "Content" / "XODOSMetadata.zip") as metadata:
+        records = game_records(metadata)
+    configs, by_game_folder = launch_configs(root, records)
+    shards = {path.stem: json.loads(path.read_text(encoding="utf-8"))
+              for path in catalog.glob("[0-9a-f][0-9a-f].json")}
+    artwork_by_title = {}
+    for shard in shards.values():
+        for record in shard["games"].values():
+            for variant in record.get("variants", {}).values() if "variants" in record else (record,):
+                if variant.get("artwork"):
+                    artwork_by_title.setdefault(variant.get("title"), variant["artwork"])
+    matched = 0
+    missing_config = []
+    new_catalog = []
+    seen_by_id = {}
+    new_variants = 0
+    def metadata_for(item: Path) -> dict:
+        game = records.get(item.name.casefold())
+        title = (game.findtext("Title") if game is not None else None) or item.stem
+        description = ((game.findtext("Notes") if game is not None else None) or "").strip()
+        year = ((game.findtext("ReleaseDate") if game is not None else None) or "")[:4]
+        tags = [value for value in (year,
+                game.findtext("Genre") if game is not None else None,
+                game.findtext("PlayMode") if game is not None else None) if value]
+        return {"title": title, "description": description, "tags": tags,
+                "artwork": artwork_by_title.get(title, {})}
+    archives = root / "eXo" / "eXoDOS"
+    for index, item in enumerate(sorted(archives.glob("*.zip")), 1):
+        config = configs.get(item.name.casefold())
+        if config is None:
+            with zipfile.ZipFile(item) as archive:
+                roots = {name.split("/", 1)[0].casefold() for name in archive.namelist()
+                         if "/" in name}
+            if len(roots) == 1:
+                config = by_game_folder.get(next(iter(roots)))
+            if config is None:
+                missing_config.append(item.name)
+                continue
+        if item.name.casefold() == "blood (1997).zip":
+            # This archive contains BLOODCD1.cue; its metadata still points to
+            # the BLOOD121.cue name used by an earlier eXoDOS revision.
+            config = {**config, "configs": {name: body.replace("BLOOD121.CUE", "BLOODCD1.cue")
+                       for name, body in config["configs"].items()}}
+        content_id = hash_zip(item)
+        shard = shards.get(content_id.split(":", 1)[1][:2])
+        record = shard and shard["games"].get(content_id)
+        if record is None:
+            record = metadata_for(item)
+            shard["games"][content_id] = record
+            new_catalog.append(item.name)
+        stem = item.stem.casefold()
+        if "variants" not in record and content_id in seen_by_id and seen_by_id[content_id] != stem:
+            first = dict(record)
+            record.clear()
+            record.update({"title": first["title"], "variants": {
+                seen_by_id[content_id]: first, stem: metadata_for(item)}})
+            new_variants += 1
+        elif "variants" in record and stem not in record["variants"]:
+            record["variants"][stem] = metadata_for(item)
+            new_variants += 1
+        variant = record.get("variants", {}).get(stem, record)
+        variant["launch"] = config
+        seen_by_id[content_id] = stem
+        matched += 1
+        if index % 250 == 0:
+            print(f"Launch metadata {index} archives, {matched} matched", flush=True)
+    for prefix, shard in shards.items():
+        (catalog / f"{prefix}.json").write_text(json.dumps(shard, ensure_ascii=False,
+            separators=(",", ":")), encoding="utf-8")
+    write_folder_index(catalog, shards)
+    report = {"matched": matched, "newCatalogRecords": len(new_catalog),
+              "newFilenameVariants": new_variants,
+              "missingConfig": missing_config}
+    print(json.dumps(report, indent=2))
+
+
+def write_folder_index(catalog: Path, shards: dict[str, dict] | None = None) -> None:
+    if shards is None:
+        shards = {path.stem: json.loads(path.read_text(encoding="utf-8"))
+                  for path in catalog.glob("[0-9a-f][0-9a-f].json")}
+    folders = {}
+    for shard in shards.values():
+        for content_id, record in shard["games"].items():
+            for variant in record.get("variants", {}).values() if "variants" in record else (record,):
+                launch = variant.get("launch")
+                if launch:
+                    ids = folders.setdefault(launch["folder"].casefold(), [])
+                    if content_id not in ids:
+                        ids.append(content_id)
+    (catalog / "folders.json").write_text(json.dumps(folders, ensure_ascii=False,
+        separators=(",", ":")), encoding="utf-8")
+
+
 def image_index(metadata: zipfile.ZipFile) -> dict[tuple[str, str], list[str]]:
     result: dict[tuple[str, str], list[str]] = {}
     for name in metadata.namelist():
@@ -122,7 +251,19 @@ def main() -> None:
     parser.add_argument("output", type=Path, help="ignored local staging directory")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--art", action="store_true", help="extract local thumbnail candidates")
+    parser.add_argument("--launch-only", action="store_true",
+                        help="attach eXoDOS launch configs to existing catalog shards")
+    parser.add_argument("--folder-index-only", action="store_true",
+                        help="rebuild the source-folder lookup from catalog shards")
     args = parser.parse_args()
+    if args.folder_index_only:
+        write_folder_index(Path(__file__).resolve().parent.parent /
+                           "kairodos" / "src" / "main" / "assets" / "catalog" / "dos")
+        return
+    if args.launch_only:
+        import_launch_only(args.root, Path(__file__).resolve().parent.parent /
+                           "kairodos" / "src" / "main" / "assets" / "catalog" / "dos")
+        return
     args.output.mkdir(parents=True, exist_ok=True)
     previous_art = {}
     previous_manifest = args.output / "manifest.json"

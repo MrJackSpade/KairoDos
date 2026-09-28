@@ -4,11 +4,13 @@ KairoDos is an Android DOS emulator built around [DOSBox Pure](https://github.co
 
 ## Current development build
 
-Select a DOS folder from the library menu. KairoDos scans game ZIPs, DOSZ archives, standalone executables and disk images, and extracted game folders. It leaves the user's collection in place, prepares the selected game in private cache on launch, and runs it with the copied DOSBox Pure core. Video, stereo audio, keyboard, mouse, and gamepad input are connected. No games or operating system files are included.
+Select a DOS folder from the library menu. KairoDos scans game ZIPs, DOSZ archives, standalone executables and disk images, and extracted game folders. It prepares the selected game in private cache on launch and runs it with the copied DOSBox Pure core. Video, stereo audio, keyboard, mouse, and gamepad input are connected. No games or operating system files are included.
 
-Known files are matched to a hash-keyed metadata catalog seeded from the owner's eXoDOS v6 collection. Recognition shows titles, descriptions, tags, covers, and screenshots in the same library UI as Kairo98. eXoDOS is a metadata source, not a required user directory or a separate browser. See [catalog details](docs/catalog.md) for the identity format, generation, and review status.
+eXoDOS source ZIPs are identified by their empty `.exo` archive marker, even without a catalog match. They appear with ` - Installer` after the title. On first launch, KairoDos creates and verifies a separate ` - Installed.zip` beside the source ZIP in the selected folder. It then launches the installed archive and, when the session ends, offers to remove the source ZIP. Keeping it is always an option. The folder picker requests write access for this workflow; users who previously selected a read-only folder need to select it again. DOSBox Pure keeps game writes in its per-game save overlay.
 
-A small original `.COM` program booted on a Retroid Pocket Classic on 27 September 2026, both loose and inside a ZIP with `DOSBOX.BAT`. The new shared library and folder scan have compiled but have not yet been checked on an Android device. Game compatibility and eXoDOS-specific startup scripts still require verification. This is a development app; no KairoDos public release workflow or Google Play edition exists yet.
+Known files are matched to a hash-keyed metadata catalog seeded from the owner's eXoDOS v6 collection. Recognition shows titles, descriptions, tags, covers, and screenshots in the same library UI as Kairo98. The catalog also supplies each recognized archive's DOSBox configuration and startup commands; KairoDos adapts those commands to the user's mounted game. eXoDOS is a metadata source, not a required user directory or a separate browser. See [catalog details](docs/catalog.md) for the identity format, generation, and review status.
+
+A small original `.COM` program booted on a Retroid Pocket Classic on 27 September 2026, both loose and inside a ZIP with `DOSBOX.BAT`. The shared library, folder scan, and eXoDOS startup integration have not yet been checked on an Android device. eXoDOS launchers that depend on other emulators or Windows companion programs remain outside DOSBox Pure. This is a development app; no KairoDos public release workflow or Google Play edition exists yet.
 
 ## Build
 

@@ -54,7 +54,8 @@ import kotlin.math.roundToInt
 
 /** DOS library and session UI. Pure is compiled in :backend-dos and hosted via JNI. */
 class MainActivity : Activity(), SurfaceHolder.Callback {
-    private external fun nativeRun(path: String, saveDir: String, systemDir: String): Boolean
+    private external fun nativeRun(path: String, saveDir: String, systemDir: String,
+                                   enterSoloRoot: Boolean, useOutsideConf: Boolean): Boolean
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
     private external fun nativeReset()
@@ -100,6 +101,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var prepareCancelled = AtomicBoolean(false)
     private val games: List<DosLibrary.Game> get() = libraryFlow.entries
     private var currentGame: DosLibrary.Game? = null
+    private var pendingInstallerRemoval: Pair<DosLibrary.Game, DosLibrary.Game>? = null
     private var gameThread: Thread? = null
     @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
@@ -109,6 +111,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var videoFrame: FrameLayout? = null
     private var keyboard: GuestKeyboardPanel? = null
     private var statusLabel: TextView? = null
+    private var loadingStatus: TextView? = null
+    private var sessionGameTitle: String? = null
     private var sessionDrawer: SessionDrawer? = null
     private var sessionFlow: SessionFlow? = null
     private var userPaused = false
@@ -125,7 +129,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
         val libraryPage = LibraryScreen(this, catalog, LibraryStrings("KAIRODOS",
-            "Select DOS folder", "Choose where DOS games and ZIP archives are stored",
+            "Select DOS folder", "Choose a writable folder for DOS games and ZIP archives",
             "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
             { refreshLibrary(true) },
             { libraryScreen.showStatus("The game catalog is included in this build") },
@@ -136,8 +140,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             dosLibrary::cached, dosLibrary::scan,
             { uri -> uri.lastPathSegment ?: "DOS folder" },
             "Choose a DOS folder to find games",
-            "Folder access expired. Select the DOS folder again.",
-            { found -> "${found.count { it.playable }} games ready" })
+            "DOS folder needs read and write access. Select it again.",
+            { found -> "${found.count { it.playable }} games ready" },
+            writable = true)
         appRoot.addView(libraryPage, FrameLayout.LayoutParams(-1, -1))
         onScreenControls = OnScreenControls(this, appRoot, gamepad, preferences,
             ::refreshControllerUi)
@@ -190,6 +195,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showGameDetails(entry: DosLibrary.Game) {
         val record = catalog.resolve(entry.contentId ?: "", entry.displayName)
+        val variants = record.launch?.configs?.keys.orEmpty()
         GameSettingsSheet.show(this, record.title, entry.playable, entry.contentId != null,
             listOf(
                 "CONTROLS" to listOf(
@@ -200,7 +206,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         "Direct tap · Global" else "Touchpad · Global", false) { showSettings() }),
                 "MACHINE" to listOf(
                     GameSettingsRow("DOS CPU speed", if (preferences.getInt("cycles_mode", 0) == 0)
-                        "Auto · Global" else "Maximum · Global", false) { showCpuSettings() }),
+                        "Auto · Global" else "Maximum · Global", false) { showCpuSettings() }) +
+                    (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
+                        preferences.getString("launch_variant_${entry.contentId}", null)
+                            ?: "Choose on first play", false) {
+                        chooseLaunchVariant(entry, false)
+                    }) else emptyList()) +
+                    (if (DosLaunchConfig.needsPlayer(record.launch)) listOf(
+                        GameSettingsRow("DOS player name",
+                            preferences.getString("dos_player_${entry.contentId}", null)
+                                ?: "Choose on first play", false) {
+                            choosePlayerName(entry, null)
+                        }) else emptyList()),
                 "LIBRARY" to listOf(
                     GameSettingsRow("Title", record.title, true) {
                         val input = EditText(this).apply { setText(record.title) }
@@ -228,8 +245,41 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun launch(game: DosLibrary.Game) {
+        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
+        val variants = launch?.configs?.keys.orEmpty()
+        if (variants.size > 1) {
+            val saved = preferences.getString("launch_variant_${game.contentId}", null)
+            if (saved !in variants) { chooseLaunchVariant(game, true); return }
+            startGame(game, saved!!)
+        } else startGame(game, "dosbox.conf")
+    }
+
+    private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean) {
+        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch ?: return
+        val names = launch.configs.keys.sortedWith(compareBy<String> { it != "dosbox.conf" }
+            .thenBy { it })
+        AlertDialog.Builder(this).setTitle("Startup variant")
+            .setItems(names.map { if (it == "dosbox.conf") "Default" else it }.toTypedArray())
+            { _, index ->
+                val selected = names[index]
+                preferences.edit().putString("launch_variant_${game.contentId}", selected).apply()
+                if (play) startGame(game, selected)
+                else showGameDetails(game)
+            }.setNegativeButton("Cancel", null).show()
+    }
+
+    private fun startGame(game: DosLibrary.Game, configName: String) {
         val selected = tree ?: return
         if (!game.playable) return
+        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
+        val playerKey = "dos_player_${game.contentId}"
+        if (DosLaunchConfig.needsPlayer(launch) && preferences.getString(playerKey, null) == null) {
+            choosePlayerName(game, configName)
+            return
+        }
+        val playerName = preferences.getString(playerKey, null)
+        val mountsParent = launch?.let { DosLaunchConfig.mountsParent(it, configName) } == true
+        val availableGames = games.toList()
         val generation = ++launchGeneration
         prepareCancelled.set(true)
         val cancelled = AtomicBoolean(false)
@@ -240,7 +290,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         currentGame = game
         gamepad.bindings = loadControllerBindings(game)
         showGame()
-        val saveDir = File(filesDir, "saves/${game.id}").apply { mkdirs() }
         val systemDir = File(filesDir, "system").apply { mkdirs() }
         nativeConfigure(if (preferences.getBoolean("direct_touch", false)) 1 else 0,
             preferences.getInt("cycles_mode", 0))
@@ -248,10 +297,50 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             oldThread?.join()
             var message: String? = null
             val success = try {
-                val file = dosLibrary.prepare(game, selected, cancelled)
+                val playableGame = if (game.installer) {
+                    dosLibrary.install(game, selected, cancelled) { status ->
+                        runOnUiThread {
+                            if (generation == launchGeneration) loadingStatus?.text = status
+                        }
+                    }
+                } else game
+                val saveDir = File(filesDir, "saves/${playableGame.id}")
+                if (game.installer) {
+                    val oldSaveDir = File(filesDir, "saves/${game.id}")
+                    if (oldSaveDir.isDirectory && !saveDir.exists())
+                        require(oldSaveDir.renameTo(saveDir)) {
+                            "Could not move existing game saves to the installed archive"
+                        }
+                }
+                require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
+                val dependencies = DosLaunchConfig.requiredFolders(launch, configName)
+                    .associateWith { folder ->
+                        val ids = catalog.contentIdsForFolder(folder).toSet()
+                        val dependency = availableGames.firstOrNull { it.contentId in ids }
+                            ?: error("This game also needs the $folder archive in your DOS library")
+                        val dependencyFile = dosLibrary.prepare(dependency, selected, cancelled)
+                        DosLaunchConfig.Dependency(dependencyFile, !dependency.folder &&
+                            dosLibrary.hasOuterFolder(dependencyFile, folder))
+                    }
+                val file = dosLibrary.prepare(playableGame, selected, cancelled,
+                    if (mountsParent) launch?.folder else null)
                 if (generation != launchGeneration) return@Thread
+                runOnUiThread {
+                    if (generation == launchGeneration) loadingStatus?.text = "Starting DOSBox Pure…"
+                }
+                DosLaunchConfig.write(file, launch, configName, dependencies, playerName)
+                if (game.installer) runOnUiThread {
+                    if (generation == launchGeneration) {
+                        pendingInstallerRemoval = game to playableGame
+                        sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
+                            playableGame.displayName).title
+                        preferences.edit().putString("last_played_entry", playableGame.id).apply()
+                    }
+                }
+                val enterOuterFolder = launch != null && !mountsParent && !playableGame.folder &&
+                    dosLibrary.hasOuterFolder(file, launch.folder)
                 val started = nativeRun(file.absolutePath, saveDir.absolutePath,
-                    systemDir.absolutePath)
+                    systemDir.absolutePath, enterOuterFolder, launch != null)
                 if (!started) message = nativeLastError().ifBlank {
                     "DOSBox Pure could not start this game."
                 }
@@ -269,6 +358,26 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }
         }.apply { name = "KairoDos-emulation"; start() }
         pollSession(game.id)
+    }
+
+    private fun choosePlayerName(game: DosLibrary.Game, playConfig: String?) {
+        val key = "dos_player_${game.contentId}"
+        val input = EditText(this).apply {
+            hint = "1–8 letters, digits, or underscores"
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or
+                android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+            setText(preferences.getString(key, "PLAYER"))
+            selectAll()
+        }
+        AlertDialog.Builder(this).setTitle("DOS player name").setView(input)
+            .setPositiveButton(if (playConfig == null) "Save" else "Play") { _, _ ->
+                val name = input.text.toString().trim().uppercase(java.util.Locale.ROOT)
+                if (name.matches(Regex("[A-Z0-9_]{1,8}"))) {
+                    preferences.edit().putString(key, name).apply()
+                    if (playConfig == null) showGameDetails(game)
+                    else startGame(game, playConfig)
+                } else Ui.message(this, "Use 1–8 letters, digits, or underscores")
+            }.setNegativeButton("Cancel", null).show()
     }
 
     private fun settingsEntries() = listOf(
@@ -295,6 +404,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
+        sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
         libraryScreen.visibility = View.GONE
@@ -302,6 +412,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
         root.addView(frame, FrameLayout.LayoutParams(-1, -1))
+        loadingStatus = TextView(this).apply {
+            text = if (game.installer) "Preparing installer archive…" else "Preparing DOS game…"
+            setTextColor(Color.WHITE)
+            textSize = 16f
+            gravity = Gravity.CENTER
+            setPadding(Ui.dp(this@MainActivity, 24), Ui.dp(this@MainActivity, 16),
+                Ui.dp(this@MainActivity, 24), Ui.dp(this@MainActivity, 16))
+            setBackgroundColor(0xCC101820.toInt())
+        }.also { root.addView(it, FrameLayout.LayoutParams(-1, -2, Gravity.CENTER)) }
         val display = SurfaceView(this)
         surface = display
         frame.addView(display, FrameLayout.LayoutParams(-1, -1, Gravity.CENTER))
@@ -336,7 +455,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }
         ), settingsEntries())
         sessionFlow = SessionFlow(sessionDrawer!!,
-            { catalog.resolve(game.contentId ?: "", game.displayName).title },
+            { sessionGameTitle ?: game.displayName },
             { statusLabel?.text?.toString() ?: "DOS game" },
             {
                 keyboard?.close()
@@ -349,7 +468,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             },
             { surface?.requestFocus() })
         statusLabel = sessionDrawer?.status
-        statusLabel?.text = "Starting ${game.title}…"
+        statusLabel?.text = "Starting ${sessionGameTitle}…"
         onScreenControls?.refreshVisibility(true)
     }
 
@@ -435,7 +554,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             when (nativeStatus()) {
                 1 -> statusLabel?.text = "Loading DOSBox Pure…"
                 2 -> {
-                    statusLabel?.text = "${currentGame?.title ?: "Game"} · running"
+                    loadingStatus?.visibility = View.GONE
+                    statusLabel?.text = "${sessionGameTitle ?: "Game"} · running"
                     if (audioThread == null || audioThread?.isAlive != true) startAudio()
                     updateSurfaceLayout()
                 }
@@ -584,9 +704,26 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionDrawer = null
         userPaused = false
         nativeSetSurface(null)
+        loadingStatus = null
+        sessionGameTitle = null
         currentGame = null
         gamepad.bindings = globalControllerBindings()
         showLibrary()
+        pendingInstallerRemoval?.let { (installer, installed) ->
+            pendingInstallerRemoval = null
+            refreshLibrary(false)
+            AlertDialog.Builder(this).setTitle("Remove installer ZIP?")
+                .setMessage("The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?")
+                .setPositiveButton("Remove") { _, _ ->
+                    Thread {
+                        runCatching { dosLibrary.deleteInstaller(installer, installed) }
+                            .onSuccess { runOnUiThread { refreshLibrary(false) } }
+                            .onFailure { failure -> runOnUiThread {
+                                Ui.message(this, failure.message ?: "Could not remove installer")
+                            } }
+                    }.apply { name = "KairoDos-remove-installer"; start() }
+                }.setNegativeButton("Keep", null).show()
+        }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) { nativeSetSurface(holder.surface) }

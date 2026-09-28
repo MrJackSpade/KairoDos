@@ -314,6 +314,69 @@ public:
 
 			if (!cmd->FindCommand(2,temp_line)) goto showusage;
 			if (!temp_line.size()) goto showusage;
+			// A dependency from another user-owned game archive, staged by KairoDos.
+			if (temp_line.compare(0, 9, "KAIROZIP:") == 0 && temp_line.size() >= 12 &&
+				(temp_line[9] == '0' || temp_line[9] == '1') && temp_line[10] == ':') {
+				size_t separator = temp_line.rfind('|');
+				if (separator == std::string::npos || separator <= 11) {
+					WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"), temp_line.c_str());
+					return;
+				}
+				std::string archive_path = temp_line.substr(11, separator - 11);
+				std::string subdir = temp_line.substr(separator + 1);
+				std::string* zip_error = NULL;
+				DOS_Drive* source = zipDrive::MountWithDependencies(archive_path.c_str(), zip_error,
+					false, temp_line[9] == '1');
+				if (!source || subdir.find("..") != std::string::npos ||
+					(!subdir.empty() && !source->TestDir(&subdir[0]))) {
+					delete source;
+					delete zip_error;
+					WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"), temp_line.c_str());
+					return;
+				}
+				delete zip_error;
+				newdrive = subdir.empty() ? source : new mirrorDrive(*source, true, subdir.c_str());
+				Drives[drive - 'A'] = newdrive;
+				mem_writeb(Real2Phys(dos.tables.mediaid) + (drive - 'A') * 9,
+					type == "floppy" ? 0xF0 : newdrive->GetMediaByte());
+				if (iscdrom) {
+					extern int MSCDEX_AddDrive(char, const char*, Bit8u&);
+					Bit8u subUnit;
+					MSCDEX_AddDrive(drive, "", subUnit);
+				}
+				if (type == "floppy") incrementFDD();
+				return;
+			}
+			// KairoDos maps another DOS drive to a directory inside the loaded game ZIP.
+			// The source drive is specified by the generated sidecar configuration.
+			if (temp_line.compare(0, 6, "KAIRO:") == 0 && temp_line.size() >= 8 &&
+				temp_line[7] == ':' && temp_line[6] >= 'A' && temp_line[6] <= 'Z') {
+				DOS_Drive* source = Drives[temp_line[6] - 'A'];
+				std::string subdir = temp_line.substr(8);
+				while (!subdir.empty() && subdir.back() == '\\') subdir.pop_back();
+				if (!source || subdir.find("..") != std::string::npos) {
+					WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"), temp_line.c_str());
+					return;
+				}
+				// Some eXoDOS install scripts create an initially empty exchange or
+				// floppy directory. The C: union drive can create it in its save layer.
+				if (!subdir.empty() && !source->TestDir(&subdir[0]) &&
+					(!source->MakeDir(&subdir[0]) || !source->TestDir(&subdir[0]))) {
+					WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"), temp_line.c_str());
+					return;
+				}
+				newdrive = new mirrorDrive(*source, false, subdir.empty() ? NULL : subdir.c_str());
+				Drives[drive - 'A'] = newdrive;
+				mem_writeb(Real2Phys(dos.tables.mediaid) + (drive - 'A') * 9,
+					type == "floppy" ? 0xF0 : newdrive->GetMediaByte());
+				if (iscdrom) {
+					extern int MSCDEX_AddDrive(char, const char*, Bit8u&);
+					Bit8u subUnit;
+					MSCDEX_AddDrive(drive, "", subUnit);
+				}
+				if (type == "floppy") incrementFDD();
+				return;
+			}
 #ifdef C_DBP_NATIVE_CONFIGFILE
 			if(path_relative_to_last_config && control->configfiles.size() && !Cross::IsPathAbsolute(temp_line)) {
 				std::string lastconfigdir(control->configfiles[control->configfiles.size()-1]);

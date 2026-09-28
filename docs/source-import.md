@@ -9,7 +9,9 @@
 - Source commit: `a4a0bab7f8931433588f2fcad9045c85b277373d`
 - Archive: `https://github.com/schellingb/dosbox-pure/archive/a4a0bab7f8931433588f2fcad9045c85b277373d.tar.gz`
 - Archive SHA-256: `f0d04f087bb1c63a4cf1d46e314a9e0336afad427ddebbefde3daffe64b9005b`
-- Import method: extracted and copied the complete archive tree into `third_party/dosbox-pure/` (284 files). No source patches were applied.
+- Import method: extracted and copied the complete archive tree into `third_party/dosbox-pure/` (284 files).
+- Local patch: `dosbox_pure_libretro.cpp` exports `kairo_set_enter_solo_root_dir(bool)` and passes that choice to ZIP mounting. KairoDos uses it to enter a game archive's single wrapper folder when eXoDOS originally mounted that folder as C:. The default remains upstream behavior for other content.
+- Local patch: `src/dos/dos_programs.cpp` accepts generated `KAIRO:<drive>:<subdir>` and `KAIROZIP:<mode>:<archive>|<subdir>` sources in the DOS `MOUNT` command. These mirror a directory from the loaded game ZIP or mount a separately staged user-owned dependency archive onto another DOS drive. This allows eXoDOS floppy and CD directory mounts without packaging game media in the APK.
 - Build entry: `third_party/dosbox-pure/jni/Android.mk`, `arm64-v8a`, using upstream's arm64 dynamic recompiler selection.
 
 The host in `kairodos/src/main/cpp/` uses the libretro API header copied with the core. `backend-dos/` builds upstream source into `libretro.so`; `kairodos/` builds the first-party `libkairodos_host.so`. The app loads the copied core at runtime. Neither repository carries a DOSBox Pure Git remote.

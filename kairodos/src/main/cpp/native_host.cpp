@@ -33,6 +33,7 @@ std::atomic<bool> mouse_left{false}, mouse_right{false};
 std::atomic<int> pointer_x{0}, pointer_y{0};
 std::atomic<bool> pointer_pressed{false};
 std::atomic<int> mouse_mode{0}, cycles_mode{0};
+std::atomic<bool> outside_conf{false};
 std::atomic<bool> option_dirty{false};
 std::mutex audio_mutex;
 std::array<int16_t, AUDIO_CAPACITY> audio{};
@@ -62,6 +63,7 @@ struct Core {
     decltype(&retro_get_system_av_info) get_system_av_info = nullptr;
     decltype(&retro_run) run = nullptr;
     decltype(&retro_reset) reset = nullptr;
+    void (*set_zip_root)(bool) = nullptr;
 } core;
 
 void set_error(const std::string& message) {
@@ -108,6 +110,10 @@ bool environment(unsigned command, void* data) {
             }
             if (std::strcmp(variable->key, "dosbox_pure_cycles") == 0) {
                 variable->value = cycles_mode.load() == 1 ? "max" : "auto";
+                return true;
+            }
+            if (std::strcmp(variable->key, "dosbox_pure_conf") == 0) {
+                variable->value = outside_conf.load() ? "outside" : "false";
                 return true;
             }
             return false;
@@ -223,7 +229,8 @@ bool load_core() {
         symbol(core.load_game, "retro_load_game") &&
         symbol(core.unload_game, "retro_unload_game") &&
         symbol(core.get_system_av_info, "retro_get_system_av_info") &&
-        symbol(core.run, "retro_run") && symbol(core.reset, "retro_reset");
+        symbol(core.run, "retro_run") && symbol(core.reset, "retro_reset") &&
+        symbol(core.set_zip_root, "kairo_set_enter_solo_root_dir");
 }
 
 std::string string(JNIEnv* env, jstring value) {
@@ -238,7 +245,8 @@ std::string string(JNIEnv* env, jstring value) {
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
-    jstring path_j, jstring save_j, jstring system_j) {
+    jstring path_j, jstring save_j, jstring system_j, jboolean enter_solo_root,
+    jboolean use_outside_conf) {
     int expected = status.load();
     while (expected == 0 || expected == 3) {
         if (status.compare_exchange_weak(expected, 1)) break;
@@ -259,7 +267,9 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     { std::lock_guard<std::mutex> lock(audio_mutex); audio_read = audio_write = audio_count = 0; }
     { std::lock_guard<std::mutex> lock(input_mutex); key_changes.clear(); keys.fill(0); joypad.fill(0); }
     keyboard_callback = {};
+    outside_conf.store(use_outside_conf);
     if (!load_core()) { if (core_handle) dlclose(core_handle); core_handle = nullptr; status.store(3); return false; }
+    core.set_zip_root(enter_solo_root);
     core.set_environment(environment);
     core.set_video_refresh(video);
     core.set_audio_sample_batch(audio_batch);

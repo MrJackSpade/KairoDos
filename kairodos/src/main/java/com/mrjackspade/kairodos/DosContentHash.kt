@@ -13,20 +13,33 @@ import java.util.zip.ZipFile
 
 /** One identity for a DOS game tree, whether stored as a ZIP or extracted files. */
 object DosContentHash {
+    data class ZipInspection(val contentId: String, val exodosSource: Boolean)
     private const val PREFIX = "sha256-dos-manifest-v1:"
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
     /** Local document providers expose seekable descriptors; others use the copy fallback. */
-    fun zipDocument(resolver: ContentResolver, uri: Uri,
-                    cancelled: AtomicBoolean): String? = try {
+    fun inspectZipDocument(resolver: ContentResolver, uri: Uri,
+                           cancelled: AtomicBoolean): ZipInspection? = try {
         resolver.openFileDescriptor(uri, "r")?.use { descriptor ->
-            zip(File("/proc/self/fd/${descriptor.fd}"), cancelled)
+            inspectZip(File("/proc/self/fd/${descriptor.fd}"), cancelled)
         }
     } catch (_: Exception) { null }
 
-    fun zip(file: File, cancelled: AtomicBoolean): String = ZipFile(file).use { archive ->
+    fun zipDocument(resolver: ContentResolver, uri: Uri,
+                    cancelled: AtomicBoolean): String? =
+        inspectZipDocument(resolver, uri, cancelled)?.contentId
+
+    fun zip(file: File, cancelled: AtomicBoolean): String =
+        inspectZip(file, cancelled).contentId
+
+    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = ZipFile(file).use { archive ->
         if (cancelled.get()) throw CancellationException("Cancelled")
-        val members = archive.entries().asSequence().filterNot { it.isDirectory }
+        val entries = archive.entries().asSequence().filterNot { it.isDirectory }.toList()
+        val exodosSource = entries.any { entry ->
+            entry.size == 0L && entry.name.replace('\\', '/').substringAfterLast('/')
+                .endsWith(".exo", true)
+        }
+        val members = entries.asSequence()
             .map { it to safePath(it.name) }.filterNot { it.second.endsWith(".exo", true) }
             .toList()
         require(members.isNotEmpty()) { "No game files in ZIP" }
@@ -45,7 +58,7 @@ object DosContentHash {
             require(item.crc in 0..0xffffffffL) { "Missing ZIP member checksum" }
             frame(digest, path, item.size, item.crc)
         }
-        PREFIX + hex(digest.digest())
+        ZipInspection(PREFIX + hex(digest.digest()), exodosSource)
     }
 
     fun documents(resolver: ContentResolver, files: List<DocumentTreeWalker.FileEntry>,

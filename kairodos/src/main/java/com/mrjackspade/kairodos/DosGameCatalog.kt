@@ -12,15 +12,24 @@ import java.util.Locale
 
 /** Hash-keyed, data-only game metadata. Game media is never read from these records. */
 class DosGameCatalog(private val context: Context) : LibraryCatalog {
+    data class Launch(val folder: String, val configs: Map<String, String>,
+                      val exception: Boolean)
+
     data class Game(
         override val title: String,
         override val description: String?,
         override val boxArt: String?,
         override val preview: String?,
-        override val tags: List<String>
+        override val tags: List<String>,
+        val launch: Launch?
     ) : LibraryGame
 
     private val cache = object : LruCache<String, JSONObject>(8) {}
+    private val folderIndex by lazy { runCatching {
+        context.assets.open("catalog/dos/folders.json").use { input ->
+            JSONObject(input.bufferedReader().readText())
+        }
+    }.getOrDefault(JSONObject()) }
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
     private var overrides = runCatching {
@@ -30,13 +39,25 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     @Synchronized override fun resolve(contentId: String, fileName: String): Game {
         val found = if (id.matches(contentId)) shard(contentId.substringAfter(':').take(2))
             ?.optJSONObject("games")?.optJSONObject(contentId) else null
-        val record = found?.optJSONObject("variants")
-            ?.optJSONObject(fileName.lowercase(Locale.ROOT)) ?: found
-        val title = overrides.optJSONObject(contentId)?.optString("title")
+        val variants = found?.optJSONObject("variants")
+        val sourceName = fileName.removeSuffix(" - Installer").lowercase(Locale.ROOT)
+        val record = variants?.optJSONObject(sourceName)
+            ?: variants?.optJSONObject("$sourceName.zip")
+            ?: variants?.optJSONObject("$sourceName.dosz")
+            ?: variants?.keys()?.asSequence()?.firstOrNull()?.let(variants::optJSONObject)
+            ?: found
+        val baseTitle = overrides.optJSONObject(contentId)?.optString("title")
             ?.takeIf { it.isNotBlank() }
             ?: record?.optString("title")?.takeIf { it.isNotBlank() }
             ?: fileName.substringAfterLast('/')
+        val title = if (fileName.endsWith(" - Installer", true) &&
+            !baseTitle.endsWith(" - Installer", true)) "$baseTitle - Installer" else baseTitle
         val art = record?.optJSONObject("artwork")
+        val launch = record?.optJSONObject("launch")?.let { source ->
+            val configs = source.optJSONObject("configs") ?: JSONObject()
+            Launch(source.optString("folder"), configs.keys().asSequence()
+                .associateWith { configs.optString(it) }, source.optBoolean("exception"))
+        }
         return Game(title, record?.optString("description")?.takeIf { it.isNotBlank() },
             art?.optString("boxArt")?.takeIf(::artExists),
             art?.optString("preview")?.takeIf(::artExists),
@@ -44,10 +65,15 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 (0 until array.length()).mapNotNull { index ->
                     array.optString(index).takeIf { it.isNotBlank() }
                 }
-            } ?: emptyList())
+            } ?: emptyList(), launch)
     }
 
     override fun hiddenFromLibrary(contentId: String) = false
+
+    fun contentIdsForFolder(folder: String): List<String> {
+        val matches = folderIndex.optJSONArray(folder.lowercase(Locale.ROOT)) ?: return emptyList()
+        return (0 until matches.length()).map { matches.optString(it) }
+    }
 
     @Synchronized fun setTitle(contentId: String, title: String?) {
         require(id.matches(contentId)) { "Hash this game first" }

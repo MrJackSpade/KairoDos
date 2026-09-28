@@ -61,6 +61,11 @@ static enum DBP_State : Bit8u { DBPSTATE_BOOT, DBPSTATE_EXITED, DBPSTATE_SHUTDOW
 static enum DBP_SerializeMode : Bit8u { DBPSERIALIZE_STATES, DBPSERIALIZE_REWIND, DBPSERIALIZE_DISABLED } dbp_serializemode;
 static bool dbp_game_running, dbp_pause_events, dbp_paused_midframe, dbp_frame_pending, dbp_biosreboot, dbp_biospoweroff, dbp_system_cached, dbp_system_scannable, dbp_refresh_memmaps;
 static bool dbp_optionsupdatecallback, dbp_reboot_set64mem, dbp_use_network, dbp_had_game_running, dbp_strict_mode, dbp_legacy_save, dbp_wasloaded, dbp_skip_c_mount;
+static bool dbp_kairo_enter_solo_root_dir;
+extern "C" __attribute__((visibility("default"))) void kairo_set_enter_solo_root_dir(bool enabled)
+{
+	dbp_kairo_enter_solo_root_dir = enabled;
+}
 static signed char dbp_menu_time, dbp_conf_loading, dbp_reboot_machine;
 static Bit8u dbp_alphablend_base;
 static float dbp_auto_target, dbp_last_fastforward;
@@ -977,7 +982,9 @@ static DOS_Drive* DBP_Mount(unsigned image_index = 0, bool unmount_existing = tr
 		if (!unmount_existing && Drives[letter-'A']) return NULL;
 		std::string* ziperr = NULL;
 		if ((ext[3]|0x20) != 'c')
-			drive = zipDrive::MountWithDependencies(path, ziperr, dbp_strict_mode, dbp_legacy_save);
+			// KairoDos can enter an eXoDOS archive's single wrapper directory.
+			drive = zipDrive::MountWithDependencies(path, ziperr, dbp_strict_mode,
+				dbp_legacy_save || dbp_kairo_enter_solo_root_dir);
 		else
 		{
 			// When loading a DOSC file, load the corresponding DOSZ file, but strip out a [VARIANT] specifier at the end.
@@ -989,7 +996,8 @@ static DOS_Drive* DBP_Mount(unsigned image_index = 0, bool unmount_existing = tr
 				size_t dosc_variant_len = (ext - 1 - dosc_variant);
 				dosz_path.erase(dosc_variant - path, dosc_variant_len);
 			}
-			drive = zipDrive::MountWithDependencies(dosz_path.c_str(), ziperr, dbp_strict_mode, dbp_legacy_save, path);
+			drive = zipDrive::MountWithDependencies(dosz_path.c_str(), ziperr, dbp_strict_mode,
+				dbp_legacy_save || dbp_kairo_enter_solo_root_dir, path);
 		}
 		if (!drive)
 		{

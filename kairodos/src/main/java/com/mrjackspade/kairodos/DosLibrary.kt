@@ -2,6 +2,7 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.util.AtomicFile
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import com.mrjackspade.kairo.frontend.LibraryItem
@@ -12,6 +13,7 @@ import java.security.MessageDigest
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
@@ -24,11 +26,13 @@ class DosLibrary(private val context: Context) {
         val rootFolder: Boolean = false,
         val fingerprint: String,
         override val contentId: String?,
-        override val error: String? = null
+        override val error: String? = null,
+        val installer: Boolean = false
     ) : LibraryItem {
         override val zipEntry: String? = null
         override val displayName: String get() = path.substringAfterLast('/').let {
-            if (folder) it else it.substringBeforeLast('.')
+            val stem = if (folder) it else it.substringBeforeLast('.')
+            if (installer) "$stem - Installer" else stem.removeSuffix(" - Installed")
         }
         val title: String get() = displayName
         override val playable: Boolean get() = contentId != null && error == null
@@ -52,16 +56,23 @@ class DosLibrary(private val context: Context) {
         val source = walker.scan(tree, cancelled, { true }, progress)
         val all = source.files
         val rootFiles = all.filter { !it.path.contains('/') }
+        val containsArchives = all.any { extension(it.path) in archiveExtensions }
         val rootGame = (rootFiles.size > 1 || all.any { it.path.contains('/') }) &&
             rootFiles.any { extension(it.path) in executableExtensions } &&
-            rootFiles.none { extension(it.path) in archiveExtensions + otherExtensions }
+            !containsArchives &&
+            rootFiles.none { extension(it.path) in otherExtensions }
         val nested = all.filter { it.path.contains('/') }.groupBy { it.path.substringBefore('/') }
         val folderGroups = if (rootGame) mapOf("@root" to all) else nested.filterValues {
-            members -> members.any { extension(it.path) in executableExtensions }
+            members -> members.any { extension(it.path) in executableExtensions } &&
+                members.none { extension(it.path) in archiveExtensions } &&
+                members.asSequence().map { it.path.substringAfter('/').substringBefore('/') }
+                    .distinct().take(513).count() <= 512
         }
         val archives = if (rootGame) emptyList() else all.filter { item ->
             val type = extension(item.path)
-            type in archiveExtensions + otherExtensions + executableExtensions &&
+            (type in archiveExtensions ||
+                (type in otherExtensions + executableExtensions &&
+                 (!containsArchives || !item.path.contains('/')))) &&
                 (!item.path.contains('/') || item.path.substringBefore('/') !in folderGroups)
         }
         val output = ArrayList<Game>()
@@ -73,6 +84,7 @@ class DosLibrary(private val context: Context) {
             val old = prior[id]
             var contentId: String?
             var failure: String?
+            var installer = old?.installer ?: false
             if (old != null && old.fingerprint == fingerprint && item.modified > 0 &&
                 old.contentId != null && old.error == null &&
                 (if (extension(item.path) in archiveExtensions)
@@ -81,18 +93,23 @@ class DosLibrary(private val context: Context) {
                 contentId = old.contentId; failure = null
             } else try {
                 contentId = if (extension(item.path) in archiveExtensions) {
-                    DosContentHash.zipDocument(context.contentResolver, item.uri, cancelled)
+                    val inspection = DosContentHash.inspectZipDocument(
+                        context.contentResolver, item.uri, cancelled)
                         ?: copySource(item, cancelled).let { temp ->
-                            try { DosContentHash.zip(temp, cancelled) }
+                            try { DosContentHash.inspectZip(temp, cancelled) }
                             finally { temp.delete() }
                         }
+                    installer = inspection.exodosSource &&
+                        !item.path.substringAfterLast('/').substringBeforeLast('.')
+                            .endsWith(" - Installed", true)
+                    inspection.contentId
                 } else hashDocument(item, cancelled)
                 failure = null
             } catch (error: Exception) {
                 contentId = null; failure = error.message ?: "Unreadable DOS game"
             }
             output.add(Game(id, item.uri.toString(), item.path, false, false,
-                fingerprint, contentId, failure))
+                fingerprint, contentId, failure, installer))
         }
         folderGroups.toSortedMap(String.CASE_INSENSITIVE_ORDER).forEach { (root, members) ->
             progress("Hashing $root")
@@ -129,12 +146,140 @@ class DosLibrary(private val context: Context) {
         return sorted
     }
 
-    fun prepare(game: Game, tree: Uri, cancelled: AtomicBoolean): File {
+    /** Materialize eXoDOS's ZIP extraction as a durable, separate archive. */
+    fun install(game: Game, tree: Uri, cancelled: AtomicBoolean,
+                progress: (String) -> Unit = {}): Game {
+        require(game.installer && !game.folder && game.playable) { "Not an eXoDOS installer" }
+        progress("Preparing installer archive…")
+        val source = prepare(game, tree, cancelled)
+        val originalName = game.path.substringAfterLast('/')
+        val installedName = originalName.substringBeforeLast('.') + " - Installed.zip"
+        val parentPath = game.path.substringBeforeLast('/', "")
+        var parentId = DocumentsContract.getTreeDocumentId(tree)
+        if (parentPath.isNotEmpty()) for (segment in parentPath.split('/')) {
+            parentId = childId(tree, parentId, segment, true)
+                ?: error("Installer folder was moved; refresh the library")
+        }
+        val path = if (parentPath.isEmpty()) installedName else "$parentPath/$installedName"
+        val existing = childId(tree, parentId, installedName, false)
+        val created = if (existing != null)
+            DocumentsContract.buildDocumentUriUsingTree(tree, existing)
+        else DocumentsContract.createDocument(context.contentResolver,
+            DocumentsContract.buildDocumentUriUsingTree(tree, parentId),
+            "application/zip", installedName)
+            ?: error("Could not create installed game archive")
+        val uri = DocumentsContract.buildDocumentUriUsingTree(tree,
+            DocumentsContract.getDocumentId(created))
+        try {
+            if (existing == null) {
+                val digest = MessageDigest.getInstance("SHA-256")
+                var written = 0L
+                var nextReport = 64L * 1024 * 1024
+                source.inputStream().use { input ->
+                    context.contentResolver.openOutputStream(uri, "wt")?.use { output ->
+                        val buffer = ByteArray(65536)
+                        while (true) {
+                            require(!cancelled.get()) { "Cancelled" }
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            digest.update(buffer, 0, count)
+                            output.write(buffer, 0, count)
+                            written += count
+                            if (written >= nextReport) {
+                                progress("Installing game: ${written / (1024 * 1024)} MiB copied")
+                                nextReport += 64L * 1024 * 1024
+                            }
+                        }
+                    } ?: error("Could not write installed game archive")
+                }
+                val expected = digest.digest()
+                val actual = MessageDigest.getInstance("SHA-256")
+                progress("Verifying installed game archive…")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    val buffer = ByteArray(65536)
+                    while (true) {
+                        require(!cancelled.get()) { "Cancelled" }
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        actual.update(buffer, 0, count)
+                    }
+                } ?: error("Could not verify installed game archive")
+                require(expected.contentEquals(actual.digest())) {
+                    "Installed game archive failed verification"
+                }
+            } else {
+                progress("Checking installed game archive…")
+                val checked = DosContentHash.inspectZipDocument(
+                    context.contentResolver, uri, cancelled)?.contentId
+                    ?: copySource(DocumentTreeWalker.FileEntry(uri, path, -1, 0), cancelled)
+                        .let { temp ->
+                            try { DosContentHash.zip(temp, cancelled) }
+                            finally { temp.delete() }
+                        }
+                require(checked == game.contentId) {
+                    "An installed archive with this name already exists and differs"
+                }
+            }
+            val installedId = sha256(uri.toString())
+            val staged = File(cache,
+                "$installedId-${game.contentId!!.substringAfter(':').take(16)}.zip")
+            if (!staged.isFile) source.renameTo(staged)
+            return Game(installedId, uri.toString(), path, false, false,
+                "", game.contentId, null, false)
+        } catch (failure: Exception) {
+            if (existing == null) runCatching {
+                DocumentsContract.deleteDocument(context.contentResolver, uri)
+            }
+            throw failure
+        }
+    }
+
+    fun deleteInstaller(game: Game, installed: Game) {
+        require(game.installer) { "Not an installer" }
+        require(!installed.installer && installed.contentId == game.contentId) {
+            "Installed game is not available"
+        }
+        val check = DosContentHash.inspectZipDocument(context.contentResolver,
+            Uri.parse(installed.uri), AtomicBoolean(false))?.contentId
+            ?: copySource(DocumentTreeWalker.FileEntry(Uri.parse(installed.uri),
+                installed.path, -1, 0), AtomicBoolean(false)).let { temp ->
+                try { DosContentHash.zip(temp, AtomicBoolean(false)) }
+                finally { temp.delete() }
+            }
+        require(check == game.contentId) { "Installed game could not be verified" }
+        require(DocumentsContract.deleteDocument(context.contentResolver, Uri.parse(game.uri))) {
+            "The document provider could not remove the installer"
+        }
+    }
+
+    private fun childId(tree: Uri, parentId: String, name: String,
+                        directory: Boolean): String? {
+        val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
+        val columns = arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE)
+        context.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                if (cursor.getString(1) == name &&
+                    (cursor.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) == directory)
+                    return cursor.getString(0)
+            }
+        } ?: error("Could not read game folder")
+        return null
+    }
+
+    fun prepare(game: Game, tree: Uri, cancelled: AtomicBoolean,
+                wrapFolder: String? = null): File {
         require(game.playable) { "Game is not ready" }
         val type = extension(game.path)
         val outputType = if (game.folder || type in archiveExtensions + executableExtensions)
             "zip" else type
-        val target = File(cache, "${game.id}-${game.contentId!!.substringAfter(':').take(16)}.$outputType")
+        if (wrapFolder != null) require(wrapFolder.isNotEmpty() &&
+            wrapFolder.none { it == '/' || it == '\\' || it == ':' } &&
+            wrapFolder != "." && wrapFolder != "..") { "Invalid game folder" }
+        val wrapping = if (wrapFolder != null) "-parent" else ""
+        val target = File(cache,
+            "${game.id}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
         if (target.isFile) return target
         try { if (!game.folder) {
             val source = DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0)
@@ -146,6 +291,35 @@ class DosLibrary(private val context: Context) {
                     "Game changed since scan; refresh the library"
                 }
                 if (type in archiveExtensions + otherExtensions) {
+                    if (type in archiveExtensions && wrapFolder != null &&
+                        !hasOuterFolder(copied, wrapFolder)) {
+                        val pending = File.createTempFile("dos-", ".zip.part", cache)
+                        try {
+                            ZipFile(copied).use { input ->
+                                ZipOutputStream(pending.outputStream()).use { output ->
+                                    input.entries().asSequence().filterNot { it.isDirectory }
+                                        .forEach { entry ->
+                                            val name = entry.name.replace('\\', '/')
+                                            require(!name.startsWith('/') &&
+                                                name.split('/').all { it.isNotEmpty() &&
+                                                    it != "." && it != ".." }) {
+                                                "Unsafe game archive"
+                                            }
+                                            output.putNextEntry(ZipEntry("$wrapFolder/$name"))
+                                            input.getInputStream(entry).use {
+                                                copyChecked(it, output, cancelled)
+                                            }
+                                            output.closeEntry()
+                                        }
+                                }
+                            }
+                            require(DosContentHash.zip(pending, cancelled) == game.contentId) {
+                                "Game changed while preparing; refresh the library"
+                            }
+                            require(pending.renameTo(target)) { "Could not prepare game" }
+                        } finally { pending.delete() }
+                        return target
+                    }
                     require(copied.renameTo(target)) { "Could not prepare game" }
                     return target
                 }
@@ -175,7 +349,8 @@ class DosLibrary(private val context: Context) {
                         val name = if (game.rootFolder) item.path else
                             item.path.removePrefix("${game.path}/")
                         if (!name.endsWith(".exo", true)) {
-                            zip.putNextEntry(ZipEntry(name))
+                            val packaged = if (wrapFolder == null) name else "$wrapFolder/$name"
+                            zip.putNextEntry(ZipEntry(packaged))
                             context.contentResolver.openInputStream(item.uri)?.use {
                                 copyChecked(it, zip, cancelled)
                             } ?: error("Unable to read $name")
@@ -194,6 +369,12 @@ class DosLibrary(private val context: Context) {
             target.delete()
             throw failure
         }
+    }
+
+    fun hasOuterFolder(file: File, folder: String): Boolean = ZipFile(file).use { archive ->
+        val names = archive.entries().asSequence().filterNot { it.isDirectory }
+            .map { it.name.replace('\\', '/') }.toList()
+        names.isNotEmpty() && names.all { it.startsWith("$folder/", true) }
     }
 
     private fun copySource(source: DocumentTreeWalker.FileEntry,
@@ -267,7 +448,7 @@ class DosLibrary(private val context: Context) {
 
     private fun readStore(): Pair<String?, List<Game>> = try {
         val json = JSONObject(AtomicFile(store).readFully().toString(Charsets.UTF_8))
-        if (json.optInt("schemaVersion") != 1) null to emptyList() else {
+        if (json.optInt("schemaVersion") != 2) null to emptyList() else {
             val array = json.optJSONArray("games") ?: JSONArray()
             json.optString("treeUri") to (0 until array.length()).mapNotNull { index ->
                 array.optJSONObject(index)?.let { item ->
@@ -275,7 +456,8 @@ class DosLibrary(private val context: Context) {
                         item.optBoolean("folder"), item.optBoolean("rootFolder"),
                         item.optString("fingerprint"),
                         item.optString("contentId").takeIf { it.isNotEmpty() },
-                        item.optString("error").takeIf { it.isNotEmpty() })
+                        item.optString("error").takeIf { it.isNotEmpty() },
+                        item.optBoolean("installer"))
                 }
             }
         }
@@ -287,8 +469,8 @@ class DosLibrary(private val context: Context) {
             .put("path", game.path).put("folder", game.folder)
             .put("rootFolder", game.rootFolder)
             .put("fingerprint", game.fingerprint).put("contentId", game.contentId ?: "")
-            .put("error", game.error ?: "")) }
-        val bytes = JSONObject().put("schemaVersion", 1).put("treeUri", tree.toString())
+            .put("error", game.error ?: "").put("installer", game.installer)) }
+        val bytes = JSONObject().put("schemaVersion", 2).put("treeUri", tree.toString())
             .put("games", array).toString().toByteArray(Charsets.UTF_8)
         val atomic = AtomicFile(store)
         val stream = atomic.startWrite()
