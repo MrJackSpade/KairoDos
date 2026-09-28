@@ -2,6 +2,8 @@
 
 KairoDos is an Android DOS emulator built around [DOSBox Pure](https://github.com/schellingb/dosbox-pure). It offers a game library, controller and touch mapping, an on-screen keyboard, and per-game settings. The emulator core is copied into this project's source; KairoDos is an independent app.
 
+[![Kairo98: the companion PC-98 emulator for Android](docs/kairo98-banner.svg)](https://github.com/MrJackSpade/Kairo98)
+
 [Kairo98](https://github.com/MrJackSpade/Kairo98) is the companion PC-98 emulator. Both apps use the [Kairo shared frontend](https://github.com/MrJackSpade/Kairo) for the library, navigation, and controls.
 
 ## Add games
