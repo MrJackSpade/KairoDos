@@ -33,9 +33,6 @@ function Write-PublicJson([System.Text.Json.JsonElement] $value,
 
 function Get-PublicBytes([string] $name) {
     $bytes = [IO.File]::ReadAllBytes((Join-Path $source $name))
-    if (-not $name.EndsWith('.json') -or $name -in @('folders.json', 'controller-profiles-v1.json')) {
-        return ,$bytes
-    }
     $document = [System.Text.Json.JsonDocument]::Parse([Text.Encoding]::UTF8.GetString($bytes))
     $stream = [IO.MemoryStream]::new()
     try {
