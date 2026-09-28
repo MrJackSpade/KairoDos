@@ -9,6 +9,7 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import android.net.Uri
 import android.os.Bundle
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -19,6 +20,8 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
@@ -29,6 +32,7 @@ import com.mrjackspade.kairo.frontend.Ui
 import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryFlow
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
+import com.mrjackspade.kairo.frontend.FirstRunScreen
 import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SettingsEntry
@@ -94,6 +98,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val dosLibrary by lazy { DosLibrary(this) }
     private val catalog by lazy { DosGameCatalog(this) }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
+    private lateinit var firstRunScreen: FirstRunScreen
+    private val firstRunBack = OnBackInvokedCallback { firstRunScreen.back() }
+    private var firstRunBackRegistered = false
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
@@ -145,8 +152,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
             { found -> "${found.count { it.playable }} games ready" },
+            onFolderSelected = { finishFirstRun() },
+            onFolderError = { message -> if (firstRunScreen.isOpen) Ui.message(this, message) },
             writable = true)
         appRoot.addView(libraryPage, FrameLayout.LayoutParams(-1, -1))
+        firstRunScreen = FirstRunScreen(this)
+        appRoot.addView(firstRunScreen, FrameLayout.LayoutParams(-1, -1))
         onScreenControls = OnScreenControls(this, appRoot, gamepad, preferences,
             ::refreshControllerUi)
         controllerEditor = ControllerEditor(this, appRoot,
@@ -166,9 +177,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.deadZone = controllerProfiles.deadZone
         libraryFlow.restore()
         showLibrary()
-        if (savedInstanceState == null && (intent.data != null || intent.hasExtra("ROM")))
+        val externallyRequested = savedInstanceState == null &&
+            (intent.data != null || intent.hasExtra("ROM"))
+        if (externallyRequested)
             dispatchExternalGame(intent)
-        else if (tree != null) refreshLibrary(false)
+        else {
+            if (tree != null) refreshLibrary(false)
+            if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -178,6 +194,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun dispatchExternalGame(intent: Intent) {
+        if (::firstRunScreen.isInitialized) closeFirstRun()
         val request = try { ExternalGameIntent.file(intent, contentResolver) }
         catch (failure: Exception) {
             libraryScreen.showStatus(failure.message ?: "Invalid game file")
@@ -210,6 +227,42 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun chooseFolder() = libraryFlow.chooseFolder()
+
+    private fun showFirstRun() {
+        firstRunScreen.show(FirstRunScreen.Page("KAIRODOS", "SETUP  ·  1 OF 1",
+            "Choose a DOS folder",
+            "Select a writable folder containing your DOS games and ZIP archives. You can add one later from the library.",
+            listOf(
+                FirstRunScreen.Action("Select DOS folder", "Find games on this device",
+                    primary = true, onClick = ::chooseFolder),
+                FirstRunScreen.Action("Skip for now", "Open the game library",
+                    onClick = ::finishFirstRun)
+            )), ::finishFirstRun)
+        if (Build.VERSION.SDK_INT >= 33 && !firstRunBackRegistered) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT, firstRunBack)
+            firstRunBackRegistered = true
+        }
+    }
+
+    private fun finishFirstRun() {
+        preferences.edit().putBoolean("onboarding_complete_v1", true).apply()
+        closeFirstRun()
+        if (tree != null) refreshLibrary(false)
+    }
+
+    private fun closeFirstRun() {
+        firstRunScreen.close()
+        if (Build.VERSION.SDK_INT >= 33 && firstRunBackRegistered) {
+            onBackInvokedDispatcher.unregisterOnBackInvokedCallback(firstRunBack)
+            firstRunBackRegistered = false
+        }
+    }
+
+    @Deprecated("Legacy Back path; API 33+ uses OnBackInvokedDispatcher")
+    override fun onBackPressed() {
+        if (firstRunScreen.isOpen) firstRunScreen.back() else super.onBackPressed()
+    }
 
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -791,6 +844,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun surfaceDestroyed(holder: SurfaceHolder) { nativeSetSurface(null) }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (firstRunScreen.isOpen) return firstRunScreen.handleKey(event)
         if (controllerEditor.isOpen) {
             if (controllerEditor.handleKey(event)) return true
             return super.onKeyDown(keyCode, event)
@@ -826,6 +880,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (firstRunScreen.isOpen) return firstRunScreen.handleKey(event)
         if (controllerEditor.isOpen) {
             if (controllerEditor.handleKey(event)) return true
             return super.onKeyUp(keyCode, event)
@@ -839,6 +894,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
+        if (firstRunScreen.isOpen) return true
         if (controllerEditor.isOpen) return controllerEditor.captureMotion(event)
         if (onScreenControls?.isOpen == true) return true
         if (currentGame != null && sessionDrawer?.isOpen != true && gamepad.motion(event)) return true
