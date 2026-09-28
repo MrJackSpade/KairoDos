@@ -2,6 +2,7 @@ package com.mrjackspade.kairodos
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.res.Configuration
 import android.content.Intent
 import android.graphics.Color
 import android.media.AudioAttributes
@@ -56,6 +57,8 @@ import android.widget.EditText
 import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /** DOS library and session UI. Pure is compiled in :backend-dos and hosted via JNI. */
@@ -65,10 +68,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
     private external fun nativeReset()
+    private external fun nativeSaveState(path: String): Int
+    private external fun nativeLoadState(path: String): Int
     private external fun nativeStatus(): Int
     private external fun nativeInputTelemetry(): LongArray
     private external fun nativeAudioRate(): Int
     private external fun nativeAspect(): Double
+    private external fun nativeVideoWidth(): Int
+    private external fun nativeVideoHeight(): Int
     private external fun nativeLastError(): String
     private external fun nativeSetSurface(surface: Surface?)
     private external fun nativeKey(code: Int, down: Boolean)
@@ -118,6 +125,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var installerPromptOpen = false
     private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
+    private var stateBusy = false
     @Volatile private var launchGeneration = 0
     @Volatile private var externalLaunchGeneration = 0
     private var audioThread: Thread? = null
@@ -125,6 +133,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Volatile private var stopAudio = false
     private var surface: SurfaceView? = null
     private var videoFrame: FrameLayout? = null
+    private var integerScaling = true
+    private var integerCrop = false
+    private var portraitNotchPadding = 0
     private var keyboard: GuestKeyboardPanel? = null
     private var statusLabel: TextView? = null
     private var loadingStatus: TextView? = null
@@ -141,6 +152,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadGraphicsSettings()
         window.statusBarColor = Ui.BG
         window.navigationBarColor = Ui.BG
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
@@ -562,6 +574,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
+        SettingsEntry("Graphics", { scalingLabel() + if (isPortrait())
+            " · notch $portraitNotchPadding dp" else "" }, ::showGraphics),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
             closeMenu()
             showOnScreenControls()
@@ -575,7 +589,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             audio?.setVolume(if (muted) 0f else 1f)
             sessionDrawer?.refreshValues()
             libraryScreen.refreshSettingValues()
-        }
+        },
+        SettingsEntry("About", { "Version, shortcuts, and licenses" }, ::showAbout)
     )
 
     private fun showGame() {
@@ -616,21 +631,30 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 userPaused = false
                 closeMenu()
             },
+            SessionAction("Save", R.drawable.ic_save) {
+                showStateSlots(saving = true)
+            },
+            SessionAction("Load", R.drawable.ic_load) {
+                showStateSlots(saving = false)
+            },
             SessionAction("Restart", com.mrjackspade.kairo.frontend.R.drawable.ic_restart) {
-                nativeReset()
-                closeMenu()
+                confirmRestart()
             },
             SessionAction("Library", com.mrjackspade.kairo.frontend.R.drawable.ic_library) {
                 leaveGame()
             }
         ), listOf(
-            SettingsEntry("Pause", { if (userPaused) "On" else "Off" }) {
+            SettingsEntry("Pause", { if (userPaused) "On · tap to let the game run again"
+                else "Close the menu with the game stopped" }) {
                 userPaused = !userPaused
                 closeMenu()
             },
             SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
                 closeMenu()
                 panel.open()
+            },
+            SettingsEntry("Exit", { "Stop the game and close KairoDos" }) {
+                confirmExit()
             }
         ), settingsEntries())
         sessionFlow = SessionFlow(sessionDrawer!!,
@@ -663,8 +687,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 nativePause(userPaused)
                 onScreenControls?.refreshVisibility(!userPaused)
             }
-            "restart" -> nativeReset()
-            "exit" -> leaveGame()
+            "restart" -> confirmRestart()
+            "exit" -> confirmExit()
         }
     }
 
@@ -755,14 +779,106 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val frame = videoFrame ?: return
         val display = surface ?: return
         if (frame.width <= 0 || frame.height <= 0) return
-        val ratio = nativeAspect().takeIf { it in 0.5..3.0 } ?: 4.0 / 3.0
-        var width = frame.width
-        var height = (width / ratio).roundToInt()
-        if (height > frame.height) { height = frame.height; width = (height * ratio).roundToInt() }
+        val keyboardHeight = keyboard?.takeIf { it.visibility == View.VISIBLE }
+            ?.layoutParams?.height ?: 0
+        val topPadding = if (isPortrait()) Ui.dp(this, portraitNotchPadding) else 0
+        val availableHeight = (frame.height - keyboardHeight - topPadding).coerceAtLeast(1)
+        val sourceWidth = nativeVideoWidth().coerceAtLeast(1)
+        val sourceHeight = nativeVideoHeight().coerceAtLeast(1)
+        val ratio = nativeAspect().takeIf { it in 0.5..3.0 }
+            ?: sourceWidth.toDouble() / sourceHeight
+        val correctedHeight = sourceWidth / ratio
+        val fit = minOf(frame.width / sourceWidth.toDouble(), availableHeight / correctedHeight)
+        if (fit <= 0.0) return
+        val scale = if (integerScaling && fit >= 1.0) {
+            if (integerCrop) ceil(fit) else floor(fit)
+        } else fit
+        val width = (sourceWidth * scale).roundToInt().coerceAtLeast(1)
+        val height = (correctedHeight * scale).roundToInt().coerceAtLeast(1)
+        val top = topPadding + ((availableHeight - height) / 2).coerceAtLeast(0)
         val params = display.layoutParams as FrameLayout.LayoutParams
-        if (params.width != width || params.height != height) {
-            display.layoutParams = FrameLayout.LayoutParams(width, height, Gravity.CENTER)
+        if (params.width != width || params.height != height || params.topMargin != top ||
+            params.gravity != (Gravity.TOP or Gravity.CENTER_HORIZONTAL)) {
+            display.layoutParams = FrameLayout.LayoutParams(width, height,
+                Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = top }
         }
+    }
+
+    private fun isPortrait() = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        loadGraphicsSettings()
+        videoFrame?.post { updateSurfaceLayout() }
+    }
+
+    private fun scalingLabel() = when {
+        !integerScaling -> "Fit display"
+        integerCrop -> "Integer crop"
+        else -> "Integer full image"
+    }
+
+    private fun loadGraphicsSettings() {
+        val suffix = if (isPortrait()) "portrait" else "landscape"
+        integerScaling = preferences.getBoolean("integer_scaling_$suffix",
+            preferences.getBoolean("integer_scaling", true))
+        integerCrop = preferences.getBoolean("integer_crop_$suffix",
+            preferences.getBoolean("integer_crop", false))
+        portraitNotchPadding = preferences.getInt("portrait_notch_padding", 0).coerceIn(0, 240)
+    }
+
+    private fun showGraphics() {
+        val orientation = if (isPortrait()) "portrait" else "landscape"
+        val items = if (isPortrait()) arrayOf(
+            "Scaling  ·  ${scalingLabel()}", "Notch padding  ·  $portraitNotchPadding dp")
+        else arrayOf("Scaling  ·  ${scalingLabel()}")
+        val dialog = AlertDialog.Builder(this).setTitle("Graphics · $orientation")
+            .setItems(items) { _, which ->
+                if (which == 0) showScalingChoices(orientation) else showNotchPadding()
+            }.setNegativeButton("Close", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun showScalingChoices(orientation: String) {
+        val options = arrayOf("Integer  ·  full image (default)",
+            "Integer  ·  crop edges", "Fit display  ·  fractional scale")
+        val selected = if (!integerScaling) 2 else if (integerCrop) 1 else 0
+        val dialog = AlertDialog.Builder(this).setTitle("Scaling · $orientation")
+            .setSingleChoiceItems(options, selected) { current, choice ->
+                integerScaling = choice != 2
+                integerCrop = choice == 1
+                preferences.edit()
+                    .putBoolean("integer_scaling_$orientation", integerScaling)
+                    .putBoolean("integer_crop_$orientation", integerCrop).apply()
+                updateSurfaceLayout()
+                sessionDrawer?.refreshValues()
+                libraryScreen.refreshSettingValues()
+                current.dismiss()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun showNotchPadding() {
+        val input = EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            setSingleLine(true)
+            setText(portraitNotchPadding.toString())
+            selectAll()
+        }
+        val dialog = AlertDialog.Builder(this).setTitle("Portrait notch padding (dp)")
+            .setView(input).setPositiveButton("Save") { _, _ ->
+                val value = input.text.toString().toIntOrNull()?.coerceIn(0, 240)
+                if (value == null) { Ui.message(this, "Enter a number from 0 to 240"); return@setPositiveButton }
+                portraitNotchPadding = value
+                preferences.edit().putInt("portrait_notch_padding", value).apply()
+                updateSurfaceLayout()
+                sessionDrawer?.refreshValues()
+                libraryScreen.refreshSettingValues()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
     }
 
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean {
@@ -852,6 +968,145 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 nativeConfigure(if (preferences.getBoolean("direct_touch", false)) 1 else 0, value)
                 dialog.dismiss()
             }.setNegativeButton("Cancel", null).show()
+    }
+
+    private fun confirmRestart() {
+        val title = sessionGameTitle ?: "the DOS game"
+        val dialog = AlertDialog.Builder(this).setTitle("Restart $title?")
+            .setMessage("Progress since your last save state or in-game save is lost.")
+            .setPositiveButton("Restart") { _, _ ->
+                userPaused = false
+                nativeReset()
+                closeMenu()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun confirmExit() {
+        val dialog = AlertDialog.Builder(this).setTitle("Exit KairoDos?")
+            .setMessage("The DOS game stops. Progress since your last save state or in-game save is lost.")
+            .setPositiveButton("Exit") { _, _ ->
+                leaveGame()
+                if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun showAbout() {
+        val version = packageManager.getPackageInfo(packageName, 0).versionName
+        val dialog = AlertDialog.Builder(this).setTitle("KairoDos $version")
+            .setMessage("Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Pure emulator core. KairoDos, the shared Kairo frontend, and DOSBox Pure are GPL-2.0-or-later. Third-party notices and source provenance are in the project source at github.com/MrJackSpade/KairoDos.")
+            .setPositiveButton("Done", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun stateFile(game: DosLibrary.Game, slot: Int): File {
+        val key = game.contentId!!.replace(Regex("[^A-Za-z0-9._-]"), "_")
+        return File(filesDir, "states/$key/slot$slot.state")
+    }
+
+    private fun showStateSlots(saving: Boolean) {
+        val game = currentGame?.takeIf { it.contentId != null }
+        if (game == null || nativeStatus() != 2) {
+            Ui.message(this, "Start a DOS game before using save states")
+            return
+        }
+        if (stateBusy) return
+        val format = java.text.DateFormat.getDateTimeInstance(
+            java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT)
+        val labels = (1..4).map { slot ->
+            val saved = stateFile(game, slot).takeIf { it.isFile }
+            "Slot $slot · " + (saved?.let { format.format(java.util.Date(it.lastModified())) }
+                ?: "Empty")
+        }.toTypedArray()
+        val dialog = AlertDialog.Builder(this)
+            .setTitle((if (saving) "Save state" else "Load state") + " · ${sessionGameTitle ?: game.displayName}")
+            .setItems(labels) { _, index ->
+                val slot = index + 1
+                val existing = stateFile(game, slot).isFile
+                if (!saving && !existing) {
+                    Ui.message(this, "Slot $slot is empty")
+                } else if (existing) {
+                    val confirm = AlertDialog.Builder(this)
+                        .setTitle(if (saving) "Overwrite slot $slot?" else "Load slot $slot?")
+                        .setMessage(if (saving) "The current save in this slot is replaced."
+                            else "Progress since that save is lost.")
+                        .setPositiveButton(if (saving) "Overwrite" else "Load") { _, _ ->
+                            if (saving) saveState(game, slot) else loadState(game, slot)
+                        }.setNegativeButton("Cancel", null).create()
+                    confirm.show()
+                    Ui.styleDialog(confirm)
+                } else saveState(game, slot)
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun stateError(code: Int) = when (code) {
+        1 -> "game is not running"
+        2 -> "state is unavailable or incompatible"
+        3 -> "storage is unavailable"
+        else -> "DOSBox Pure rejected the state"
+    }
+
+    private fun saveState(game: DosLibrary.Game, slot: Int) {
+        if (stateBusy) return
+        stateBusy = true
+        statusLabel?.text = "Saving slot $slot…"
+        Thread {
+            val target = stateFile(game, slot)
+            val scratch = File(target.parentFile, "slot$slot.part")
+            val previous = File(target.parentFile, "slot$slot.old")
+            val result = runCatching {
+                require(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs())
+                scratch.delete()
+                val code = nativeSaveState(scratch.absolutePath)
+                if (code != 0) return@runCatching "Save failed: ${stateError(code)}"
+                previous.delete()
+                if (target.exists() && !target.renameTo(previous))
+                    error("Could not replace the old save")
+                if (!scratch.renameTo(target)) {
+                    previous.renameTo(target)
+                    error("Could not store the save")
+                }
+                previous.delete()
+                "Saved to slot $slot"
+            }.getOrElse { "Save failed: ${it.message ?: "storage error"}" }
+            scratch.delete()
+            runOnUiThread {
+                stateBusy = false
+                statusLabel?.text = result
+                Ui.message(this, result)
+            }
+        }.apply { name = "KairoDos-save-state"; start() }
+    }
+
+    private fun loadState(game: DosLibrary.Game, slot: Int) {
+        if (stateBusy) return
+        stateBusy = true
+        statusLabel?.text = "Loading slot $slot…"
+        Thread {
+            val code = nativeLoadState(stateFile(game, slot).absolutePath)
+            runOnUiThread {
+                stateBusy = false
+                if (code == 0) {
+                    gamepad.releaseAll()
+                    keys.releaseAll()
+                    inputModeDecider.reset()
+                    userPaused = false
+                    closeMenu()
+                    Ui.message(this, "Loaded slot $slot")
+                } else {
+                    statusLabel?.text = "Load failed: ${stateError(code)}"
+                    Ui.message(this, "Load failed: ${stateError(code)}")
+                    // A rejected state may have partially changed the emulated machine.
+                    if (code == 4) { userPaused = false; nativeReset(); closeMenu() }
+                }
+            }
+        }.apply { name = "KairoDos-load-state"; start() }
     }
 
     private fun startAudio() {

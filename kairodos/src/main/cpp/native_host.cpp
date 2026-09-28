@@ -7,13 +7,16 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdarg>
+#include <cstdio>
 #include <cstdint>
 #include <cstring>
 #include <deque>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 #include "libretro.h"
 
 namespace {
@@ -23,6 +26,11 @@ std::mutex surface_mutex;
 ANativeWindow* surface = nullptr;
 int surface_width = 0;
 int surface_height = 0;
+std::mutex frame_mutex;
+std::condition_variable frame_ready;
+std::vector<uint8_t> pending_frame;
+unsigned pending_width = 0, pending_height = 0;
+bool has_pending_frame = false, renderer_stopping = false;
 std::mutex input_mutex;
 struct KeyChange { unsigned code; bool down; };
 std::deque<KeyChange> key_changes;
@@ -48,6 +56,7 @@ std::atomic<int> status{0}; // 0 idle, 1 loading, 2 running, 3 failed
 std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
 std::atomic<int> guest_keyboard_waiting{0};
 std::mutex error_mutex;
+std::mutex core_execution_mutex;
 std::string last_error;
 std::string save_directory, system_directory, content_directory;
 retro_keyboard_callback keyboard_callback{};
@@ -67,6 +76,9 @@ struct Core {
     decltype(&retro_get_system_av_info) get_system_av_info = nullptr;
     decltype(&retro_run) run = nullptr;
     decltype(&retro_reset) reset = nullptr;
+    decltype(&retro_serialize_size) serialize_size = nullptr;
+    decltype(&retro_serialize) serialize = nullptr;
+    decltype(&retro_unserialize) unserialize = nullptr;
     void (*set_zip_root)(bool) = nullptr;
     void (*reset_input_telemetry)() = nullptr;
     void (*input_telemetry_snapshot)(uint64_t*, uint64_t*, uint64_t*, int*) = nullptr;
@@ -159,27 +171,56 @@ void video(const void* data, unsigned width, unsigned height, size_t pitch) {
     if (!data || data == RETRO_HW_FRAME_BUFFER_VALID || width == 0 || height == 0) return;
     video_width.store(static_cast<int>(width));
     video_height.store(static_cast<int>(height));
-    std::lock_guard<std::mutex> lock(surface_mutex);
-    if (!surface) return;
-    if (surface_width != static_cast<int>(width) || surface_height != static_cast<int>(height)) {
-        if (ANativeWindow_setBuffersGeometry(surface, static_cast<int>(width),
-                static_cast<int>(height), WINDOW_FORMAT_RGBA_8888) != 0) return;
-        surface_width = static_cast<int>(width);
-        surface_height = static_cast<int>(height);
-    }
-    ANativeWindow_Buffer buffer{};
-    if (ANativeWindow_lock(surface, &buffer, nullptr) != 0) return;
+    // Posting to a 60 Hz Surface can block for a full refresh. Keep that wait off
+    // the emulation thread, which must run at the DOS video rate (often 70 Hz).
+    std::lock_guard<std::mutex> lock(frame_mutex);
+    pending_frame.resize(static_cast<size_t>(width) * height * 4);
     const auto* src = static_cast<const uint8_t*>(data);
-    for (unsigned y = 0; y < height && y < static_cast<unsigned>(buffer.height); ++y) {
+    for (unsigned y = 0; y < height; ++y) {
         const auto* row = reinterpret_cast<const uint32_t*>(src + y * pitch);
-        auto* out = static_cast<uint32_t*>(buffer.bits) + y * buffer.stride;
-        for (unsigned x = 0; x < width && x < static_cast<unsigned>(buffer.width); ++x) {
+        auto* out = reinterpret_cast<uint32_t*>(pending_frame.data()) + y * width;
+        for (unsigned x = 0; x < width; ++x) {
             uint32_t rgb = row[x];
             out[x] = 0xff000000u | ((rgb & 0xffu) << 16) | (rgb & 0xff00u) |
                      ((rgb >> 16) & 0xffu);
         }
     }
-    ANativeWindow_unlockAndPost(surface);
+    pending_width = width;
+    pending_height = height;
+    has_pending_frame = true;
+    frame_ready.notify_one();
+}
+
+void render_frames() {
+    std::vector<uint8_t> frame;
+    while (true) {
+        unsigned width, height;
+        {
+            std::unique_lock<std::mutex> lock(frame_mutex);
+            frame_ready.wait(lock, [] { return renderer_stopping || has_pending_frame; });
+            if (renderer_stopping) return;
+            frame.swap(pending_frame);
+            width = pending_width;
+            height = pending_height;
+            has_pending_frame = false;
+        }
+        std::lock_guard<std::mutex> lock(surface_mutex);
+        if (!surface) continue;
+        if (surface_width != static_cast<int>(width) || surface_height != static_cast<int>(height)) {
+            if (ANativeWindow_setBuffersGeometry(surface, static_cast<int>(width),
+                    static_cast<int>(height), WINDOW_FORMAT_RGBA_8888) != 0) continue;
+            surface_width = static_cast<int>(width);
+            surface_height = static_cast<int>(height);
+        }
+        ANativeWindow_Buffer buffer{};
+        if (ANativeWindow_lock(surface, &buffer, nullptr) != 0) continue;
+        for (unsigned y = 0; y < height && y < static_cast<unsigned>(buffer.height); ++y) {
+            auto* out = static_cast<uint32_t*>(buffer.bits) + y * buffer.stride;
+            const auto* row = reinterpret_cast<const uint32_t*>(frame.data()) + y * width;
+            std::memcpy(out, row, std::min(width, static_cast<unsigned>(buffer.width)) * 4);
+        }
+        ANativeWindow_unlockAndPost(surface);
+    }
 }
 
 size_t audio_batch(const int16_t* data, size_t frames) {
@@ -251,6 +292,9 @@ bool load_core() {
         symbol(core.unload_game, "retro_unload_game") &&
         symbol(core.get_system_av_info, "retro_get_system_av_info") &&
         symbol(core.run, "retro_run") && symbol(core.reset, "retro_reset") &&
+        symbol(core.serialize_size, "retro_serialize_size") &&
+        symbol(core.serialize, "retro_serialize") &&
+        symbol(core.unserialize, "retro_unserialize") &&
         symbol(core.set_zip_root, "kairo_set_enter_solo_root_dir") &&
         symbol(core.reset_input_telemetry, "kairo_dos_input_telemetry_reset") &&
         symbol(core.input_telemetry_snapshot, "kairo_dos_input_telemetry_snapshot");
@@ -316,6 +360,12 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     if (av.timing.sample_rate > 1000) sample_rate.store(static_cast<int>(av.timing.sample_rate));
     if (av.geometry.aspect_ratio > 0) aspect.store(av.geometry.aspect_ratio);
     status.store(2);
+    {
+        std::lock_guard<std::mutex> lock(frame_mutex);
+        renderer_stopping = false;
+        has_pending_frame = false;
+    }
+    std::thread renderer(render_frames);
     auto next = std::chrono::steady_clock::now();
     while (!stop_requested.load()) {
         if (paused.load()) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); next = std::chrono::steady_clock::now(); continue; }
@@ -323,8 +373,14 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         { std::lock_guard<std::mutex> lock(input_mutex); changes.swap(key_changes); }
         if (keyboard_callback.callback) for (const auto& change : changes)
             keyboard_callback.callback(change.down, change.code, change.code < 128 ? change.code : 0, 0);
-        if (reset_requested.exchange(false)) core.reset();
-        core.run();
+        if (reset_requested.exchange(false)) {
+            std::lock_guard<std::mutex> lock(core_execution_mutex);
+            core.reset();
+        }
+        {
+            std::lock_guard<std::mutex> lock(core_execution_mutex);
+            core.run();
+        }
         uint64_t waits = 0, polls = 0, reads = 0;
         int waiting = 0;
         core.input_telemetry_snapshot(&waits, &polls, &reads, &waiting);
@@ -336,10 +392,20 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         if (next > now) std::this_thread::sleep_until(next);
         else if (now - next > std::chrono::milliseconds(100)) next = now;
     }
-    core.unload_game();
-    core.deinit();
-    dlclose(core_handle); core_handle = nullptr;
-    status.store(0);
+    {
+        std::lock_guard<std::mutex> lock(frame_mutex);
+        renderer_stopping = true;
+    }
+    frame_ready.notify_one();
+    renderer.join();
+    {
+        std::lock_guard<std::mutex> lock(core_execution_mutex);
+        status.store(1);
+        core.unload_game();
+        core.deinit();
+        dlclose(core_handle); core_handle = nullptr;
+        status.store(0);
+    }
     return true;
 }
 
@@ -349,6 +415,44 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativePause(JNIEnv*, jobject, jboolean value) { paused.store(value); }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeReset(JNIEnv*, jobject) { reset_requested.store(true); }
+extern "C" JNIEXPORT jint JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeSaveState(JNIEnv* env, jobject, jstring path_j) {
+    const std::string path = string(env, path_j);
+    std::lock_guard<std::mutex> lock(core_execution_mutex);
+    if (status.load() != 2 || !core_handle) return 1;
+    const size_t size = core.serialize_size();
+    if (!size || size > 512ull * 1024 * 1024) return 2;
+    std::vector<uint8_t> state(size);
+    if (!core.serialize(state.data(), state.size())) return 4;
+    FILE* file = std::fopen(path.c_str(), "wb");
+    if (!file) return 3;
+    const bool written = std::fwrite(state.data(), 1, state.size(), file) == state.size();
+    const bool closed = std::fclose(file) == 0;
+    if (!written || !closed) { std::remove(path.c_str()); return 3; }
+    return 0;
+}
+extern "C" JNIEXPORT jint JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeLoadState(JNIEnv* env, jobject, jstring path_j) {
+    const std::string path = string(env, path_j);
+    std::lock_guard<std::mutex> lock(core_execution_mutex);
+    if (status.load() != 2 || !core_handle) return 1;
+    const size_t size = core.serialize_size();
+    if (!size || size > 512ull * 1024 * 1024) return 2;
+    FILE* file = std::fopen(path.c_str(), "rb");
+    if (!file) return 3;
+    if (std::fseek(file, 0, SEEK_END) != 0 || std::ftell(file) != static_cast<long>(size) ||
+        std::fseek(file, 0, SEEK_SET) != 0) {
+        std::fclose(file);
+        return 2;
+    }
+    std::vector<uint8_t> state(size);
+    const bool read = std::fread(state.data(), 1, size, file) == size;
+    std::fclose(file);
+    if (!read) return 3;
+    if (!core.unserialize(state.data(), size)) return 4;
+    { std::lock_guard<std::mutex> audio_lock(audio_mutex); audio_read = audio_write = audio_count = 0; }
+    return 0;
+}
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeStatus(JNIEnv*, jobject) { return status.load(); }
 extern "C" JNIEXPORT jlongArray JNICALL
@@ -365,6 +469,10 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAudioRate(JNIEnv*, jobject) { return sample_rate.load(); }
 extern "C" JNIEXPORT jdouble JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAspect(JNIEnv*, jobject) { return aspect.load(); }
+extern "C" JNIEXPORT jint JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeVideoWidth(JNIEnv*, jobject) { return video_width.load(); }
+extern "C" JNIEXPORT jint JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeVideoHeight(JNIEnv*, jobject) { return video_height.load(); }
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeLastError(JNIEnv* env, jobject) {
     std::lock_guard<std::mutex> lock(error_mutex);
