@@ -12,8 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check out pinned Kairo frontend
-        env:
-          KAIRO_SHARED_DEPLOY_KEY: ${{ secrets.KAIRO_SHARED_DEPLOY_KEY }}
         run: bash tools/checkout_shared.sh
       - uses: actions/setup-java@v4
         with:
