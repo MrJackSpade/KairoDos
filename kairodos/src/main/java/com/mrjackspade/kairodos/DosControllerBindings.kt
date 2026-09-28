@@ -20,16 +20,15 @@ internal object DosControllerBindings {
     private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
     private val keyCodes = keys.map { it.code }
-    private val numberKeys = ('0'..'9').associateWith { it.code }
     val spec = ControllerGuestSpec("DOS", keyCodes, { code ->
         keys.firstOrNull { it.code == code }?.label ?: "Key $code"
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
         "D-pad: arrows; A: Enter; left stick and Y/B: joystick 1; right stick and L/R: joystick 2.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
-            "restart" to "Restart", "exit" to "Exit"), numberKeys)
+            "restart" to "Restart", "exit" to "Exit"))
     private val codec = ControllerBindingsCodec(::defaults, { it in keyCodes }, joystick,
-        spec.actions.map { it.first }, numberKeys.values)
+        spec.actions.map { it.first })
 
     fun parse(text: String?) = codec.parse(text).let { parsed ->
         if (text != null && parsed == oldDefaults()) defaults() else parsed
