@@ -23,3 +23,7 @@ The complete corresponding source for a distributed APK must include the KairoDo
 The KairoDos launcher artwork at `kairodos/src/main/res/mipmap-nodpi/ic_launcher.png` was supplied by the project owner on 27 September 2026 and is included byte for byte (SHA-256 `8180f2f52608045a0b8dcfe55937437368c04089043803e72647c81df58afe35`). The code license does not itself grant rights to the artwork. Confirm its redistribution terms before public distribution.
 
 **Audit status:** source components and their embedded notices have been inventoried, but binary packaging and artwork terms have not yet been signed off. The development APK has been tested on a device; it is not yet designated release-ready.
+
+## DOS catalog source
+
+The private development catalog is derived from the owner's eXoDOS v6 LaunchBox XML and image archive. Game archives and launchers are not distributed. The copied descriptions and downscaled cover/screenshot images still require creator, redistribution, and derivative-rights review before a public free or paid binary can include them. The local import manifest records source paths and checksums; see [catalog](catalog.md).

@@ -3,7 +3,6 @@ package com.mrjackspade.kairodos
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.AudioFormat
@@ -12,9 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.OpenableColumns
 import android.view.Gravity
-import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.Surface
@@ -23,19 +20,28 @@ import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
 import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.MouseInputRouter
-import com.mrjackspade.kairo.frontend.PixelTextView
 import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
 import com.mrjackspade.kairo.frontend.Ui
-import org.json.JSONArray
-import org.json.JSONObject
+import com.mrjackspade.kairo.frontend.LibraryScreen
+import com.mrjackspade.kairo.frontend.LibraryStrings
+import com.mrjackspade.kairo.frontend.SettingsEntry
+import com.mrjackspade.kairo.frontend.SessionAction
+import com.mrjackspade.kairo.frontend.SessionDrawer
+import com.mrjackspade.kairo.frontend.GameSettingsRow
+import com.mrjackspade.kairo.frontend.GameSettingsSheet
+import com.mrjackspade.kairo.frontend.JoystickInputRouter
+import com.mrjackspade.kairo.frontend.GamepadMapper
+import com.mrjackspade.kairo.frontend.ControllerBinding
+import com.mrjackspade.kairo.frontend.OnScreenControls
+import android.graphics.BitmapFactory
+import android.widget.ImageView
+import android.widget.EditText
+import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
-import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -59,23 +65,48 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeReadAudio(buffer: ShortArray, maxFrames: Int): Int
 
     companion object {
-        private const val PICK_GAME = 1001
-        private val EXTENSIONS = setOf("zip", "dosz", "exe", "com", "bat", "iso", "chd",
-            "img", "ima", "vhd", "jrc")
+        private const val PICK_FOLDER = 1001
         init { System.loadLibrary("kairodos_host") }
-    }
-
-    private data class Game(val id: String, val title: String, val fileName: String) {
-        fun file(root: File) = File(File(root, "games/$id"), fileName)
     }
 
     private val handler = Handler(Looper.getMainLooper())
     private val preferences by lazy { getSharedPreferences("kairodos", MODE_PRIVATE) }
     private val keys = InputRouter(::nativeKey, 341)
     private val mouse = MouseInputRouter(::nativeMouseMove, ::nativeMouseButton)
-    private var games = mutableListOf<Game>()
-    private var currentGame: Game? = null
+    private val joystick = JoystickInputRouter(::nativeJoypad,
+        listOf("b", "y", "select", "start", "up", "down", "left", "right",
+            "a", "x", "l1", "r1"))
+    private val gamepad = GamepadMapper(keys, joystick, mouse,
+        { action -> if (action == "menu") openMenu() }, {}, listOf(
+            ControllerBinding("virtual:up", joystick = "up"),
+            ControllerBinding("virtual:down", joystick = "down"),
+            ControllerBinding("virtual:left", joystick = "left"),
+            ControllerBinding("virtual:right", joystick = "right"),
+            ControllerBinding("virtual:lsup", joystick = "up"),
+            ControllerBinding("virtual:lsdown", joystick = "down"),
+            ControllerBinding("virtual:lsleft", joystick = "left"),
+            ControllerBinding("virtual:lsright", joystick = "right"),
+            ControllerBinding("virtual:a", joystick = "a"),
+            ControllerBinding("virtual:b", joystick = "b"),
+            ControllerBinding("virtual:x", joystick = "x"),
+            ControllerBinding("virtual:y", joystick = "y"),
+            ControllerBinding("virtual:l1", joystick = "l1"),
+            ControllerBinding("virtual:r1", joystick = "r1"),
+            ControllerBinding("virtual:start", joystick = "start"),
+            ControllerBinding("virtual:select", joystick = "select"),
+            ControllerBinding("virtual:menu", action = "menu")
+        ))
+    private var onScreenControls: OnScreenControls? = null
+    private val dosLibrary by lazy { DosLibrary(this) }
+    private val catalog by lazy { DosGameCatalog(this) }
+    private lateinit var libraryScreen: LibraryScreen<DosLibrary.Game>
+    private var tree: Uri? = null
+    private var scanCancelled = AtomicBoolean(false)
+    private var prepareCancelled = AtomicBoolean(false)
+    private var games = emptyList<DosLibrary.Game>()
+    private var currentGame: DosLibrary.Game? = null
     private var gameThread: Thread? = null
+    @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
     @Volatile private var stopAudio = false
@@ -83,6 +114,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var videoFrame: FrameLayout? = null
     private var keyboard: GuestKeyboardPanel? = null
     private var statusLabel: TextView? = null
+    private var sessionDrawer: SessionDrawer? = null
+    private var userPaused = false
+    private var menuSwipeX: Float? = null
     private var lastX = 0f
     private var lastY = 0f
     private var moved = false
@@ -92,114 +126,135 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Ui.BG
         window.navigationBarColor = Ui.BG
-        games = readGames()
+        tree = preferences.getString("rom_tree", null)?.let(Uri::parse)
+        libraryScreen = LibraryScreen(this, catalog, LibraryStrings("KAIRODOS",
+            "Select DOS folder", "Choose where DOS games and ZIP archives are stored",
+            "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
+            { refreshLibrary(true) },
+            { libraryScreen.showStatus("The game catalog is included in this build") },
+            null, {}, settingsEntries(),
+            { preferences.getString("last_played_entry", null) }, ::launch,
+            ::previewGame, ::showGameDetails, {})
+        games = tree?.let(dosLibrary::cached) ?: emptyList()
         showLibrary()
-    }
-
-    private fun readGames(): MutableList<Game> {
-        val result = mutableListOf<Game>()
-        val stored = JSONArray(preferences.getString("games", "[]"))
-        for (index in 0 until stored.length()) {
-            val item = stored.optJSONObject(index) ?: continue
-            val game = Game(item.optString("id"), item.optString("title"), item.optString("file"))
-            if (game.id.isNotEmpty() && game.file(filesDir).isFile) result.add(game)
-        }
-        return result
-    }
-
-    private fun saveGames() {
-        val array = JSONArray()
-        games.forEach { array.put(JSONObject().put("id", it.id).put("title", it.title)
-            .put("file", it.fileName)) }
-        preferences.edit().putString("games", array.toString()).apply()
+        if (tree != null) refreshLibrary(false)
     }
 
     private fun showLibrary() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         currentGame = null
-        val page = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Ui.BG)
-            setPadding(Ui.dp(this@MainActivity, 20), Ui.dp(this@MainActivity, 24),
-                Ui.dp(this@MainActivity, 20), Ui.dp(this@MainActivity, 16))
-        }
-        page.addView(PixelTextView(this).apply {
-            text = "KAIRODOS"
-            color = Ui.ACCENT
-            scale = 2
-        })
-        page.addView(Ui.text(this, "DOSBox Pure · DOS library", Ui.BODY, Ui.TEXT_MUTED))
-        page.addView(Ui.primaryButton(this, "Add DOS game") { pickGame() },
-            LinearLayout.LayoutParams(-1, Ui.dp(this, 52)).apply {
-                topMargin = Ui.dp(this@MainActivity, 24)
-            })
-        page.addView(Ui.secondaryButton(this, "Input and machine settings") { showSettings() },
-            LinearLayout.LayoutParams(-1, Ui.dp(this, 48)).apply {
-                topMargin = Ui.dp(this@MainActivity, 10)
-            })
-        page.addView(Ui.sectionLabel(this, "MY GAMES"))
-        if (games.isEmpty()) page.addView(Ui.text(this,
-            "Choose a DOS game ZIP, DOSZ, executable, or disk image. Files are copied into this app; no games or operating system are included.",
-            Ui.BODY, Ui.TEXT_MUTED))
-        for (game in games) {
-            val row = Ui.actionRow(this, game.title, { game.fileName }) { launch(game) }
-            page.addView(row.view)
-        }
-        setContentView(ScrollView(this).apply {
-            setBackgroundColor(Ui.BG)
-            addView(page)
-        })
+        setContentView(libraryScreen)
+        libraryScreen.showFolder(tree?.lastPathSegment)
+        libraryScreen.showEntries(games)
+        libraryScreen.showStatus(if (tree == null) "Choose a DOS folder to find games"
+            else "${games.count { it.playable }} games ready")
     }
 
-    private fun pickGame() {
-        startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-        }, PICK_GAME)
+    private fun chooseFolder() {
+        startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+        }, PICK_FOLDER)
     }
 
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != PICK_GAME || resultCode != RESULT_OK) return
-        val uri = data?.data ?: return
-        var name = "game.zip"
-        contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
-            cursor: Cursor -> if (cursor.moveToFirst()) name = cursor.getString(0) ?: name
+        if (requestCode != PICK_FOLDER || resultCode != RESULT_OK) return
+        val chosen = data?.data ?: return
+        try {
+            contentResolver.takePersistableUriPermission(chosen, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            tree = chosen
+            preferences.edit().putString("rom_tree", chosen.toString()).apply()
+            games = emptyList()
+            libraryScreen.showEntries(games)
+            libraryScreen.showFolder(chosen.lastPathSegment)
+            refreshLibrary(false)
+        } catch (failure: Exception) {
+            libraryScreen.showStatus("Cannot keep folder access: ${failure.message}")
         }
-        val safeName = name.substringAfterLast('/').replace(Regex("[^A-Za-z0-9._-]"), "_")
-        val ext = safeName.substringAfterLast('.', "").lowercase()
-        if (ext !in EXTENSIONS) {
-            AlertDialog.Builder(this).setMessage("Unsupported file type: .$ext. Select a ZIP, DOSZ, DOS executable, or self-contained disk image.")
-                .setPositiveButton("OK", null).show()
-            return
-        }
-        val id = UUID.randomUUID().toString()
-        val game = Game(id, safeName.substringBeforeLast('.'), safeName)
-        Thread {
-            val file = game.file(filesDir)
-            try {
-                file.parentFile?.mkdirs()
-                contentResolver.openInputStream(uri)?.use { source ->
-                    file.outputStream().use { target -> source.copyTo(target) }
-                } ?: error("Could not open selected file")
-                runOnUiThread {
-                    games.add(game)
-                    saveGames()
-                    showLibrary()
-                }
-            } catch (e: Exception) {
-                file.delete()
-                runOnUiThread {
-                    AlertDialog.Builder(this).setMessage("Import failed: ${e.message}")
-                        .setPositiveButton("OK", null).show()
-                }
-            }
-        }.start()
     }
 
-    private fun launch(game: Game) {
-        if (!game.file(filesDir).isFile) { showLibrary(); return }
+    private fun refreshLibrary(forceHash: Boolean) {
+        val selected = tree ?: run {
+            libraryScreen.showStatus("Select a DOS folder first")
+            return
+        }
+        scanCancelled.set(true)
+        val cancelled = AtomicBoolean(false)
+        scanCancelled = cancelled
+        libraryScreen.showStatus(if (forceHash) "Rehashing DOS folder…" else "Scanning DOS folder…")
+        Thread {
+            try {
+                val entries = dosLibrary.scan(selected, forceHash, cancelled) { message ->
+                    runOnUiThread { if (!cancelled.get()) libraryScreen.showStatus(message) }
+                }
+                runOnUiThread {
+                    if (!cancelled.get() && tree == selected) {
+                        games = entries
+                        libraryScreen.showEntries(games)
+                        libraryScreen.showStatus("${games.count { it.playable }} games ready")
+                    }
+                }
+            } catch (failure: Exception) {
+                runOnUiThread { if (!cancelled.get())
+                    libraryScreen.showStatus("Scan failed: ${failure.message}") }
+            }
+        }.apply { name = "KairoDos-library-scan"; start() }
+    }
+
+    private fun previewGame(game: DosLibrary.Game) {
+        val art = catalog.resolve(game.contentId ?: "", game.displayName).preview ?: return
+        val bitmap = runCatching { catalog.openArtwork(art).use(BitmapFactory::decodeStream) }.getOrNull()
+            ?: return
+        AlertDialog.Builder(this).setView(ImageView(this).apply { setImageBitmap(bitmap) })
+            .setPositiveButton("Close", null).show()
+    }
+
+    private fun showGameDetails(entry: DosLibrary.Game) {
+        val record = catalog.resolve(entry.contentId ?: "", entry.displayName)
+        GameSettingsSheet.show(this, record.title, entry.playable, entry.contentId != null,
+            listOf(
+                "CONTROLS" to listOf(
+                    GameSettingsRow("Touch input", if (preferences.getBoolean("direct_touch", false))
+                        "Direct tap · Global" else "Touchpad · Global", false) { showSettings() }),
+                "MACHINE" to listOf(
+                    GameSettingsRow("DOS CPU speed", if (preferences.getInt("cycles_mode", 0) == 0)
+                        "Auto · Global" else "Maximum · Global", false) { showCpuSettings() }),
+                "LIBRARY" to listOf(
+                    GameSettingsRow("Title", record.title, true) {
+                        val input = EditText(this).apply { setText(record.title) }
+                        AlertDialog.Builder(this).setTitle("Game title").setView(input)
+                            .setPositiveButton("Save") { _, _ ->
+                                runCatching { catalog.setTitle(entry.contentId!!,
+                                    input.text.toString().trim()) }
+                                    .onSuccess { libraryScreen.showEntries(games) }
+                                    .onFailure { Ui.message(this, it.message ?: "Could not save title") }
+                            }.setNegativeButton("Cancel", null).show()
+                    },
+                    GameSettingsRow("View screenshot", if (record.preview == null)
+                        "No screenshot available" else "Open full size", false) {
+                        previewGame(entry)
+                    },
+                    GameSettingsRow("File information", "Path and content ID", false) {
+                        AlertDialog.Builder(this).setTitle("File information")
+                            .setMessage("${entry.path}\n\n${entry.contentId ?: entry.error ?: "Not hashed"}")
+                            .setPositiveButton("Close", null).show()
+                    })
+            ), { launch(entry) }, entry.contentId?.let { id -> {{
+                catalog.setTitle(id, null)
+                libraryScreen.showEntries(games)
+            }} }, { Ui.message(this, "Hash this game before saving settings") })
+    }
+
+    private fun launch(game: DosLibrary.Game) {
+        val selected = tree ?: return
+        if (!game.playable) return
+        val generation = ++launchGeneration
+        prepareCancelled.set(true)
+        val cancelled = AtomicBoolean(false)
+        prepareCancelled = cancelled
+        preferences.edit().putString("last_played_entry", game.id).apply()
         val oldThread = gameThread
         nativeStop()
         currentGame = game
@@ -210,60 +265,119 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             preferences.getInt("cycles_mode", 0))
         gameThread = Thread {
             oldThread?.join()
-            val success = nativeRun(game.file(filesDir).absolutePath, saveDir.absolutePath,
-                systemDir.absolutePath)
+            var message: String? = null
+            val success = try {
+                val file = dosLibrary.prepare(game, selected, cancelled)
+                if (generation != launchGeneration) return@Thread
+                val started = nativeRun(file.absolutePath, saveDir.absolutePath,
+                    systemDir.absolutePath)
+                if (!started) message = nativeLastError().ifBlank {
+                    "DOSBox Pure could not start this game."
+                }
+                started
+            } catch (failure: Exception) {
+                message = failure.message ?: "Could not prepare this game"
+                false
+            }
             runOnUiThread {
-                if (currentGame?.id == game.id) {
-                    stopAudio = true
-                    if (!success) AlertDialog.Builder(this)
-                        .setMessage(nativeLastError().ifBlank { "DOSBox Pure could not start this game." })
+                if (generation == launchGeneration && currentGame?.id == game.id) {
+                    leaveGame()
+                    if (!success) AlertDialog.Builder(this).setMessage(message)
                         .setPositiveButton("OK", null).show()
-                    showLibrary()
                 }
             }
         }.apply { name = "KairoDos-emulation"; start() }
         pollSession(game.id)
     }
 
+    private fun settingsEntries() = listOf(
+        SettingsEntry("Touch input", { if (preferences.getBoolean("direct_touch", false))
+            "Direct tap" else "Touchpad" }, ::showSettings),
+        SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
+            "Auto" else "Maximum" }, ::showCpuSettings),
+        SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
+            if (onScreenControls == null) Ui.message(this, "Open a game to arrange controls")
+            else {
+                closeMenu()
+                onScreenControls?.show()
+            }
+        },
+        SettingsEntry("Sound", { if (preferences.getBoolean("muted", false)) "Muted" else "On" }) {
+            val muted = !preferences.getBoolean("muted", false)
+            preferences.edit().putBoolean("muted", muted).apply()
+            audio?.setVolume(if (muted) 0f else 1f)
+            sessionDrawer?.refreshValues()
+            libraryScreen.refreshSettingValues()
+        }
+    )
+
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
-        val page = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.BLACK)
-        }
-        val toolbar = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(Ui.BG)
-        }
-        toolbar.addView(Ui.secondaryButton(this, "Library") { leaveGame() },
-            LinearLayout.LayoutParams(0, Ui.dp(this, 48), 1f))
-        toolbar.addView(Ui.secondaryButton(this, "Keyboard") {
-            keyboard?.let { if (it.visibility == View.VISIBLE) it.close()
-                else it.visibility = View.VISIBLE }
-        }, LinearLayout.LayoutParams(0, Ui.dp(this, 48), 1f))
-        toolbar.addView(Ui.secondaryButton(this, "Menu") { showGameMenu() },
-            LinearLayout.LayoutParams(0, Ui.dp(this, 48), 1f))
-        page.addView(toolbar)
+        val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
+        root.addView(frame, FrameLayout.LayoutParams(-1, -1))
         val display = SurfaceView(this)
         surface = display
         frame.addView(display, FrameLayout.LayoutParams(-1, -1, Gravity.CENTER))
         frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateSurfaceLayout() }
         display.holder.addCallback(this)
         display.setOnTouchListener(::handleGameTouch)
-        page.addView(frame, LinearLayout.LayoutParams(-1, 0, 1f))
-        statusLabel = Ui.text(this, "Starting ${game.title}…", Ui.SECONDARY, Ui.TEXT_MUTED)
-        page.addView(statusLabel, LinearLayout.LayoutParams(-1, Ui.dp(this, 32)))
-        val root = FrameLayout(this)
-        root.addView(page)
+        onScreenControls = OnScreenControls(this, root, gamepad, preferences) {
+            onScreenControls?.refreshVisibility(currentGame != null &&
+                sessionDrawer?.isOpen != true)
+        }
         lateinit var panel: GuestKeyboardPanel
         panel = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, { panel.close() },
             mouse = mouse, mouseReferenceSize = { 640 to 400 })
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
+        sessionDrawer = SessionDrawer(this, root, "KAIRODOS", ::closeMenu, {}, listOf(
+            SessionAction("Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play) {
+                userPaused = false
+                closeMenu()
+            },
+            SessionAction("Restart", com.mrjackspade.kairo.frontend.R.drawable.ic_restart) {
+                nativeReset()
+                closeMenu()
+            },
+            SessionAction("Library", com.mrjackspade.kairo.frontend.R.drawable.ic_library) {
+                leaveGame()
+            }
+        ), listOf(
+            SettingsEntry("Pause", { if (userPaused) "On" else "Off" }) {
+                userPaused = !userPaused
+                closeMenu()
+            },
+            SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
+                closeMenu()
+                panel.visibility = View.VISIBLE
+            }
+        ), settingsEntries())
+        statusLabel = sessionDrawer?.status
+        statusLabel?.text = "Starting ${game.title}…"
         setContentView(root)
+        onScreenControls?.refreshVisibility(true)
+    }
+
+    private fun openMenu() {
+        val game = currentGame ?: return
+        if (sessionDrawer?.isOpen == true) return
+        keyboard?.close()
+        keys.releaseAll()
+        mouse.releasePrefix("touch-")
+        nativePause(true)
+        onScreenControls?.refreshVisibility(false)
+        sessionDrawer?.open(catalog.resolve(game.contentId ?: "", game.displayName).title,
+            statusLabel?.text?.toString() ?: "DOS game")
+    }
+
+    private fun closeMenu() {
+        sessionDrawer?.close()
+        nativePause(userPaused)
+        onScreenControls?.refreshVisibility(!userPaused)
+        surface?.requestFocus()
     }
 
     private fun pollSession(id: String) {
@@ -296,6 +410,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            menuSwipeX = event.x.takeIf { it <= Ui.dp(this, 28).toFloat() }
+        } else if (event.actionMasked == MotionEvent.ACTION_MOVE &&
+            menuSwipeX != null && event.x - menuSwipeX!! > Ui.dp(this, 60)) {
+            menuSwipeX = null
+            openMenu()
+            return true
+        } else if (event.actionMasked == MotionEvent.ACTION_UP ||
+            event.actionMasked == MotionEvent.ACTION_CANCEL) menuSwipeX = null
         if (preferences.getInt("touch_mode", 0) == 1) {
             if (event.actionMasked == MotionEvent.ACTION_UP) keyboard?.visibility = View.VISIBLE
             return true
@@ -334,20 +457,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             MotionEvent.ACTION_CANCEL -> mouse.releasePrefix("touch-")
         }
         return true
-    }
-
-    private fun showGameMenu() {
-        val labels = arrayOf("Resume", "Reset DOS", "Input settings", "Mute audio", "Return to library")
-        AlertDialog.Builder(this).setItems(labels) { _, which -> when (which) {
-            1 -> nativeReset()
-            2 -> showSettings()
-            3 -> {
-                val muted = !preferences.getBoolean("muted", false)
-                preferences.edit().putBoolean("muted", muted).apply()
-                audio?.setVolume(if (muted) 0f else 1f)
-            }
-            4 -> leaveGame()
-        } }.show()
     }
 
     private fun showSettings() {
@@ -411,11 +520,20 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun leaveGame() {
+        launchGeneration++
+        prepareCancelled.set(true)
         nativeStop()
         stopAudio = true
+        gamepad.releaseAll()
         keys.releaseAll()
         mouse.releasePrefix("touch-")
+        onScreenControls?.refreshVisibility(false)
+        onScreenControls?.close()
+        onScreenControls = null
         keyboard?.close()
+        sessionDrawer?.close()
+        sessionDrawer = null
+        userPaused = false
         nativeSetSurface(null)
         currentGame = null
         showLibrary()
@@ -428,15 +546,51 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun surfaceDestroyed(holder: SurfaceHolder) { nativeSetSurface(null) }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (currentGame == null) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_DOWN -> if (libraryScreen.actionsOpen)
+                    libraryScreen.moveActionSelection(1) else libraryScreen.moveSelection(1)
+                KeyEvent.KEYCODE_DPAD_UP -> if (libraryScreen.actionsOpen)
+                    libraryScreen.moveActionSelection(-1) else libraryScreen.moveSelection(-1)
+                KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_BUTTON_A ->
+                    if (libraryScreen.actionsOpen) libraryScreen.activateAction()
+                    else if (libraryScreen.detailOpen) libraryScreen.activateDetail()
+                    else libraryScreen.activateSelection()
+                KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_BUTTON_MODE -> libraryScreen.openActions()
+                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B ->
+                    if (!libraryScreen.closeDetail()) libraryScreen.closeActions()
+                else -> return super.onKeyDown(keyCode, event)
+            }
+            return true
+        }
         if (currentGame != null) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (keyboard?.visibility == View.VISIBLE) keyboard?.close() else leaveGame()
+            if (onScreenControls?.isOpen == true) {
+                if (onScreenControls?.handleKey(event) == true) return true
+                return super.onKeyDown(keyCode, event)
+            }
+            if (sessionDrawer?.isOpen == true) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT ->
+                        sessionDrawer?.focus((sessionDrawer?.selectedIndex ?: 0) + 1)
+                    KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_LEFT ->
+                        sessionDrawer?.focus((sessionDrawer?.selectedIndex ?: 0) - 1)
+                    KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_BUTTON_A ->
+                        sessionDrawer?.activateSelected()
+                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B,
+                    KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_BUTTON_MODE -> closeMenu()
+                    else -> return super.onKeyDown(keyCode, event)
+                }
                 return true
             }
-            if (event.isFromSource(InputDevice.SOURCE_GAMEPAD) ||
-                event.isFromSource(InputDevice.SOURCE_JOYSTICK)) {
-                mapJoypad(keyCode)?.let { nativeJoypad(it, true); return true }
+            if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
+                openMenu()
+                return true
             }
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (keyboard?.visibility == View.VISIBLE) keyboard?.close() else openMenu()
+                return true
+            }
+            if (gamepad.key(event)) return true
             mapKey(keyCode)?.let { keys.hold("physical:$keyCode", listOf(it)); return true }
         }
         return super.onKeyDown(keyCode, event)
@@ -444,42 +598,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (currentGame != null) {
-            if (event.isFromSource(InputDevice.SOURCE_GAMEPAD) ||
-                event.isFromSource(InputDevice.SOURCE_JOYSTICK)) {
-                mapJoypad(keyCode)?.let { nativeJoypad(it, false); return true }
-            }
+            if (gamepad.key(event)) return true
             mapKey(keyCode)?.let { keys.release("physical:$keyCode"); return true }
         }
         return super.onKeyUp(keyCode, event)
     }
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (currentGame != null && event.isFromSource(InputDevice.SOURCE_JOYSTICK)) {
-            val x = event.getAxisValue(MotionEvent.AXIS_HAT_X).takeIf { abs(it) > .1f }
-                ?: event.getAxisValue(MotionEvent.AXIS_X)
-            val y = event.getAxisValue(MotionEvent.AXIS_HAT_Y).takeIf { abs(it) > .1f }
-                ?: event.getAxisValue(MotionEvent.AXIS_Y)
-            nativeJoypad(6, x < -.5f); nativeJoypad(7, x > .5f)
-            nativeJoypad(4, y < -.5f); nativeJoypad(5, y > .5f)
-            return true
-        }
+        if (currentGame != null && sessionDrawer?.isOpen != true && gamepad.motion(event)) return true
         return super.onGenericMotionEvent(event)
-    }
-
-    private fun mapJoypad(code: Int): Int? = when (code) {
-        KeyEvent.KEYCODE_BUTTON_B -> 0
-        KeyEvent.KEYCODE_BUTTON_Y -> 1
-        KeyEvent.KEYCODE_BUTTON_SELECT -> 2
-        KeyEvent.KEYCODE_BUTTON_START -> 3
-        KeyEvent.KEYCODE_DPAD_UP -> 4
-        KeyEvent.KEYCODE_DPAD_DOWN -> 5
-        KeyEvent.KEYCODE_DPAD_LEFT -> 6
-        KeyEvent.KEYCODE_DPAD_RIGHT -> 7
-        KeyEvent.KEYCODE_BUTTON_A -> 8
-        KeyEvent.KEYCODE_BUTTON_X -> 9
-        KeyEvent.KEYCODE_BUTTON_L1 -> 10
-        KeyEvent.KEYCODE_BUTTON_R1 -> 11
-        else -> null
     }
 
     private fun mapKey(code: Int): Int? = when (code) {
@@ -549,6 +676,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     override fun onDestroy() {
+        scanCancelled.set(true)
+        launchGeneration++
+        prepareCancelled.set(true)
         nativeStop()
         stopAudio = true
         nativeSetSurface(null)
