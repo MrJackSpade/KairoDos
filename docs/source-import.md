@@ -11,4 +11,6 @@ The Kairo frontend is a pinned first-party submodule at `shared/`. [DOSBox Pure]
 
 KairoDos patches `dosbox_pure_libretro.cpp` to enter a game ZIP's single wrapper folder when needed. It patches `src/dos/dos_programs.cpp` with generated `KAIRO:` and `KAIROZIP:` mount sources for game directories and separately staged user-owned media. These allow eXoDOS startup profiles to refer to their original game and disc paths without bundling the media. A local GPL-2.0-or-later telemetry bridge in `src/kairo_input_telemetry.*`, with hooks in `src/ints/bios_keyboard.cpp` and `src/ints/mouse.cpp`, reports guest keyboard waits, keyboard polls, and mouse reads to the shared touch mode decision logic.
 
+KairoDos also patches `src/dos/drive_zip.cpp` so the ZIP seek-cache compressor does not hash past the final bytes of its input buffer. Without this bound check, launching a large compressed game file can crash the native core while writing its seek cache.
+
 `backend-dos/` builds the copied core into `libretro.so`; `kairodos/` builds the app host into `libkairodos_host.so`. The native build targets ARM64 and uses the core's dynamic recompiler selection. License details are in [licensing](licensing.md).

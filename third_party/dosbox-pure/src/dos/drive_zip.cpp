@@ -577,9 +577,14 @@ struct sdefl
 				run = 1;
 			}
 			while (run-- != 0) {
-				unsigned h = defl::hash32(&in[p]);
-				prv[p&WIN_MSK] = tbl[h];
-				tbl[h] = p++;
+				// hash32 reads four bytes. The last three input positions cannot
+				// start another match and must not be read past the input buffer.
+				if (p <= in_len - MIN_MATCH) {
+					unsigned h = defl::hash32(&in[p]);
+					prv[p&WIN_MSK] = tbl[h];
+					tbl[h] = p;
+				}
+				p++;
 			}
 		}
 		/* zlib partial flush */
