@@ -20,15 +20,16 @@ internal object DosControllerBindings {
     private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
     private val keyCodes = keys.map { it.code }
+    private val numberKeys = ('0'..'9').associateWith { it.code }
     val spec = ControllerGuestSpec("DOS", keyCodes, { code ->
         keys.firstOrNull { it.code == code }?.label ?: "Key $code"
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
         "D-pad: arrows; A: Enter; left stick and Y/B: joystick 1; right stick and L/R: joystick 2.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
-            "restart" to "Restart", "exit" to "Exit"))
+            "restart" to "Restart", "exit" to "Exit"), numberKeys)
     private val codec = ControllerBindingsCodec(::defaults, { it in keyCodes }, joystick,
-        spec.actions.map { it.first })
+        spec.actions.map { it.first }, numberKeys.values)
 
     fun parse(text: String?) = codec.parse(text).let { parsed ->
         if (text != null && parsed == oldDefaults()) defaults() else parsed
@@ -80,26 +81,26 @@ internal object DosControllerBindings {
         ControllerBinding("virtual:menu", action = "menu")
     )
 
-    /** Classic Doom controls from its DEFAULT.CFG: arrows move/turn, comma and period strafe. */
+    /** Classic Doom controls: keyboard movement/strafe and analog mouse turning. */
     fun doom() = listOf(
         ControllerBinding("virtual:up", keys = listOf(273)),
         ControllerBinding("virtual:down", keys = listOf(274)),
-        ControllerBinding("virtual:left", keys = listOf(276)),
-        ControllerBinding("virtual:right", keys = listOf(275)),
+        ControllerBinding("virtual:left", keys = listOf(44)),
+        ControllerBinding("virtual:right", keys = listOf(46)),
         ControllerBinding("virtual:lsup", keys = listOf(273)),
         ControllerBinding("virtual:lsdown", keys = listOf(274)),
         ControllerBinding("virtual:lsleft", keys = listOf(44)),
         ControllerBinding("virtual:lsright", keys = listOf(46)),
-        ControllerBinding("virtual:rsleft", keys = listOf(276)),
-        ControllerBinding("virtual:rsright", keys = listOf(275)),
+        ControllerBinding("virtual:rsleft", mouse = "moveLeft"),
+        ControllerBinding("virtual:rsright", mouse = "moveRight"),
         ControllerBinding("virtual:a", keys = listOf(306)),
         ControllerBinding("virtual:b", keys = listOf(32)),
         ControllerBinding("virtual:x", keys = listOf(304)),
         ControllerBinding("virtual:y", keys = listOf(9)),
-        ControllerBinding("virtual:l1", keys = listOf(51)),
-        ControllerBinding("virtual:r1", keys = listOf(52)),
-        ControllerBinding("virtual:l2", keys = listOf(53)),
-        ControllerBinding("virtual:r2", keys = listOf(54)),
+        ControllerBinding("virtual:l1", keys = listOf(276)),
+        ControllerBinding("virtual:r1", keys = listOf(275)),
+        ControllerBinding("virtual:l2", cycleKeys = (49..55).toList()),
+        ControllerBinding("virtual:r2", cycleKeys = (49..55).toList()),
         ControllerBinding("virtual:start", keys = listOf(27)),
         ControllerBinding("virtual:select", keys = listOf(13)),
         ControllerBinding("virtual:menu", action = "menu")
