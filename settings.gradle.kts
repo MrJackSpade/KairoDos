@@ -16,5 +16,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "KairoDos"
 include(":kairodos")
+include(":backend-dos")
 include(":frontend")
 project(":frontend").projectDir = file("shared/frontend")

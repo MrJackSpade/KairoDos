@@ -4,7 +4,7 @@ import com.mrjackspade.kairo.frontend.GuestKeyboardLayout
 import com.mrjackspade.kairo.frontend.GuestKeyboardPage
 import com.mrjackspade.kairo.frontend.KeyboardKey
 
-/** Libretro RETROK codes; the DOS backend will consume these when it exists. */
+/** Libretro RETROK codes sent to DOSBox Pure through the shared keyboard panel. */
 internal object DosKeyboardLayout {
     val value = GuestKeyboardLayout(
         brand = "KAIRODOS",
@@ -40,6 +40,18 @@ internal object DosKeyboardLayout {
                     KeyboardKey("/", 47)),
                 listOf(KeyboardKey("Tab", 9), KeyboardKey("Space", 32, 5f),
                     KeyboardKey("Enter", 13))
+            )),
+            GuestKeyboardPage("FN", listOf(
+                (1..6).map { KeyboardKey("F$it", 281 + it) },
+                (7..12).map { KeyboardKey("F$it", 281 + it) },
+                listOf(KeyboardKey("Esc", 27), KeyboardKey("Home", 278),
+                    KeyboardKey("↑", 273), KeyboardKey("End", 279),
+                    KeyboardKey("PgUp", 280), KeyboardKey("Ins", 277)),
+                listOf(KeyboardKey("Tab", 9), KeyboardKey("←", 276),
+                    KeyboardKey("↓", 274), KeyboardKey("→", 275),
+                    KeyboardKey("PgDn", 281), KeyboardKey("Del", 127)),
+                listOf(KeyboardKey("Ctrl", 306), KeyboardKey("Alt", 308),
+                    KeyboardKey("Space", 32, 3f), KeyboardKey("Enter", 13))
             ))
         ),
         modifiers = setOf(301, 303, 304, 305, 306, 307, 308),
