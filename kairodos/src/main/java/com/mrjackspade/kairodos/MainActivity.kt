@@ -48,6 +48,8 @@ import com.mrjackspade.kairo.frontend.GamepadMapper
 import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerEditor
 import com.mrjackspade.kairo.frontend.ControllerProfileStore
+import com.mrjackspade.kairo.frontend.CatalogUpdateController
+import com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController
 import com.mrjackspade.kairo.frontend.PhysicalControllerBinding
 import com.mrjackspade.kairo.frontend.PhysicalControllerBindings
 import com.mrjackspade.kairo.frontend.OnScreenControls
@@ -107,6 +109,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var onScreenControls: OnScreenControls? = null
     private val dosLibrary by lazy { DosLibrary(this) }
     private val catalog by lazy { DosGameCatalog(this) }
+    private val catalogUpdates by lazy {
+        CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
+            { libraryScreen.showEntries(games) }, {
+                if (libraryScreen.visibility == View.VISIBLE)
+                    android.widget.Toast.makeText(this, "Game catalog updated",
+                        android.widget.Toast.LENGTH_SHORT).show()
+            })
+    }
+    private val artworkDownloads by lazy {
+        CatalogArtworkDownloadController(this, libraryScreen, { games },
+            catalog::missingArtworkFor, catalog::downloadArtwork)
+    }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
     private val firstRunBack = OnBackInvokedCallback { firstRunScreen.back() }
@@ -161,8 +175,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "Select DOS folder", "Choose a writable folder for DOS games and ZIP archives",
             "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
             { refreshLibrary(true) },
-            { libraryScreen.showStatus("The game catalog is included in this build") },
-            null, {}, settingsEntries(),
+            { catalogUpdates.check(false) },
+            { artworkDownloads.start() }, { artworkDownloads.cancel() }, settingsEntries(),
             { preferences.getString("last_played_entry", null) }, ::launch,
             ::previewGame, ::showGameDetails, {})
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
@@ -204,6 +218,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (tree != null) refreshLibrary(false)
             if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
         }
+        catalogUpdates.check(true)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -1348,6 +1363,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onDestroy() {
         libraryFlow.cancel()
+        artworkDownloads.cancel()
         launchGeneration++
         prepareCancelled.set(true)
         nativeStop()
