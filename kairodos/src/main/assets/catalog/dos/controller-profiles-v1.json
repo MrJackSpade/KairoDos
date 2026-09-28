@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "profiles": {
+    "doom-v1": [
+      "sha256-dos-manifest-v1:0c966f496f97fc37bae4ed6e152db824fe4b2ec6bf8664b3108de1617800e264",
+      "sha256-dos-manifest-v1:a54ee0d6d549825fadefa6bc8516f976c31a9d7b5a91fed00007ef40d01a7cd3",
+      "sha256-dos-manifest-v1:dae688c3589833dc1f334275fa51a5bd0c80c378706f419984246fe8668e612e",
+      "sha256-dos-manifest-v1:ee63a767a03a05942515895023c2f24f4aafe1d8784a376da374418c40aa4d20",
+      "sha256-dos-manifest-v1:3b3be019d429164eb1fede4571f2884f6215bb36ef91d428b72620efb5150777",
+      "sha256-dos-manifest-v1:edf622951ae5aec4b32b9f9af48d20c9d8b5ce3e786caa81e8d915474b0195e9",
+      "sha256-dos-manifest-v1:b54463c256c0d32233b26f949848ef6688ce600871fea97e9099ca71014662dd",
+      "sha256-dos-manifest-v1:1a6dd8a2043276f1ad836d003bec3f3cc867735115df5bcdb023a9d8db9f2e3a",
+      "sha256-dos-manifest-v1:430d5e83b6dcfe564c5e4a7278e99f661d0c2f5b81f09db29f3c8ef9cc4533db",
+      "sha256-dos-manifest-v1:1ff8b8c873d6d0111625ed542fe8c9e71b98adefcaa08a2057d75d99ca92ddbd",
+      "sha256-dos-manifest-v1:5970178c33f7f6c60db9b66852d18c3a4b5971a34ef7191c3a6ee36d46ebec19",
+      "sha256-dos-manifest-v1:5dba2625caa20c0ea6eb0f0c4d37897b65c376cd6ba88341ede38257f36dadc3",
+      "sha256-dos-manifest-v1:ab82f82f3ac42e4612010ddb04962fd50cc65229aeabc47aa28f9b7d9398a818",
+      "sha256-dos-manifest-v1:58ad4d4bffe0253217b7cd8db730b029f8c6b375622486e42f24e840dbc8899e",
+      "sha256-dos-manifest-v1:b728da5c03d6bb51e9fc8085b07594c8c0ff61006fb005c642796bfbbfd53c20",
+      "sha256-dos-manifest-v1:8c540fbbcb1a4d3100d237bf98603e2ef2d341b49890b1d7ff8604cd81b76384",
+      "sha256-dos-manifest-v1:ced1df7adf9e60775c4b12694422aa62e94f13d8d17e9b98cd732f2aef8ba646",
+      "sha256-dos-manifest-v1:847e6b8ed3db5496915d33336b24d1cb843f73efb3f785d22ce97d919af52ebe",
+      "sha256-dos-manifest-v1:ec6bbd980b5d16485ef07efe9c03ce1ce1158532aa0a0d9021ae5f971664f209"
+    ]
+  }
+}

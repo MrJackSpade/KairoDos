@@ -8,6 +8,8 @@ KairoDos scans a user-selected DOS folder. Game ZIPs, DOSZ archives, extracted f
 
 The catalog is sharded by content ID under `kairodos/src/main/assets/catalog/dos/`. A missing match shows the user's filename without catalog artwork. The user does not need to own eXoDOS.
 
+Known Doom engine releases and level collections use the content IDs in `catalog/dos/controller-profiles-v1.json` to select a controller layout. D-pad remains the arrow keys; left stick moves forward/back and strafes; right stick turns. A fires, B uses, X runs, Y opens the automap, L1/R1/L2/R2 select weapons 3/4/5/6, Start opens the game menu, and Select confirms with Enter. A saved per-game controller layout takes precedence. Doom-titled games with different controls, such as DOOM 2D and DOOM, the Roguelike, retain the normal defaults.
+
 ## eXoDOS installers and startup
 
 An empty `.exo` ZIP member identifies an eXoDOS source archive even when the catalog has no matching hash. It appears with ` - Installer`. On first launch, KairoDos creates a verified ` - Installed.zip` in the writable selected folder and launches it. The installed archive appears under the game title without the filename suffix. When the session ends, the app offers to remove the source archive. For a one-file grant from another frontend, the installed copy lives in private app storage and the source cannot be removed by the app.

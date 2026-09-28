@@ -79,4 +79,29 @@ internal object DosControllerBindings {
         ControllerBinding("virtual:select", joystick = "select"),
         ControllerBinding("virtual:menu", action = "menu")
     )
+
+    /** Classic Doom controls from its DEFAULT.CFG: arrows move/turn, comma and period strafe. */
+    fun doom() = listOf(
+        ControllerBinding("virtual:up", keys = listOf(273)),
+        ControllerBinding("virtual:down", keys = listOf(274)),
+        ControllerBinding("virtual:left", keys = listOf(276)),
+        ControllerBinding("virtual:right", keys = listOf(275)),
+        ControllerBinding("virtual:lsup", keys = listOf(273)),
+        ControllerBinding("virtual:lsdown", keys = listOf(274)),
+        ControllerBinding("virtual:lsleft", keys = listOf(44)),
+        ControllerBinding("virtual:lsright", keys = listOf(46)),
+        ControllerBinding("virtual:rsleft", keys = listOf(276)),
+        ControllerBinding("virtual:rsright", keys = listOf(275)),
+        ControllerBinding("virtual:a", keys = listOf(306)),
+        ControllerBinding("virtual:b", keys = listOf(32)),
+        ControllerBinding("virtual:x", keys = listOf(304)),
+        ControllerBinding("virtual:y", keys = listOf(9)),
+        ControllerBinding("virtual:l1", keys = listOf(51)),
+        ControllerBinding("virtual:r1", keys = listOf(52)),
+        ControllerBinding("virtual:l2", keys = listOf(53)),
+        ControllerBinding("virtual:r2", keys = listOf(54)),
+        ControllerBinding("virtual:start", keys = listOf(27)),
+        ControllerBinding("virtual:select", keys = listOf(13)),
+        ControllerBinding("virtual:menu", action = "menu")
+    )
 }

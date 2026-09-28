@@ -21,7 +21,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         override val boxArt: String?,
         override val preview: String?,
         override val tags: List<String>,
-        val launch: Launch?
+        val launch: Launch?,
+        val controllerProfile: String?
     ) : LibraryGame
 
     private val cache = object : LruCache<String, JSONObject>(8) {}
@@ -31,6 +32,15 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         }
     }.getOrDefault(JSONObject()) }
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
+    private val doomContentIds by lazy {
+        runCatching {
+            context.assets.open("catalog/dos/controller-profiles-v1.json").use { input ->
+                val games = JSONObject(input.bufferedReader().readText())
+                    .getJSONObject("profiles").getJSONArray("doom-v1")
+                (0 until games.length()).map(games::getString).toSet()
+            }
+        }.getOrDefault(emptySet())
+    }
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
     private var overrides = runCatching {
         JSONObject(AtomicFile(overridesFile).readFully().toString(Charsets.UTF_8))
@@ -65,7 +75,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 (0 until array.length()).mapNotNull { index ->
                     array.optString(index).takeIf { it.isNotBlank() }
                 }
-            } ?: emptyList(), launch)
+            } ?: emptyList(), launch,
+            "doom-v1".takeIf { found != null && contentId in doomContentIds })
     }
 
     override fun hiddenFromLibrary(contentId: String) = false

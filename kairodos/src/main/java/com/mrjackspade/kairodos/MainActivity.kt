@@ -687,7 +687,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun loadControllerBindings(game: DosLibrary.Game?): List<ControllerBinding> =
         if (game?.contentId == null) globalControllerBindings()
         else preferences.getString(controllerKey(game), null)?.let(DosControllerBindings::parse)
-            ?: globalControllerBindings()
+            ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
+                "doom-v1" -> DosControllerBindings.doom()
+                else -> globalControllerBindings()
+            }
 
     private fun saveControllerBindings(game: DosLibrary.Game?, bindings: List<ControllerBinding>) {
         val key = game?.takeIf { it.contentId != null }?.let(::controllerKey)
