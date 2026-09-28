@@ -1,99 +1,21 @@
-# DOS game catalog
+# DOS game catalog and installation
 
-KairoDos reads a user-selected DOS folder. Game archives and extracted game folders
-stay on the user's device; the app prepares one selected game for DOSBox Pure at
-launch. A recognized game's content ID supplies its title, description, tags,
-cover, and screenshot to the shared Kairo library and detail screens. The app
-packages metadata and downscaled artwork, never eXoDOS games, operating systems,
-or launchers.
+KairoDos scans a user-selected DOS folder. Game ZIPs, DOSZ archives, extracted folders, standalone programs, and disk images remain on the user's device. The selected game is staged for DOSBox Pure when launched. Known games receive title, description, tags, cover, screenshot, and startup settings from a hash-keyed catalog seeded from eXoDOS metadata. Unknown games remain playable by filename.
 
-## Source and matching
+## Content identity
 
-The seed is the owner's eXoDOS v6 collection. `tools/generate_dos_catalog.py`
-reads `Content/XODOSMetadata.zip` (`xml/all/MS-DOS.xml` and `Images/MS-DOS/`),
-`Content/!DOSmetadata.zip` (per-game DOSBox configs), and the game ZIPs in
-`eXo/eXoDOS/`. The XML `ApplicationPath` batch basename maps a record to its
-game ZIP. Renamed archive variants can match the config by their single outer
-ZIP folder. These are import details, not a UI mode or a required directory
-layout for users.
+`sha256-dos-manifest-v1` hashes a canonical list of normalized file paths, sizes, and CRC-32 values. A ZIP's central directory supplies those values without decompressing every file; an extracted folder computes them from its files. One common outer folder is stripped, ASCII case is folded, and eXoDOS `.exo` markers are excluded. Recompression and unpacking the outer folder therefore preserve a match. The CRC-32 manifest is a fast lookup identity, not cryptographic proof of file contents. Standalone files use `sha256-dos-file-v1` over their bytes.
 
-The `sha256-dos-manifest-v1` identity hashes a canonical manifest of each game
-file's normalized path, byte count, and CRC-32. The ZIP central directory
-supplies these fields without decompressing every file; an extracted folder
-computes the same CRC-32 values from its files. The importer strips a single
-common outer folder, folds ASCII case, sorts paths, and excludes eXoDOS `.exo`
-marker files. Thus ZIP compression, member order, and extraction of the outer
-folder do not change a match. The CRC-32 manifest is a fast catalog lookup key,
-not a cryptographic proof of file contents. Standalone disk images and programs
-use `sha256-dos-file-v1` over their bytes. Two pairs of collection archives
-share the same manifest; the catalog selects their distinct metadata using the
-source filename when it is available.
+The catalog is sharded by content ID under `kairodos/src/main/assets/catalog/dos/`. A missing match shows the user's filename without catalog artwork. The user does not need to own eXoDOS.
 
-Installer detection does not depend on a catalog match. Every game ZIP in the
-supplied eXoDOS directory has an empty `.exo` member. KairoDos uses that marker
-to identify an eXoDOS source ZIP, and its own ` - Installed.zip` filename
-distinguishes the durable installed copy. Unknown sources still install;
-without a matching startup profile, DOSBox Pure chooses the launch program.
-The generic eXoDOS Windows installer extracts the game ZIP to a same-named
-directory, with optional update and save overlays. The supplied collection has
-no `Update/` tree. Because the ZIP already contains the extracted game files,
-KairoDos preserves them in a separate archive and mounts that archive as the
-game filesystem. It does not execute the Windows batch wrapper. Pure stores
-subsequent writes in its separate save overlay. Removing the source ZIP is
-offered only after installation and launch preparation succeed.
+## eXoDOS installers and startup
 
-On Android, a seekable document provider lets the app read a ZIP's central
-directory directly while scanning. For providers that cannot seek, it copies
-one archive to temporary storage for that scan. Standalone files are hashed as
-streams, and the selected game is copied to private storage only when launched.
+An empty `.exo` ZIP member identifies an eXoDOS source archive even when the catalog has no matching hash. It appears with ` - Installer`. On first launch, KairoDos creates a verified ` - Installed.zip` in the writable selected folder and launches it. When the session ends, the app offers to remove the source archive. For a one-file grant from another frontend, the installed copy lives in private app storage and the source cannot be removed by the app.
 
-Catalog records are sharded under `kairodos/src/main/assets/catalog/dos/` by
-the first two hex digits of the content ID. Artwork paths point to small WebP
-assets under `art/catalog/dos/`. The initial artwork import matched 7,633
-archives to 7,629 distinct content IDs and included 14,938 artwork thumbnails.
-The launch import matches all 7,669 current source archives, retains those
-records, and adds identities for archives whose content changed. All 7,669
-current archives have startup profiles; shared content IDs retain filename
-variants.
-On a missing match, the shared library shows
-the user's filename and no artwork. The user never needs to own eXoDOS.
+The source ZIP already holds the extracted game files; KairoDos does not run the Windows batch installer. DOSBox Pure keeps later writes in a per-game overlay. For recognized games, KairoDos adapts cataloged DOSBox configuration and startup commands to the mounted archive and any user-owned disc or dependency archives. Alternate configs can appear as startup variants. Windows exception launchers that depend on other emulators or companion programs are not executed.
 
-## Regeneration and review
+## Catalog generation
 
-Install Python 3 and Pillow, then run:
+`tools/generate_dos_catalog.py` reads eXoDOS LaunchBox XML and images, DOSBox configuration metadata, and game archives to produce the hash catalog and optional downscaled artwork. Its generated provenance manifest records image sources and checksums. Keep source games and staging data out of Git. Review descriptions, images, and their redistribution rights before packaging them; see [licensing](licensing.md).
 
-```sh
-python tools/generate_dos_catalog.py "<eXoDOS root>" "<ignored staging directory>" --art
-python tools/generate_dos_catalog.py "<eXoDOS root>" . --launch-only
-```
-
-The tool caches completed archive identities in `hashes.sqlite` and writes a
-manifest of source image names and SHA-256 values alongside the catalog shards.
-The generated import manifest is committed as `catalog-provenance.json` in this
-directory so each bundled thumbnail can be traced to its source image.
-Review records and artwork rights before replacing packaged assets or publishing
-an APK. The local eXoDOS files and staging database are not part of the repo.
-Metadata source access does not itself grant redistribution rights to descriptions
-or images in either the free or paid app.
-
-At launch KairoDos writes the selected game's DOSBox config beside its private
-cached archive. It retains machine, audio, CPU, and `[autoexec]` settings,
-removes the source collection's C: mount, and rewrites game and disc paths to
-the mounted archive. Directory mounts inside that archive use Pure's locally
-patched mirror drive. When an eXoDOS startup script references another game
-folder, KairoDos looks up that folder's content hash in the selected library,
-stages that archive separately, and mounts it as a dependency. DOSBox Pure loads
-this sidecar config. Games with alternate
-configs offer a startup variant chooser. Nothing is copied from the user's DOS
-library into the APK.
-
-Three DOS door games (Azalta, Dominions, and Legend of the Red Dragon) need a
-player name and generated startup files that eXoDOS normally creates with a
-Windows launcher. KairoDos asks for a DOS-safe name once and creates those files
-inside Pure's writable game overlay on launch.
-
-Recognition and a startup config do not prove that a game boots. eXoDOS Windows
-`exception.bat` launchers can use other emulators, companion programs, and setup
-operations outside DOSBox Pure. The catalog records their presence for auditing;
-KairoDos does not execute Windows batch files. Games that require those steps
-need an Android implementation or may remain incompatible with Pure.
+The catalog enriches the shared Kairo library. It does not create a separate eXoDOS UI or require the user to keep the original collection layout.

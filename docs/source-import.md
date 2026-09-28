@@ -1,19 +1,14 @@
 # Source provenance
 
-`shared/` is the pinned first-party Kairo Android frontend submodule. DOSBox Pure is **copied source** in `third_party/dosbox-pure/`; it is not a submodule, subtree, remote, or automated upstream sync.
+The Kairo frontend is a pinned first-party submodule at `shared/`. [DOSBox Pure](https://github.com/schellingb/dosbox-pure) is copied into `third_party/dosbox-pure/` as ordinary source. KairoDos does not use a DOSBox Pure Git submodule or automated upstream merge.
 
-## DOSBox Pure copy
+## DOSBox Pure snapshot
 
-- Project: [schellingb/dosbox-pure](https://github.com/schellingb/dosbox-pure)
-- Upstream release: `1.0-preview6` (14 July 2026)
+- Upstream release: `1.0-preview6`
 - Source commit: `a4a0bab7f8931433588f2fcad9045c85b277373d`
-- Archive: `https://github.com/schellingb/dosbox-pure/archive/a4a0bab7f8931433588f2fcad9045c85b277373d.tar.gz`
-- Archive SHA-256: `f0d04f087bb1c63a4cf1d46e314a9e0336afad427ddebbefde3daffe64b9005b`
-- Import method: extracted and copied the complete archive tree into `third_party/dosbox-pure/` (284 files).
-- Local patch: `dosbox_pure_libretro.cpp` exports `kairo_set_enter_solo_root_dir(bool)` and passes that choice to ZIP mounting. KairoDos uses it to enter a game archive's single wrapper folder when eXoDOS originally mounted that folder as C:. The default remains upstream behavior for other content.
-- Local patch: `src/dos/dos_programs.cpp` accepts generated `KAIRO:<drive>:<subdir>` and `KAIROZIP:<mode>:<archive>|<subdir>` sources in the DOS `MOUNT` command. These mirror a directory from the loaded game ZIP or mount a separately staged user-owned dependency archive onto another DOS drive. This allows eXoDOS floppy and CD directory mounts without packaging game media in the APK.
-- Build entry: `third_party/dosbox-pure/jni/Android.mk`, `arm64-v8a`, using upstream's arm64 dynamic recompiler selection.
+- [Source archive](https://github.com/schellingb/dosbox-pure/archive/a4a0bab7f8931433588f2fcad9045c85b277373d.tar.gz) SHA-256: `f0d04f087bb1c63a4cf1d46e314a9e0336afad427ddebbefde3daffe64b9005b`
+- Import: complete extracted archive tree in `third_party/dosbox-pure/`
 
-The host in `kairodos/src/main/cpp/` uses the libretro API header copied with the core. `backend-dos/` builds upstream source into `libretro.so`; `kairodos/` builds the first-party `libkairodos_host.so`. The app loads the copied core at runtime. Neither repository carries a DOSBox Pure Git remote.
+KairoDos patches `dosbox_pure_libretro.cpp` to enter a game ZIP's single wrapper folder when needed. It patches `src/dos/dos_programs.cpp` with generated `KAIRO:` and `KAIROZIP:` mount sources for game directories and separately staged user-owned media. These allow eXoDOS startup profiles to refer to their original game and disc paths without bundling the media.
 
-No BIOS, ROM, operating system, or game files are included in the application source or APK. The local DOS `.COM` used for a device smoke test is outside the KairoDos repository.
+`backend-dos/` builds the copied core into `libretro.so`; `kairodos/` builds the app host into `libkairodos_host.so`. The native build targets ARM64 and uses the core's dynamic recompiler selection. License details are in [licensing](licensing.md).

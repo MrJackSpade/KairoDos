@@ -1,29 +1,9 @@
-# Licensing
+# Licensing and third-party credits
 
-First-party KairoDos source is GPL-2.0-or-later; see `COPYING`. The pinned Kairo frontend's first-party code has the same license. Its generated Spleen font asset remains BSD-2-Clause, with source and full notice in `shared/third_party/spleen/`.
+KairoDos first-party source and the pinned [Kairo frontend](https://github.com/MrJackSpade/Kairo) are GPL-2.0-or-later; see [COPYING](../COPYING). The generated Spleen UI font remains BSD-2-Clause, with its source and notice in `shared/third_party/spleen/`.
 
-## Copied DOSBox Pure source
+The copied [DOSBox Pure](https://github.com/schellingb/dosbox-pure) core and its DOSBox-derived code state GPL-2.0-or-later. Its complete source and license text are in `third_party/dosbox-pure/`. Preserve its per-file notices, `DOSBOX-AUTHORS`, and `DOSBOX-THANKS` when distributing source. The copied tree also contains components under their own notices, including Nuked OPL3 and Munt (LGPL-2.1-or-later), TinySoundFont and libretro headers (MIT), SIMDe (MIT or CC0 as marked), and Voodoo emulation code with a BSD-style notice.
 
-`third_party/dosbox-pure/` is a complete copy of the source revision identified in [source provenance](source-import.md). DOSBox Pure and its original DOSBox-derived code state GPL-2.0-or-later; the full GPL v2 text is in `third_party/dosbox-pure/LICENSE`. Preserve the upstream per-file author and license notices, `DOSBOX-AUTHORS`, and `DOSBOX-THANKS` when distributing source.
+A distributed APK requires the corresponding KairoDos source, pinned shared frontend commit, copied DOSBox Pure source, host and build scripts, and applicable third-party notices. See [source provenance](source-import.md) for the exact core revision and project patches.
 
-The copied tree also includes components with their own notices:
-
-| Component | License stated in copied source | Notice location |
-| --- | --- | --- |
-| Nuked OPL3 | LGPL-2.1-or-later | `src/hardware/nukedopl3.cpp`, `.h` |
-| Munt MT-32 emulator code | LGPL-2.1-or-later | `src/gui/mt32emu.h` |
-| TinySoundFont | MIT | `src/gui/tsf.h` |
-| libretro API and libretro-common headers | MIT | `libretro-common/` file headers |
-| SIMDe MMX header | MIT or CC0, as stated in file | `src/cpu/core_dynrec/simde_x86_mmx.h` |
-| Voodoo emulation portion by Aaron Giles | BSD-style three-clause notice | `src/hardware/voodoo.cpp` |
-| ZIP and Ogg helpers | public-domain or MIT alternatives, as stated in files | `src/dos/drive_zip.cpp`, `src/dos/stb_vorbis.inl` |
-
-The complete corresponding source for a distributed APK must include the KairoDos commit, the referenced `shared/` commit, this copied DOSBox Pure tree, native host, build scripts, and notices. The Android build uses the NDK C++ runtime; review the final packaged artifacts and library notices as part of the release license audit.
-
-The KairoDos launcher artwork at `kairodos/src/main/res/mipmap-nodpi/ic_launcher.png` was supplied by the project owner on 27 September 2026 and is included byte for byte (SHA-256 `8180f2f52608045a0b8dcfe55937437368c04089043803e72647c81df58afe35`). The code license does not itself grant rights to the artwork. Confirm its redistribution terms before public distribution.
-
-**Audit status:** source components and their embedded notices have been inventoried, but binary packaging and artwork terms have not yet been signed off. The development APK has been tested on a device; it is not yet designated release-ready.
-
-## DOS catalog source
-
-The private development catalog is derived from the owner's eXoDOS v6 LaunchBox XML, image archive, and per-game DOSBox configs. Game archives and Windows launchers are not distributed. The copied descriptions, startup configs, and downscaled cover/screenshot images still require creator, redistribution, and derivative-rights review before a public free or paid binary can include them. The local import manifest records image source paths and checksums; see [catalog](catalog.md).
+KairoDos does not distribute games, operating systems, BIOS files, or Windows launchers. The hash catalog may include descriptions, startup profiles, and downscaled images derived from eXoDOS and LaunchBox material. Access to those sources does not itself grant redistribution rights. Review creator, redistribution, and derivative rights for included metadata and artwork before public distribution. The project owner's launcher artwork is separate from the code license.
