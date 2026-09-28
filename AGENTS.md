@@ -7,3 +7,4 @@
 - First-party code is GPL-2.0-or-later. Preserve each third-party notice and supply complete corresponding source for distributed binaries.
 - Free GitHub and paid Google Play builds must have the same features and behavior and come from the same revision.
 - Do not claim a binary is release-ready until it boots a game on an Android device and its license audit is complete.
+- When the user asks to push a release tag, treat that as confirmation that testing is sufficient. Keep the normal tag-triggered release workflow enabled; do not bypass it or substitute manual publication to add a test gate.
