@@ -356,7 +356,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         AlertDialog.Builder(this).setTitle("File information")
                             .setMessage("${entry.path}\n\n${entry.contentId ?: entry.error ?: "Not hashed"}")
                             .setPositiveButton("Close", null).show()
-                    })
+                    }) + (if (!entry.external && !entry.rootFolder) listOf(
+                    GameSettingsRow(if (entry.folder) "Delete game folder" else "Delete game file",
+                        "Permanently remove from device storage",
+                        false, destructive = true) { confirmDeleteGame(entry) }) else emptyList())
             ), { launch(entry) }, entry.contentId?.let { id -> {{
                 catalog.setTitle(id, null)
                 libraryScreen.showEntries(games)
@@ -374,6 +377,36 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }
             startGame(game, saved!!, fromFrontend)
         } else startGame(game, "dosbox.conf", fromFrontend)
+    }
+
+    private fun confirmDeleteGame(entry: DosLibrary.Game) {
+        if (currentGame?.uri == entry.uri) {
+            Ui.message(this, "Exit this game before deleting its source")
+            return
+        }
+        val kind = if (entry.folder) "folder and everything inside it" else "file"
+        val dialog = AlertDialog.Builder(this).setTitle("Permanently delete game $kind?")
+            .setMessage("Delete ${entry.path} from device storage?\n\n" +
+                "This permanently removes the $kind. This cannot be undone. " +
+                "Game settings and saves are kept.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ ->
+                libraryScreen.showStatus("Deleting ${entry.path}…")
+                Thread {
+                    val result = runCatching { dosLibrary.deleteSource(entry) }
+                    runOnUiThread {
+                        result.onSuccess {
+                            libraryScreen.closeDetail()
+                            refreshLibrary(false)
+                        }.onFailure { failure ->
+                            Ui.message(this, failure.message ?: "Could not delete game file")
+                        }
+                    }
+                }.apply { name = "KairoDos-delete-game"; start() }
+            }.create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Ui.DANGER)
     }
 
     private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean,

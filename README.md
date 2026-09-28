@@ -14,6 +14,8 @@ Known games receive a title, description, tags, and artwork from a hash-keyed ca
 
 An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a catalog entry, and appears with ` - Installer` in the library. On first launch, KairoDos creates an installed ZIP alongside it in a writable selected folder, verifies the copy, and runs it. After play, it offers to remove the source ZIP; you can keep it. If an external frontend grants access to only one ZIP, the installed copy goes into private app storage instead. DOSBox Pure stores later game writes in its own save overlay.
 
+To remove a game file or game folder from device storage, open its **Game settings** and choose **Delete game file** or **Delete game folder**. KairoDos names the source in a confirmation before deleting it. Saves and settings are kept.
+
 Some eXoDOS Windows launchers rely on companion programs or other emulators. Those steps are outside DOSBox Pure and may need manual setup.
 
 ## External frontends

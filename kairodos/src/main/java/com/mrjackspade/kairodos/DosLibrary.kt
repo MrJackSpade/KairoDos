@@ -315,6 +315,21 @@ class DosLibrary(private val context: Context) {
         }
     }
 
+    /** Remove the selected source document, rather than only hiding its catalog entry. */
+    fun deleteSource(game: Game) {
+        require(!game.external && !game.rootFolder) {
+            "This game is not a removable library document"
+        }
+        val uri = Uri.parse(game.uri)
+        require(DocumentsContract.isDocumentUri(context, uri)) {
+            "This game is not a removable library document"
+        }
+        require(DocumentsContract.deleteDocument(context.contentResolver, uri)) {
+            "The document provider could not delete the game"
+        }
+        cache.listFiles()?.filter { it.name.startsWith("${game.id}-") }?.forEach { it.delete() }
+    }
+
     private fun childId(tree: Uri, parentId: String, name: String,
                         directory: Boolean): String? {
         val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
