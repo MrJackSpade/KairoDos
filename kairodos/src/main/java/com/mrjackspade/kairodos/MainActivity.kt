@@ -1222,55 +1222,54 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     override fun surfaceDestroyed(holder: SurfaceHolder) { nativeSetSurface(null) }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Handle menu navigation before Android moves View focus. The shared drawer
+        // owns selection; letting View focus handle D-pad first can select two rows.
+        if (event.action == KeyEvent.ACTION_DOWN && ::appRoot.isInitialized && appRoot.isInTouchMode)
+            (currentFocus ?: appRoot).requestFocusFromTouch()
         if (firstRunScreen.isOpen) return firstRunScreen.handleKey(event)
         if (controllerEditor.isOpen) {
             if (controllerEditor.handleKey(event)) return true
-            return super.onKeyDown(keyCode, event)
+            return super.dispatchKeyEvent(event)
         }
         if (onScreenControls?.isOpen == true) {
             if (onScreenControls?.handleKey(event) == true) return true
-            return super.onKeyDown(keyCode, event)
+            return super.dispatchKeyEvent(event)
         }
         if (currentGame == null) {
             if (FrontendNavigation.library(libraryScreen,
                     FrontendNavigation.control(event, gamepad),
                     event, ::finish)) return true
-            return super.onKeyDown(keyCode, event)
+            return super.dispatchKeyEvent(event)
         }
-        if (currentGame != null) {
-            if (sessionDrawer?.isOpen == true) {
-                if (FrontendNavigation.session(sessionDrawer!!,
-                        FrontendNavigation.control(event, gamepad), event, ::closeMenu)) return true
-                return super.onKeyDown(keyCode, event)
+        if (event.keyCode == KeyEvent.KEYCODE_MENU ||
+            (event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE && !gamepad.hasButton(event.keyCode))) {
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                if (sessionFlow?.isOpen == true) closeMenu() else openMenu()
             }
-            if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
-                openMenu()
-                return true
-            }
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true
+        }
+        if (sessionDrawer?.isOpen == true) {
+            if (FrontendNavigation.session(sessionDrawer!!,
+                    FrontendNavigation.control(event, gamepad), event, ::closeMenu)) return true
+            super.dispatchKeyEvent(event)
+            return true
+        }
+        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)
                 handleGameBack()
-                return true
+            return true
+        }
+        if (gamepad.key(event)) return true
+        mapKey(event.keyCode)?.let { key ->
+            val owner = "physical:${event.keyCode}"
+            when (event.action) {
+                KeyEvent.ACTION_DOWN -> keys.hold(owner, listOf(key))
+                KeyEvent.ACTION_UP -> keys.release(owner)
             }
-            if (gamepad.key(event)) return true
-            mapKey(keyCode)?.let { keys.hold("physical:$keyCode", listOf(it)); return true }
+            return true
         }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        if (firstRunScreen.isOpen) return firstRunScreen.handleKey(event)
-        if (controllerEditor.isOpen) {
-            if (controllerEditor.handleKey(event)) return true
-            return super.onKeyUp(keyCode, event)
-        }
-        if (onScreenControls?.isOpen == true) return super.onKeyUp(keyCode, event)
-        if (currentGame != null) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) return true
-            if (gamepad.key(event)) return true
-            mapKey(keyCode)?.let { keys.release("physical:$keyCode"); return true }
-        }
-        return super.onKeyUp(keyCode, event)
+        return super.dispatchKeyEvent(event)
     }
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
