@@ -28,6 +28,7 @@ import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
 import com.mrjackspade.kairo.frontend.Ui
 import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryFlow
+import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SettingsEntry
@@ -104,6 +105,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var pendingInstallerRemoval: Pair<DosLibrary.Game, DosLibrary.Game>? = null
     private var gameThread: Thread? = null
     @Volatile private var launchGeneration = 0
+    @Volatile private var externalLaunchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
     @Volatile private var stopAudio = false
@@ -163,7 +165,38 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.deadZone = controllerProfiles.deadZone
         libraryFlow.restore()
         showLibrary()
-        if (tree != null) refreshLibrary(false)
+        if (savedInstanceState == null && (intent.data != null || intent.hasExtra("ROM")))
+            dispatchExternalGame(intent)
+        else if (tree != null) refreshLibrary(false)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        dispatchExternalGame(intent)
+    }
+
+    private fun dispatchExternalGame(intent: Intent) {
+        val request = try { ExternalGameIntent.file(intent, contentResolver) }
+        catch (failure: Exception) {
+            libraryScreen.showStatus(failure.message ?: "Invalid game file")
+            return
+        } ?: return
+        val matching = games.firstOrNull {
+            ExternalGameIntent.sameDocument(Uri.parse(it.uri), request.uri)
+        }
+        if (matching != null) { launch(matching); return }
+        val generation = ++externalLaunchGeneration
+        libraryScreen.showStatus("Opening ${request.name}…")
+        Thread {
+            val inspected = runCatching { dosLibrary.inspectExternal(request, AtomicBoolean(false)) }
+            runOnUiThread {
+                if (generation != externalLaunchGeneration || isDestroyed) return@runOnUiThread
+                inspected.onSuccess(::launch).onFailure { failure ->
+                    libraryScreen.showStatus("Could not open ${request.name}: ${failure.message}")
+                }
+            }
+        }.apply { name = "KairoDos-external-game"; start() }
     }
 
     private fun showLibrary() {
@@ -269,7 +302,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun startGame(game: DosLibrary.Game, configName: String) {
-        val selected = tree ?: return
+        val selected = tree
+        if (!game.external && selected == null) {
+            libraryScreen.showStatus("Choose a DOS folder for this game")
+            return
+        }
         if (!game.playable) return
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
         val playerKey = "dos_player_${game.contentId}"
@@ -298,11 +335,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             var message: String? = null
             val success = try {
                 val playableGame = if (game.installer) {
-                    dosLibrary.install(game, selected, cancelled) { status ->
+                    val progress: (String) -> Unit = { status ->
                         runOnUiThread {
                             if (generation == launchGeneration) loadingStatus?.text = status
                         }
                     }
+                    if (game.external) dosLibrary.installExternal(game, cancelled, progress)
+                    else dosLibrary.install(game, selected!!, cancelled, progress)
                 } else game
                 val saveDir = File(filesDir, "saves/${playableGame.id}")
                 if (game.installer) {
@@ -329,7 +368,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     if (generation == launchGeneration) loadingStatus?.text = "Starting DOSBox Pure…"
                 }
                 DosLaunchConfig.write(file, launch, configName, dependencies, playerName)
-                if (game.installer) runOnUiThread {
+                if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
                         pendingInstallerRemoval = game to playableGame
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",

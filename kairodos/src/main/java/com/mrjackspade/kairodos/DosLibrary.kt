@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.AtomicFile
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
+import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.LibraryItem
 import org.json.JSONArray
 import org.json.JSONObject
@@ -27,7 +28,8 @@ class DosLibrary(private val context: Context) {
         val fingerprint: String,
         override val contentId: String?,
         override val error: String? = null,
-        val installer: Boolean = false
+        val installer: Boolean = false,
+        val external: Boolean = false
     ) : LibraryItem {
         override val zipEntry: String? = null
         override val displayName: String get() = path.substringAfterLast('/').let {
@@ -48,6 +50,27 @@ class DosLibrary(private val context: Context) {
 
     fun cached(tree: Uri): List<Game> = readStore().let { (source, entries) ->
         if (source == tree.toString()) entries else emptyList()
+    }
+
+    /** Inspect a launcher-provided file using the same content IDs as a library scan. */
+    fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean): Game {
+        val type = extension(file.name)
+        require(type in archiveExtensions + executableExtensions + otherExtensions) {
+            "Unsupported DOS game file: ${file.name}"
+        }
+        val source = DocumentTreeWalker.FileEntry(file.uri, file.name, file.size, file.modified)
+        val inspection = if (type in archiveExtensions) {
+            DosContentHash.inspectZipDocument(context.contentResolver, file.uri, cancelled)
+                ?: copySource(source, cancelled).let { temp ->
+                    try { DosContentHash.inspectZip(temp, cancelled) }
+                    finally { temp.delete() }
+                }
+        } else null
+        val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
+        val installer = inspection?.exodosSource == true &&
+            !file.name.substringBeforeLast('.').endsWith(" - Installed", true)
+        return Game(sha256(file.uri.toString()), file.uri.toString(), file.name,
+            false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
     }
 
     fun scan(tree: Uri, forceHash: Boolean, cancelled: AtomicBoolean,
@@ -234,6 +257,36 @@ class DosLibrary(private val context: Context) {
         }
     }
 
+    /** Keep the installed copy private when the launcher only grants one source file. */
+    fun installExternal(game: Game, cancelled: AtomicBoolean,
+                        progress: (String) -> Unit = {}): Game {
+        require(game.external && game.installer && game.playable) { "Not an external installer" }
+        progress("Preparing installer archive…")
+        val source = prepare(game, null, cancelled)
+        val installedId = sha256("external:${game.contentId}")
+        val folder = File(context.filesDir, "installed-dos").apply { mkdirs() }
+        val installed = File(folder, "$installedId.zip")
+        if (installed.isFile) {
+            require(DosContentHash.zip(installed, cancelled) == game.contentId) {
+                "Installed game archive changed"
+            }
+        } else {
+            val pending = File.createTempFile("dos-install-", ".part", folder)
+            try {
+                source.inputStream().use { input -> pending.outputStream().use { output ->
+                    copyChecked(input, output, cancelled)
+                } }
+                require(DosContentHash.zip(pending, cancelled) == game.contentId) {
+                    "Installed game archive failed verification"
+                }
+                require(pending.renameTo(installed)) { "Could not save installed game" }
+            } finally { pending.delete() }
+        }
+        val name = game.path.substringBeforeLast('.') + " - Installed.zip"
+        return Game(installedId, Uri.fromFile(installed).toString(), name, false,
+            false, "", game.contentId, null, false, true)
+    }
+
     fun deleteInstaller(game: Game, installed: Game) {
         require(game.installer) { "Not an installer" }
         require(!installed.installer && installed.contentId == game.contentId) {
@@ -268,7 +321,7 @@ class DosLibrary(private val context: Context) {
         return null
     }
 
-    fun prepare(game: Game, tree: Uri, cancelled: AtomicBoolean,
+    fun prepare(game: Game, tree: Uri?, cancelled: AtomicBoolean,
                 wrapFolder: String? = null): File {
         require(game.playable) { "Game is not ready" }
         val type = extension(game.path)
@@ -334,7 +387,8 @@ class DosLibrary(private val context: Context) {
                 } finally { pending.delete() }
             } finally { copied.delete() }
         } else {
-            val files = walker.scan(tree, cancelled, { true }, {}).files.filter {
+            val files = walker.scan(tree ?: error("Choose a DOS folder for this game"),
+                cancelled, { true }, {}).files.filter {
                 if (game.rootFolder) true
                 else it.path.startsWith("${game.path}/")
             }

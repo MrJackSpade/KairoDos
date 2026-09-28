@@ -116,6 +116,10 @@ bool environment(unsigned command, void* data) {
                 variable->value = outside_conf.load() ? "outside" : "false";
                 return true;
             }
+            if (std::strcmp(variable->key, "dosbox_pure_menu_time") == 0) {
+                variable->value = "0"; // Return to KairoDos when the game or its script exits.
+                return true;
+            }
             return false;
         }
         case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
