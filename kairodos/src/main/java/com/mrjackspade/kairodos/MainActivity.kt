@@ -102,6 +102,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var prepareCancelled = AtomicBoolean(false)
     private val games: List<DosLibrary.Game> get() = libraryFlow.entries
     private var currentGame: DosLibrary.Game? = null
+    private var sessionFromFrontend = false
     private var pendingInstallerRemoval: Pair<DosLibrary.Game, DosLibrary.Game>? = null
     private var gameThread: Thread? = null
     @Volatile private var launchGeneration = 0
@@ -185,14 +186,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val matching = games.firstOrNull {
             ExternalGameIntent.sameDocument(Uri.parse(it.uri), request.uri)
         }
-        if (matching != null) { launch(matching); return }
+        if (matching != null) { launch(matching, true); return }
         val generation = ++externalLaunchGeneration
         libraryScreen.showStatus("Opening ${request.name}…")
         Thread {
             val inspected = runCatching { dosLibrary.inspectExternal(request, AtomicBoolean(false)) }
             runOnUiThread {
                 if (generation != externalLaunchGeneration || isDestroyed) return@runOnUiThread
-                inspected.onSuccess(::launch).onFailure { failure ->
+                inspected.onSuccess { launch(it, true) }.onFailure { failure ->
                     libraryScreen.showStatus("Could not open ${request.name}: ${failure.message}")
                 }
             }
@@ -277,17 +278,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }} }, { Ui.message(this, "Hash this game before saving settings") })
     }
 
-    private fun launch(game: DosLibrary.Game) {
+    private fun launch(game: DosLibrary.Game, fromFrontend: Boolean = false) {
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
         val variants = launch?.configs?.keys.orEmpty()
         if (variants.size > 1) {
             val saved = preferences.getString("launch_variant_${game.contentId}", null)
-            if (saved !in variants) { chooseLaunchVariant(game, true); return }
-            startGame(game, saved!!)
-        } else startGame(game, "dosbox.conf")
+            if (saved !in variants) {
+                chooseLaunchVariant(game, true, fromFrontend)
+                return
+            }
+            startGame(game, saved!!, fromFrontend)
+        } else startGame(game, "dosbox.conf", fromFrontend)
     }
 
-    private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean) {
+    private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean,
+                                    fromFrontend: Boolean = false) {
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch ?: return
         val names = launch.configs.keys.sortedWith(compareBy<String> { it != "dosbox.conf" }
             .thenBy { it })
@@ -296,12 +301,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { _, index ->
                 val selected = names[index]
                 preferences.edit().putString("launch_variant_${game.contentId}", selected).apply()
-                if (play) startGame(game, selected)
+                if (play) startGame(game, selected, fromFrontend)
                 else showGameDetails(game)
             }.setNegativeButton("Cancel", null).show()
     }
 
-    private fun startGame(game: DosLibrary.Game, configName: String) {
+    private fun startGame(game: DosLibrary.Game, configName: String,
+                          fromFrontend: Boolean = false) {
         val selected = tree
         if (!game.external && selected == null) {
             libraryScreen.showStatus("Choose a DOS folder for this game")
@@ -311,7 +317,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
         val playerKey = "dos_player_${game.contentId}"
         if (DosLaunchConfig.needsPlayer(launch) && preferences.getString(playerKey, null) == null) {
-            choosePlayerName(game, configName)
+            choosePlayerName(game, configName, fromFrontend)
             return
         }
         val playerName = preferences.getString(playerKey, null)
@@ -325,6 +331,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val oldThread = gameThread
         nativeStop()
         currentGame = game
+        sessionFromFrontend = fromFrontend
         gamepad.bindings = loadControllerBindings(game)
         showGame()
         val systemDir = File(filesDir, "system").apply { mkdirs() }
@@ -390,7 +397,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }
             runOnUiThread {
                 if (generation == launchGeneration && currentGame?.id == game.id) {
-                    leaveGame()
+                    leaveGame(success)
                     if (!success) AlertDialog.Builder(this).setMessage(message)
                         .setPositiveButton("OK", null).show()
                 }
@@ -399,7 +406,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         pollSession(game.id)
     }
 
-    private fun choosePlayerName(game: DosLibrary.Game, playConfig: String?) {
+    private fun choosePlayerName(game: DosLibrary.Game, playConfig: String?,
+                                 fromFrontend: Boolean = false) {
         val key = "dos_player_${game.contentId}"
         val input = EditText(this).apply {
             hint = "1–8 letters, digits, or underscores"
@@ -414,7 +422,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (name.matches(Regex("[A-Z0-9_]{1,8}"))) {
                     preferences.edit().putString(key, name).apply()
                     if (playConfig == null) showGameDetails(game)
-                    else startGame(game, playConfig)
+                    else startGame(game, playConfig, fromFrontend)
                 } else Ui.message(this, "Use 1–8 letters, digits, or underscores")
             }.setNegativeButton("Cancel", null).show()
     }
@@ -727,7 +735,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }.apply { name = "KairoDos-audio"; start() }
     }
 
-    private fun leaveGame() {
+    private fun leaveGame(completed: Boolean = true) {
+        val returnToFrontend = completed && sessionFromFrontend
+        sessionFromFrontend = false
         launchGeneration++
         prepareCancelled.set(true)
         nativeStop()
@@ -747,22 +757,31 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionGameTitle = null
         currentGame = null
         gamepad.bindings = globalControllerBindings()
-        showLibrary()
-        pendingInstallerRemoval?.let { (installer, installed) ->
+        val removal = pendingInstallerRemoval
+        if (!returnToFrontend || removal != null) showLibrary()
+        removal?.let { (installer, installed) ->
             pendingInstallerRemoval = null
-            refreshLibrary(false)
+            if (!returnToFrontend) refreshLibrary(false)
             AlertDialog.Builder(this).setTitle("Remove installer ZIP?")
                 .setMessage("The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?")
                 .setPositiveButton("Remove") { _, _ ->
                     Thread {
                         runCatching { dosLibrary.deleteInstaller(installer, installed) }
-                            .onSuccess { runOnUiThread { refreshLibrary(false) } }
+                            .onSuccess { runOnUiThread {
+                                if (returnToFrontend) finish() else refreshLibrary(false)
+                            } }
                             .onFailure { failure -> runOnUiThread {
-                                Ui.message(this, failure.message ?: "Could not remove installer")
+                                if (returnToFrontend) AlertDialog.Builder(this)
+                                    .setMessage(failure.message ?: "Could not remove installer")
+                                    .setPositiveButton("Close") { _, _ -> finish() }.show()
+                                else Ui.message(this, failure.message ?: "Could not remove installer")
                             } }
                     }.apply { name = "KairoDos-remove-installer"; start() }
-                }.setNegativeButton("Keep", null).show()
+                }.setNegativeButton("Keep") { _, _ ->
+                    if (returnToFrontend) finish()
+                }.show()
         }
+        if (returnToFrontend && removal == null) finish()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) { nativeSetSurface(holder.surface) }

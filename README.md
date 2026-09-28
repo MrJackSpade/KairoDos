@@ -24,7 +24,7 @@ Import your DOS game ZIPs into LaunchBox's MS-DOS platform. Open that platform, 
 | Custom Emulator Activity Name | `com.loxifi.kairodos.Launch` |
 | Custom Emulator ROM Path Key | `ROM` |
 
-Leave **Extract ROM Archives** off; KairoDos opens ZIPs and handles eXoDOS installer archives itself. You do not need a launch command or a folder selection in KairoDos for a game sent by LaunchBox. This setup launched a ZIP game through LaunchBox on a Retroid Pocket Classic development build.
+Leave **Extract ROM Archives** off; KairoDos opens ZIPs and handles eXoDOS installer archives itself. You do not need a launch command or a folder selection in KairoDos for a game sent by LaunchBox. For a frontend-launched game, KairoDos returns to the frontend when the game ends or you choose **Library**. This setup launched a ZIP game through LaunchBox on a Retroid Pocket Classic development build.
 
 ES-DE can send a single game file or ZIP as an Android `VIEW` intent to the same activity. Its Android `es_find_rules.xml` entry is `com.loxifi.kairodos/com.loxifi.kairodos.Launch`; the system command uses `%EMULATOR_KAIRODOS% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%`. ES-DE launch has not yet been tested on a device.
 
