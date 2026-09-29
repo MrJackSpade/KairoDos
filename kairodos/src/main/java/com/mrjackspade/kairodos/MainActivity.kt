@@ -770,6 +770,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             })
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
+        onScreenControls?.bindGuestKeyboard(panel)
         swappedKeyboard = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, {},
             showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse)
             .also { root.addView(it, FrameLayout.LayoutParams(-1, -1)) }
@@ -935,7 +936,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (showingGuest) ImmersiveWindow.hideBars(this)
         if (currentGame != null) nativePause(blocked || userPaused)
         onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
-            keyboard?.visibility != View.VISIBLE && !secondaryDisplay.swapped)
+            !secondaryDisplay.swapped)
     }
 
     private fun onSecondarySwapChanged(swapped: Boolean) {
@@ -1444,6 +1445,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         mouse.releasePrefix("touch-")
         onScreenControls?.close()
         keyboard?.close()
+        onScreenControls?.bindGuestKeyboard(null)
         swappedKeyboard?.close()
         onScreenControls?.refreshVisibility(false)
         sessionFlow?.reset()
