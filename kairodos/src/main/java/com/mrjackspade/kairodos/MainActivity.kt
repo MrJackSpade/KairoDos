@@ -29,6 +29,7 @@ import com.mrjackspade.kairo.frontend.MouseInputRouter
 import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
 import com.mrjackspade.kairo.frontend.Ui
 import com.mrjackspade.kairo.frontend.LibraryScreen
+import com.mrjackspade.kairo.frontend.LibraryScanSummary
 import com.mrjackspade.kairo.frontend.LibraryFlow
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.FirstRunScreen
@@ -226,12 +227,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { uri -> uri.lastPathSegment ?: "DOS folder" },
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
-            { found ->
-                val errors = found.count { it.error != null }
-                "${found.count { it.playable }} games" +
-                    (if (errors == 0) "" else " · $errors unreadable") +
-                    " · ${dosLibrary.hashCount} hashes this scan"
-            },
+            { found -> LibraryScanSummary.format(found, dosLibrary.hashCount) },
             onFolderSelected = { finishFirstRun() },
             onFolderError = { message -> if (firstRunScreen.isOpen) Ui.message(this, message) },
             writable = true)
