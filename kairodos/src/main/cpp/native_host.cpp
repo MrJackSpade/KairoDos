@@ -450,15 +450,18 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeLoadState(JNIEnv* env, jobject,
     const std::string path = string(env, path_j);
     std::lock_guard<std::mutex> lock(core_execution_mutex);
     if (status.load() != 2 || !core_handle) return 1;
-    const size_t size = core.serialize_size();
-    if (!size || size > 512ull * 1024 * 1024) return 2;
     FILE* file = std::fopen(path.c_str(), "rb");
     if (!file) return 3;
-    if (std::fseek(file, 0, SEEK_END) != 0 || std::ftell(file) != static_cast<long>(size) ||
+    if (std::fseek(file, 0, SEEK_END) != 0) { std::fclose(file); return 3; }
+    const long stored_size = std::ftell(file);
+    // Pure's sparse state length can change as guest memory changes. Load the recorded
+    // length, then let the core validate its version, layout, and machine configuration.
+    if (stored_size < 9 || stored_size > 512ll * 1024 * 1024 ||
         std::fseek(file, 0, SEEK_SET) != 0) {
         std::fclose(file);
         return 2;
     }
+    const size_t size = static_cast<size_t>(stored_size);
     std::vector<uint8_t> state(size);
     const bool read = std::fread(state.data(), 1, size, file) == size;
     std::fclose(file);

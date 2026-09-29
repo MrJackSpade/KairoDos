@@ -56,8 +56,8 @@ import com.mrjackspade.kairo.frontend.SessionAction
 import com.mrjackspade.kairo.frontend.SessionDrawer
 import com.mrjackspade.kairo.frontend.SessionFlow
 import com.mrjackspade.kairo.frontend.SessionStatusDialog
-import com.mrjackspade.kairo.frontend.StateSlotDialog
-import com.mrjackspade.kairo.frontend.SurfaceThumbnail
+import com.mrjackspade.kairo.frontend.StateSlotCoordinator
+import com.mrjackspade.kairo.frontend.StateSlotStore
 import com.mrjackspade.kairo.frontend.GameSettingsRow
 import com.mrjackspade.kairo.frontend.GameSettingsCoordinator
 import com.mrjackspade.kairo.frontend.CommonGameSettings
@@ -254,7 +254,27 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var installerPromptOpen = false
     private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
-    private var stateBusy = false
+    private val stateFlow by lazy {
+        StateSlotCoordinator(this, handler,
+            { currentGame?.contentId?.takeIf { nativeStatus() == 2 &&
+                libraryScreen.visibility != View.VISIBLE } },
+            { sessionGameTitle ?: currentGame?.displayName },
+            { StateSlotStore(File(filesDir, "states"), it, "state.dos", ".state") },
+            { secondaryDisplay.activeGameSurface ?: surface },
+            { store, scratch -> nativeSaveState(store.stateFileIn(scratch).absolutePath) },
+            { nativeLoadState(it.stateFile.absolutePath) }, ::stateError,
+            { statusLabel?.text = it }, { Ui.message(this, it) },
+            {
+                gamepad.releaseAll()
+                keys.releaseAll()
+                inputModeDecider.reset()
+                userPaused = false
+                closeMenu()
+            }, { code ->
+                // A rejected DOS state can leave the native machine partly changed.
+                if (code == 4) { userPaused = false; nativeReset(); closeMenu() }
+            }, "Start a DOS game from the library before using save states", R.drawable.ic_save)
+    }
     @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
@@ -1113,111 +1133,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt")
     }
 
-    private fun stateFile(game: DosLibrary.Game, slot: Int): File {
-        val key = game.contentId!!.replace(Regex("[^A-Za-z0-9._-]"), "_")
-        return File(filesDir, "states/$key/slot$slot.state")
-    }
-
-    private fun stateThumbnailFile(game: DosLibrary.Game, slot: Int): File =
-        File(stateFile(game, slot).parentFile, "slot$slot.png")
-
-    private fun showStateSlots(saving: Boolean) {
-        val game = currentGame?.takeIf { it.contentId != null }
-        if (game == null || nativeStatus() != 2) {
-            Ui.message(this, "Start a DOS game before using save states")
-            return
-        }
-        if (stateBusy) return
-        val slots = (1..4).map { slot ->
-            val saved = stateFile(game, slot).takeIf { it.isFile }
-            StateSlotDialog.Slot(slot, saved?.lastModified(), saved?.let {
-                BitmapFactory.decodeFile(stateThumbnailFile(game, slot).absolutePath)
-            })
-        }
-        StateSlotDialog.show(this, sessionGameTitle ?: game.displayName, saving, slots,
-            { saveState(game, it) }, { loadState(game, it) })
-    }
+    private fun showStateSlots(saving: Boolean) = stateFlow.show(saving)
 
     private fun stateError(code: Int) = when (code) {
         1 -> "game is not running"
         2 -> "state is unavailable or incompatible"
         3 -> "storage is unavailable"
         else -> "DOSBox Pure rejected the state"
-    }
-
-    private fun saveState(game: DosLibrary.Game, slot: Int) {
-        if (stateBusy) return
-        stateBusy = true
-        statusLabel?.text = "Saving slot $slot…"
-        SurfaceThumbnail.capture(secondaryDisplay.activeGameSurface ?: surface, handler) { thumbnail -> Thread {
-            val target = stateFile(game, slot)
-            val scratch = File(target.parentFile, "slot$slot.part")
-            val previous = File(target.parentFile, "slot$slot.old")
-            var saved = false
-            val result = runCatching {
-                require(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs())
-                scratch.delete()
-                val code = nativeSaveState(scratch.absolutePath)
-                if (code != 0) return@runCatching "Save failed: ${stateError(code)}"
-                previous.delete()
-                if (target.exists() && !target.renameTo(previous))
-                    error("Could not replace the old save")
-                if (!scratch.renameTo(target)) {
-                    previous.renameTo(target)
-                    error("Could not store the save")
-                }
-                previous.delete()
-                saved = true
-                "Saved to slot $slot"
-            }.getOrElse { "Save failed: ${it.message ?: "storage error"}" }
-            scratch.delete()
-            if (saved) {
-                val previewFile = stateThumbnailFile(game, slot)
-                if (thumbnail == null) previewFile.delete()
-                else runCatching {
-                    val atomic = android.util.AtomicFile(previewFile)
-                    val stream = atomic.startWrite()
-                    try {
-                        check(thumbnail.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream))
-                        atomic.finishWrite(stream)
-                    } catch (error: Exception) {
-                        atomic.failWrite(stream)
-                        throw error
-                    }
-                }
-            }
-            thumbnail?.recycle()
-            runOnUiThread {
-                stateBusy = false
-                statusLabel?.text = result
-                Ui.message(this, result)
-            }
-        }.apply { name = "KairoDos-save-state"; start() } }
-    }
-
-    private fun loadState(game: DosLibrary.Game, slot: Int) {
-        if (stateBusy) return
-        stateBusy = true
-        statusLabel?.text = "Loading slot $slot…"
-        Thread {
-            val code = nativeLoadState(stateFile(game, slot).absolutePath)
-            runOnUiThread {
-                stateBusy = false
-                if (code == 0) {
-                    gamepad.releaseAll()
-                    keys.releaseAll()
-                    inputModeDecider.reset()
-                    userPaused = false
-                    closeMenu()
-                    Ui.message(this, "Loaded slot $slot")
-                } else {
-                    statusLabel?.text = "Load failed: ${stateError(code)}"
-                    Ui.message(this, "Load failed: ${stateError(code)}")
-                    // A rejected state may have partially changed the emulated machine.
-                    if (code == 4) { userPaused = false; nativeReset(); closeMenu() }
-                }
-            }
-        }.apply { name = "KairoDos-load-state"; start() }
     }
 
     private fun startAudio() {

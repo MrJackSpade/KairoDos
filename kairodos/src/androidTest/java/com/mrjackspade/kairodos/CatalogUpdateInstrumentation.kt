@@ -11,16 +11,19 @@ import java.util.zip.ZipOutputStream
 
 /** Device fixture for partial catalog layers and rejection before snapshot activation. */
 class CatalogUpdateInstrumentation : Instrumentation() {
+    private var stateSlots = false
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
+        stateSlots = arguments?.getString("stateSlots") == "true"
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
         try {
-            verify()
-            result.putString("stream", "DOS catalog partial merge and invalid snapshot: OK\n")
+            if (stateSlots) StateSlotStoreFixture.verify(targetContext.cacheDir) else verify()
+            result.putString("stream", if (stateSlots) "Shared state slot transactions: OK\n"
+                else "DOS catalog partial merge and invalid snapshot: OK\n")
             finish(Activity.RESULT_OK, result)
         } catch (failure: Throwable) {
             result.putString("stream", "DOS catalog fixture failed: ${failure.stackTraceToString()}\n")
