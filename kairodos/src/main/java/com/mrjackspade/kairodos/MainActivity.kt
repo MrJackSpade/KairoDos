@@ -28,6 +28,7 @@ import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.InputModeDecider
 import com.mrjackspade.kairo.frontend.MouseInputRouter
 import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
+import com.mrjackspade.kairo.frontend.ArtworkOverrideEditor
 import com.mrjackspade.kairo.frontend.TouchInputPolicy
 import com.mrjackspade.kairo.frontend.TouchInputSelection
 import com.mrjackspade.kairo.frontend.ScopedTouchInput
@@ -414,27 +415,23 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun editGameArtwork(game: DosLibrary.Game, kind: String) {
         val id = game.contentId ?: return
         val current = catalog.resolve(id, game.displayName)
-        val input = EditText(this).apply {
-            setSingleLine(true)
-            setText(if (kind == "boxArt") current.boxArt ?: "" else current.preview ?: "")
-            hint = "art/catalog/dos/example.webp"
-        }
         val label = if (kind == "boxArt") "Box art" else "Screenshot"
-        val dialog = AlertDialog.Builder(this).setTitle(label)
-            .setMessage("Use a packaged DOS artwork path. Missing art falls back to the game title.")
-            .setView(input)
-            .setPositiveButton("Save") { _, _ ->
-                val path = input.text.toString().trim().takeIf { it.isNotEmpty() }
+        ArtworkOverrideEditor.show(this, ArtworkOverrideEditor.Options(
+            title = label,
+            currentPath = if (kind == "boxArt") current.boxArt ?: "" else current.preview ?: "",
+            hint = "art/catalog/dos/example.webp",
+            explanation = "Use a packaged DOS artwork path. Missing art falls back to the game title.",
+            resetLabel = "Reset $label",
+            onSave = { path ->
                 runCatching { catalog.setArtworkOverride(id, kind, path) }
                     .onSuccess { libraryScreen.showEntries(games) }
                     .onFailure { Ui.message(this, it.message ?: "Could not save artwork") }
-            }.setNeutralButton("Reset $label") { _, _ ->
+            },
+            onReset = {
                 runCatching { catalog.setArtworkOverride(id, kind, null) }
                     .onSuccess { libraryScreen.showEntries(games) }
                     .onFailure { Ui.message(this, it.message ?: "Could not reset artwork") }
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
+            }))
     }
 
     private fun showGameDetails(entry: DosLibrary.Game) {

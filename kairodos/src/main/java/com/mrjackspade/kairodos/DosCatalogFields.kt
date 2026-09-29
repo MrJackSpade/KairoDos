@@ -1,6 +1,7 @@
 package com.mrjackspade.kairodos
 
 import com.mrjackspade.kairo.frontend.CatalogFieldLayers
+import com.mrjackspade.kairo.frontend.ArtworkOverridePath
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -33,8 +34,8 @@ internal object DosCatalogFields {
     }
 
     fun safeArtPath(path: String?): String? = path?.takeIf {
-        it.length in 17..256 && it.startsWith("art/catalog/dos/") &&
-            it.matches(Regex("[a-zA-Z0-9/._-]+")) && !it.contains("..")
+        ArtworkOverridePath.valid(it, "art/catalog/dos/", asciiOnly = true,
+            minLength = 17)
     }
 
     fun invalidPath(record: JSONObject): String? {
