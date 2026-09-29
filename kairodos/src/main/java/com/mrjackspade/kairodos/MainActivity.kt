@@ -38,6 +38,8 @@ import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
 import com.mrjackspade.kairo.frontend.GuestLifecycleCoordinator
 import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
+import com.mrjackspade.kairo.frontend.SecondaryDisplayCoordinator
+import com.mrjackspade.kairo.frontend.RgDsDisplayRouter
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
 import com.mrjackspade.kairo.frontend.GameSettingScope
@@ -164,6 +166,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var integerCrop = false
     private var portraitNotchPadding = 0
     private var keyboard: GuestKeyboardPanel? = null
+    private var swappedKeyboard: GuestKeyboardPanel? = null
+    private lateinit var secondaryDisplay: SecondaryDisplayCoordinator
+    private val libraryArtExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private var librarySelectionGeneration = 0
     private var statusLabel: TextView? = null
     private var loadingStatus: TextView? = null
     private var sessionGameTitle: String? = null
@@ -176,13 +182,29 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var moved = false
     private var twoFingers = false
     private var directPointerPressed = false
+    private var relocating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (RgDsDisplayRouter.routeToUpper(this)) {
+            relocating = true
+            return
+        }
         loadGraphicsSettings()
         ImmersiveWindow.apply(this)
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
+        secondaryDisplay = SecondaryDisplayCoordinator(this, keys, mouse,
+            DosKeyboardLayout.value, "KairoDos",
+            { available ->
+                if (available && secondaryDisplay.isKeyboardVisible &&
+                    keyboard?.visibility == View.VISIBLE) keyboard?.close()
+                refreshControllerUi()
+            },
+            { remoteSurface, _, _ -> nativeSetSurface(remoteSurface) },
+            { event, width, height -> handleGameTouchAt(event, width, height) },
+            ::onSecondarySwapChanged,
+            { nativeAspect().takeIf { it in 0.5..3.0 } ?: 4.0 / 3.0 })
         val libraryPage = LibraryScreen(this, catalog, LibraryStrings("KAIRODOS",
             "Select DOS folder", "Choose a writable folder for DOS games and ZIP archives",
             "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
@@ -190,7 +212,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { catalogUpdates.check(false) },
             null, {}, settingsEntries(),
             { preferences.getString("last_played_entry", null) }, ::launch,
-            ::previewGame, ::showGameDetails, {})
+            ::previewGame, ::showGameDetails, ::showLibrarySelection)
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
             dosLibrary::cached, dosLibrary::scan,
             { uri -> uri.lastPathSegment ?: "DOS folder" },
@@ -266,12 +288,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showLibrary() {
+        librarySelectionGeneration++
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         currentGame = null
         gameRoot?.let(appRoot::removeView)
         gameRoot = null
         libraryScreen.visibility = View.VISIBLE
         libraryFlow.show()
+        refreshControllerUi()
     }
 
     private fun openLibraryOverGame() {
@@ -282,12 +306,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         refreshControllerUi()
         sessionFlow?.reset()
         keyboard?.close()
+        swappedKeyboard?.close()
         releaseGuestInputs()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         libraryFlow.show()
+        refreshControllerUi()
     }
 
     private fun resumeGameFromLibrary() {
+        librarySelectionGeneration++
+        secondaryDisplay.setLibraryInfo(null)
         libraryScreen.dismissSystemKeyboard()
         libraryScreen.visibility = View.GONE
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -329,6 +357,36 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun refreshLibrary(forceHash: Boolean) = libraryFlow.refresh(forceHash)
+
+    private fun showLibrarySelection(entry: DosLibrary.Game?) {
+        if (!::secondaryDisplay.isInitialized) return
+        val generation = ++librarySelectionGeneration
+        if (entry == null) {
+            secondaryDisplay.setLibraryInfo(null)
+            return
+        }
+        val game = catalog.resolve(entry.contentId ?: "", entry.displayName)
+        val info = SecondaryDisplayCoordinator.LibraryInfo(game.title,
+            listOf(entry.displayName) + game.tags,
+            game.description ?: "No description available yet.", null)
+        secondaryDisplay.setLibraryInfo(info)
+        val art = game.preview ?: return
+        libraryArtExecutor.execute {
+            val bitmap = runCatching {
+                catalog.openArtwork(art).use { stream ->
+                    BitmapFactory.decodeStream(stream, null, BitmapFactory.Options().apply {
+                        inSampleSize = 2
+                    })
+                }
+            }.getOrNull() ?: return@execute
+            runOnUiThread {
+                if (generation == librarySelectionGeneration &&
+                    libraryScreen.visibility == View.VISIBLE && !isDestroyed)
+                    secondaryDisplay.setLibraryInfo(info.copy(art = bitmap))
+                else bitmap.recycle()
+            }
+        }
+    }
 
     private fun previewGame(game: DosLibrary.Game) {
         val art = catalog.resolve(game.contentId ?: "", game.displayName).preview ?: return
@@ -703,6 +761,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             })
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
+        swappedKeyboard = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, {},
+            showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse)
+            .also { root.addView(it, FrameLayout.LayoutParams(-1, -1)) }
         sessionDrawer = SessionDrawer(this, root, "KAIRODOS", ::closeMenu,
             ::showSessionStatus, listOf(
             SessionAction("Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play) {
@@ -729,7 +790,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             },
             SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
                 closeMenu()
-                panel.open()
+                if (!secondaryDisplay.isShowing) panel.open()
             },
             SettingsEntry("Exit", { "Stop the game and close KairoDos" }) {
                 confirmExit()
@@ -750,6 +811,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         statusLabel = sessionDrawer?.status
         statusLabel?.text = "Starting ${sessionGameTitle}…"
         onScreenControls?.refreshVisibility(true)
+        refreshControllerUi()
     }
 
     private fun openMenu() {
@@ -848,12 +910,33 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun refreshControllerUi() {
+        if (relocating || !::secondaryDisplay.isInitialized ||
+            !::libraryFlow.isInitialized || !::controllerEditor.isInitialized) return
         val blocked = controllerEditor.isOpen || onScreenControls?.isOpen == true ||
             sessionFlow?.isOpen == true || libraryScreen.visibility == View.VISIBLE ||
             !guestLifecycle.isVisible
+        val showingGuest = currentGame != null && !blocked && !userPaused
+        if (libraryScreen.visibility != View.VISIBLE) {
+            librarySelectionGeneration++
+            secondaryDisplay.setLibraryInfo(null)
+        }
+        if (secondaryDisplay.swapped && showingGuest) {
+            if (swappedKeyboard?.visibility != View.VISIBLE) swappedKeyboard?.open()
+        } else if (swappedKeyboard?.visibility == View.VISIBLE) swappedKeyboard?.close()
+        secondaryDisplay.setAppearance(showingGuest, Color.BLACK)
         if (currentGame != null) nativePause(blocked || userPaused)
         onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
-            keyboard?.visibility != View.VISIBLE)
+            keyboard?.visibility != View.VISIBLE && !secondaryDisplay.swapped)
+    }
+
+    private fun onSecondarySwapChanged(swapped: Boolean) {
+        keyboard?.close()
+        updateSurfaceLayout()
+        if (!swapped) {
+            val holder = surface?.holder
+            nativeSetSurface(holder?.surface?.takeIf { it.isValid })
+        }
+        refreshControllerUi()
     }
 
     private fun pollSession(id: String) {
@@ -983,21 +1066,25 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         Ui.styleDialog(dialog)
     }
 
-    private fun handleGameTouch(view: View, event: MotionEvent): Boolean {
+    private fun handleGameTouch(view: View, event: MotionEvent): Boolean =
+        handleGameTouchAt(event, view.width, view.height)
+
+    private fun handleGameTouchAt(event: MotionEvent, width: Int, height: Int): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             lastX = event.x; lastY = event.y; moved = false
         }
         if (inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD) {
             if (event.actionMasked == MotionEvent.ACTION_MOVE &&
                 abs(event.x - lastX) + abs(event.y - lastY) > Ui.dp(this, 12)) moved = true
-            if (event.actionMasked == MotionEvent.ACTION_UP && !moved)
+            if (event.actionMasked == MotionEvent.ACTION_UP && !moved &&
+                !secondaryDisplay.isKeyboardVisible)
                 keyboard?.open()
             return true
         }
         val direct = effectiveDirectTouch()
         if (direct) {
-            val x = ((event.x / view.width.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
-            val y = ((event.y / view.height.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
+            val x = ((event.x / width.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
+            val y = ((event.y / height.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
             directPointerPressed = event.actionMasked != MotionEvent.ACTION_UP &&
                 event.actionMasked != MotionEvent.ACTION_CANCEL
             nativePointer(x, y, directPointerPressed)
@@ -1189,7 +1276,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (stateBusy) return
         stateBusy = true
         statusLabel?.text = "Saving slot $slot…"
-        SurfaceThumbnail.capture(surface, handler) { thumbnail -> Thread {
+        SurfaceThumbnail.capture(secondaryDisplay.activeGameSurface ?: surface, handler) { thumbnail -> Thread {
             val target = stateFile(game, slot)
             val scratch = File(target.parentFile, "slot$slot.part")
             val previous = File(target.parentFile, "slot$slot.old")
@@ -1348,6 +1435,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         mouse.releasePrefix("touch-")
         onScreenControls?.close()
         keyboard?.close()
+        swappedKeyboard?.close()
         onScreenControls?.refreshVisibility(false)
         sessionFlow?.reset()
         sessionFlow = null
@@ -1356,6 +1444,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         nativeSetSurface(null)
         loadingStatus = null
         sessionGameTitle = null
+        swappedKeyboard = null
         currentGame = null
         gamepad.bindings = globalControllerBindings()
         if (!returnToFrontend || installerPromptOpen) showLibrary()
@@ -1388,13 +1477,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        if (surface?.holder === holder) nativeSetSurface(holder.surface)
+        if (surface?.holder === holder && !secondaryDisplay.swapped) nativeSetSurface(holder.surface)
     }
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        if (surface?.holder === holder) nativeSetSurface(holder.surface)
+        if (surface?.holder === holder && !secondaryDisplay.swapped) nativeSetSurface(holder.surface)
     }
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        if (surface?.holder === holder) nativeSetSurface(null)
+        if (surface?.holder === holder && !secondaryDisplay.swapped) nativeSetSurface(null)
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -1408,7 +1497,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             EdgeSwipeNavigation.Result.PASS -> super.dispatchTouchEvent(event)
             EdgeSwipeNavigation.Result.CONSUME -> true
             EdgeSwipeNavigation.Result.OPEN_MENU -> { openMenu(); true }
-            EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> { keyboard?.open(); true }
+            EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> {
+                if (!secondaryDisplay.isKeyboardVisible) keyboard?.open()
+                true
+            }
             EdgeSwipeNavigation.Result.CLOSE_MENU -> {
                 val cancel = MotionEvent.obtain(event)
                 cancel.action = MotionEvent.ACTION_CANCEL
@@ -1540,29 +1632,46 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     override fun onPause() {
+        if (relocating || secondaryDisplay.isCompanionActive) {
+            super.onPause()
+            return
+        }
         guestLifecycle.onPause()
+        secondaryDisplay.stop()
         super.onPause()
     }
 
     override fun onStop() {
-        guestLifecycle.onStop()
+        if (!relocating && !secondaryDisplay.isCompanionActive) {
+            guestLifecycle.onStop()
+            secondaryDisplay.stop()
+        }
         super.onStop()
     }
 
     override fun onResume() {
         super.onResume()
+        if (relocating) return
+        secondaryDisplay.start(handler)
         guestLifecycle.onResume()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
+        if (relocating || (!hasFocus && secondaryDisplay.isCompanionActive)) return
         guestLifecycle.onWindowFocusChanged(hasFocus)
     }
 
     override fun onDestroy() {
+        if (relocating) {
+            super.onDestroy()
+            return
+        }
         backCoordinator.unregister()
         controllerDevices.unregister()
         libraryFlow.cancel()
+        libraryArtExecutor.shutdownNow()
+        secondaryDisplay.stop()
         launchGeneration++
         prepareCancelled.set(true)
         nativeStop()
