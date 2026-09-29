@@ -52,6 +52,7 @@ std::atomic<double> fps{60.0};
 std::atomic<double> aspect{4.0 / 3.0};
 std::atomic<int> video_width{640}, video_height{400};
 std::atomic<bool> stop_requested{false}, paused{false}, reset_requested{false};
+std::atomic<bool> core_crashed{false};
 std::atomic<int> status{0}; // 0 idle, 1 loading, 2 running, 3 failed
 std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
 std::atomic<int> guest_keyboard_waiting{0};
@@ -91,11 +92,22 @@ void set_error(const std::string& message) {
 }
 
 void core_log(retro_log_level level, const char* format, ...) {
+    char message[1024];
     va_list args;
     va_start(args, format);
-    __android_log_vprint(level == RETRO_LOG_ERROR ? ANDROID_LOG_ERROR : ANDROID_LOG_INFO,
-                         "DOSBoxPure", format, args);
+    std::vsnprintf(message, sizeof(message), format, args);
     va_end(args);
+    __android_log_print(level == RETRO_LOG_ERROR ? ANDROID_LOG_ERROR : ANDROID_LOG_INFO,
+                        "DOSBoxPure", "%s", message);
+    constexpr char crash_prefix[] = "[DOSBOX] Crash: ";
+    if (std::strncmp(message, crash_prefix, sizeof(crash_prefix) - 1) == 0) {
+        std::string detail(message + sizeof(crash_prefix) - 1);
+        while (!detail.empty() && (detail.back() == '\n' || detail.back() == '\r'))
+            detail.pop_back();
+        set_error("DOS emulator crashed: " + detail);
+        core_crashed.store(true);
+        stop_requested.store(true);
+    }
 }
 
 bool environment(unsigned command, void* data) {
@@ -168,7 +180,8 @@ bool environment(unsigned command, void* data) {
 }
 
 void video(const void* data, unsigned width, unsigned height, size_t pitch) {
-    if (!data || data == RETRO_HW_FRAME_BUFFER_VALID || width == 0 || height == 0) return;
+    if (core_crashed.load() || !data || data == RETRO_HW_FRAME_BUFFER_VALID ||
+        width == 0 || height == 0) return;
     video_width.store(static_cast<int>(width));
     video_height.store(static_cast<int>(height));
     // Posting to a 60 Hz Surface can block for a full refresh. Keep that wait off
@@ -323,6 +336,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         return false;
     }
     stop_requested.store(false);
+    core_crashed.store(false);
     paused.store(false);
     reset_requested.store(false);
     const std::string path = string(env, path_j);
@@ -406,7 +420,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         dlclose(core_handle); core_handle = nullptr;
         status.store(0);
     }
-    return true;
+    return !core_crashed.load();
 }
 
 extern "C" JNIEXPORT void JNICALL
