@@ -1,21 +1,5 @@
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+apply(from = "shared/gradle/android-settings.gradle")
 
 rootProject.name = "KairoDos"
-include(":kairodos")
-include(":backend-dos")
-include(":frontend")
+include(":kairodos", ":backend-dos", ":frontend")
 project(":frontend").projectDir = file("shared/frontend")

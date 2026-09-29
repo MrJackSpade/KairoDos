@@ -2,13 +2,12 @@ plugins {
     id("com.android.library")
 }
 
+apply(from = rootProject.file("shared/gradle/android-module.gradle"))
+
 android {
     namespace = "com.mrjackspade.kairodos.backend"
-    compileSdk = 36
-    ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        minSdk = 26
         ndk {
             abiFilters += "arm64-v8a"
         }

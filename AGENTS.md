@@ -11,6 +11,8 @@
 
 # Local Windows build
 
+- Android toolchain versions, Gradle conventions, wrapper distribution and CI setup live in pinned `shared/` (see `shared/docs/android-build.md`). Initialize that submodule before building. Product wrappers delegate to it; do not restore duplicate plugin versions or CI setup in either app.
+
 - This workstation has the Android SDK at `D:\android-sdk` (platform 36, NDK `28.2.13676358`, CMake `3.22.1`) and a populated Gradle cache at `C:\Users\Service Account\.gradle`. Environment variables may be unset; check these locations before claiming the toolchain is unavailable.
 - The checkout path contains a space, which makes `ndk-build` reject `Android.mk`. Temporarily map the checkout to an unused drive letter (verified with `K:` here), build from that drive, and remove the mapping afterward. The exact working command is in `docs/build-windows.md`.
 
