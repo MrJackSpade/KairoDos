@@ -35,7 +35,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         .optJSONObject("hidden") ?: JSONObject()
     private var onlineHidden = online.read("hidden-index-v1.json")
         ?.optJSONObject("hidden") ?: JSONObject()
-    private val artworkStore = CatalogArtworkStore(context, { false },
+    val artworkStore = CatalogArtworkStore(context, { false },
         "art/catalog/dos/")
     // Dependency folder lookup is only needed when preparing a game launch.
     // Parsing this large index while opening the library delays the first frame.

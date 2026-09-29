@@ -30,7 +30,7 @@ import com.mrjackspade.kairo.frontend.MouseInputRouter
 import com.mrjackspade.kairo.frontend.TouchSettingsCoordinator
 import com.mrjackspade.kairo.frontend.TouchSettingsStore
 import com.mrjackspade.kairo.frontend.TouchUiCoordinator
-import com.mrjackspade.kairo.frontend.ArtworkOverrideEditor
+import com.mrjackspade.kairo.frontend.ArtworkCoordinator
 import com.mrjackspade.kairo.frontend.TouchInputPolicy
 import com.mrjackspade.kairo.frontend.TouchInputSelection
 import com.mrjackspade.kairo.frontend.ScopedTouchInput
@@ -75,7 +75,6 @@ import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
 import android.graphics.BitmapFactory
-import android.widget.ImageView
 import android.widget.EditText
 import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
@@ -160,6 +159,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             libraryScreen::showStatus, "KairoDos-external-game")
     }
     private val catalog by lazy { DosGameCatalog(this) }
+    private val artwork by lazy {
+        ArtworkCoordinator(this, catalog.artworkStore, { game: DosLibrary.Game -> game.contentId },
+            { game, kind ->
+                val record = catalog.resolve(game.contentId ?: "", game.displayName)
+                ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt)
+            }, { DosCatalogFields.safeArtPath(it) != null }, catalog::setArtworkOverride,
+            "art/catalog/dos/example.webp", { libraryScreen.showEntries(games) },
+            ::showGameDetails, { Ui.message(this, it) })
+    }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
             { libraryScreen.showEntries(games) }, {
@@ -423,6 +431,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (artwork.handleActivityResult(requestCode, resultCode, data)) return
         libraryFlow.handleActivityResult(requestCode, resultCode, data)
     }
 
@@ -458,35 +467,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
     }
 
-    private fun previewGame(game: DosLibrary.Game) {
-        val art = catalog.resolve(game.contentId ?: "", game.displayName).preview ?: return
-        val bitmap = runCatching { catalog.openArtwork(art).use(BitmapFactory::decodeStream) }.getOrNull()
-            ?: return
-        AlertDialog.Builder(this).setView(ImageView(this).apply { setImageBitmap(bitmap) })
-            .setPositiveButton("Close", null).show()
-    }
+    private fun previewGame(game: DosLibrary.Game) = artwork.view(game)
 
-    private fun editGameArtwork(game: DosLibrary.Game, kind: String) {
-        val id = game.contentId ?: return
-        val current = catalog.resolve(id, game.displayName)
-        val label = if (kind == "boxArt") "Box art" else "Screenshot"
-        ArtworkOverrideEditor.show(this, ArtworkOverrideEditor.Options(
-            title = label,
-            currentPath = if (kind == "boxArt") current.boxArt ?: "" else current.preview ?: "",
-            hint = "art/catalog/dos/example.webp",
-            explanation = "Use a packaged DOS artwork path. Missing art falls back to the game title.",
-            resetLabel = "Reset $label",
-            onSave = { path ->
-                runCatching { catalog.setArtworkOverride(id, kind, path) }
-                    .onSuccess { libraryScreen.showEntries(games) }
-                    .onFailure { Ui.message(this, it.message ?: "Could not save artwork") }
-            },
-            onReset = {
-                runCatching { catalog.setArtworkOverride(id, kind, null) }
-                    .onSuccess { libraryScreen.showEntries(games) }
-                    .onFailure { Ui.message(this, it.message ?: "Could not reset artwork") }
-            }))
-    }
+    private fun editGameArtwork(game: DosLibrary.Game, kind: String) = artwork.edit(game, kind)
 
     private fun showGameDetails(entry: DosLibrary.Game) {
         val id = entry.contentId
@@ -533,7 +516,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 editTitle = { editGameTitle(entry, record.title) },
                 editBoxArt = { editGameArtwork(entry, "boxArt") },
                 editScreenshot = { editGameArtwork(entry, "preview") },
-                viewScreenshot = { previewGame(entry) },
+                viewScreenshot = { artwork.view(entry, returnToSettings = true) },
                 delete = if (common.deleteKind == null) null else {{ confirmDeleteGame(entry) }},
                 reset = id?.let { { resetGameSettings(entry, it) } },
                 resetFailed = { failure -> Ui.message(this,
