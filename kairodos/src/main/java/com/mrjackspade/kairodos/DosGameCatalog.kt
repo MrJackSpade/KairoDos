@@ -43,7 +43,9 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private var doomContentIds = readDoomContentIds()
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
-    private val overrides = GameMetadataOverrides(overridesFile)
+    private val overrides = GameMetadataOverrides(overridesFile, validRecord = { contentId, record ->
+        id.matches(contentId) && DosCatalogFields.invalidPath(record) == null
+    })
     private val userCatalogFile = File(context.filesDir, "user-dos-catalog-v1.json")
     private var userCatalog = readUserCatalog()
 

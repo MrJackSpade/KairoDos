@@ -13,10 +13,12 @@ import java.util.zip.ZipOutputStream
 class CatalogUpdateInstrumentation : Instrumentation() {
     private var stateSlots = false
     private var inputDispatch = false
+    private var catalogOverrides = false
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
+        catalogOverrides = arguments?.getString("catalogOverrides") == "true"
         start()
     }
 
@@ -28,8 +30,10 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                 runOnMainSync { failure = runCatching { InputDispatchFixture.verify() }.exceptionOrNull() }
                 failure?.let { throw it }
             }
+            else if (catalogOverrides) { CatalogOverrideFixture.verify(targetContext.cacheDir); verify() }
             else if (stateSlots) StateSlotStoreFixture.verify(targetContext.cacheDir) else verify()
-            result.putString("stream", if (inputDispatch) "Shared input routing and lifecycle: OK\n"
+            result.putString("stream", if (catalogOverrides) "Shared catalog override transactions and DOS merge: OK\n"
+                else if (inputDispatch) "Shared input routing and lifecycle: OK\n"
                 else if (stateSlots) "Shared state slot transactions: OK\n"
                 else "DOS catalog partial merge and invalid snapshot: OK\n")
             finish(Activity.RESULT_OK, result)
