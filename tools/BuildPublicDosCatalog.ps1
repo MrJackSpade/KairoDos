@@ -7,6 +7,7 @@ $outputs = @(
     (Join-Path $PSScriptRoot '../catalog/online-v1.zip'),
     (Join-Path $PSScriptRoot '../shared/catalog/dos/online-v1.zip')
 )
+$metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, '.json') })
 $names = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ }) +
     @('folders.json', 'controller-profiles-v1.json')
 
@@ -63,6 +64,13 @@ function Test-Archive([string] $path) {
     } finally { $archive.Dispose() }
 }
 
+function Get-MetadataBytes([string] $path) {
+    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $size = ([IO.FileInfo]::new([IO.Path]::GetFullPath($path))).Length
+    return ,[Text.Encoding]::UTF8.GetBytes(
+        "{`"schemaVersion`":1,`"archive`":`"online-v1.zip`",`"sha256`":`"$hash`",`"size`":$size}`n")
+}
+
 if (-not $Check) {
     $path = $outputs[0]
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($path)) | Out-Null
@@ -85,7 +93,17 @@ if (-not $Check) {
     } finally { if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary } }
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($outputs[1])) | Out-Null
     Copy-Item -LiteralPath $path -Destination $outputs[1] -Force
+    for ($index = 0; $index -lt $outputs.Count; $index++) {
+        [IO.File]::WriteAllBytes($metadataOutputs[$index], (Get-MetadataBytes $outputs[$index]))
+    }
 }
 
-foreach ($path in $outputs) { Test-Archive $path }
-Write-Host 'Public DOS catalog contains only sanitized metadata and matches both archives.'
+for ($index = 0; $index -lt $outputs.Count; $index++) {
+    Test-Archive $outputs[$index]
+    $expected = Get-MetadataBytes $outputs[$index]
+    $actual = [IO.File]::ReadAllBytes($metadataOutputs[$index])
+    if (-not [System.Linq.Enumerable]::SequenceEqual[byte]($actual, $expected)) {
+        throw "Catalog revision metadata does not match archive: $($outputs[$index])"
+    }
+}
+Write-Host 'Public DOS catalog and revision metadata match both sanitized archives.'

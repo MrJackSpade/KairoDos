@@ -10,7 +10,7 @@ import java.util.zip.ZipFile
 /** Validated online snapshot of the bundled, sharded DOS metadata. */
 internal class DosCatalogUpdate(context: Context) {
     private val store = CatalogSnapshotStore(context, "dos-catalog-update-v1.zip",
-        UPDATE_URL, MAX_ARCHIVE_BYTES, ::validateFile)
+        UPDATE_URL, METADATA_URL, MAX_ARCHIVE_BYTES, ::validateFile)
     private var archive: ZipFile? = store.activeFile()?.let(::ZipFile)
 
     @Synchronized fun read(name: String): JSONObject? = archive?.let { readEntry(it, name) }
@@ -97,5 +97,7 @@ internal class DosCatalogUpdate(context: Context) {
         private const val MAX_ENTRY_BYTES = 2L * 1024 * 1024
         private const val UPDATE_URL =
             "https://raw.githubusercontent.com/MrJackSpade/Kairo/main/catalog/dos/online-v1.zip"
+        private const val METADATA_URL =
+            "https://raw.githubusercontent.com/MrJackSpade/Kairo/main/catalog/dos/online-v1.json"
     }
 }
