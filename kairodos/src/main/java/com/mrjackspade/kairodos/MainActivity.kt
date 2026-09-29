@@ -37,6 +37,7 @@ import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryScanSummary
 import com.mrjackspade.kairo.frontend.LibraryFlow
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
+import com.mrjackspade.kairo.frontend.ExternalGameDispatcher
 import com.mrjackspade.kairo.frontend.FirstRunScreen
 import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
@@ -133,6 +134,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         ::controllerAction, {}, DosControllerBindings.defaults())
     private var onScreenControls: OnScreenControls? = null
     private val dosLibrary by lazy { DosLibrary(this) }
+    private val externalDispatcher by lazy {
+        ExternalGameDispatcher(this, contentResolver, { games },
+            { game: DosLibrary.Game -> Uri.parse(game.uri) },
+            { file, cancelled -> listOf(dosLibrary.inspectExternal(file, cancelled)) },
+            { entries, _ -> launch(entries.single(), true) },
+            libraryScreen::showStatus, "KairoDos-external-game")
+    }
     private val catalog by lazy { DosGameCatalog(this) }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
@@ -170,7 +178,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var gameThread: Thread? = null
     private var stateBusy = false
     @Volatile private var launchGeneration = 0
-    @Volatile private var externalLaunchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
     @Volatile private var audioGeneration = 0
@@ -262,7 +269,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             libraryFlow.restore()
             showLibrary()
             val externallyRequested = savedInstanceState == null &&
-                (intent.data != null || intent.hasExtra("ROM"))
+                ExternalGameIntent.hasRequest(intent)
             if (externallyRequested)
                 dispatchExternalGame(intent)
             else {
@@ -281,26 +288,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun dispatchExternalGame(intent: Intent) {
         if (::firstRunScreen.isInitialized) closeFirstRun()
-        val request = try { ExternalGameIntent.file(intent, contentResolver) }
-        catch (failure: Exception) {
-            libraryScreen.showStatus(failure.message ?: "Invalid game file")
-            return
-        } ?: return
-        val matching = games.firstOrNull {
-            ExternalGameIntent.sameDocument(Uri.parse(it.uri), request.uri)
-        }
-        if (matching != null) { launch(matching, true); return }
-        val generation = ++externalLaunchGeneration
-        libraryScreen.showStatus("Opening ${request.name}…")
-        Thread {
-            val inspected = runCatching { dosLibrary.inspectExternal(request, AtomicBoolean(false)) }
-            runOnUiThread {
-                if (generation != externalLaunchGeneration || isDestroyed) return@runOnUiThread
-                inspected.onSuccess { launch(it, true) }.onFailure { failure ->
-                    libraryScreen.showStatus("Could not open ${request.name}: ${failure.message}")
-                }
-            }
-        }.apply { name = "KairoDos-external-game"; start() }
+        externalDispatcher.dispatch(intent)
     }
 
     private fun showLibrary() {
@@ -1611,6 +1599,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         backCoordinator.unregister()
         controllerDevices.unregister()
         libraryFlow.cancel()
+        externalDispatcher.cancel()
         libraryArtExecutor.shutdownNow()
         secondaryDisplay.stop()
         launchGeneration++
