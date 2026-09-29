@@ -32,9 +32,15 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val cache = object : LruCache<String, JSONObject>(8) {}
     private val bundledCache = object : LruCache<String, JSONObject>(8) {}
     private val online = DosCatalogUpdate(context)
+    private val bundledHidden = readAssetCatalog("hidden-index-v1.json")
+        .optJSONObject("hidden") ?: JSONObject()
+    private var onlineHidden = online.read("hidden-index-v1.json")
+        ?.optJSONObject("hidden") ?: JSONObject()
     private val artworkStore = CatalogArtworkStore(context, { false },
         "art/catalog/dos/")
-    private var folderIndex = readFolderIndex()
+    // Dependency folder lookup is only needed when preparing a game launch.
+    // Parsing this large index while opening the library delays the first frame.
+    private var folderIndex: JSONObject? = null
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private var doomContentIds = readDoomContentIds()
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
@@ -49,7 +55,9 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         if (!online.download()) return false
         synchronized(this) {
             cache.evictAll()
-            folderIndex = readFolderIndex()
+            folderIndex = null
+            onlineHidden = online.read("hidden-index-v1.json")
+                ?.optJSONObject("hidden") ?: JSONObject()
             doomContentIds = readDoomContentIds()
         }
         return true
@@ -112,8 +120,18 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             ?: variants?.optJSONObject("$sourceName.dosz")
     }
 
-    @Synchronized override fun hiddenFromLibrary(contentId: String): Boolean =
-        id.matches(contentId) && layered(contentId, "").record.optBoolean("hidden")
+    @Synchronized override fun hiddenFromLibrary(contentId: String): Boolean {
+        if (!id.matches(contentId)) return false
+        // The generated index avoids opening hundreds of catalog shards merely
+        // to decide which cached rows should be visible at startup.
+        val values = listOf(
+            bundledHidden.opt(contentId),
+            onlineHidden.opt(contentId),
+            userCatalog.optJSONObject("games")?.optJSONObject(contentId)?.opt("hidden"),
+            overrides.record(contentId)?.opt("hidden")
+        )
+        return values.filterIsInstance<Boolean>().lastOrNull() ?: false
+    }
 
     private fun layered(contentId: String, fileName: String): CatalogFieldLayers.Result {
         val sources = ArrayList<CatalogFieldLayers.Source>()
@@ -186,7 +204,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     }.getOrDefault(JSONObject())
 
     @Synchronized fun contentIdsForFolder(folder: String): List<String> {
-        val matches = folderIndex.optJSONArray(folder.lowercase(Locale.ROOT)) ?: return emptyList()
+        val index = folderIndex ?: readFolderIndex().also { folderIndex = it }
+        val matches = index.optJSONArray(folder.lowercase(Locale.ROOT)) ?: return emptyList()
         return (0 until matches.length()).map { matches.optString(it) }
     }
 

@@ -19,6 +19,11 @@
 - The companion Kairo98 checkout is at `C:\Users\Service Account\Kairo98`. Its existing update key is `.downloads\ci-signing\kairo98-beta.p12`; its password source is the adjacent `password.txt`. These are local, ignored files. Read the password into `KAIRO98_BETA_PASSWORD` for the build without printing it, and set `KAIRO98_BETA_KEYSTORE` to the absolute `.p12` path. Do not commit either file or the password.
 - Kairo98's `kairo98/build.gradle.kts` uses those environment variables for the `beta` signing config, including debug builds. Build `:kairo98:assembleWithImagesDebug` with the variables set, then install `kairo98/build/outputs/apk/withImages/debug/kairo98-withImages-debug.apk` with `adb install -r`. An ordinary debug APK uses a different key and cannot update the existing installations on the Retroid or RGDS.
 - Keep Kairo98's pinned `shared/` submodule on the same first-party Kairo commit as KairoDos when changing shared controller code. Build both apps and update both devices after such changes.
+
+# RGDS deployment
+
+- The RGDS wireless ADB port changes. Discover it with `adb mdns services`; the device advertises `adb-dd437d64c337800f` and has model `RG_DS`. Do not ask the user for a port before checking mDNS.
+- On September 29, 2026, two large APK transfers failed because the RGDS Wi-Fi link disconnected. Device logs show `wlan0: CTRL-EVENT-DISCONNECTED`, followed by Android disabling wireless debugging. `iw dev wlan0 get power_save` was `on`; `adb shell iw dev wlan0 set power_save off` made the 238 MB KairoDos install succeed. The device shell runs as root. Use `tools/InstallRgDs.ps1 -Apk <path>` for future RGDS installs; it discovers the device and verifies power saving is off before transfer.
 # Generated catalog guard
 
 - Do not hand-edit bundled files under kairodos/src/main/assets/catalog/dos/ or the public catalog/online-v1.zip and catalog/online-v1.json outputs. Use the catalog generator for bundled data and tools/BuildPublicDosCatalog.ps1 for the sanitized public archive.

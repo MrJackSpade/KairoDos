@@ -243,18 +243,23 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.bindings = globalControllerBindings()
         gamepad.deadZone = controllerProfiles.deadZone
         controllerDevices.register(handler)
-        libraryFlow.restore()
-        showLibrary()
         backCoordinator.register()
-        val externallyRequested = savedInstanceState == null &&
-            (intent.data != null || intent.hasExtra("ROM"))
-        if (externallyRequested)
-            dispatchExternalGame(intent)
-        else {
-            if (tree != null) refreshLibrary(false)
-            if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
+        // Match Kairo98's startup order: attach the library first, then restore
+        // its cached entries after Android gets a chance to draw the window.
+        appRoot.post {
+            if (isFinishing || isDestroyed) return@post
+            libraryFlow.restore()
+            showLibrary()
+            val externallyRequested = savedInstanceState == null &&
+                (intent.data != null || intent.hasExtra("ROM"))
+            if (externallyRequested)
+                dispatchExternalGame(intent)
+            else {
+                if (tree != null) refreshLibrary(false)
+                if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
+            }
+            catalogUpdates.check(true)
         }
-        catalogUpdates.check(true)
     }
 
     override fun onNewIntent(intent: Intent) {

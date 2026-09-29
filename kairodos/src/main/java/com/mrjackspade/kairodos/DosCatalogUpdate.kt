@@ -28,14 +28,18 @@ internal class DosCatalogUpdate(context: Context) {
     private fun validateFile(file: File) { ZipFile(file).use(::validate) }
 
     private fun validate(zip: ZipFile) {
-        require(zip.size() == 258) { "Invalid catalog file count" }
+        require(zip.size() == 259) { "Invalid catalog file count" }
         val expected = (0..255).map { "%02x.json".format(it) } +
-            listOf("folders.json", "controller-profiles-v1.json")
+            listOf("folders.json", "controller-profiles-v1.json", "hidden-index-v1.json")
         val actual = zip.entries().asSequence().map { it.name }.toList()
         require(actual.size == actual.distinct().size && actual.toSet() == expected.toSet()) {
             "Invalid catalog file names"
         }
         val contentId = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
+        val visibility = readEntry(zip, "hidden-index-v1.json")
+        require(visibility.optInt("schemaVersion") == 1)
+        val hidden = visibility.getJSONObject("hidden")
+        val seenHidden = HashSet<String>()
         for (name in expected) {
             val root = readEntry(zip, name)
             when (name) {
@@ -59,6 +63,7 @@ internal class DosCatalogUpdate(context: Context) {
                         }) { "Invalid controller profile IDs" }
                     }
                 }
+                "hidden-index-v1.json" -> Unit
                 else -> {
                     require(root.optInt("schemaVersion") == 1)
                     val games = root.getJSONObject("games")
@@ -66,9 +71,18 @@ internal class DosCatalogUpdate(context: Context) {
                     for (id in games.keys()) {
                         require(contentId.matches(id) && id.substringAfter(':').startsWith(prefix) &&
                             games.optJSONObject(id) != null) { "Invalid catalog game record" }
+                        val record = games.getJSONObject(id)
+                        val flag = record.opt("hidden")
+                        if (flag is Boolean) {
+                            require(hidden.opt(id) == flag) { "Catalog hidden index differs from $id" }
+                            seenHidden += id
+                        }
                     }
                 }
             }
+        }
+        require(hidden.keys().asSequence().toSet() == seenHidden) {
+            "Catalog hidden index contains unknown entries"
         }
     }
 

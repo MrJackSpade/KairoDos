@@ -8,8 +8,26 @@ $outputs = @(
     (Join-Path $PSScriptRoot '../shared/catalog/dos/online-v1.zip')
 )
 $metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, '.json') })
-$names = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ }) +
-    @('folders.json', 'controller-profiles-v1.json')
+$shardNames = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ })
+$names = $shardNames + @('folders.json', 'controller-profiles-v1.json',
+    'hidden-index-v1.json')
+
+function Get-HiddenIndexBytes {
+    $hidden = [ordered]@{}
+    foreach ($name in $shardNames) {
+        $shard = Get-Content -LiteralPath (Join-Path $source $name) -Raw |
+            ConvertFrom-Json -AsHashtable
+        foreach ($id in @($shard.games.Keys | Sort-Object -CaseSensitive)) {
+            $record = $shard.games[$id]
+            if ($record.ContainsKey('hidden') -and $record.hidden -is [bool]) {
+                $hidden[$id] = $record.hidden
+            }
+        }
+    }
+    $json = [ordered]@{ schemaVersion = 1; hidden = $hidden } |
+        ConvertTo-Json -Compress -Depth 4
+    return ,[Text.Encoding]::UTF8.GetBytes("$json`n")
+}
 
 function Write-PublicJson([System.Text.Json.JsonElement] $value,
                           [System.Text.Json.Utf8JsonWriter] $writer) {
@@ -72,6 +90,8 @@ function Get-MetadataBytes([string] $path) {
 }
 
 if (-not $Check) {
+    [IO.File]::WriteAllBytes((Join-Path $source 'hidden-index-v1.json'),
+        (Get-HiddenIndexBytes))
     $path = $outputs[0]
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($path)) | Out-Null
     $temporary = "$path.tmp"
@@ -96,6 +116,12 @@ if (-not $Check) {
     for ($index = 0; $index -lt $outputs.Count; $index++) {
         [IO.File]::WriteAllBytes($metadataOutputs[$index], (Get-MetadataBytes $outputs[$index]))
     }
+}
+
+$hiddenPath = Join-Path $source 'hidden-index-v1.json'
+if (-not [System.Linq.Enumerable]::SequenceEqual[byte](
+    [IO.File]::ReadAllBytes($hiddenPath), (Get-HiddenIndexBytes))) {
+    throw "DOS hidden index differs from catalog shards: $hiddenPath"
 }
 
 for ($index = 0; $index -lt $outputs.Count; $index++) {
