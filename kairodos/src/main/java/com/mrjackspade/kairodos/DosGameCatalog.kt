@@ -2,8 +2,8 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.util.LruCache
-import android.util.AtomicFile
 import com.mrjackspade.kairo.frontend.CatalogFieldLayers
+import com.mrjackspade.kairo.frontend.LocalCatalogFile
 import com.mrjackspade.kairo.frontend.LibraryCatalog
 import com.mrjackspade.kairo.frontend.LibraryGame
 import com.mrjackspade.kairo.frontend.CatalogArtworkStore
@@ -11,7 +11,6 @@ import com.mrjackspade.kairo.frontend.GameMetadataOverrides
 import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
-import java.io.ByteArrayOutputStream
 import java.util.Locale
 
 /** Hash-keyed, data-only game metadata. Game media is never read from these records. */
@@ -124,13 +123,12 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         if (!id.matches(contentId)) return false
         // The generated index avoids opening hundreds of catalog shards merely
         // to decide which cached rows should be visible at startup.
-        val values = listOf(
+        return CatalogFieldLayers.hidden(
             bundledHidden.opt(contentId),
             onlineHidden.opt(contentId),
             userCatalog.optJSONObject("games")?.optJSONObject(contentId)?.opt("hidden"),
             overrides.record(contentId)?.opt("hidden")
         )
-        return values.filterIsInstance<Boolean>().lastOrNull() ?: false
     }
 
     private fun layered(contentId: String, fileName: String): CatalogFieldLayers.Result {
@@ -160,23 +158,10 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         layered(contentId, fileName).sourceOf(*path)
             ?: if (path.size == 1 && path[0] == "title") "Filename" else "App default"
 
-    private fun readUserCatalog(): JSONObject = runCatching {
-        val output = ByteArrayOutputStream()
-        AtomicFile(userCatalogFile).openRead().use { input ->
-            val buffer = ByteArray(8192)
-            while (true) {
-                val count = input.read(buffer)
-                if (count < 0) break
-                require(output.size() + count <= 8 * 1024 * 1024) {
-                    "User catalog is too large"
-                }
-                output.write(buffer, 0, count)
-            }
-        }
-        JSONObject(output.toString(Charsets.UTF_8.name())).takeIf {
-            it.optInt("schemaVersion") == 1 && it.optJSONObject("games") != null
+    private fun readUserCatalog(): JSONObject =
+        LocalCatalogFile.read(userCatalogFile, 8 * 1024 * 1024) { contentId, record ->
+            id.matches(contentId) && DosCatalogFields.invalidPath(record) == null
         } ?: JSONObject()
-    }.getOrDefault(JSONObject())
 
     @Synchronized fun contentIdsForFolder(folder: String): List<String> {
         val index = folderIndex ?: readFolderIndex().also { folderIndex = it }
