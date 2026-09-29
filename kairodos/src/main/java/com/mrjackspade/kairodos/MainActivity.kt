@@ -37,6 +37,7 @@ import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
 import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
+import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SettingsEntry
 import com.mrjackspade.kairo.frontend.SessionAction
@@ -97,6 +98,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private val handler = Handler(Looper.getMainLooper())
     private val preferences by lazy { getSharedPreferences("kairodos", MODE_PRIVATE) }
+    private val gameSettings by lazy { GameSettingScope(preferences) }
     private val controllerProfiles by lazy {
         ControllerProfileStore(preferences, DosControllerBindings::parse,
             { DosControllerBindings.toJson(it).toString() })
@@ -378,11 +380,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     GameSettingsRow("Controller", "Gamepad and on-screen controls", true) {
                         showControllerScope(entry)
                     },
-                    GameSettingsRow("Touch input", if (preferences.getBoolean("direct_touch", false))
-                        "Direct tap · Global" else "Touchpad · Global", false) { showSettings() }),
+                    GameSettingsRow("Touch input", touchSettingsLabel(entry),
+                        true) { showGameTouchSettings(entry) }),
                 "MACHINE" to listOf(
-                    GameSettingsRow("DOS CPU speed", if (preferences.getInt("cycles_mode", 0) == 0)
-                        "Auto · Global" else "Maximum · Global", false) { showCpuSettings() }) +
+                    GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
+                        true) { showGameCpuSettings(entry) }) +
                     (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
                         preferences.getString("launch_variant_${entry.contentId}", null)
                             ?: "Choose on first play", false) {
@@ -420,10 +422,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             ), { launch(entry) }, entry.contentId?.let { id -> {{
                 GameSettingsResetDialog.show(this, {
                     catalog.setTitle(id, null)
+                    gameSettings.clear(id, "touch_mode", "direct_touch", "cycles_mode")
                     preferences.edit().remove("controller_game_$id")
                         .remove("launch_variant_$id").remove("dos_player_$id").apply()
-                    if (currentGame?.contentId == id)
+                    if (currentGame?.contentId == id) {
                         gamepad.bindings = loadControllerBindings(currentGame)
+                        inputModeDecider.reset()
+                        configureGuest()
+                    }
                     libraryScreen.showEntries(games)
                 }, { failure -> Ui.message(this,
                     failure.message ?: "Could not reset game settings") })
@@ -535,8 +541,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.bindings = loadControllerBindings(game)
         showGame()
         val systemDir = File(filesDir, "system").apply { mkdirs() }
-        nativeConfigure(if (preferences.getBoolean("direct_touch", false)) 1 else 0,
-            preferences.getInt("cycles_mode", 0))
+        configureGuest()
         gameThread = Thread {
             oldThread?.join()
             var message: String? = null
@@ -629,10 +634,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun settingsEntries() = listOf(
         SettingsEntry("Touch input", {
-            when (configuredTouchMode()) {
-                InputModeDecider.Mode.AUTO -> "Auto"
-                InputModeDecider.Mode.KEYBOARD -> "Keyboard"
-                InputModeDecider.Mode.MOUSE -> if (preferences.getBoolean("direct_touch", false))
+            when (preferences.getInt("touch_mode", 2)) {
+                2 -> "Auto"
+                1 -> "Keyboard"
+                else -> if (preferences.getBoolean("direct_touch", false))
                     "Mouse · direct tap" else "Mouse · touchpad"
             }
         }, ::showSettings),
@@ -762,7 +767,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "Game" to (sessionGameTitle ?: "Unknown"),
             "Core" to "DOSBox Pure",
             "State" to state,
-            "DOS CPU speed" to if (preferences.getInt("cycles_mode", 0) == 0) "Auto" else "Maximum",
+            "DOS CPU speed" to if (effectiveCycles() == 0) "Auto" else "Maximum",
             "Touch input" to configuredTouchMode().name.lowercase()
         )
         if (nativeStatus() == 2) {
@@ -985,7 +990,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 keyboard?.open()
             return true
         }
-        val direct = preferences.getBoolean("direct_touch", false)
+        val direct = effectiveDirectTouch()
         if (direct) {
             val x = ((event.x / view.width.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
             val y = ((event.y / view.height.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
@@ -1032,7 +1037,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.",
             onSave = { mode, direct, _ ->
                 preferences.edit().putInt("touch_mode", mode).putBoolean("direct_touch", direct).apply()
-                nativeConfigure(if (direct) 1 else 0, preferences.getInt("cycles_mode", 0))
+                configureGuest()
             }
         )).setNeutralButton("CPU speed") { _, _ -> showCpuSettings() }.create()
         dialog.show()
@@ -1044,7 +1049,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         AlertDialog.Builder(this).setTitle("DOS CPU performance")
             .setSingleChoiceItems(arrayOf("Auto", "Maximum"), selected) { dialog, value ->
                 preferences.edit().putInt("cycles_mode", value).apply()
-                nativeConfigure(if (preferences.getBoolean("direct_touch", false)) 1 else 0, value)
+                configureGuest()
                 dialog.dismiss()
             }.setNegativeButton("Cancel", null).show()
     }
@@ -1057,6 +1062,70 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 userPaused = false
                 nativeReset()
                 closeMenu()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun touchSettingsLabel(game: DosLibrary.Game): String {
+        val mode = when (effectiveTouchMode(game)) {
+            0 -> "Mouse"
+            1 -> "Keyboard"
+            else -> "Auto"
+        }
+        val pointer = if (effectiveDirectTouch(game)) "direct tap" else "touchpad"
+        val source = if (gameSettings.has(game.contentId, "touch_mode") ||
+            gameSettings.has(game.contentId, "direct_touch")) "Game" else "Global"
+        return "$mode · $pointer · $source"
+    }
+
+    private fun cpuSettingsLabel(game: DosLibrary.Game): String {
+        val mode = if (effectiveCycles(game) == 0) "Auto" else "Maximum"
+        val source = if (gameSettings.has(game.contentId, "cycles_mode")) "Game" else "Global"
+        return "$mode · $source"
+    }
+
+    private fun showGameTouchSettings(game: DosLibrary.Game) {
+        val id = game.contentId ?: return
+        val dialog = TouchInputSettingsDialog.builder(this, TouchInputSettingsDialog.Options(
+            title = "Touch input · ${catalog.resolve(id, game.displayName).title}",
+            modeLabels = listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
+                "Auto (follows what the game reads)"),
+            modeIndex = effectiveTouchMode(game),
+            directTouch = effectiveDirectTouch(game),
+            directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.",
+            onSave = { mode, direct, _ ->
+                gameSettings.setInt(id, "touch_mode", mode)
+                gameSettings.setBoolean(id, "direct_touch", direct)
+                if (currentGame?.contentId == id) {
+                    inputModeDecider.reset()
+                    configureGuest()
+                }
+            },
+            onReset = {
+                gameSettings.clear(id, "touch_mode", "direct_touch")
+                if (currentGame?.contentId == id) {
+                    inputModeDecider.reset()
+                    configureGuest()
+                }
+            },
+            resetLabel = "Use global settings"
+        )).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
+    private fun showGameCpuSettings(game: DosLibrary.Game) {
+        val id = game.contentId ?: return
+        val selected = if (gameSettings.has(id, "cycles_mode"))
+            effectiveCycles(game) + 1 else 0
+        val dialog = AlertDialog.Builder(this).setTitle("DOS CPU performance · ${game.displayName}")
+            .setSingleChoiceItems(arrayOf("Use global setting", "Auto", "Maximum"), selected) {
+                    current, choice ->
+                if (choice == 0) gameSettings.clear(id, "cycles_mode")
+                else gameSettings.setInt(id, "cycles_mode", choice - 1)
+                if (currentGame?.contentId == id) configureGuest()
+                current.dismiss()
             }.setNegativeButton("Cancel", null).create()
         dialog.show()
         Ui.styleDialog(dialog)
@@ -1292,8 +1361,24 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
     }
 
+    private fun effectiveTouchMode(game: DosLibrary.Game? = currentGame): Int =
+        gameSettings.int(game?.contentId, "touch_mode",
+            preferences.getInt("touch_mode", 2)).coerceIn(0, 2)
+
+    private fun effectiveDirectTouch(game: DosLibrary.Game? = currentGame): Boolean =
+        gameSettings.boolean(game?.contentId, "direct_touch",
+            preferences.getBoolean("direct_touch", false))
+
+    private fun effectiveCycles(game: DosLibrary.Game? = currentGame): Int =
+        gameSettings.int(game?.contentId, "cycles_mode",
+            preferences.getInt("cycles_mode", 0)).coerceIn(0, 1)
+
+    private fun configureGuest() {
+        nativeConfigure(if (effectiveDirectTouch()) 1 else 0, effectiveCycles())
+    }
+
     private fun configuredTouchMode(): InputModeDecider.Mode =
-        when (preferences.getInt("touch_mode", 2)) {
+        when (effectiveTouchMode()) {
             0 -> InputModeDecider.Mode.MOUSE
             1 -> InputModeDecider.Mode.KEYBOARD
             else -> InputModeDecider.Mode.AUTO
