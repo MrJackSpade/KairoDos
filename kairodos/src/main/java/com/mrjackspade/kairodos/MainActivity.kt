@@ -57,8 +57,11 @@ import com.mrjackspade.kairo.frontend.SessionStatusDialog
 import com.mrjackspade.kairo.frontend.StateSlotDialog
 import com.mrjackspade.kairo.frontend.SurfaceThumbnail
 import com.mrjackspade.kairo.frontend.GameSettingsRow
-import com.mrjackspade.kairo.frontend.GameSettingsSheet
-import com.mrjackspade.kairo.frontend.GameSettingsResetDialog
+import com.mrjackspade.kairo.frontend.GameSettingsCoordinator
+import com.mrjackspade.kairo.frontend.CommonGameSettings
+import com.mrjackspade.kairo.frontend.CommonGameSettingsActions
+import com.mrjackspade.kairo.frontend.GameSettingsValue
+import com.mrjackspade.kairo.frontend.GameTitleEditor
 import com.mrjackspade.kairo.frontend.JoystickInputRouter
 import com.mrjackspade.kairo.frontend.GamepadMapper
 import com.mrjackspade.kairo.frontend.ControllerEditor
@@ -414,12 +417,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             .setPositiveButton("Close", null).show()
     }
 
-    private fun artworkSettingsLabel(game: DosLibrary.Game, kind: String, path: String?): String {
-        val source = catalog.sourceOf(game.contentId ?: "", game.displayName,
-            "artwork", kind)
-        return "${if (path == null) "None" else "Available"} · $source"
-    }
-
     private fun editGameArtwork(game: DosLibrary.Game, kind: String) {
         val id = game.contentId ?: return
         val current = catalog.resolve(id, game.displayName)
@@ -443,74 +440,83 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showGameDetails(entry: DosLibrary.Game) {
-        val record = catalog.resolve(entry.contentId ?: "", entry.displayName)
+        val id = entry.contentId
+        val record = catalog.resolve(id ?: "", entry.displayName)
         val variants = record.launch?.configs?.keys.orEmpty()
-        GameSettingsSheet.show(this, record.title, entry.playable, entry.contentId != null,
-            listOf(
-                "CONTROLS" to listOf(
-                    GameSettingsRow("Controller", "Gamepad and on-screen controls", true) {
-                        showControllerScope(entry)
-                    },
-                    GameSettingsRow("Touch input", touchSettingsLabel(entry),
-                        true) { showGameTouchSettings(entry) }),
-                "MACHINE" to listOf(
-                    GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
-                        true) { showGameCpuSettings(entry) }) +
-                    (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
-                        entry.contentId?.let(dosGameSettings::startupVariant)
-                            ?: "Choose on first play", false) {
-                        chooseLaunchVariant(entry, false)
-                    }) else emptyList()) +
-                    (if (DosLaunchConfig.needsPlayer(record.launch)) listOf(
-                        GameSettingsRow("DOS player name",
-                            entry.contentId?.let(dosGameSettings::playerName)
-                                ?: "Choose on first play", false) {
-                            choosePlayerName(entry, null)
-                        }) else emptyList()),
-                "LIBRARY" to listOf(
-                    GameSettingsRow("Title", record.title, true) {
-                        val input = EditText(this).apply { setText(record.title) }
-                        AlertDialog.Builder(this).setTitle("Game title").setView(input)
-                            .setPositiveButton("Save") { _, _ ->
-                                runCatching { catalog.setTitle(entry.contentId!!,
-                                    input.text.toString().trim()) }
-                                    .onSuccess { libraryScreen.showEntries(games) }
-                                    .onFailure { Ui.message(this, it.message ?: "Could not save title") }
-                            }.setNegativeButton("Cancel", null).show()
-                    },
-                    GameSettingsRow("Box art", artworkSettingsLabel(entry, "boxArt", record.boxArt),
-                        true) { editGameArtwork(entry, "boxArt") },
-                    GameSettingsRow("Screenshot", artworkSettingsLabel(entry, "preview", record.preview),
-                        true) { editGameArtwork(entry, "preview") },
-                    GameSettingsRow("View screenshot", if (record.preview == null)
-                        "No screenshot available" else "Open full size", false) {
-                        previewGame(entry)
-                    },
-                    GameSettingsRow("File information", "Path and content ID", false) {
-                        AlertDialog.Builder(this).setTitle("File information")
-                            .setMessage("${entry.path}\n\n${entry.contentId ?: entry.error ?: "Not hashed"}")
-                            .setPositiveButton("Close", null).show()
-                    }) + (if (!entry.external && !entry.rootFolder) listOf(
-                    GameSettingsRow(if (entry.folder) "Delete game folder" else "Delete game file",
-                        "Permanently remove from device storage",
-                        false, destructive = true) { confirmDeleteGame(entry) }) else emptyList())
-            ), { launch(entry) }, entry.contentId?.let { id ->
-                { confirmResetGameSettings(id) }
-            }, { Ui.message(this, "Hash this game before saving settings") })
+        val controllerSource = when {
+            id == null -> "Global"
+            dosGameSettings.controllerBindings(id) != null -> "User override"
+            record.controllerProfile != null -> "Catalog"
+            else -> "Global"
+        }
+        val common = CommonGameSettings(
+            title = GameSettingsValue(record.title,
+                id?.let { catalog.sourceOf(it, entry.displayName, "title") } ?: "Filename"),
+            touch = GameSettingsValue(touchSettingsLabel(entry)),
+            controller = GameSettingsValue("${controllerFlow.load(entry).size} bindings",
+                controllerSource),
+            boxArt = GameSettingsValue(if (record.boxArt == null) "None" else "Available",
+                catalog.sourceOf(id ?: "", entry.displayName, "artwork", "boxArt")),
+            screenshot = GameSettingsValue(if (record.preview == null) "None" else "Available",
+                catalog.sourceOf(id ?: "", entry.displayName, "artwork", "preview")),
+            filePath = entry.path,
+            zipEntry = null,
+            contentId = id,
+            error = entry.error,
+            deleteKind = if (!entry.external && !entry.rootFolder)
+                if (entry.folder) "game folder" else "game file" else null)
+        val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
+            true) { showGameCpuSettings(entry) }) +
+            (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
+                id?.let(dosGameSettings::startupVariant) ?: "Choose on first play", false) {
+                chooseLaunchVariant(entry, false)
+            }) else emptyList()) +
+            (if (DosLaunchConfig.needsPlayer(record.launch)) listOf(GameSettingsRow(
+                "DOS player name", id?.let(dosGameSettings::playerName)
+                    ?: "Choose on first play", false) {
+                choosePlayerName(entry, null)
+            }) else emptyList())
+        GameSettingsCoordinator.show(this, common, entry.playable, machineRows,
+            CommonGameSettingsActions(
+                play = { launch(entry) },
+                editTouch = { showGameTouchSettings(entry) },
+                editController = { showControllerScope(entry) },
+                editTitle = { editGameTitle(entry, record.title) },
+                editBoxArt = { editGameArtwork(entry, "boxArt") },
+                editScreenshot = { editGameArtwork(entry, "preview") },
+                viewScreenshot = { previewGame(entry) },
+                delete = if (common.deleteKind == null) null else {{ confirmDeleteGame(entry) }},
+                reset = id?.let { { resetGameSettings(entry, it) } },
+                resetFailed = { failure -> Ui.message(this,
+                    failure.message ?: "Could not reset game settings") },
+                resetCancelled = { showGameDetails(entry) },
+                noHash = { Ui.message(this, "Hash this game before saving settings") }))
     }
 
-    private fun confirmResetGameSettings(id: String) {
-        GameSettingsResetDialog.show(this, {
-            catalog.resetOverrides(id)
-            dosGameSettings.reset(id)
-            if (currentGame?.contentId == id) {
-                gamepad.bindings = controllerFlow.load(currentGame)
-                inputModeDecider.reset()
-                configureGuest()
-            }
-            libraryScreen.showEntries(games)
-        }, { failure -> Ui.message(this,
-            failure.message ?: "Could not reset game settings") })
+    private fun editGameTitle(entry: DosLibrary.Game, current: String) {
+        val id = entry.contentId ?: return
+        fun update(value: String?) {
+            runCatching { catalog.setTitle(id, value) }
+                .onSuccess {
+                    libraryScreen.showEntries(games)
+                    showGameDetails(entry)
+                }
+                .onFailure { Ui.message(this, it.message ?: "Could not save title") }
+        }
+        GameTitleEditor.show(this, current, { update(it) }, { update(null) },
+            { showGameDetails(entry) })
+    }
+
+    private fun resetGameSettings(entry: DosLibrary.Game, id: String) {
+        catalog.resetOverrides(id)
+        dosGameSettings.reset(id)
+        if (currentGame?.contentId == id) {
+            gamepad.bindings = controllerFlow.load(currentGame)
+            inputModeDecider.reset()
+            configureGuest()
+        }
+        libraryScreen.showEntries(games)
+        showGameDetails(entry)
     }
 
     private fun launch(game: DosLibrary.Game, fromFrontend: Boolean = false) {
