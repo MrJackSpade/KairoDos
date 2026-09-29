@@ -100,8 +100,8 @@ internal object DosControllerBindings {
         ControllerBinding("virtual:r1", keys = listOf(275)),
         ControllerBinding("virtual:l2", cycleKeys = (49..55).toList()),
         ControllerBinding("virtual:r2", cycleKeys = (49..55).toList()),
-        ControllerBinding("virtual:start", keys = listOf(27)),
-        ControllerBinding("virtual:select", keys = listOf(13)),
+        ControllerBinding("virtual:start", keys = listOf(13)),
+        ControllerBinding("virtual:select", keys = listOf(27)),
         ControllerBinding("virtual:menu", action = "menu")
     )
 }
