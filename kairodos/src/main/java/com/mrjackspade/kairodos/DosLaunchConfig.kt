@@ -145,6 +145,16 @@ internal object DosLaunchConfig {
                 adapted.trim().startsWith("@imgmount ", true)) {
                 adapted = ideOption.replace(adapted, "")
             }
+            if (folder.equals("duke3d", true) && name.equals("dosbox.conf", true) &&
+                adapted.trim().equals("@call run", true)) {
+                // This eXoDOS launcher defaults to a Gravis profile that crashes
+                // DOSBox Pure. Use its bundled SB16 profile on the first run and
+                // recover an existing Gravis selection without editing the ZIP.
+                // Preserve working SB16/SC55 selections and later game settings.
+                lines += "if exist DUKE3D\\GUS.SEL del DUKE3D\\GUS.SEL"
+                lines += "if not exist DUKE3D\\*.SEL copy DUKE3D\\SB16\\*.* DUKE3D"
+                lines += "if not exist DUKE3D\\*.SEL type .>DUKE3D\\SB16.SEL"
+            }
             lines += adapted
         }
         val atomic = AtomicFile(sidecar)
