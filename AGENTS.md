@@ -24,6 +24,8 @@
 
 - The RGDS wireless ADB port changes. Discover it with `adb mdns services`; the device advertises `adb-dd437d64c337800f` and has model `RG_DS`. Do not ask the user for a port before checking mDNS.
 - On September 29, 2026, two large APK transfers failed because the RGDS Wi-Fi link disconnected. Device logs show `wlan0: CTRL-EVENT-DISCONNECTED`, followed by Android disabling wireless debugging. `iw dev wlan0 get power_save` was `on`; `adb shell iw dev wlan0 set power_save off` made the 238 MB KairoDos install succeed. The device shell runs as root. Use `tools/InstallRgDs.ps1 -Apk <path>` for future RGDS installs; it discovers the device and verifies power saving is off before transfer.
+- Later that day, another large wireless install disconnected even with power saving disabled; the advertised ADB port then refused connections while the device still answered on Wi-Fi. USB ADB (`dd437d64c337800f`) installed both APKs successfully. Prefer USB for large RGDS updates when it is connected. Do not assume disabling Wi-Fi power saving fully fixes the transfer problem.
+- Automatic approval review rejected enabling a fixed, unauthenticated RGDS ADB TCP port (`adb tcpip 5555`) because it would expose debugging on the LAN. Do not retry that change without explicit authorization. Continue using USB or the paired wireless-debugging service.
 
 # Retroid deployment
 
