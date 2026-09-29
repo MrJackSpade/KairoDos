@@ -61,12 +61,11 @@ import com.mrjackspade.kairo.frontend.GameSettingsSheet
 import com.mrjackspade.kairo.frontend.GameSettingsResetDialog
 import com.mrjackspade.kairo.frontend.JoystickInputRouter
 import com.mrjackspade.kairo.frontend.GamepadMapper
-import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerEditor
 import com.mrjackspade.kairo.frontend.ControllerProfileStore
+import com.mrjackspade.kairo.frontend.ControllerProfileCoordinator
+import com.mrjackspade.kairo.frontend.ControllerEditorFlow
 import com.mrjackspade.kairo.frontend.CatalogUpdateController
-import com.mrjackspade.kairo.frontend.PhysicalControllerBinding
-import com.mrjackspade.kairo.frontend.PhysicalControllerBindings
 import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
@@ -132,6 +131,20 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         DosControllerBindings.joystick)
     private val gamepad = GamepadMapper(keys, joystick, mouse,
         ::controllerAction, {}, DosControllerBindings.defaults())
+    private val controllerFlow by lazy {
+        ControllerProfileCoordinator(controllerProfiles, gamepad,
+            DosLibrary.Game::contentId,
+            { game: DosLibrary.Game ->
+                dosGameSettings.controllerBindings(game.contentId!!)?.let(DosControllerBindings::parse)
+                    ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
+                        "doom-v1" -> DosControllerBindings.doom()
+                        else -> controllerProfiles.global()
+                    }
+            },
+            { id, bindings -> dosGameSettings.setControllerBindings(id,
+                DosControllerBindings.toJson(bindings).toString()) },
+            dosGameSettings::clearControllerBindings, { currentGame })
+    }
     private var onScreenControls: OnScreenControls? = null
     private val dosLibrary by lazy { DosLibrary(this) }
     private val externalDispatcher by lazy {
@@ -168,6 +181,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
     private lateinit var controllerEditor: ControllerEditor<DosLibrary.Game>
+    private val controllerEditorFlow by lazy {
+        ControllerEditorFlow(controllerEditor, DosLibrary.Game::contentId, ::closeMenu,
+            ::releaseGuestInputs, { keyboard?.close() },
+            { onScreenControls?.show() }, { Ui.message(this, it) })
+    }
     private val tree: Uri? get() = libraryFlow.tree
     private var prepareCancelled = AtomicBoolean(false)
     private val games: List<DosLibrary.Game> get() = libraryFlow.entries
@@ -246,20 +264,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         onScreenControls = OnScreenControls(this, appRoot, gamepad, preferences,
             ::refreshControllerUi)
         controllerEditor = ControllerEditor(this, appRoot,
-            ::loadControllerBindings, ::saveControllerBindings, ::resetControllerBindings,
-            ::physicalControllerBindings, ::savePhysicalControllerBindings,
-            ::resetPhysicalControllerBindings,
-            { gamepad.deadZone }, { value ->
-                gamepad.deadZone = value
-                controllerProfiles.deadZone = value
-            }, ::refreshControllerUi, ::showOnScreenControls,
+            controllerFlow::load, controllerFlow::save, controllerFlow::reset,
+            controllerFlow::physical, controllerFlow::savePhysical,
+            controllerFlow::resetPhysical,
+            { controllerFlow.deadZone }, { controllerFlow.deadZone = it },
+            ::refreshControllerUi, ::showOnScreenControls,
             { onScreenControls?.eightWayDpad ?: false },
             { onScreenControls?.eightWayDpad = it },
             DosLibrary.Game::id, DosControllerBindings.spec,
             { DosControllerBindings.toJson(it) })
-        gamepad.physicalBindings = physicalControllerBindings()
-        gamepad.bindings = globalControllerBindings()
-        gamepad.deadZone = controllerProfiles.deadZone
+        controllerFlow.initialize()
         controllerDevices.register(handler)
         backCoordinator.register()
         // Match Kairo98's startup order: attach the library first, then restore
@@ -490,7 +504,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             catalog.resetOverrides(id)
             dosGameSettings.reset(id)
             if (currentGame?.contentId == id) {
-                gamepad.bindings = loadControllerBindings(currentGame)
+                gamepad.bindings = controllerFlow.load(currentGame)
                 inputModeDecider.reset()
                 configureGuest()
             }
@@ -584,7 +598,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         userPaused = false
         currentGame = game
         sessionFromFrontend = fromFrontend
-        gamepad.bindings = loadControllerBindings(game)
+        gamepad.bindings = controllerFlow.load(game)
         showGame()
         val systemDir = File(filesDir, "system").apply { mkdirs() }
         configureGuest()
@@ -840,58 +854,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
     }
 
-    private fun globalControllerBindings() = controllerProfiles.global()
-
-    private fun physicalControllerBindings() = controllerProfiles.physical()
-
-    private fun savePhysicalControllerBindings(bindings: List<PhysicalControllerBinding>) {
-        controllerProfiles.savePhysical(bindings)
-        gamepad.physicalBindings = bindings
-    }
-
-    private fun resetPhysicalControllerBindings() {
-        controllerProfiles.resetPhysical()
-        gamepad.physicalBindings = physicalControllerBindings()
-    }
-
-    private fun loadControllerBindings(game: DosLibrary.Game?): List<ControllerBinding> =
-        if (game?.contentId == null) globalControllerBindings()
-        else dosGameSettings.controllerBindings(game.contentId)?.let(DosControllerBindings::parse)
-            ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
-                "doom-v1" -> DosControllerBindings.doom()
-                else -> globalControllerBindings()
-            }
-
-    private fun saveControllerBindings(game: DosLibrary.Game?, bindings: List<ControllerBinding>) {
-        val id = game?.contentId
-        if (id == null) controllerProfiles.saveGlobal(bindings)
-        else dosGameSettings.setControllerBindings(id,
-            DosControllerBindings.toJson(bindings).toString())
-        gamepad.bindings = loadControllerBindings(currentGame)
-    }
-
-    private fun resetControllerBindings(game: DosLibrary.Game?) {
-        val id = game?.contentId
-        if (id == null) controllerProfiles.resetGlobal()
-        else dosGameSettings.clearControllerBindings(id)
-        gamepad.bindings = loadControllerBindings(currentGame)
-    }
-
     private fun showControllerScope(game: DosLibrary.Game? = null) {
-        if (game != null && game.contentId == null) {
-            Ui.message(this, "Hash this game before editing its controls")
-            return
-        }
-        closeMenu()
-        gamepad.releaseAll()
-        keys.releaseAll()
-        keyboard?.close()
-        controllerEditor.show(game)
+        controllerEditorFlow.showScope(game)
     }
 
     private fun showOnScreenControls() {
-        controllerEditor.close()
-        onScreenControls?.show()
+        controllerEditorFlow.showOnScreenControls()
     }
 
     private fun refreshControllerUi() {
@@ -1352,7 +1320,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionGameTitle = null
         swappedKeyboard = null
         currentGame = null
-        gamepad.bindings = globalControllerBindings()
+        gamepad.bindings = controllerFlow.global()
         if (!returnToFrontend || installerPromptOpen) showLibrary()
         if (returnToFrontend) {
             if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
