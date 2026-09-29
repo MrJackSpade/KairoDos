@@ -371,6 +371,38 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             .setPositiveButton("Close", null).show()
     }
 
+    private fun artworkSettingsLabel(game: DosLibrary.Game, kind: String, path: String?): String {
+        val source = if (catalog.hasArtworkOverride(game.contentId, kind))
+            "User override" else "Catalog"
+        return "${if (path == null) "None" else "Available"} · $source"
+    }
+
+    private fun editGameArtwork(game: DosLibrary.Game, kind: String) {
+        val id = game.contentId ?: return
+        val current = catalog.resolve(id, game.displayName)
+        val input = EditText(this).apply {
+            setSingleLine(true)
+            setText(if (kind == "boxArt") current.boxArt ?: "" else current.preview ?: "")
+            hint = "art/catalog/dos/example.webp"
+        }
+        val label = if (kind == "boxArt") "Box art" else "Screenshot"
+        val dialog = AlertDialog.Builder(this).setTitle(label)
+            .setMessage("Use a packaged DOS artwork path. Missing art falls back to the game title.")
+            .setView(input)
+            .setPositiveButton("Save") { _, _ ->
+                val path = input.text.toString().trim().takeIf { it.isNotEmpty() }
+                runCatching { catalog.setArtworkOverride(id, kind, path) }
+                    .onSuccess { libraryScreen.showEntries(games) }
+                    .onFailure { Ui.message(this, it.message ?: "Could not save artwork") }
+            }.setNeutralButton("Reset $label") { _, _ ->
+                runCatching { catalog.setArtworkOverride(id, kind, null) }
+                    .onSuccess { libraryScreen.showEntries(games) }
+                    .onFailure { Ui.message(this, it.message ?: "Could not reset artwork") }
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
     private fun showGameDetails(entry: DosLibrary.Game) {
         val record = catalog.resolve(entry.contentId ?: "", entry.displayName)
         val variants = record.launch?.configs?.keys.orEmpty()
@@ -407,6 +439,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                                     .onFailure { Ui.message(this, it.message ?: "Could not save title") }
                             }.setNegativeButton("Cancel", null).show()
                     },
+                    GameSettingsRow("Box art", artworkSettingsLabel(entry, "boxArt", record.boxArt),
+                        true) { editGameArtwork(entry, "boxArt") },
+                    GameSettingsRow("Screenshot", artworkSettingsLabel(entry, "preview", record.preview),
+                        true) { editGameArtwork(entry, "preview") },
                     GameSettingsRow("View screenshot", if (record.preview == null)
                         "No screenshot available" else "Open full size", false) {
                         previewGame(entry)
@@ -421,7 +457,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         false, destructive = true) { confirmDeleteGame(entry) }) else emptyList())
             ), { launch(entry) }, entry.contentId?.let { id -> {{
                 GameSettingsResetDialog.show(this, {
-                    catalog.setTitle(id, null)
+                    catalog.resetOverrides(id)
                     gameSettings.clear(id, "touch_mode", "direct_touch", "cycles_mode")
                     preferences.edit().remove("controller_game_$id")
                         .remove("launch_variant_$id").remove("dos_player_$id").apply()

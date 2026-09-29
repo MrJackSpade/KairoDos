@@ -2,10 +2,10 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.util.LruCache
-import android.util.AtomicFile
 import com.mrjackspade.kairo.frontend.LibraryCatalog
 import com.mrjackspade.kairo.frontend.LibraryGame
 import com.mrjackspade.kairo.frontend.CatalogArtworkStore
+import com.mrjackspade.kairo.frontend.GameMetadataOverrides
 import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
@@ -35,9 +35,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private var doomContentIds = readDoomContentIds()
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
-    private var overrides = runCatching {
-        JSONObject(AtomicFile(overridesFile).readFully().toString(Charsets.UTF_8))
-    }.getOrDefault(JSONObject())
+    private val overrides = GameMetadataOverrides(overridesFile)
 
     /** Call off the main thread; a failed download leaves the active catalog in place. */
     fun downloadUpdate(): Boolean {
@@ -67,19 +65,23 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         val found = if (id.matches(contentId)) shard(prefix)
             ?.optJSONObject("games")?.optJSONObject(contentId) else null
         val record = selectRecord(found, fileName)
+        val user = overrides.record(contentId)
         val description = record?.optString("description")?.takeIf { it.isNotBlank() }
             ?: if (found != null) selectRecord(bundledShard(prefix)
                 ?.optJSONObject("games")?.optJSONObject(contentId), fileName)
                 ?.optString("description")?.takeIf { it.isNotBlank() } else null
-        val baseTitle = overrides.optJSONObject(contentId)?.optString("title")
+        val baseTitle = user?.optString("title")
             ?.takeIf { it.isNotBlank() }
             ?: record?.optString("title")?.takeIf { it.isNotBlank() }
             ?: fileName.substringAfterLast('/')
         val title = if (fileName.endsWith(" - Installer", true) &&
             !baseTitle.endsWith(" - Installer", true)) "$baseTitle - Installer" else baseTitle
         val art = record?.optJSONObject("artwork")
-        val boxArtPath = safeArtPath(art?.optString("boxArt"))
-        val previewPath = safeArtPath(art?.optString("preview"))
+        val userArt = user?.optJSONObject("artwork")
+        val boxArtPath = safeArtPath(userArt?.optString("boxArt")?.takeIf { it.isNotBlank() }
+            ?: art?.optString("boxArt"))
+        val previewPath = safeArtPath(userArt?.optString("preview")?.takeIf { it.isNotBlank() }
+            ?: art?.optString("preview"))
         val launch = record?.optJSONObject("launch")?.let { source ->
             val configs = source.optJSONObject("configs") ?: JSONObject()
             Launch(source.optString("folder"), configs.keys().asSequence()
@@ -116,17 +118,23 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     @Synchronized fun setTitle(contentId: String, title: String?) {
         require(id.matches(contentId)) { "Hash this game first" }
         require(title == null || title.length in 1..160) { "Invalid title" }
-        if (title == null) overrides.remove(contentId)
-        else overrides.put(contentId, JSONObject().put("title", title))
-        val atomic = AtomicFile(overridesFile)
-        val output = atomic.startWrite()
-        try {
-            output.write(overrides.toString().toByteArray(Charsets.UTF_8))
-            atomic.finishWrite(output)
-        } catch (failure: Exception) {
-            atomic.failWrite(output)
-            throw failure
-        }
+        overrides.set(contentId, "title", title)
+    }
+
+    fun hasArtworkOverride(contentId: String?, kind: String): Boolean =
+        contentId != null && overrides.record(contentId)?.optJSONObject("artwork")
+            ?.has(kind) == true
+
+    fun setArtworkOverride(contentId: String, kind: String, path: String?) {
+        require(id.matches(contentId)) { "Hash this game first" }
+        require(kind == "boxArt" || kind == "preview") { "Invalid artwork kind" }
+        require(path == null || safeArtPath(path) != null) { "Invalid DOS artwork path" }
+        overrides.setSubfield(contentId, "artwork", kind, path)
+    }
+
+    fun resetOverrides(contentId: String) {
+        require(id.matches(contentId)) { "Hash this game first" }
+        overrides.clear(contentId)
     }
 
     override fun openArtwork(path: String): InputStream = artworkStore.open(path)
