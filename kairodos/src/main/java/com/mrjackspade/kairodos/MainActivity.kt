@@ -1505,16 +1505,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (surface?.holder === holder && !secondaryDisplay.swapped) nativeSetSurface(null)
     }
 
+    private fun dispatchGuestTouch(event: MotionEvent) = super.dispatchTouchEvent(event)
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (!::appRoot.isInitialized || !::firstRunScreen.isInitialized || firstRunScreen.isOpen ||
             onScreenControls?.isOpen == true || controllerEditor.isOpen ||
             currentGame == null || libraryScreen.visibility == View.VISIBLE)
             return super.dispatchTouchEvent(event)
         return when (edgeSwipes.handle(event, appRoot.width, sessionFlow?.isOpen == true,
-            canOpenMenu = true, canOpenKeyboard = keyboard?.visibility != View.VISIBLE,
+            canOpenMenu = true, canOpenKeyboard = keyboard?.visibility != View.VISIBLE &&
+                !secondaryDisplay.isKeyboardVisible,
             controlsHit = onScreenControls?.hitTest(event.x, event.y) == true)) {
             EdgeSwipeNavigation.Result.PASS -> super.dispatchTouchEvent(event)
             EdgeSwipeNavigation.Result.CONSUME -> true
+            EdgeSwipeNavigation.Result.REPLAY_GUEST ->
+                edgeSwipes.replay(event, ::dispatchGuestTouch)
             EdgeSwipeNavigation.Result.OPEN_MENU -> { openMenu(); true }
             EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> {
                 if (!secondaryDisplay.isKeyboardVisible) keyboard?.open()

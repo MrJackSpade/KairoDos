@@ -24,6 +24,12 @@
 
 - The RGDS wireless ADB port changes. Discover it with `adb mdns services`; the device advertises `adb-dd437d64c337800f` and has model `RG_DS`. Do not ask the user for a port before checking mDNS.
 - On September 29, 2026, two large APK transfers failed because the RGDS Wi-Fi link disconnected. Device logs show `wlan0: CTRL-EVENT-DISCONNECTED`, followed by Android disabling wireless debugging. `iw dev wlan0 get power_save` was `on`; `adb shell iw dev wlan0 set power_save off` made the 238 MB KairoDos install succeed. The device shell runs as root. Use `tools/InstallRgDs.ps1 -Apk <path>` for future RGDS installs; it discovers the device and verifies power saving is off before transfer.
+
+# Retroid deployment
+
+- The Retroid Pocket Classic is currently reachable at `192.168.1.247:5555`. On September 29, 2026, `adb -s adb-49b22840-zuwOf4._adb-tls-connect._tcp tcpip 5555` enabled the fixed TCP endpoint; `adb connect 192.168.1.247:5555` connected, and it survived screen off/on, disconnect/reconnect, and APK installation. Prefer this endpoint to the rotating Android wireless-debugging port. Verify the model with `adb -s 192.168.1.247:5555 shell getprop ro.product.model` before installing.
+- If its DHCP address changes, inspect `adb devices -l` and `adb mdns services` for `adb-49b22840-zuwOf4` and obtain the current Wi-Fi address from the device shell. If port 5555 stops listening after a device reboot, reconnect through its paired TLS wireless-debugging service and run `adb -s <TLS-serial> tcpip 5555` again. Exhaust these checks before asking the user to operate the device. The Retroid shell is unprivileged, so the fixed TCP setting is not known to persist across a reboot.
+- Wi-Fi was switched off via System UI at 02:33 on September 29 and re-enabled at 09:52. That historical event does not explain subsequent ADB unavailability; do not cite it as the cause of a later disconnect without fresh evidence.
 # Generated catalog guard
 
 - Do not hand-edit bundled files under kairodos/src/main/assets/catalog/dos/ or the public catalog/online-v1.zip and catalog/online-v1.json outputs. Use the catalog generator for bundled data and tools/BuildPublicDosCatalog.ps1 for the sanitized public archive.
