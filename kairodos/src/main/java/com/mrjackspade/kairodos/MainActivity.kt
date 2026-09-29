@@ -731,6 +731,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
         libraryScreen.visibility = View.GONE
+        restoreGameFullscreen()
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
@@ -924,6 +925,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (swappedKeyboard?.visibility != View.VISIBLE) swappedKeyboard?.open()
         } else if (swappedKeyboard?.visibility == View.VISIBLE) swappedKeyboard?.close()
         secondaryDisplay.setAppearance(showingGuest, Color.BLACK)
+        if (showingGuest) ImmersiveWindow.hideBars(this)
         if (currentGame != null) nativePause(blocked || userPaused)
         onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
             keyboard?.visibility != View.VISIBLE && !secondaryDisplay.swapped)
@@ -937,6 +939,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             nativeSetSurface(holder?.surface?.takeIf { it.isValid })
         }
         refreshControllerUi()
+    }
+
+    private fun restoreGameFullscreen() {
+        if (currentGame == null || !::libraryFlow.isInitialized ||
+            libraryScreen.visibility == View.VISIBLE) return
+        ImmersiveWindow.apply(this)
+        window.decorView.post {
+            if (!isDestroyed && window.decorView.hasWindowFocus() && currentGame != null &&
+                libraryScreen.visibility != View.VISIBLE) ImmersiveWindow.hideBars(this)
+        }
     }
 
     private fun pollSession(id: String) {
@@ -1654,12 +1666,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (relocating) return
         secondaryDisplay.start(handler)
         guestLifecycle.onResume()
+        restoreGameFullscreen()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (relocating || (!hasFocus && secondaryDisplay.isCompanionActive)) return
         guestLifecycle.onWindowFocusChanged(hasFocus)
+        if (hasFocus) restoreGameFullscreen()
     }
 
     override fun onDestroy() {
