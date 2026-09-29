@@ -19,6 +19,8 @@ import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
 class DosLibrary(private val context: Context) {
+    @Volatile var hashCount = 0
+        private set
     companion object {
         private val installedSuffix = Regex(" - Installed(?:\\.zip)?$", RegexOption.IGNORE_CASE)
 
@@ -85,6 +87,7 @@ class DosLibrary(private val context: Context) {
 
     fun scan(tree: Uri, forceHash: Boolean, cancelled: AtomicBoolean,
              progress: (String) -> Unit): List<Game> {
+        var hashes = 0
         val prior = if (forceHash) emptyMap() else cached(tree).associateBy(Game::id)
         val source = walker.scan(tree, cancelled, { true }, progress)
         val all = source.files
@@ -126,6 +129,7 @@ class DosLibrary(private val context: Context) {
                     old.contentId.startsWith("sha256-dos-file-v1:"))) {
                 contentId = old.contentId; failure = null
             } else try {
+                hashes++
                 contentId = if (extension(item.path) in archiveExtensions) {
                     val inspection = DosContentHash.inspectZipDocument(
                         context.contentResolver, item.uri, cancelled)
@@ -158,6 +162,7 @@ class DosLibrary(private val context: Context) {
                 old.contentId.startsWith("sha256-dos-manifest-v1:") && old.error == null) {
                 contentId = old.contentId; failure = null
             } else try {
+                hashes++
                 contentId = DosContentHash.documents(context.contentResolver, members, cancelled)
                 failure = null
             } catch (error: Exception) {
@@ -176,6 +181,7 @@ class DosLibrary(private val context: Context) {
         if (cancelled.get()) return emptyList()
         val sorted = output.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.path })
         saveStore(tree, sorted)
+        hashCount = hashes
         return sorted
     }
 

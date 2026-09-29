@@ -10,7 +10,6 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import android.net.Uri
 import android.os.Bundle
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -21,8 +20,6 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
-import android.window.OnBackInvokedCallback
-import android.window.OnBackInvokedDispatcher
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
@@ -36,13 +33,19 @@ import com.mrjackspade.kairo.frontend.LibraryFlow
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.FirstRunScreen
 import com.mrjackspade.kairo.frontend.FrontendNavigation
+import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
+import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
+import com.mrjackspade.kairo.frontend.ImmersiveWindow
+import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SettingsEntry
 import com.mrjackspade.kairo.frontend.SessionAction
 import com.mrjackspade.kairo.frontend.SessionDrawer
 import com.mrjackspade.kairo.frontend.SessionFlow
+import com.mrjackspade.kairo.frontend.SessionStatusDialog
 import com.mrjackspade.kairo.frontend.GameSettingsRow
 import com.mrjackspade.kairo.frontend.GameSettingsSheet
+import com.mrjackspade.kairo.frontend.GameSettingsResetDialog
 import com.mrjackspade.kairo.frontend.JoystickInputRouter
 import com.mrjackspade.kairo.frontend.GamepadMapper
 import com.mrjackspade.kairo.frontend.ControllerBinding
@@ -118,10 +121,52 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
-    private val firstRunBack = OnBackInvokedCallback { firstRunScreen.back() }
-    private var firstRunBackRegistered = false
-    private val gameBack = OnBackInvokedCallback { handleGameBack() }
-    private var gameBackRegistered = false
+    private val controllerDevices by lazy { ControllerDeviceMonitor(this, gamepad) }
+    private val backCoordinator by lazy {
+        FrontendBackCoordinator(this, listOf(
+            {
+                if (!firstRunScreen.isOpen) false else {
+                    firstRunScreen.back()
+                    true
+                }
+            },
+            {
+                if (onScreenControls?.isOpen != true) false else {
+                    onScreenControls?.back()
+                    true
+                }
+            },
+            {
+                if (!controllerEditor.isOpen) false else {
+                    controllerEditor.back()
+                    true
+                }
+            },
+            {
+                if (libraryScreen.visibility != View.VISIBLE) false else {
+                    when {
+                        libraryScreen.closeDetail() -> Unit
+                        libraryScreen.closeActions() -> Unit
+                        currentGame != null -> resumeGameFromLibrary()
+                        else -> finish()
+                    }
+                    true
+                }
+            },
+            {
+                if (sessionFlow?.isOpen != true) false else {
+                    closeMenu()
+                    true
+                }
+            },
+            {
+                if (keyboard?.visibility != View.VISIBLE) false else {
+                    keyboard?.close()
+                    true
+                }
+            }
+        ), { if (currentGame != null) openMenu() else finish() })
+    }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
@@ -139,7 +184,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Volatile private var externalLaunchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
-    @Volatile private var stopAudio = false
+    @Volatile private var audioGeneration = 0
     private var surface: SurfaceView? = null
     private var videoFrame: FrameLayout? = null
     private var integerScaling = true
@@ -152,8 +197,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var sessionDrawer: SessionDrawer? = null
     private var sessionFlow: SessionFlow? = null
     private var userPaused = false
-    private var menuSwipeX: Float? = null
-    private var menuSwipeConsumed = false
+    private val edgeSwipes by lazy { EdgeSwipeNavigation(resources.displayMetrics.density) }
     private var lastX = 0f
     private var lastY = 0f
     private var moved = false
@@ -162,8 +206,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadGraphicsSettings()
-        window.statusBarColor = Ui.BG
-        window.navigationBarColor = Ui.BG
+        ImmersiveWindow.apply(this)
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
         val libraryPage = LibraryScreen(this, catalog, LibraryStrings("KAIRODOS",
@@ -179,7 +222,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { uri -> uri.lastPathSegment ?: "DOS folder" },
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
-            { found -> "${found.count { it.playable }} games ready" },
+            { found ->
+                val errors = found.count { it.error != null }
+                "${found.count { it.playable }} games" +
+                    (if (errors == 0) "" else " · $errors unreadable") +
+                    " · ${dosLibrary.hashCount} hashes this scan"
+            },
             onFolderSelected = { finishFirstRun() },
             onFolderError = { message -> if (firstRunScreen.isOpen) Ui.message(this, message) },
             writable = true)
@@ -203,8 +251,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.physicalBindings = physicalControllerBindings()
         gamepad.bindings = globalControllerBindings()
         gamepad.deadZone = controllerProfiles.deadZone
+        controllerDevices.register(handler)
         libraryFlow.restore()
         showLibrary()
+        backCoordinator.register()
         val externallyRequested = savedInstanceState == null &&
             (intent.data != null || intent.hasExtra("ROM"))
         if (externallyRequested)
@@ -247,13 +297,33 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showLibrary() {
-        unregisterGameBack()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         currentGame = null
         gameRoot?.let(appRoot::removeView)
         gameRoot = null
         libraryScreen.visibility = View.VISIBLE
         libraryFlow.show()
+    }
+
+    private fun openLibraryOverGame() {
+        if (currentGame == null) return
+        if (sessionFromFrontend) { leaveGame(); return }
+        edgeSwipes.reset()
+        libraryScreen.visibility = View.VISIBLE
+        refreshControllerUi()
+        sessionFlow?.reset()
+        keyboard?.close()
+        releaseGuestInputs()
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        libraryFlow.show()
+    }
+
+    private fun resumeGameFromLibrary() {
+        libraryScreen.dismissSystemKeyboard()
+        libraryScreen.visibility = View.GONE
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        refreshControllerUi()
+        surface?.requestFocus()
     }
 
     private fun chooseFolder() = libraryFlow.chooseFolder()
@@ -268,11 +338,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 FirstRunScreen.Action("Skip for now", "Open the game library",
                     onClick = ::finishFirstRun)
             )), ::finishFirstRun)
-        if (Build.VERSION.SDK_INT >= 33 && !firstRunBackRegistered) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT, firstRunBack)
-            firstRunBackRegistered = true
-        }
     }
 
     private fun finishFirstRun() {
@@ -283,45 +348,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun closeFirstRun() {
         firstRunScreen.close()
-        if (Build.VERSION.SDK_INT >= 33 && firstRunBackRegistered) {
-            onBackInvokedDispatcher.unregisterOnBackInvokedCallback(firstRunBack)
-            firstRunBackRegistered = false
-        }
     }
 
     @Deprecated("Legacy Back path; API 33+ uses OnBackInvokedDispatcher")
-    override fun onBackPressed() {
-        when {
-            firstRunScreen.isOpen -> firstRunScreen.back()
-            currentGame != null -> handleGameBack()
-            else -> super.onBackPressed()
-        }
-    }
-
-    private fun registerGameBack() {
-        if (Build.VERSION.SDK_INT >= 33 && !gameBackRegistered) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT, gameBack)
-            gameBackRegistered = true
-        }
-    }
-
-    private fun unregisterGameBack() {
-        if (Build.VERSION.SDK_INT >= 33 && gameBackRegistered) {
-            onBackInvokedDispatcher.unregisterOnBackInvokedCallback(gameBack)
-            gameBackRegistered = false
-        }
-    }
-
-    private fun handleGameBack() {
-        when {
-            controllerEditor.isOpen -> controllerEditor.back()
-            onScreenControls?.isOpen == true -> onScreenControls?.back()
-            sessionFlow?.isOpen == true -> closeMenu()
-            keyboard?.visibility == View.VISIBLE -> keyboard?.close()
-            else -> openMenu()
-        }
-    }
+    override fun onBackPressed() = backCoordinator.handle()
 
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -388,8 +418,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         "Permanently remove from device storage",
                         false, destructive = true) { confirmDeleteGame(entry) }) else emptyList())
             ), { launch(entry) }, entry.contentId?.let { id -> {{
-                catalog.setTitle(id, null)
-                libraryScreen.showEntries(games)
+                GameSettingsResetDialog.show(this, {
+                    catalog.setTitle(id, null)
+                    preferences.edit().remove("controller_game_$id")
+                        .remove("launch_variant_$id").remove("dos_player_$id").apply()
+                    if (currentGame?.contentId == id)
+                        gamepad.bindings = loadControllerBindings(currentGame)
+                    libraryScreen.showEntries(games)
+                }, { failure -> Ui.message(this,
+                    failure.message ?: "Could not reset game settings") })
             }} }, { Ui.message(this, "Hash this game before saving settings") })
     }
 
@@ -475,7 +512,24 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         preferences.edit().putString("last_played_entry", game.id).apply()
         val oldThread = gameThread
         nativeStop()
+        if (currentGame != null) {
+            audioGeneration++
+            runCatching { audio?.pause() }
+            audioThread = null
+            releaseGuestInputs()
+            keyboard?.close()
+            sessionFlow?.reset()
+            onScreenControls?.close()
+            gameRoot?.let(appRoot::removeView)
+            gameRoot = null
+            nativeSetSurface(null)
+            surface = null
+            videoFrame = null
+            sessionFlow = null
+            sessionDrawer = null
+        }
         inputModeDecider.reset()
+        userPaused = false
         currentGame = game
         sessionFromFrontend = fromFrontend
         gamepad.bindings = loadControllerBindings(game)
@@ -606,7 +660,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
-        registerGameBack()
         sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
         libraryScreen.dismissSystemKeyboard()
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
@@ -633,10 +686,17 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         display.setOnTouchListener(::handleGameTouch)
         lateinit var panel: GuestKeyboardPanel
         panel = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, { panel.close() },
-            mouse = mouse, mouseReferenceSize = { 640 to 400 })
+            mouse = mouse, mouseReferenceSize = { 640 to 400 },
+            onVisibilityChanged = {
+                refreshControllerUi()
+                if (panel.visibility == View.VISIBLE) handler.postDelayed({
+                    if (panel.visibility == View.VISIBLE) ImmersiveWindow.hideBars(this)
+                }, 350)
+            })
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
-        sessionDrawer = SessionDrawer(this, root, "KAIRODOS", ::closeMenu, {}, listOf(
+        sessionDrawer = SessionDrawer(this, root, "KAIRODOS", ::closeMenu,
+            ::showSessionStatus, listOf(
             SessionAction("Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play) {
                 userPaused = false
                 closeMenu()
@@ -651,7 +711,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 confirmRestart()
             },
             SessionAction("Library", com.mrjackspade.kairo.frontend.R.drawable.ic_library) {
-                leaveGame()
+                openLibraryOverGame()
             }
         ), listOf(
             SettingsEntry("Pause", { if (userPaused) "On · tap to let the game run again"
@@ -676,8 +736,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 mouse.releasePrefix("touch-")
             },
             { open ->
-                nativePause(open || userPaused)
-                onScreenControls?.refreshVisibility(!open && !userPaused)
+                refreshControllerUi()
             },
             { surface?.requestFocus() })
         statusLabel = sessionDrawer?.status
@@ -685,17 +744,40 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         onScreenControls?.refreshVisibility(true)
     }
 
-    private fun openMenu() { if (currentGame != null) sessionFlow?.open() }
+    private fun openMenu() {
+        if (currentGame != null && libraryScreen.visibility != View.VISIBLE) sessionFlow?.open()
+    }
 
     private fun closeMenu() { sessionFlow?.close() }
+
+    private fun showSessionStatus() {
+        val state = when (nativeStatus()) {
+            1 -> "Loading"
+            2 -> if (userPaused || sessionFlow?.isOpen == true ||
+                libraryScreen.visibility == View.VISIBLE) "Paused" else "Running"
+            3 -> "Failed"
+            else -> "Stopped"
+        }
+        val details = mutableListOf(
+            "Game" to (sessionGameTitle ?: "Unknown"),
+            "Core" to "DOSBox Pure",
+            "State" to state,
+            "DOS CPU speed" to if (preferences.getInt("cycles_mode", 0) == 0) "Auto" else "Maximum",
+            "Touch input" to configuredTouchMode().name.lowercase()
+        )
+        if (nativeStatus() == 2) {
+            details += "Video" to "${nativeVideoWidth()} × ${nativeVideoHeight()}"
+            details += "Audio" to "${nativeAudioRate()} Hz"
+        }
+        SessionStatusDialog.show(this, "Session details", details)
+    }
 
     private fun controllerAction(action: String) {
         when (action) {
             "menu" -> if (sessionFlow?.isOpen == true) closeMenu() else openMenu()
             "pause" -> {
                 userPaused = !userPaused
-                nativePause(userPaused)
-                onScreenControls?.refreshVisibility(!userPaused)
+                refreshControllerUi()
             }
             "restart" -> confirmRestart()
             "exit" -> confirmExit()
@@ -759,9 +841,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun refreshControllerUi() {
         val blocked = controllerEditor.isOpen || onScreenControls?.isOpen == true ||
-            sessionFlow?.isOpen == true
+            sessionFlow?.isOpen == true || libraryScreen.visibility == View.VISIBLE
         if (currentGame != null) nativePause(blocked || userPaused)
-        onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused)
+        onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
+            keyboard?.visibility != View.VISIBLE)
     }
 
     private fun pollSession(id: String) {
@@ -893,21 +976,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            menuSwipeX = event.x.takeIf { it <= Ui.dp(this, 28).toFloat() }
-            menuSwipeConsumed = false
             lastX = event.x; lastY = event.y; moved = false
-        } else if (event.actionMasked == MotionEvent.ACTION_MOVE &&
-            menuSwipeX != null && event.x - menuSwipeX!! > Ui.dp(this, 60)) {
-            menuSwipeX = null
-            menuSwipeConsumed = true
-            openMenu()
-            return true
-        } else if (event.actionMasked == MotionEvent.ACTION_UP ||
-            event.actionMasked == MotionEvent.ACTION_CANCEL) menuSwipeX = null
-        if (menuSwipeConsumed) {
-            if (event.actionMasked == MotionEvent.ACTION_UP ||
-                event.actionMasked == MotionEvent.ACTION_CANCEL) menuSwipeConsumed = false
-            return true
         }
         if (inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD) {
             if (event.actionMasked == MotionEvent.ACTION_MOVE &&
@@ -1120,8 +1189,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun startAudio() {
-        stopAudio = false
+        val generation = ++audioGeneration
         audioThread = Thread {
+            if (generation != audioGeneration) return@Thread
             val rate = nativeAudioRate().coerceIn(8000, 96000)
             val minimum = AudioTrack.getMinBufferSize(rate,
                 AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT)
@@ -1134,20 +1204,24 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     .setEncoding(AudioFormat.ENCODING_PCM_16BIT).build())
                 .setBufferSizeInBytes(maxOf(minimum, 16384))
                 .setTransferMode(AudioTrack.MODE_STREAM).build()
+            if (generation != audioGeneration) {
+                track.release()
+                return@Thread
+            }
             audio = track
             track.setVolume(if (preferences.getBoolean("muted", false)) 0f else 1f)
             track.play()
             val buffer = ShortArray(4096)
             try {
-                while (!stopAudio && nativeStatus() == 2) {
+                while (generation == audioGeneration && nativeStatus() == 2) {
                     val frames = nativeReadAudio(buffer, buffer.size / 2)
                     if (frames > 0) track.write(buffer, 0, frames * 2, AudioTrack.WRITE_BLOCKING)
                     else Thread.sleep(4)
                 }
             } finally {
-                track.stop()
+                runCatching { track.stop() }
                 track.release()
-                audio = null
+                if (audio === track) audio = null
             }
         }.apply { name = "KairoDos-audio"; start() }
     }
@@ -1191,19 +1265,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun leaveGame(completed: Boolean = true) {
-        unregisterGameBack()
         val returnToFrontend = completed && sessionFromFrontend
         sessionFromFrontend = false
         launchGeneration++
         prepareCancelled.set(true)
         nativeStop()
-        stopAudio = true
+        audioGeneration++
         gamepad.releaseAll()
         keys.releaseAll()
         mouse.releasePrefix("touch-")
-        onScreenControls?.refreshVisibility(false)
         onScreenControls?.close()
         keyboard?.close()
+        onScreenControls?.refreshVisibility(false)
         sessionFlow?.reset()
         sessionFlow = null
         sessionDrawer = null
@@ -1226,11 +1299,38 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             else -> InputModeDecider.Mode.AUTO
         }
 
-    override fun surfaceCreated(holder: SurfaceHolder) { nativeSetSurface(holder.surface) }
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        nativeSetSurface(holder.surface)
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        if (surface?.holder === holder) nativeSetSurface(holder.surface)
     }
-    override fun surfaceDestroyed(holder: SurfaceHolder) { nativeSetSurface(null) }
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        if (surface?.holder === holder) nativeSetSurface(holder.surface)
+    }
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        if (surface?.holder === holder) nativeSetSurface(null)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (!::appRoot.isInitialized || !::firstRunScreen.isInitialized || firstRunScreen.isOpen ||
+            onScreenControls?.isOpen == true || controllerEditor.isOpen ||
+            currentGame == null || libraryScreen.visibility == View.VISIBLE)
+            return super.dispatchTouchEvent(event)
+        return when (edgeSwipes.handle(event, appRoot.width, sessionFlow?.isOpen == true,
+            canOpenMenu = true, canOpenKeyboard = keyboard?.visibility != View.VISIBLE,
+            controlsHit = onScreenControls?.hitTest(event.x, event.y) == true)) {
+            EdgeSwipeNavigation.Result.PASS -> super.dispatchTouchEvent(event)
+            EdgeSwipeNavigation.Result.CONSUME -> true
+            EdgeSwipeNavigation.Result.OPEN_MENU -> { openMenu(); true }
+            EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> { keyboard?.open(); true }
+            EdgeSwipeNavigation.Result.CLOSE_MENU -> {
+                val cancel = MotionEvent.obtain(event)
+                cancel.action = MotionEvent.ACTION_CANCEL
+                super.dispatchTouchEvent(cancel)
+                cancel.recycle()
+                closeMenu()
+                true
+            }
+        }
+    }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         // Handle menu navigation before Android moves View focus. The shared drawer
@@ -1246,10 +1346,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (onScreenControls?.handleKey(event) == true) return true
             return super.dispatchKeyEvent(event)
         }
-        if (currentGame == null) {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)
+                backCoordinator.handle()
+            return true
+        }
+        if (libraryScreen.visibility == View.VISIBLE) {
             if (FrontendNavigation.library(libraryScreen,
                     FrontendNavigation.control(event, gamepad),
-                    event, ::finish)) return true
+                    event, backCoordinator::handle)) return true
             return super.dispatchKeyEvent(event)
         }
         if (event.keyCode == KeyEvent.KEYCODE_MENU ||
@@ -1263,11 +1368,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (FrontendNavigation.session(sessionDrawer!!,
                     FrontendNavigation.control(event, gamepad), event, ::closeMenu)) return true
             super.dispatchKeyEvent(event)
-            return true
-        }
-        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
-            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)
-                handleGameBack()
             return true
         }
         if (gamepad.key(event)) return true
@@ -1286,7 +1386,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (firstRunScreen.isOpen) return true
         if (controllerEditor.isOpen) return controllerEditor.captureMotion(event)
         if (onScreenControls?.isOpen == true) return true
-        if (currentGame != null && sessionDrawer?.isOpen != true && gamepad.motion(event)) return true
+        if (currentGame != null && libraryScreen.visibility != View.VISIBLE &&
+            sessionDrawer?.isOpen != true && gamepad.motion(event)) return true
         return super.onGenericMotionEvent(event)
     }
 
@@ -1340,28 +1441,49 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         else -> null
     }
 
-    override fun onStop() {
+    private fun releaseGuestInputs() {
+        gamepad.releaseAll()
         keys.releaseAll()
         mouse.releasePrefix("touch-")
+    }
+
+    private fun suspendGuest() {
+        releaseGuestInputs()
         nativePause(true)
         audio?.pause()
+    }
+
+    override fun onPause() {
+        suspendGuest()
+        super.onPause()
+    }
+
+    override fun onStop() {
+        suspendGuest()
         super.onStop()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         if (currentGame != null) {
             refreshControllerUi()
             audio?.play()
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) releaseGuestInputs()
+    }
+
     override fun onDestroy() {
+        backCoordinator.unregister()
+        controllerDevices.unregister()
         libraryFlow.cancel()
         launchGeneration++
         prepareCancelled.set(true)
         nativeStop()
-        stopAudio = true
+        audioGeneration++
         nativeSetSurface(null)
         super.onDestroy()
     }
