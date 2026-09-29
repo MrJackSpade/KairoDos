@@ -67,14 +67,13 @@ import com.mrjackspade.kairo.frontend.CatalogUpdateController
 import com.mrjackspade.kairo.frontend.PhysicalControllerBinding
 import com.mrjackspade.kairo.frontend.PhysicalControllerBindings
 import com.mrjackspade.kairo.frontend.OnScreenControls
+import com.mrjackspade.kairo.frontend.GraphicsOptions
 import android.graphics.BitmapFactory
 import android.widget.ImageView
 import android.widget.EditText
 import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
 import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /** DOS library and session UI. Pure is compiled in :backend-dos and hosted via JNI. */
@@ -109,6 +108,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private val handler = Handler(Looper.getMainLooper())
     private val preferences by lazy { getSharedPreferences("kairodos", MODE_PRIVATE) }
+    private val graphics by lazy {
+        GraphicsOptions(this, preferences, { builder ->
+            builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
+        }, {
+            updateSurfaceLayout()
+            sessionDrawer?.refreshValues()
+            libraryScreen.refreshSettingValues()
+        }, { message -> Ui.message(this, message) })
+    }
     private val gameSettings by lazy { GameSettingScope(preferences) }
     private val dosGameSettings by lazy { DosPerGameSettings(preferences, gameSettings) }
     private val controllerProfiles by lazy {
@@ -167,9 +175,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Volatile private var audioGeneration = 0
     private var surface: SurfaceView? = null
     private var videoFrame: FrameLayout? = null
-    private var integerScaling = true
-    private var integerCrop = false
-    private var portraitNotchPadding = 0
     private var keyboard: GuestKeyboardPanel? = null
     private var swappedKeyboard: GuestKeyboardPanel? = null
     private lateinit var secondaryDisplay: SecondaryDisplayCoordinator
@@ -195,7 +200,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             relocating = true
             return
         }
-        loadGraphicsSettings()
+        graphics.load()
         ImmersiveWindow.apply(this)
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
@@ -712,8 +717,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
-        SettingsEntry("Graphics", { scalingLabel() + if (isPortrait())
-            " · notch $portraitNotchPadding dp" else "" }, ::showGraphics),
+        SettingsEntry("Graphics", graphics::settingsLabel, graphics::show),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
             closeMenu()
             showOnScreenControls()
@@ -986,104 +990,23 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (frame.width <= 0 || frame.height <= 0) return
         val keyboardHeight = keyboard?.takeIf { it.visibility == View.VISIBLE }
             ?.layoutParams?.height ?: 0
-        val topPadding = if (isPortrait()) Ui.dp(this, portraitNotchPadding) else 0
-        val availableHeight = (frame.height - keyboardHeight - topPadding).coerceAtLeast(1)
-        val sourceWidth = nativeVideoWidth().coerceAtLeast(1)
-        val sourceHeight = nativeVideoHeight().coerceAtLeast(1)
-        val ratio = nativeAspect().takeIf { it in 0.5..3.0 }
-            ?: sourceWidth.toDouble() / sourceHeight
-        val correctedHeight = sourceWidth / ratio
-        val fit = minOf(frame.width / sourceWidth.toDouble(), availableHeight / correctedHeight)
-        if (fit <= 0.0) return
-        val scale = if (integerScaling && fit >= 1.0) {
-            if (integerCrop) ceil(fit) else floor(fit)
-        } else fit
-        val width = (sourceWidth * scale).roundToInt().coerceAtLeast(1)
-        val height = (correctedHeight * scale).roundToInt().coerceAtLeast(1)
-        val top = topPadding + ((availableHeight - height) / 2).coerceAtLeast(0)
+        val viewport = graphics.viewport(frame.width, frame.height, keyboardHeight,
+            nativeVideoWidth(), nativeVideoHeight(), nativeAspect()) ?: return
         val params = display.layoutParams as FrameLayout.LayoutParams
-        if (params.width != width || params.height != height || params.topMargin != top ||
+        if (params.width != viewport.width || params.height != viewport.height ||
+            params.topMargin != viewport.topMargin ||
             params.gravity != (Gravity.TOP or Gravity.CENTER_HORIZONTAL)) {
-            display.layoutParams = FrameLayout.LayoutParams(width, height,
-                Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = top }
+            display.layoutParams = FrameLayout.LayoutParams(viewport.width, viewport.height,
+                Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply {
+                topMargin = viewport.topMargin
+            }
         }
     }
-
-    private fun isPortrait() = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        loadGraphicsSettings()
+        graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
-    }
-
-    private fun scalingLabel() = when {
-        !integerScaling -> "Fit display"
-        integerCrop -> "Integer crop"
-        else -> "Integer full image"
-    }
-
-    private fun loadGraphicsSettings() {
-        val suffix = if (isPortrait()) "portrait" else "landscape"
-        integerScaling = preferences.getBoolean("integer_scaling_$suffix",
-            preferences.getBoolean("integer_scaling", true))
-        integerCrop = preferences.getBoolean("integer_crop_$suffix",
-            preferences.getBoolean("integer_crop", false))
-        portraitNotchPadding = preferences.getInt("portrait_notch_padding", 0).coerceIn(0, 240)
-    }
-
-    private fun showGraphics() {
-        val orientation = if (isPortrait()) "portrait" else "landscape"
-        val items = if (isPortrait()) arrayOf(
-            "Scaling  ·  ${scalingLabel()}", "Notch padding  ·  $portraitNotchPadding dp")
-        else arrayOf("Scaling  ·  ${scalingLabel()}")
-        val dialog = AlertDialog.Builder(this).setTitle("Graphics · $orientation")
-            .setItems(items) { _, which ->
-                if (which == 0) showScalingChoices(orientation) else showNotchPadding()
-            }.setNegativeButton("Close", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showScalingChoices(orientation: String) {
-        val options = arrayOf("Integer  ·  full image (default)",
-            "Integer  ·  crop edges", "Fit display  ·  fractional scale")
-        val selected = if (!integerScaling) 2 else if (integerCrop) 1 else 0
-        val dialog = AlertDialog.Builder(this).setTitle("Scaling · $orientation")
-            .setSingleChoiceItems(options, selected) { current, choice ->
-                integerScaling = choice != 2
-                integerCrop = choice == 1
-                preferences.edit()
-                    .putBoolean("integer_scaling_$orientation", integerScaling)
-                    .putBoolean("integer_crop_$orientation", integerCrop).apply()
-                updateSurfaceLayout()
-                sessionDrawer?.refreshValues()
-                libraryScreen.refreshSettingValues()
-                current.dismiss()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showNotchPadding() {
-        val input = EditText(this).apply {
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setSingleLine(true)
-            setText(portraitNotchPadding.toString())
-            selectAll()
-        }
-        val dialog = AlertDialog.Builder(this).setTitle("Portrait notch padding (dp)")
-            .setView(input).setPositiveButton("Save") { _, _ ->
-                val value = input.text.toString().toIntOrNull()?.coerceIn(0, 240)
-                if (value == null) { Ui.message(this, "Enter a number from 0 to 240"); return@setPositiveButton }
-                portraitNotchPadding = value
-                preferences.edit().putInt("portrait_notch_padding", value).apply()
-                updateSurfaceLayout()
-                sessionDrawer?.refreshValues()
-                libraryScreen.refreshSettingValues()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
     }
 
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean =
