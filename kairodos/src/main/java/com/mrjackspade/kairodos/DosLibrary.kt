@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import com.mrjackspade.kairo.frontend.ExternalGameFile
+import com.mrjackspade.kairo.frontend.LibraryScanPipeline
 import com.mrjackspade.kairo.frontend.LibraryItem
 import com.mrjackspade.kairo.frontend.VersionedLibraryCache
 import org.json.JSONObject
@@ -18,8 +19,7 @@ import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
 class DosLibrary(private val context: Context) {
-    @Volatile var hashCount = 0
-        private set
+    val hashCount: Int get() = scanPipeline.hashCount
     companion object {
         private val installedSuffix = Regex(" - Installed(?:\\.zip)?$", RegexOption.IGNORE_CASE)
 
@@ -56,6 +56,12 @@ class DosLibrary(private val context: Context) {
     private val storeCache = VersionedLibraryCache(store, 2, "games", 64 * 1024 * 1024,
         50_000, ::decodeCacheEntry, ::encodeCacheEntry)
     private val walker = DocumentTreeWalker(context.contentResolver)
+    private val scanPipeline by lazy {
+        LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
+            ::failedScanWork, ::scanLabel,
+            cacheOrder = { entries -> entries.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
+    }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
     private val archiveExtensions = setOf("zip", "dosz")
     private val executableExtensions = setOf("exe", "com", "bat")
@@ -85,10 +91,18 @@ class DosLibrary(private val context: Context) {
             false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
     }
 
+    private sealed interface ScanWork {
+        data class Archive(val file: DocumentTreeWalker.FileEntry) : ScanWork
+        data class Folder(val tree: Uri, val root: String,
+                          val members: List<DocumentTreeWalker.FileEntry>) : ScanWork
+    }
+
     fun scan(tree: Uri, forceHash: Boolean, cancelled: AtomicBoolean,
-             progress: (String) -> Unit): List<Game> {
-        var hashes = 0
-        val prior = if (forceHash) emptyMap() else cached(tree).associateBy(Game::id)
+             progress: (String) -> Unit): List<Game> =
+        scanPipeline.scan(tree, forceHash, cancelled, progress)
+
+    private fun planScan(tree: Uri, cancelled: AtomicBoolean,
+                         progress: (String) -> Unit): LibraryScanPipeline.Plan<ScanWork, Game> {
         val source = walker.scan(tree, cancelled, { true }, progress)
         val all = source.files
         val rootFiles = all.filter { !it.path.contains('/') }
@@ -111,83 +125,107 @@ class DosLibrary(private val context: Context) {
                  (!containsArchives || !item.path.contains('/')))) &&
                 (!item.path.contains('/') || item.path.substringBefore('/') !in folderGroups)
         }
-        val output = ArrayList<Game>()
-        archives.forEachIndexed { index, item ->
-            if (cancelled.get()) return@forEachIndexed
-            progress("Scanning ${index + 1}/${archives.size + folderGroups.size}: ${item.path}")
-            val id = sha256(item.uri.toString())
-            val fingerprint = "${item.size}:${item.modified}"
-            val old = prior[id]
-            var contentId: String?
-            var failure: String?
-            var installer = old?.installer == true &&
-                !isInstalledArchive(item.path.substringAfterLast('/'))
-            if (old != null && old.fingerprint == fingerprint && item.modified > 0 &&
-                old.contentId != null && old.error == null &&
-                (if (extension(item.path) in archiveExtensions)
-                    old.contentId.startsWith("sha256-dos-manifest-v1:") else
-                    old.contentId.startsWith("sha256-dos-file-v1:"))) {
-                contentId = old.contentId; failure = null
-            } else try {
-                hashes++
-                contentId = if (extension(item.path) in archiveExtensions) {
-                    val inspection = DosContentHash.inspectZipDocument(
-                        context.contentResolver, item.uri, cancelled)
-                        ?: copySource(item, cancelled).let { temp ->
-                            try { DosContentHash.inspectZip(temp, cancelled) }
-                            finally { temp.delete() }
-                        }
-                    installer = inspection.exodosSource &&
-                        !isInstalledArchive(item.path.substringAfterLast('/'))
-                    inspection.contentId
-                } else hashDocument(item, cancelled)
-                failure = null
-            } catch (error: Exception) {
-                contentId = null; failure = error.message ?: "Unreadable DOS game"
-            }
-            output.add(Game(id, item.uri.toString(), item.path, false, false,
-                fingerprint, contentId, failure, installer))
-        }
+        val work = ArrayList<ScanWork>()
+        work.addAll(archives.map(ScanWork::Archive))
         folderGroups.toSortedMap(String.CASE_INSENSITIVE_ORDER).forEach { (root, members) ->
-            progress("Hashing $root")
-            val id = sha256("${tree}\u0000$root")
-            val fingerprint = sha256(members.sortedBy { it.path }.joinToString("\u0000") {
-                "${it.path}:${it.size}:${it.modified}"
-            })
-            val old = prior[id]
-            var contentId: String?
-            var failure: String?
-            if (old != null && old.fingerprint == fingerprint &&
-                members.all { it.size >= 0 && it.modified > 0 } && old.contentId != null &&
-                old.contentId.startsWith("sha256-dos-manifest-v1:") && old.error == null) {
-                contentId = old.contentId; failure = null
-            } else try {
-                hashes++
-                contentId = DosContentHash.documents(context.contentResolver, members, cancelled)
-                failure = null
-            } catch (error: Exception) {
-                contentId = null; failure = error.message ?: "Unreadable DOS folder"
-            }
-            val display = if (root == "@root")
-                tree.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':') ?: "DOS game"
-                else root
-            val sourceUri = if (root == "@root") tree else {
-                val child = childId(tree, DocumentsContract.getTreeDocumentId(tree), root, true)
-                    ?: error("Game folder was moved; refresh the library")
-                DocumentsContract.buildDocumentUriUsingTree(tree, child)
-            }
-            output.add(Game(id, sourceUri.toString(), display, true, root == "@root",
-                fingerprint, contentId, failure))
+            work.add(ScanWork.Folder(tree, root, members))
         }
-        source.folders.forEach { folder ->
-            output.add(Game(sha256(folder.uri.toString()), folder.uri.toString(), folder.path,
-                true, false, "", null, "Unreadable folder: ${folder.message}"))
+        val folderErrors = source.folders.map { folder ->
+            Game(sha256(folder.uri.toString()), folder.uri.toString(), folder.path,
+                true, false, "", null, "Unreadable folder: ${folder.message}")
         }
-        if (cancelled.get()) return emptyList()
-        val sorted = output.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.path })
-        saveStore(tree, sorted)
-        hashCount = hashes
-        return sorted
+        return LibraryScanPipeline.Plan(work, finalEntries = folderErrors)
+    }
+
+    private fun scanLabel(work: ScanWork, index: Int, total: Int): String = when (work) {
+        is ScanWork.Archive -> "Scanning ${index + 1}/$total: ${work.file.path}"
+        is ScanWork.Folder -> "Hashing ${work.root}"
+    }
+
+    private fun inspectScanWork(work: ScanWork,
+                                scan: LibraryScanPipeline.ScanContext<Game>): List<Game> =
+        when (work) {
+            is ScanWork.Archive -> inspectArchive(work.file, scan)
+            is ScanWork.Folder -> inspectFolder(work, scan)
+        }
+
+    private fun inspectArchive(item: DocumentTreeWalker.FileEntry,
+                               scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
+        val id = sha256(item.uri.toString())
+        val fingerprint = "${item.size}:${item.modified}"
+        val old = scan.prior[id]
+        var installer = old?.installer == true &&
+            !isInstalledArchive(item.path.substringAfterLast('/'))
+        val contentId = if (old != null && old.fingerprint == fingerprint &&
+            item.modified > 0 && old.contentId != null && old.error == null &&
+            (if (extension(item.path) in archiveExtensions)
+                old.contentId.startsWith("sha256-dos-manifest-v1:") else
+                old.contentId.startsWith("sha256-dos-file-v1:"))) old.contentId
+        else {
+            scan.hashStarted()
+            if (extension(item.path) in archiveExtensions) {
+                val inspection = DosContentHash.inspectZipDocument(
+                    context.contentResolver, item.uri, scan.cancelled)
+                    ?: copySource(item, scan.cancelled).let { temp ->
+                        try { DosContentHash.inspectZip(temp, scan.cancelled) }
+                        finally { temp.delete() }
+                    }
+                installer = inspection.exodosSource &&
+                    !isInstalledArchive(item.path.substringAfterLast('/'))
+                inspection.contentId
+            } else hashDocument(item, scan.cancelled)
+        }
+        return listOf(Game(id, item.uri.toString(), item.path, false, false,
+            fingerprint, contentId, null, installer))
+    }
+
+    private fun folderId(work: ScanWork.Folder) = sha256("${work.tree}\u0000${work.root}")
+
+    private fun folderFingerprint(work: ScanWork.Folder) =
+        sha256(work.members.sortedBy { it.path }.joinToString("\u0000") {
+            "${it.path}:${it.size}:${it.modified}"
+        })
+
+    private fun folderDisplay(work: ScanWork.Folder) = if (work.root == "@root")
+        work.tree.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':') ?: "DOS game"
+        else work.root
+
+    private fun folderUri(work: ScanWork.Folder): Uri = if (work.root == "@root") work.tree else {
+        val child = childId(work.tree, DocumentsContract.getTreeDocumentId(work.tree),
+            work.root, true) ?: error("Game folder was moved; refresh the library")
+        DocumentsContract.buildDocumentUriUsingTree(work.tree, child)
+    }
+
+    private fun inspectFolder(work: ScanWork.Folder,
+                              scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
+        val id = folderId(work)
+        val fingerprint = folderFingerprint(work)
+        val old = scan.prior[id]
+        val contentId = if (old != null && old.fingerprint == fingerprint &&
+            work.members.all { it.size >= 0 && it.modified > 0 } && old.contentId != null &&
+            old.contentId.startsWith("sha256-dos-manifest-v1:") && old.error == null) old.contentId
+        else {
+            scan.hashStarted()
+            DosContentHash.documents(context.contentResolver, work.members, scan.cancelled)
+        }
+        return listOf(Game(id, folderUri(work).toString(), folderDisplay(work), true,
+            work.root == "@root", fingerprint, contentId))
+    }
+
+    private fun failedScanWork(work: ScanWork, scan: LibraryScanPipeline.ScanContext<Game>,
+                               error: Exception): List<Game> = when (work) {
+        is ScanWork.Archive -> {
+            val item = work.file
+            val installer = scan.prior[sha256(item.uri.toString())]?.installer == true &&
+                !isInstalledArchive(item.path.substringAfterLast('/'))
+            listOf(Game(sha256(item.uri.toString()), item.uri.toString(), item.path,
+                false, false, "${item.size}:${item.modified}", null,
+                error.message ?: "Unreadable DOS game", installer))
+        }
+        is ScanWork.Folder -> listOf(Game(folderId(work),
+            runCatching { folderUri(work) }.getOrDefault(work.tree).toString(),
+            folderDisplay(work), true, work.root == "@root", folderFingerprint(work),
+            null, error.message ?: "Unreadable DOS folder"))
     }
 
     /** Materialize eXoDOS's ZIP extraction as a durable, separate archive. */
@@ -558,10 +596,6 @@ class DosLibrary(private val context: Context) {
         .put("rootFolder", game.rootFolder).put("fingerprint", game.fingerprint)
         .put("contentId", game.contentId ?: "").put("error", game.error ?: "")
         .put("installer", game.installer)
-
-    private fun saveStore(tree: Uri, games: List<Game>) {
-        storeCache.write(tree.toString(), games)
-    }
 
     private fun extension(path: String) = path.substringAfterLast('.', "").lowercase(Locale.ROOT)
     private val MAX_ARCHIVE_BYTES = 8L * 1024 * 1024 * 1024
