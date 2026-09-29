@@ -106,6 +106,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val handler = Handler(Looper.getMainLooper())
     private val preferences by lazy { getSharedPreferences("kairodos", MODE_PRIVATE) }
     private val gameSettings by lazy { GameSettingScope(preferences) }
+    private val dosGameSettings by lazy { DosPerGameSettings(preferences, gameSettings) }
     private val controllerProfiles by lazy {
         ControllerProfileStore(preferences, DosControllerBindings::parse,
             { DosControllerBindings.toJson(it).toString() })
@@ -448,13 +449,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
                         true) { showGameCpuSettings(entry) }) +
                     (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
-                        preferences.getString("launch_variant_${entry.contentId}", null)
+                        entry.contentId?.let(dosGameSettings::startupVariant)
                             ?: "Choose on first play", false) {
                         chooseLaunchVariant(entry, false)
                     }) else emptyList()) +
                     (if (DosLaunchConfig.needsPlayer(record.launch)) listOf(
                         GameSettingsRow("DOS player name",
-                            preferences.getString("dos_player_${entry.contentId}", null)
+                            entry.contentId?.let(dosGameSettings::playerName)
                                 ?: "Choose on first play", false) {
                             choosePlayerName(entry, null)
                         }) else emptyList()),
@@ -485,28 +486,30 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     GameSettingsRow(if (entry.folder) "Delete game folder" else "Delete game file",
                         "Permanently remove from device storage",
                         false, destructive = true) { confirmDeleteGame(entry) }) else emptyList())
-            ), { launch(entry) }, entry.contentId?.let { id -> {{
-                GameSettingsResetDialog.show(this, {
-                    catalog.resetOverrides(id)
-                    gameSettings.clear(id, "touch_mode", "direct_touch", "cycles_mode")
-                    preferences.edit().remove("controller_game_$id")
-                        .remove("launch_variant_$id").remove("dos_player_$id").apply()
-                    if (currentGame?.contentId == id) {
-                        gamepad.bindings = loadControllerBindings(currentGame)
-                        inputModeDecider.reset()
-                        configureGuest()
-                    }
-                    libraryScreen.showEntries(games)
-                }, { failure -> Ui.message(this,
-                    failure.message ?: "Could not reset game settings") })
-            }} }, { Ui.message(this, "Hash this game before saving settings") })
+            ), { launch(entry) }, entry.contentId?.let { id ->
+                { confirmResetGameSettings(id) }
+            }, { Ui.message(this, "Hash this game before saving settings") })
+    }
+
+    private fun confirmResetGameSettings(id: String) {
+        GameSettingsResetDialog.show(this, {
+            catalog.resetOverrides(id)
+            dosGameSettings.reset(id)
+            if (currentGame?.contentId == id) {
+                gamepad.bindings = loadControllerBindings(currentGame)
+                inputModeDecider.reset()
+                configureGuest()
+            }
+            libraryScreen.showEntries(games)
+        }, { failure -> Ui.message(this,
+            failure.message ?: "Could not reset game settings") })
     }
 
     private fun launch(game: DosLibrary.Game, fromFrontend: Boolean = false) {
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
         val variants = launch?.configs?.keys.orEmpty()
         if (variants.size > 1) {
-            val saved = preferences.getString("launch_variant_${game.contentId}", null)
+            val saved = game.contentId?.let(dosGameSettings::startupVariant)
             if (saved !in variants) {
                 chooseLaunchVariant(game, true, fromFrontend)
                 return
@@ -554,7 +557,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             .setItems(names.map { if (it == "dosbox.conf") "Default" else it }.toTypedArray())
             { _, index ->
                 val selected = names[index]
-                preferences.edit().putString("launch_variant_${game.contentId}", selected).apply()
+                game.contentId?.let { dosGameSettings.setStartupVariant(it, selected) }
                 if (play) startGame(game, selected, fromFrontend)
                 else showGameDetails(game)
             }.setNegativeButton("Cancel", null).show()
@@ -569,12 +572,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         if (!game.playable) return
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
-        val playerKey = "dos_player_${game.contentId}"
-        if (DosLaunchConfig.needsPlayer(launch) && preferences.getString(playerKey, null) == null) {
+        if (DosLaunchConfig.needsPlayer(launch) &&
+            game.contentId?.let(dosGameSettings::playerName) == null) {
             choosePlayerName(game, configName, fromFrontend)
             return
         }
-        val playerName = preferences.getString(playerKey, null)
+        val playerName = game.contentId?.let(dosGameSettings::playerName)
         val mountsParent = launch?.let { DosLaunchConfig.mountsParent(it, configName) } == true
         val availableGames = games.toList()
         val generation = ++launchGeneration
@@ -679,19 +682,19 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun choosePlayerName(game: DosLibrary.Game, playConfig: String?,
                                  fromFrontend: Boolean = false) {
-        val key = "dos_player_${game.contentId}"
+        val id = game.contentId ?: return
         val input = EditText(this).apply {
             hint = "1–8 letters, digits, or underscores"
             inputType = android.text.InputType.TYPE_CLASS_TEXT or
                 android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-            setText(preferences.getString(key, "PLAYER"))
+            setText(dosGameSettings.playerName(id) ?: "PLAYER")
             selectAll()
         }
         AlertDialog.Builder(this).setTitle("DOS player name").setView(input)
             .setPositiveButton(if (playConfig == null) "Save" else "Play") { _, _ ->
                 val name = input.text.toString().trim().uppercase(java.util.Locale.ROOT)
                 if (name.matches(Regex("[A-Z0-9_]{1,8}"))) {
-                    preferences.edit().putString(key, name).apply()
+                    dosGameSettings.setPlayerName(id, name)
                     if (playConfig == null) showGameDetails(game)
                     else startGame(game, playConfig, fromFrontend)
                 } else Ui.message(this, "Use 1–8 letters, digits, or underscores")
@@ -874,27 +877,26 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.physicalBindings = physicalControllerBindings()
     }
 
-    private fun controllerKey(game: DosLibrary.Game) = "controller_game_${game.contentId}"
-
     private fun loadControllerBindings(game: DosLibrary.Game?): List<ControllerBinding> =
         if (game?.contentId == null) globalControllerBindings()
-        else preferences.getString(controllerKey(game), null)?.let(DosControllerBindings::parse)
+        else dosGameSettings.controllerBindings(game.contentId)?.let(DosControllerBindings::parse)
             ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
                 "doom-v1" -> DosControllerBindings.doom()
                 else -> globalControllerBindings()
             }
 
     private fun saveControllerBindings(game: DosLibrary.Game?, bindings: List<ControllerBinding>) {
-        val key = game?.takeIf { it.contentId != null }?.let(::controllerKey)
-        if (key == null) controllerProfiles.saveGlobal(bindings)
-        else preferences.edit().putString(key, DosControllerBindings.toJson(bindings).toString()).apply()
+        val id = game?.contentId
+        if (id == null) controllerProfiles.saveGlobal(bindings)
+        else dosGameSettings.setControllerBindings(id,
+            DosControllerBindings.toJson(bindings).toString())
         gamepad.bindings = loadControllerBindings(currentGame)
     }
 
     private fun resetControllerBindings(game: DosLibrary.Game?) {
-        val key = game?.takeIf { it.contentId != null }?.let(::controllerKey)
-        if (key == null) controllerProfiles.resetGlobal()
-        else preferences.edit().remove(key).apply()
+        val id = game?.contentId
+        if (id == null) controllerProfiles.resetGlobal()
+        else dosGameSettings.clearControllerBindings(id)
         gamepad.bindings = loadControllerBindings(currentGame)
     }
 
