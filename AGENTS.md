@@ -16,6 +16,7 @@
 
 # Local Kairo98 signing and device updates
 
+- Installed app IDs are `com.loxifi.kairo98` and `com.loxifi.kairodos`; their launch activities retain the `com.mrjackspade` namespace. Always update the existing app with `adb install -r` and verify its installed package before testing. Do not install a second application ID. The obsolete `com.mrjackspade.kairo98` package was removed from the Retroid on September 29, 2026; both devices now have only `com.loxifi.kairo98`.
 - The companion Kairo98 checkout is at `C:\Users\Service Account\Kairo98`. Its existing update key is `.downloads\ci-signing\kairo98-beta.p12`; its password source is the adjacent `password.txt`. These are local, ignored files. Read the password into `KAIRO98_BETA_PASSWORD` for the build without printing it, and set `KAIRO98_BETA_KEYSTORE` to the absolute `.p12` path. Do not commit either file or the password.
 - Kairo98's `kairo98/build.gradle.kts` uses those environment variables for the `beta` signing config, including debug builds. Build `:kairo98:assembleWithImagesDebug` with the variables set, then install `kairo98/build/outputs/apk/withImages/debug/kairo98-withImages-debug.apk` with `adb install -r`. An ordinary debug APK uses a different key and cannot update the existing installations on the Retroid or RGDS.
 - Keep Kairo98's pinned `shared/` submodule on the same first-party Kairo commit as KairoDos when changing shared controller code. Build both apps and update both devices after such changes.

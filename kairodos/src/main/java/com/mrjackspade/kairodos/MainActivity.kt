@@ -27,7 +27,9 @@ import com.mrjackspade.kairo.frontend.AboutDocuments
 import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.InputModeDecider
 import com.mrjackspade.kairo.frontend.MouseInputRouter
-import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
+import com.mrjackspade.kairo.frontend.TouchSettingsCoordinator
+import com.mrjackspade.kairo.frontend.TouchSettingsStore
+import com.mrjackspade.kairo.frontend.TouchUiCoordinator
 import com.mrjackspade.kairo.frontend.ArtworkOverrideEditor
 import com.mrjackspade.kairo.frontend.TouchInputPolicy
 import com.mrjackspade.kairo.frontend.TouchInputSelection
@@ -181,6 +183,53 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { if (currentGame != null) openMenu() else finish() })
     }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
+    private val touchUi by lazy {
+        TouchUiCoordinator(this, libraryScreen,
+            { currentGame != null && libraryScreen.visibility != View.VISIBLE },
+            { ::secondaryDisplay.isInitialized && secondaryDisplay.isKeyboardVisible },
+            ::updateSurfaceLayout, ::refreshControllerUi)
+    }
+    private val touchSettingsCoordinator by lazy {
+        TouchSettingsCoordinator(this, object : TouchSettingsStore<DosLibrary.Game> {
+            override fun global() = TouchInputSelection(
+                touchMode(preferences.getInt("touch_mode", 2)),
+                preferences.getBoolean("direct_touch", false))
+            override fun game(game: DosLibrary.Game) = touchSelection(game).selection
+            override fun saveGlobal(value: TouchInputSelection) {
+                preferences.edit().putInt("touch_mode", touchModeIndex(value.mode))
+                    .putBoolean("direct_touch", value.directTouch).apply()
+                configureGuest()
+            }
+            override fun saveGame(game: DosLibrary.Game, value: TouchInputSelection,
+                                  secondaryTouchpad: Boolean?) {
+                val id = game.contentId ?: return
+                gameSettings.setInt(id, "touch_mode", touchModeIndex(value.mode))
+                gameSettings.setBoolean(id, "direct_touch", value.directTouch)
+                if (currentGame?.contentId == id) {
+                    inputModeDecider.reset()
+                    configureGuest()
+                }
+            }
+            override fun resetGame(game: DosLibrary.Game) {
+                val id = game.contentId ?: return
+                gameSettings.clear(id, "touch_mode", "direct_touch")
+                if (currentGame?.contentId == id) {
+                    inputModeDecider.reset()
+                    configureGuest()
+                }
+            }
+        }, DosLibrary.Game::contentId,
+            listOf(InputModeDecider.Mode.MOUSE, InputModeDecider.Mode.KEYBOARD,
+                InputModeDecider.Mode.AUTO),
+            listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
+                "Auto (follows what the game reads)"),
+            "DOS touch input", { game ->
+                "Touch input · ${catalog.resolve(game.contentId ?: "", game.displayName).title}"
+            }, "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your " +
+                "finger; some games require relative movement.",
+            resetLabel = "Use global settings",
+            noHash = { Ui.message(this, "Hash this game before saving settings") })
+    }
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
     private lateinit var controllerEditor: ControllerEditor<DosLibrary.Game>
@@ -756,16 +805,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         display.holder.addCallback(this)
         display.setOnTouchListener(::handleGameTouch)
         lateinit var panel: GuestKeyboardPanel
-        panel = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, { panel.close() },
-            mouse = mouse, mouseReferenceSize = { 640 to 400 },
-            onVisibilityChanged = {
-                refreshControllerUi()
-                if (panel.visibility == View.VISIBLE) handler.postDelayed({
-                    if (panel.visibility == View.VISIBLE) ImmersiveWindow.hideBars(this)
-                }, 350)
-            })
+        panel = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value,
+            { touchUi.hideKeyboard() }, mouse = mouse,
+            mouseReferenceSize = { 640 to 400 })
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
+        touchUi.bind(panel)
         onScreenControls?.bindGuestKeyboard(panel)
         swappedKeyboard = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, {},
             showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse)
@@ -796,7 +841,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             },
             SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
                 closeMenu()
-                if (!secondaryDisplay.isShowing) panel.open()
+                if (!secondaryDisplay.isShowing) touchUi.showKeyboard()
             },
             SettingsEntry("Exit", { "Stop the game and close KairoDos" }) {
                 confirmExit()
@@ -885,8 +930,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         secondaryDisplay.setAppearance(showingGuest, Color.BLACK)
         if (showingGuest) ImmersiveWindow.hideBars(this)
         if (currentGame != null) nativePause(blocked || userPaused)
-        onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
-            !secondaryDisplay.swapped)
+        touchUi.refreshControls(onScreenControls,
+            currentGame != null && !blocked && !userPaused, secondaryDisplay.swapped)
     }
 
     private fun onSecondarySwapChanged(swapped: Boolean) {
@@ -967,7 +1012,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 abs(event.x - lastX) + abs(event.y - lastY) > Ui.dp(this, 12)) moved = true
             if (event.actionMasked == MotionEvent.ACTION_UP && !moved &&
                 !secondaryDisplay.isKeyboardVisible)
-                keyboard?.open()
+                touchUi.showKeyboard()
             return true
         }
         val direct = effectiveDirectTouch()
@@ -1008,19 +1053,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showSettings() {
-        val modeNames = listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
-            "Auto (follows what the game reads)")
-        val dialog = TouchInputSettingsDialog.builder(this, TouchInputSettingsDialog.Options(
-            title = "DOS touch input",
-            modeLabels = modeNames,
-            modeIndex = preferences.getInt("touch_mode", 2).coerceIn(0, 2),
-            directTouch = preferences.getBoolean("direct_touch", false),
-            directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.",
-            onSave = { mode, direct, _ ->
-                preferences.edit().putInt("touch_mode", mode).putBoolean("direct_touch", direct).apply()
-                configureGuest()
-            }
-        )).setNeutralButton("CPU speed") { _, _ -> showCpuSettings() }.create()
+        val dialog = touchSettingsCoordinator.builder()
+            ?.setNeutralButton("CPU speed") { _, _ -> showCpuSettings() }?.create()
+            ?: return
         dialog.show()
         Ui.styleDialog(dialog)
     }
@@ -1057,31 +1092,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showGameTouchSettings(game: DosLibrary.Game) {
-        val id = game.contentId ?: return
-        val dialog = TouchInputSettingsDialog.builder(this, TouchInputSettingsDialog.Options(
-            title = "Touch input · ${catalog.resolve(id, game.displayName).title}",
-            modeLabels = listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
-                "Auto (follows what the game reads)"),
-            modeIndex = effectiveTouchMode(game),
-            directTouch = effectiveDirectTouch(game),
-            directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.",
-            onSave = { mode, direct, _ ->
-                gameSettings.setInt(id, "touch_mode", mode)
-                gameSettings.setBoolean(id, "direct_touch", direct)
-                if (currentGame?.contentId == id) {
-                    inputModeDecider.reset()
-                    configureGuest()
-                }
-            },
-            onReset = {
-                gameSettings.clear(id, "touch_mode", "direct_touch")
-                if (currentGame?.contentId == id) {
-                    inputModeDecider.reset()
-                    configureGuest()
-                }
-            },
-            resetLabel = "Use global settings"
-        )).create()
+        val dialog = touchSettingsCoordinator.builder(game)?.create() ?: return
         dialog.show()
         Ui.styleDialog(dialog)
     }
@@ -1356,9 +1367,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 gameSettings.boolean(id, "direct_touch", false) else null)
     }
 
-    private fun effectiveTouchMode(game: DosLibrary.Game? = currentGame) =
-        touchModeIndex(touchSelection(game).selection.mode)
-
     private fun effectiveDirectTouch(game: DosLibrary.Game? = currentGame) =
         touchSelection(game).selection.directTouch
 
@@ -1399,7 +1407,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 edgeSwipes.replay(event, ::dispatchGuestTouch)
             EdgeSwipeNavigation.Result.OPEN_MENU -> { openMenu(); true }
             EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> {
-                if (!secondaryDisplay.isKeyboardVisible) keyboard?.open()
+                touchUi.showKeyboard()
                 true
             }
             EdgeSwipeNavigation.Result.CLOSE_MENU -> {
