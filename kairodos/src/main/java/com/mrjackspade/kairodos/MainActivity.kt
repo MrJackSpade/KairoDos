@@ -68,6 +68,7 @@ import com.mrjackspade.kairo.frontend.PhysicalControllerBinding
 import com.mrjackspade.kairo.frontend.PhysicalControllerBindings
 import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
+import com.mrjackspade.kairo.frontend.GameDeletionFlow
 import android.graphics.BitmapFactory
 import android.widget.ImageView
 import android.widget.EditText
@@ -524,33 +525,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun confirmDeleteGame(entry: DosLibrary.Game) {
-        if (currentGame?.uri == entry.uri) {
+        if (currentGame?.id == entry.id) {
             Ui.message(this, "Exit this game before deleting its source")
             return
         }
         val kind = if (entry.folder) "folder and everything inside it" else "file"
-        val dialog = AlertDialog.Builder(this).setTitle("Permanently delete game $kind?")
-            .setMessage("Delete ${entry.path} from device storage?\n\n" +
-                "This permanently removes the $kind. This cannot be undone. " +
-                "Game settings and saves are kept.")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Delete") { _, _ ->
-                libraryScreen.showStatus("Deleting ${entry.path}…")
-                Thread {
-                    val result = runCatching { dosLibrary.deleteSource(entry) }
-                    runOnUiThread {
-                        result.onSuccess {
-                            libraryScreen.closeDetail()
-                            refreshLibrary(false)
-                        }.onFailure { failure ->
-                            Ui.message(this, failure.message ?: "Could not delete game file")
-                        }
-                    }
-                }.apply { name = "KairoDos-delete-game"; start() }
-            }.create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Ui.DANGER)
+        GameDeletionFlow.show(this, libraryScreen,
+            GameDeletionFlow.Prompt(entry.path, kind,
+                "This permanently removes the $kind. "),
+            "KairoDos-delete-game", { dosLibrary.deleteSource(entry) },
+            { refreshLibrary(false) }, { Ui.message(this, it) })
     }
 
     private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean,

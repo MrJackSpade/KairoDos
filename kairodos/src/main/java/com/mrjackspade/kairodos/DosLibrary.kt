@@ -172,7 +172,12 @@ class DosLibrary(private val context: Context) {
             val display = if (root == "@root")
                 tree.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':') ?: "DOS game"
                 else root
-            output.add(Game(id, tree.toString(), display, true, root == "@root",
+            val sourceUri = if (root == "@root") tree else {
+                val child = childId(tree, DocumentsContract.getTreeDocumentId(tree), root, true)
+                    ?: error("Game folder was moved; refresh the library")
+                DocumentsContract.buildDocumentUriUsingTree(tree, child)
+            }
+            output.add(Game(id, sourceUri.toString(), display, true, root == "@root",
                 fingerprint, contentId, failure))
         }
         source.folders.forEach { folder ->
