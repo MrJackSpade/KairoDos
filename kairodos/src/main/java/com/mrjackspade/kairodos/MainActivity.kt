@@ -36,6 +36,7 @@ import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.FirstRunScreen
 import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
+import com.mrjackspade.kairo.frontend.GuestLifecycleCoordinator
 import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
@@ -128,6 +129,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
     private val controllerDevices by lazy { ControllerDeviceMonitor(this, gamepad) }
+    private val guestLifecycle by lazy {
+        GuestLifecycleCoordinator(::releaseGuestInputs, ::refreshControllerUi,
+            { audio?.pause() }, { if (currentGame != null) audio?.play() })
+    }
     private val backCoordinator by lazy {
         FrontendBackCoordinator(this, firstRunScreen, { onScreenControls },
             controllerEditor, libraryScreen,
@@ -170,6 +175,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var lastY = 0f
     private var moved = false
     private var twoFingers = false
+    private var directPointerPressed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -843,7 +849,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun refreshControllerUi() {
         val blocked = controllerEditor.isOpen || onScreenControls?.isOpen == true ||
-            sessionFlow?.isOpen == true || libraryScreen.visibility == View.VISIBLE
+            sessionFlow?.isOpen == true || libraryScreen.visibility == View.VISIBLE ||
+            !guestLifecycle.isVisible
         if (currentGame != null) nativePause(blocked || userPaused)
         onScreenControls?.refreshVisibility(currentGame != null && !blocked && !userPaused &&
             keyboard?.visibility != View.VISIBLE)
@@ -991,8 +998,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (direct) {
             val x = ((event.x / view.width.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
             val y = ((event.y / view.height.coerceAtLeast(1)) * 65534 - 32767).roundToInt()
-            nativePointer(x, y, event.actionMasked != MotionEvent.ACTION_UP &&
-                event.actionMasked != MotionEvent.ACTION_CANCEL)
+            directPointerPressed = event.actionMasked != MotionEvent.ACTION_UP &&
+                event.actionMasked != MotionEvent.ACTION_CANCEL
+            nativePointer(x, y, directPointerPressed)
             return true
         }
         when (event.actionMasked) {
@@ -1525,35 +1533,30 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.releaseAll()
         keys.releaseAll()
         mouse.releasePrefix("touch-")
-    }
-
-    private fun suspendGuest() {
-        releaseGuestInputs()
-        nativePause(true)
-        audio?.pause()
+        if (directPointerPressed) {
+            directPointerPressed = false
+            nativePointer(0, 0, false)
+        }
     }
 
     override fun onPause() {
-        suspendGuest()
+        guestLifecycle.onPause()
         super.onPause()
     }
 
     override fun onStop() {
-        suspendGuest()
+        guestLifecycle.onStop()
         super.onStop()
     }
 
     override fun onResume() {
         super.onResume()
-        if (currentGame != null) {
-            refreshControllerUi()
-            audio?.play()
-        }
+        guestLifecycle.onResume()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (!hasFocus) releaseGuestInputs()
+        guestLifecycle.onWindowFocusChanged(hasFocus)
     }
 
     override fun onDestroy() {
