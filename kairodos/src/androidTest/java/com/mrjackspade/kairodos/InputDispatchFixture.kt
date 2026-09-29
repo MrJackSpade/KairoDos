@@ -114,5 +114,24 @@ object InputDispatchFixture {
         check(lifecycle.isVisible && audioResumed == 1)
         check(lifecycle.onStop() && !lifecycle.isVisible && resets == 1)
         check(frontendCalls > 0)
+
+        val session = SessionNavigationState()
+        check(session.presentation(true, false, false, false).pauseGuest)
+        session.enterGame()
+        check(!session.presentation(true, false, false, false).pauseGuest)
+        session.userPaused = true
+        val paused = session.presentation(true, false, false, false)
+        check(paused.pauseGuest && paused.showGuest) { "Pause hid the guest display/keyboard" }
+        session.showLibrary()
+        check(!session.presentation(true, false, false, false).showGuest)
+        session.enterGame()
+        check(session.userPaused) { "Library resume discarded the user's pause" }
+        session.userPaused = false
+        for (blocked in listOf(session.presentation(false, false, false, false),
+                session.presentation(true, true, false, false),
+                session.presentation(true, false, true, false),
+                session.presentation(true, false, false, true))) {
+            check(blocked.pauseGuest && !blocked.showGuest)
+        }
     }
 }

@@ -56,6 +56,8 @@ import com.mrjackspade.kairo.frontend.SettingsEntry
 import com.mrjackspade.kairo.frontend.SessionAction
 import com.mrjackspade.kairo.frontend.SessionDrawer
 import com.mrjackspade.kairo.frontend.SessionFlow
+import com.mrjackspade.kairo.frontend.SessionNavigationCoordinator
+import com.mrjackspade.kairo.frontend.SessionNavigationState
 import com.mrjackspade.kairo.frontend.SessionStatusDialog
 import com.mrjackspade.kairo.frontend.StateSlotCoordinator
 import com.mrjackspade.kairo.frontend.StateSlotStore
@@ -179,7 +181,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
-    private val inputDispatch by lazy {
+    private val inputDispatch: InputDispatchCoordinator by lazy {
         InputDispatchCoordinator(FrontendInputScreens(
             { if (::firstRunScreen.isInitialized) firstRunScreen else null },
             { onScreenControls },
@@ -194,18 +196,34 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }, ::releaseTouchInputs)
     }
     private val controllerDevices by lazy { ControllerDeviceMonitor(this, inputDispatch::releaseDevice) }
-    private val guestLifecycle by lazy {
+    private val guestLifecycle: GuestLifecycleCoordinator by lazy {
         GuestLifecycleCoordinator(::releaseGuestInputs, ::refreshControllerUi,
             { audio?.pause() }, { if (currentGame != null) audio?.play() },
             companionActive = { secondaryDisplay.isCompanionActive },
             resetGestures = edgeSwipes::reset)
     }
-    private val backCoordinator by lazy {
+    private val backCoordinator: FrontendBackCoordinator by lazy {
         FrontendBackCoordinator(this, firstRunScreen, { onScreenControls },
             controllerEditor, libraryScreen,
-            { if (currentGame != null) resumeGameFromLibrary() else finish() },
+            { if (!sessionNavigation.resumeGame()) finish() },
             { sessionFlow }, ::closeMenu, { keyboard },
-            { if (currentGame != null) openMenu() else finish() })
+            { if (currentGame != null) openMenu() else finish() },
+            { touchUi.hideKeyboard() })
+    }
+    private val sessionState = SessionNavigationState()
+    private val sessionNavigation: SessionNavigationCoordinator by lazy {
+        SessionNavigationCoordinator(sessionState, libraryScreen, { sessionFlow },
+            { currentGame != null }, { sessionFromFrontend }, { leaveGame() }, edgeSwipes::reset,
+            {
+                releaseGuestInputs()
+                touchUi.hideKeyboard()
+                swappedKeyboard?.close()
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }, {
+                librarySelectionGeneration++
+                secondaryDisplay.setLibraryInfo(null)
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() })
     }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private val touchUi by lazy {
@@ -308,7 +326,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var sessionGameTitle: String? = null
     private var sessionDrawer: SessionDrawer? = null
     private var sessionFlow: SessionFlow? = null
-    private var userPaused = false
+    private var userPaused: Boolean
+        get() = sessionState.userPaused
+        set(value) { sessionState.userPaused = value }
     private val edgeSwipes by lazy { EdgeSwipeNavigation(resources.displayMetrics.density) }
     private var lastX = 0f
     private var lastY = 0f
@@ -404,39 +424,17 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showLibrary() {
         librarySelectionGeneration++
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         currentGame = null
         gameRoot?.let(appRoot::removeView)
         gameRoot = null
-        libraryScreen.visibility = View.VISIBLE
-        libraryFlow.show()
-        refreshControllerUi()
+        sessionNavigation.showLibrary()
     }
 
     private fun openLibraryOverGame() {
-        if (currentGame == null) return
-        if (sessionFromFrontend) { leaveGame(); return }
-        edgeSwipes.reset()
-        libraryScreen.visibility = View.VISIBLE
-        refreshControllerUi()
-        sessionFlow?.reset()
-        keyboard?.close()
-        swappedKeyboard?.close()
-        releaseGuestInputs()
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        libraryFlow.show()
-        refreshControllerUi()
+        if (currentGame != null) sessionNavigation.showLibrary()
     }
 
-    private fun resumeGameFromLibrary() {
-        librarySelectionGeneration++
-        secondaryDisplay.setLibraryInfo(null)
-        libraryScreen.dismissSystemKeyboard()
-        libraryScreen.visibility = View.GONE
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        refreshControllerUi()
-        surface?.requestFocus()
-    }
+    private fun resumeGameFromLibrary() { sessionNavigation.resumeGame() }
 
     private fun chooseFolder() = libraryFlow.chooseFolder()
 
@@ -800,10 +798,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
         sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
-        libraryScreen.dismissSystemKeyboard()
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
-        libraryScreen.visibility = View.GONE
+        sessionNavigation.enterGame(notify = false)
         restoreGameFullscreen()
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
@@ -935,10 +932,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun refreshControllerUi() {
         if (relocating || !::secondaryDisplay.isInitialized ||
             !::libraryFlow.isInitialized || !::controllerEditor.isInitialized) return
-        val blocked = controllerEditor.isOpen || onScreenControls?.isOpen == true ||
-            sessionFlow?.isOpen == true || libraryScreen.visibility == View.VISIBLE ||
-            !guestLifecycle.isVisible
-        val showingGuest = currentGame != null && !blocked && !userPaused
+        val presentation = sessionState.presentation(guestLifecycle.isVisible,
+            sessionFlow?.isOpen == true, controllerEditor.isOpen || onScreenControls?.isOpen == true,
+            preparing = false)
+        val showingGuest = currentGame != null && presentation.showGuest
         if (libraryScreen.visibility != View.VISIBLE) {
             librarySelectionGeneration++
             secondaryDisplay.setLibraryInfo(null)
@@ -948,9 +945,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         } else if (swappedKeyboard?.visibility == View.VISIBLE) swappedKeyboard?.close()
         secondaryDisplay.setAppearance(showingGuest, Color.BLACK)
         if (showingGuest) ImmersiveWindow.hideBars(this)
-        if (currentGame != null) nativePause(blocked || userPaused)
-        touchUi.refreshControls(onScreenControls,
-            currentGame != null && !blocked && !userPaused, secondaryDisplay.swapped)
+        if (currentGame != null) nativePause(presentation.pauseGuest)
+        touchUi.refreshControls(onScreenControls, showingGuest, secondaryDisplay.swapped)
     }
 
     private fun onSecondarySwapChanged(swapped: Boolean) {
