@@ -44,6 +44,8 @@ import com.mrjackspade.kairo.frontend.SessionAction
 import com.mrjackspade.kairo.frontend.SessionDrawer
 import com.mrjackspade.kairo.frontend.SessionFlow
 import com.mrjackspade.kairo.frontend.SessionStatusDialog
+import com.mrjackspade.kairo.frontend.StateSlotDialog
+import com.mrjackspade.kairo.frontend.SurfaceThumbnail
 import com.mrjackspade.kairo.frontend.GameSettingsRow
 import com.mrjackspade.kairo.frontend.GameSettingsSheet
 import com.mrjackspade.kairo.frontend.GameSettingsResetDialog
@@ -1192,6 +1194,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         return File(filesDir, "states/$key/slot$slot.state")
     }
 
+    private fun stateThumbnailFile(game: DosLibrary.Game, slot: Int): File =
+        File(stateFile(game, slot).parentFile, "slot$slot.png")
+
     private fun showStateSlots(saving: Boolean) {
         val game = currentGame?.takeIf { it.contentId != null }
         if (game == null || nativeStatus() != 2) {
@@ -1199,34 +1204,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         if (stateBusy) return
-        val format = java.text.DateFormat.getDateTimeInstance(
-            java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT)
-        val labels = (1..4).map { slot ->
+        val slots = (1..4).map { slot ->
             val saved = stateFile(game, slot).takeIf { it.isFile }
-            "Slot $slot · " + (saved?.let { format.format(java.util.Date(it.lastModified())) }
-                ?: "Empty")
-        }.toTypedArray()
-        val dialog = AlertDialog.Builder(this)
-            .setTitle((if (saving) "Save state" else "Load state") + " · ${sessionGameTitle ?: game.displayName}")
-            .setItems(labels) { _, index ->
-                val slot = index + 1
-                val existing = stateFile(game, slot).isFile
-                if (!saving && !existing) {
-                    Ui.message(this, "Slot $slot is empty")
-                } else if (existing) {
-                    val confirm = AlertDialog.Builder(this)
-                        .setTitle(if (saving) "Overwrite slot $slot?" else "Load slot $slot?")
-                        .setMessage(if (saving) "The current save in this slot is replaced."
-                            else "Progress since that save is lost.")
-                        .setPositiveButton(if (saving) "Overwrite" else "Load") { _, _ ->
-                            if (saving) saveState(game, slot) else loadState(game, slot)
-                        }.setNegativeButton("Cancel", null).create()
-                    confirm.show()
-                    Ui.styleDialog(confirm)
-                } else saveState(game, slot)
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
+            StateSlotDialog.Slot(slot, saved?.lastModified(), saved?.let {
+                BitmapFactory.decodeFile(stateThumbnailFile(game, slot).absolutePath)
+            })
+        }
+        StateSlotDialog.show(this, sessionGameTitle ?: game.displayName, saving, slots,
+            { saveState(game, it) }, { loadState(game, it) })
     }
 
     private fun stateError(code: Int) = when (code) {
@@ -1240,10 +1225,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (stateBusy) return
         stateBusy = true
         statusLabel?.text = "Saving slot $slot…"
-        Thread {
+        SurfaceThumbnail.capture(surface, handler) { thumbnail -> Thread {
             val target = stateFile(game, slot)
             val scratch = File(target.parentFile, "slot$slot.part")
             val previous = File(target.parentFile, "slot$slot.old")
+            var saved = false
             val result = runCatching {
                 require(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs())
                 scratch.delete()
@@ -1257,15 +1243,32 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     error("Could not store the save")
                 }
                 previous.delete()
+                saved = true
                 "Saved to slot $slot"
             }.getOrElse { "Save failed: ${it.message ?: "storage error"}" }
             scratch.delete()
+            if (saved) {
+                val previewFile = stateThumbnailFile(game, slot)
+                if (thumbnail == null) previewFile.delete()
+                else runCatching {
+                    val atomic = android.util.AtomicFile(previewFile)
+                    val stream = atomic.startWrite()
+                    try {
+                        check(thumbnail.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream))
+                        atomic.finishWrite(stream)
+                    } catch (error: Exception) {
+                        atomic.failWrite(stream)
+                        throw error
+                    }
+                }
+            }
+            thumbnail?.recycle()
             runOnUiThread {
                 stateBusy = false
                 statusLabel?.text = result
                 Ui.message(this, result)
             }
-        }.apply { name = "KairoDos-save-state"; start() }
+        }.apply { name = "KairoDos-save-state"; start() } }
     }
 
     private fun loadState(game: DosLibrary.Game, slot: Int) {
