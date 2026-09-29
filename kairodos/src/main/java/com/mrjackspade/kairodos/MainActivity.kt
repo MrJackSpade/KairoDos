@@ -129,49 +129,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private lateinit var firstRunScreen: FirstRunScreen
     private val controllerDevices by lazy { ControllerDeviceMonitor(this, gamepad) }
     private val backCoordinator by lazy {
-        FrontendBackCoordinator(this, listOf(
-            {
-                if (!firstRunScreen.isOpen) false else {
-                    firstRunScreen.back()
-                    true
-                }
-            },
-            {
-                if (onScreenControls?.isOpen != true) false else {
-                    onScreenControls?.back()
-                    true
-                }
-            },
-            {
-                if (!controllerEditor.isOpen) false else {
-                    controllerEditor.back()
-                    true
-                }
-            },
-            {
-                if (libraryScreen.visibility != View.VISIBLE) false else {
-                    when {
-                        libraryScreen.closeDetail() -> Unit
-                        libraryScreen.closeActions() -> Unit
-                        currentGame != null -> resumeGameFromLibrary()
-                        else -> finish()
-                    }
-                    true
-                }
-            },
-            {
-                if (sessionFlow?.isOpen != true) false else {
-                    closeMenu()
-                    true
-                }
-            },
-            {
-                if (keyboard?.visibility != View.VISIBLE) false else {
-                    keyboard?.close()
-                    true
-                }
-            }
-        ), { if (currentGame != null) openMenu() else finish() })
+        FrontendBackCoordinator(this, firstRunScreen, { onScreenControls },
+            controllerEditor, libraryScreen,
+            { if (currentGame != null) resumeGameFromLibrary() else finish() },
+            { sessionFlow }, ::closeMenu, { keyboard },
+            { if (currentGame != null) openMenu() else finish() })
     }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private lateinit var appRoot: FrameLayout
