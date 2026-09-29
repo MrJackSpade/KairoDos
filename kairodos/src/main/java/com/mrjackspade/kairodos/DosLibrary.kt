@@ -61,9 +61,8 @@ class DosLibrary(private val context: Context) {
     private val executableExtensions = setOf("exe", "com", "bat")
     private val otherExtensions = setOf("iso", "chd", "img", "ima", "vhd", "jrc")
 
-    fun cached(tree: Uri): List<Game> = readStore().let { (source, entries) ->
-        if (source == tree.toString()) entries else emptyList()
-    }
+    fun cached(tree: Uri): List<Game> =
+        storeCache.readForTree(tree.toString())?.entries.orEmpty()
 
     /** Inspect a launcher-provided file using the same content IDs as a library scan. */
     fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean): Game {
@@ -536,9 +535,6 @@ class DosLibrary(private val context: Context) {
         if (source.size >= 0) require(total == source.size) { "Game changed while hashing" }
         return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
     }
-
-    private fun readStore(): Pair<String?, List<Game>> =
-        storeCache.read()?.let { it.treeUri to it.entries } ?: (null to emptyList())
 
     private fun decodeCacheEntry(item: JSONObject): Game? {
         val id = item.optString("id")
