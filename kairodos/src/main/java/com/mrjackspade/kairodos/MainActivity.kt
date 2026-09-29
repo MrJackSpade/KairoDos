@@ -41,10 +41,11 @@ import com.mrjackspade.kairo.frontend.LibraryFlow
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.ExternalGameDispatcher
 import com.mrjackspade.kairo.frontend.FirstRunScreen
-import com.mrjackspade.kairo.frontend.FrontendNavigation
 import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
 import com.mrjackspade.kairo.frontend.GuestLifecycleCoordinator
 import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
+import com.mrjackspade.kairo.frontend.InputDispatchCoordinator
+import com.mrjackspade.kairo.frontend.FrontendInputScreens
 import com.mrjackspade.kairo.frontend.SecondaryDisplayCoordinator
 import com.mrjackspade.kairo.frontend.RgDsDisplayRouter
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
@@ -178,10 +179,26 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
-    private val controllerDevices by lazy { ControllerDeviceMonitor(this, gamepad) }
+    private val inputDispatch by lazy {
+        InputDispatchCoordinator(FrontendInputScreens(
+            { if (::firstRunScreen.isInitialized) firstRunScreen else null },
+            { onScreenControls },
+            { if (::controllerEditor.isInitialized) controllerEditor else null },
+            { if (::libraryFlow.isInitialized) libraryScreen else null },
+            { sessionDrawer }, { currentGame != null }, backCoordinator::handle, ::closeMenu),
+            gamepad, keys, ::mapKey, backCoordinator::handle,
+            { if (sessionFlow?.isOpen == true) closeMenu() else openMenu() },
+            {
+                if (::appRoot.isInitialized && appRoot.isInTouchMode)
+                    (currentFocus ?: appRoot).requestFocusFromTouch()
+            }, ::releaseTouchInputs)
+    }
+    private val controllerDevices by lazy { ControllerDeviceMonitor(this, inputDispatch::releaseDevice) }
     private val guestLifecycle by lazy {
         GuestLifecycleCoordinator(::releaseGuestInputs, ::refreshControllerUi,
-            { audio?.pause() }, { if (currentGame != null) audio?.play() })
+            { audio?.pause() }, { if (currentGame != null) audio?.play() },
+            companionActive = { secondaryDisplay.isCompanionActive },
+            resetGestures = edgeSwipes::reset)
     }
     private val backCoordinator by lazy {
         FrontendBackCoordinator(this, firstRunScreen, { onScreenControls },
@@ -855,8 +872,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { statusLabel?.text?.toString() ?: "DOS game" },
             {
                 keyboard?.close()
-                keys.releaseAll()
-                mouse.releasePrefix("touch-")
+                releaseGuestInputs()
             },
             { open ->
                 refreshControllerUi()
@@ -1326,64 +1342,17 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
     }
 
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        // Handle menu navigation before Android moves View focus. The shared drawer
-        // owns selection; letting View focus handle D-pad first can select two rows.
-        if (event.action == KeyEvent.ACTION_DOWN && ::appRoot.isInitialized && appRoot.isInTouchMode)
-            (currentFocus ?: appRoot).requestFocusFromTouch()
-        if (firstRunScreen.isOpen) return firstRunScreen.handleKey(event)
-        if (controllerEditor.isOpen) {
-            if (controllerEditor.handleKey(event)) return true
-            return super.dispatchKeyEvent(event)
-        }
-        if (onScreenControls?.isOpen == true) {
-            if (onScreenControls?.handleKey(event) == true) return true
-            return super.dispatchKeyEvent(event)
-        }
-        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
-            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)
-                backCoordinator.handle()
-            return true
-        }
-        if (libraryScreen.visibility == View.VISIBLE) {
-            if (FrontendNavigation.library(libraryScreen,
-                    FrontendNavigation.control(event, gamepad),
-                    event, backCoordinator::handle)) return true
-            return super.dispatchKeyEvent(event)
-        }
-        if (event.keyCode == KeyEvent.KEYCODE_MENU ||
-            (event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE && !gamepad.hasButton(event.keyCode))) {
-            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                if (sessionFlow?.isOpen == true) closeMenu() else openMenu()
-            }
-            return true
-        }
-        if (sessionDrawer?.isOpen == true) {
-            if (FrontendNavigation.session(sessionDrawer!!,
-                    FrontendNavigation.control(event, gamepad), event, ::closeMenu)) return true
-            super.dispatchKeyEvent(event)
-            return true
-        }
-        if (gamepad.key(event)) return true
-        mapKey(event.keyCode)?.let { key ->
-            val owner = "physical:${event.keyCode}"
-            when (event.action) {
-                KeyEvent.ACTION_DOWN -> keys.hold(owner, listOf(key))
-                KeyEvent.ACTION_UP -> keys.release(owner)
-            }
-            return true
-        }
-        return super.dispatchKeyEvent(event)
-    }
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean =
+        inputDispatch.dispatchKey(event) { super.dispatchKeyEvent(it) }
 
-    override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (firstRunScreen.isOpen) return true
-        if (controllerEditor.isOpen) return controllerEditor.captureMotion(event)
-        if (onScreenControls?.isOpen == true) return true
-        if (currentGame != null && libraryScreen.visibility != View.VISIBLE &&
-            sessionDrawer?.isOpen != true && gamepad.motion(event)) return true
-        return super.onGenericMotionEvent(event)
-    }
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean =
+        inputDispatch.dispatchMotion(event) { super.dispatchGenericMotionEvent(it) }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean =
+        inputDispatch.physicalKey(event) || super.onKeyDown(keyCode, event)
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean =
+        inputDispatch.physicalKey(event) || super.onKeyUp(keyCode, event)
 
     private fun mapKey(code: Int): Int? = when (code) {
         in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> 'a'.code + code - KeyEvent.KEYCODE_A
@@ -1435,9 +1404,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         else -> null
     }
 
-    private fun releaseGuestInputs() {
-        gamepad.releaseAll()
-        keys.releaseAll()
+    private fun releaseGuestInputs() = inputDispatch.releaseInputs()
+
+    private fun releaseTouchInputs() {
         mouse.releasePrefix("touch-")
         if (directPointerPressed) {
             directPointerPressed = false
@@ -1446,20 +1415,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     override fun onPause() {
-        if (relocating || secondaryDisplay.isCompanionActive) {
-            super.onPause()
-            return
-        }
-        guestLifecycle.onPause()
-        secondaryDisplay.stop()
+        if (!relocating && guestLifecycle.onPause()) secondaryDisplay.stop()
         super.onPause()
     }
 
     override fun onStop() {
-        if (!relocating && !secondaryDisplay.isCompanionActive) {
-            guestLifecycle.onStop()
-            secondaryDisplay.stop()
-        }
+        if (!relocating && guestLifecycle.onStop()) secondaryDisplay.stop()
         super.onStop()
     }
 
@@ -1473,7 +1434,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (relocating || (!hasFocus && secondaryDisplay.isCompanionActive)) return
+        if (relocating) return
         guestLifecycle.onWindowFocusChanged(hasFocus)
         if (hasFocus) restoreGameFullscreen()
     }
@@ -1484,6 +1445,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         backCoordinator.unregister()
+        releaseGuestInputs()
         controllerDevices.unregister()
         libraryFlow.cancel()
         externalDispatcher.cancel()
