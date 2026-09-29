@@ -25,7 +25,7 @@ internal class DosCatalogUpdate(context: Context) {
         return true
     }
 
-    private fun validateFile(file: File) { ZipFile(file).use(::validate) }
+    internal fun validateFile(file: File) { ZipFile(file).use(::validate) }
 
     private fun validate(zip: ZipFile) {
         require(zip.size() == 259) { "Invalid catalog file count" }
@@ -72,6 +72,10 @@ internal class DosCatalogUpdate(context: Context) {
                         require(contentId.matches(id) && id.substringAfter(':').startsWith(prefix) &&
                             games.optJSONObject(id) != null) { "Invalid catalog game record" }
                         val record = games.getJSONObject(id)
+                        val invalid = DosCatalogFields.invalidPath(record)
+                        require(invalid == null) {
+                            "Invalid catalog field $id:$invalid"
+                        }
                         val flag = record.opt("hidden")
                         if (flag is Boolean) {
                             require(hidden.opt(id) == flag) { "Catalog hidden index differs from $id" }

@@ -93,8 +93,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         val title = if (fileName.endsWith(" - Installer", true) &&
             !baseTitle.endsWith(" - Installer", true)) "$baseTitle - Installer" else baseTitle
         val art = record.optJSONObject("artwork")
-        val boxArtPath = safeArtPath(art?.optString("boxArt"))
-        val previewPath = safeArtPath(art?.optString("preview"))
+        val boxArtPath = DosCatalogFields.safeArtPath(art?.optString("boxArt"))
+        val previewPath = DosCatalogFields.safeArtPath(art?.optString("preview"))
         val launch = record.optJSONObject("launch")?.let { source ->
             val configs = source.optJSONObject("configs") ?: JSONObject()
             Launch(source.optString("folder"), configs.keys().asSequence()
@@ -151,33 +151,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 ?.optJSONObject(contentId))
             add("User override", overrides.record(contentId))
         }
-        return CatalogFieldLayers.merge(sources, ::objectField, ::validValue)
-    }
-
-    private fun objectField(path: List<String>): Boolean =
-        path == listOf("artwork") || path == listOf("launch") ||
-            path == listOf("launch", "configs")
-
-    private fun validValue(path: List<String>, value: Any): Boolean = when {
-        path == listOf("title") -> value is String && value.isNotBlank() && value.length <= 160
-        path == listOf("description") -> value is String && value.isNotBlank() &&
-            value.length <= 8000
-        path == listOf("hidden") -> value is Boolean
-        path == listOf("tags") -> value is org.json.JSONArray && value.length() <= 32 &&
-            (0 until value.length()).all { index ->
-                (value.opt(index) as? String)?.let { it.isNotBlank() && it.length <= 100 } == true
-            }
-        path.size == 2 && path[0] == "artwork" &&
-            path[1] in setOf("boxArt", "preview") ->
-            value is String && safeArtPath(value) != null
-        path == listOf("launch", "folder") -> value is String && value.length in 1..128 &&
-            !value.contains("..") && !value.contains('/') && !value.contains('\\')
-        path == listOf("launch", "exception") -> value is Boolean
-        path.size == 3 && path[0] == "launch" && path[1] == "configs" ->
-            path[2].length in 1..128 && !path[2].contains("..") &&
-                !path[2].contains('/') && !path[2].contains('\\') &&
-                value is String && value.length <= 262144
-        else -> false
+        return CatalogFieldLayers.merge(sources, DosCatalogFields::objectField,
+            DosCatalogFields::validValue)
     }
 
     @Synchronized fun sourceOf(contentId: String, fileName: String,
@@ -218,7 +193,9 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     fun setArtworkOverride(contentId: String, kind: String, path: String?) {
         require(id.matches(contentId)) { "Hash this game first" }
         require(kind == "boxArt" || kind == "preview") { "Invalid artwork kind" }
-        require(path == null || safeArtPath(path) != null) { "Invalid DOS artwork path" }
+        require(path == null || DosCatalogFields.safeArtPath(path) != null) {
+            "Invalid DOS artwork path"
+        }
         overrides.setSubfield(contentId, "artwork", kind, path)
     }
 
@@ -228,11 +205,6 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     }
 
     override fun openArtwork(path: String): InputStream = artworkStore.open(path)
-
-    private fun safeArtPath(path: String?): String? = path?.takeIf {
-        it.length in 17..256 && it.startsWith("art/catalog/dos/") &&
-            it.matches(Regex("[a-zA-Z0-9/._-]+")) && !it.contains("..")
-    }
 
     private fun shard(prefix: String): JSONObject? {
         cache.get(prefix)?.let { return it }
