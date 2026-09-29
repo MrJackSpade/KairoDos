@@ -28,6 +28,9 @@ import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.InputModeDecider
 import com.mrjackspade.kairo.frontend.MouseInputRouter
 import com.mrjackspade.kairo.frontend.TouchInputSettingsDialog
+import com.mrjackspade.kairo.frontend.TouchInputPolicy
+import com.mrjackspade.kairo.frontend.TouchInputSelection
+import com.mrjackspade.kairo.frontend.ScopedTouchInput
 import com.mrjackspade.kairo.frontend.Ui
 import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryScanSummary
@@ -1178,17 +1181,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         Ui.styleDialog(dialog)
     }
 
-    private fun touchSettingsLabel(game: DosLibrary.Game): String {
-        val mode = when (effectiveTouchMode(game)) {
-            0 -> "Mouse"
-            1 -> "Keyboard"
-            else -> "Auto"
-        }
-        val pointer = if (effectiveDirectTouch(game)) "direct tap" else "touchpad"
-        val source = if (gameSettings.has(game.contentId, "touch_mode") ||
-            gameSettings.has(game.contentId, "direct_touch")) "Game" else "Global"
-        return "$mode · $pointer · $source"
-    }
+    private fun touchSettingsLabel(game: DosLibrary.Game) = touchSelection(game).label()
 
     private fun cpuSettingsLabel(game: DosLibrary.Game): String {
         val mode = if (effectiveCycles(game) == 0) "Auto" else "Maximum"
@@ -1472,13 +1465,34 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
     }
 
-    private fun effectiveTouchMode(game: DosLibrary.Game? = currentGame): Int =
-        gameSettings.int(game?.contentId, "touch_mode",
-            preferences.getInt("touch_mode", 2)).coerceIn(0, 2)
+    private fun touchMode(value: Int): InputModeDecider.Mode = when (value.coerceIn(0, 2)) {
+        0 -> InputModeDecider.Mode.MOUSE
+        1 -> InputModeDecider.Mode.KEYBOARD
+        else -> InputModeDecider.Mode.AUTO
+    }
 
-    private fun effectiveDirectTouch(game: DosLibrary.Game? = currentGame): Boolean =
-        gameSettings.boolean(game?.contentId, "direct_touch",
-            preferences.getBoolean("direct_touch", false))
+    private fun touchModeIndex(mode: InputModeDecider.Mode): Int = when (mode) {
+        InputModeDecider.Mode.MOUSE -> 0
+        InputModeDecider.Mode.KEYBOARD -> 1
+        InputModeDecider.Mode.AUTO -> 2
+    }
+
+    private fun touchSelection(game: DosLibrary.Game? = currentGame): ScopedTouchInput {
+        val id = game?.contentId
+        return TouchInputPolicy.resolve(
+            TouchInputSelection(touchMode(preferences.getInt("touch_mode", 2)),
+                preferences.getBoolean("direct_touch", false)),
+            if (gameSettings.has(id, "touch_mode"))
+                touchMode(gameSettings.int(id, "touch_mode", 2)) else null,
+            if (gameSettings.has(id, "direct_touch"))
+                gameSettings.boolean(id, "direct_touch", false) else null)
+    }
+
+    private fun effectiveTouchMode(game: DosLibrary.Game? = currentGame) =
+        touchModeIndex(touchSelection(game).selection.mode)
+
+    private fun effectiveDirectTouch(game: DosLibrary.Game? = currentGame) =
+        touchSelection(game).selection.directTouch
 
     private fun effectiveCycles(game: DosLibrary.Game? = currentGame): Int =
         gameSettings.int(game?.contentId, "cycles_mode",
@@ -1488,12 +1502,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         nativeConfigure(if (effectiveDirectTouch()) 1 else 0, effectiveCycles())
     }
 
-    private fun configuredTouchMode(): InputModeDecider.Mode =
-        when (effectiveTouchMode()) {
-            0 -> InputModeDecider.Mode.MOUSE
-            1 -> InputModeDecider.Mode.KEYBOARD
-            else -> InputModeDecider.Mode.AUTO
-        }
+    private fun configuredTouchMode() = touchSelection().selection.mode
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (surface?.holder === holder && !secondaryDisplay.swapped) nativeSetSurface(holder.surface)
