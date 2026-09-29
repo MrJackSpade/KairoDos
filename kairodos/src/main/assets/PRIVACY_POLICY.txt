@@ -1,0 +1,24 @@
+KairoDos Privacy Policy
+Last updated: September 28, 2026
+
+KairoDos is an Android DOS emulator published by Loxifi LLC. This policy covers the paid Google Play edition and the free GitHub edition. For privacy questions or requests, email admin@loxifi.com.
+
+Data on your device
+
+KairoDos reads game files and folders that you choose through Android's file picker or share/open actions. It uses file contents to identify catalog entries. Game files, file names, content hashes, save states, screenshots, local artwork choices, and settings remain on your device in the chosen folder or app-private storage. KairoDos has no account, advertising, analytics, or crash reporting service. Loxifi does not receive your game files, file names, content hashes, saves, or settings.
+
+Catalog updates
+
+KairoDos may request a catalog metadata update over HTTPS from raw.githubusercontent.com. That request sends ordinary network information, including your IP address, to the hosting service. It does not send your library's game files, names, or hashes. The hosting service controls its own logs and retention.
+
+Storage and deletion
+
+KairoDos accesses a folder after you select it with Android's file picker. App data is stored in private app storage, and Android app backup is disabled. Clearing app storage or uninstalling removes that private app data but does not remove original game files in your selected folder. If you use the game's Delete action and confirm, KairoDos deletes the selected game file from the chosen folder. Loxifi has no server copy of app data to delete.
+
+Support correspondence
+
+If you email Loxifi for support, we receive your email address and information you choose to send and use it to respond. Email admin@loxifi.com to request deletion of that correspondence.
+
+Changes
+
+This policy will be updated in the app when KairoDos behavior changes. The current version will also be available through the Google Play listing.

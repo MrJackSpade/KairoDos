@@ -23,6 +23,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
+import com.mrjackspade.kairo.frontend.AboutDocuments
 import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.InputModeDecider
 import com.mrjackspade.kairo.frontend.MouseInputRouter
@@ -1177,12 +1178,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showAbout() {
-        val version = packageManager.getPackageInfo(packageName, 0).versionName
-        val dialog = AlertDialog.Builder(this).setTitle("KairoDos $version")
-            .setMessage("Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Pure emulator core. KairoDos, the shared Kairo frontend, and DOSBox Pure are GPL-2.0-or-later. Third-party notices and source provenance are in the project source at github.com/MrJackSpade/KairoDos.")
-            .setPositiveButton("Done", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
+        AboutDocuments.show(this, "KairoDos",
+            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Pure emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
+            "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt")
     }
 
     private fun stateFile(game: DosLibrary.Game, slot: Int): File {
