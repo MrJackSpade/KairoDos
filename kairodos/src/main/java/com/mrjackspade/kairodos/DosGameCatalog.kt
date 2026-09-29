@@ -2,6 +2,8 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.util.LruCache
+import android.util.AtomicFile
+import com.mrjackspade.kairo.frontend.CatalogFieldLayers
 import com.mrjackspade.kairo.frontend.LibraryCatalog
 import com.mrjackspade.kairo.frontend.LibraryGame
 import com.mrjackspade.kairo.frontend.CatalogArtworkStore
@@ -9,6 +11,7 @@ import com.mrjackspade.kairo.frontend.GameMetadataOverrides
 import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
+import java.io.ByteArrayOutputStream
 import java.util.Locale
 
 /** Hash-keyed, data-only game metadata. Game media is never read from these records. */
@@ -31,58 +34,60 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val online = DosCatalogUpdate(context)
     private val artworkStore = CatalogArtworkStore(context, { false },
         "art/catalog/dos/")
-    private var folderIndex = readCatalog("folders.json")
+    private var folderIndex = readFolderIndex()
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private var doomContentIds = readDoomContentIds()
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
     private val overrides = GameMetadataOverrides(overridesFile)
+    private val userCatalogFile = File(context.filesDir, "user-dos-catalog-v1.json")
+    private var userCatalog = readUserCatalog()
+
+    @Synchronized fun reloadUserCatalog() { userCatalog = readUserCatalog() }
 
     /** Call off the main thread; a failed download leaves the active catalog in place. */
     fun downloadUpdate(): Boolean {
         if (!online.download()) return false
         synchronized(this) {
             cache.evictAll()
-            folderIndex = readCatalog("folders.json")
+            folderIndex = readFolderIndex()
             doomContentIds = readDoomContentIds()
         }
         return true
     }
 
-    private fun readCatalog(name: String): JSONObject = online.read(name) ?: runCatching {
+    private fun readAssetCatalog(name: String): JSONObject = runCatching {
         context.assets.open("catalog/dos/$name").use { input ->
             JSONObject(input.bufferedReader().readText())
         }
     }.getOrDefault(JSONObject())
 
+    private fun readFolderIndex(): JSONObject {
+        val combined = JSONObject(readAssetCatalog("folders.json").toString())
+        online.read("folders.json")?.let { update ->
+            for (folder in update.keys()) combined.put(folder, update.get(folder))
+        }
+        return combined
+    }
+
     private fun readDoomContentIds(): Set<String> = runCatching {
-        val games = readCatalog("controller-profiles-v1.json")
-            .getJSONObject("profiles").getJSONArray("doom-v1")
+        val games = online.read("controller-profiles-v1.json")
+            ?.optJSONObject("profiles")?.optJSONArray("doom-v1")
+            ?: readAssetCatalog("controller-profiles-v1.json")
+                .getJSONObject("profiles").getJSONArray("doom-v1")
         (0 until games.length()).map(games::getString).toSet()
     }.getOrDefault(emptySet())
 
     @Synchronized override fun resolve(contentId: String, fileName: String): Game {
-        val prefix = contentId.substringAfter(':').take(2)
-        val found = if (id.matches(contentId)) shard(prefix)
-            ?.optJSONObject("games")?.optJSONObject(contentId) else null
-        val record = selectRecord(found, fileName)
-        val user = overrides.record(contentId)
-        val description = record?.optString("description")?.takeIf { it.isNotBlank() }
-            ?: if (found != null) selectRecord(bundledShard(prefix)
-                ?.optJSONObject("games")?.optJSONObject(contentId), fileName)
-                ?.optString("description")?.takeIf { it.isNotBlank() } else null
-        val baseTitle = user?.optString("title")
-            ?.takeIf { it.isNotBlank() }
-            ?: record?.optString("title")?.takeIf { it.isNotBlank() }
+        val record = layered(contentId, fileName).record
+        val description = record.optString("description").takeIf { it.isNotBlank() }
+        val baseTitle = record.optString("title").takeIf { it.isNotBlank() }
             ?: fileName.substringAfterLast('/')
         val title = if (fileName.endsWith(" - Installer", true) &&
             !baseTitle.endsWith(" - Installer", true)) "$baseTitle - Installer" else baseTitle
-        val art = record?.optJSONObject("artwork")
-        val userArt = user?.optJSONObject("artwork")
-        val boxArtPath = safeArtPath(userArt?.optString("boxArt")?.takeIf { it.isNotBlank() }
-            ?: art?.optString("boxArt"))
-        val previewPath = safeArtPath(userArt?.optString("preview")?.takeIf { it.isNotBlank() }
-            ?: art?.optString("preview"))
-        val launch = record?.optJSONObject("launch")?.let { source ->
+        val art = record.optJSONObject("artwork")
+        val boxArtPath = safeArtPath(art?.optString("boxArt"))
+        val previewPath = safeArtPath(art?.optString("preview"))
+        val launch = record.optJSONObject("launch")?.let { source ->
             val configs = source.optJSONObject("configs") ?: JSONObject()
             Launch(source.optString("folder"), configs.keys().asSequence()
                 .associateWith { configs.optString(it) }, source.optBoolean("exception"))
@@ -90,25 +95,95 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         return Game(title, description,
             artworkStore.availablePath(boxArtPath),
             artworkStore.availablePath(previewPath),
-            record?.optJSONArray("tags")?.let { array ->
+            record.optJSONArray("tags")?.let { array ->
                 (0 until array.length()).mapNotNull { index ->
                     array.optString(index).takeIf { it.isNotBlank() }
                 }
             } ?: emptyList(), launch,
-            "doom-v1".takeIf { found != null && contentId in doomContentIds })
+            "doom-v1".takeIf { contentId in doomContentIds })
     }
 
-    private fun selectRecord(found: JSONObject?, fileName: String): JSONObject? {
+    private fun selectVariant(found: JSONObject?, fileName: String): JSONObject? {
+        if (fileName.isBlank()) return null
         val variants = found?.optJSONObject("variants")
         val sourceName = fileName.removeSuffix(" - Installer").lowercase(Locale.ROOT)
         return variants?.optJSONObject(sourceName)
             ?: variants?.optJSONObject("$sourceName.zip")
             ?: variants?.optJSONObject("$sourceName.dosz")
-            ?: variants?.keys()?.asSequence()?.firstOrNull()?.let(variants::optJSONObject)
-            ?: found
     }
 
-    override fun hiddenFromLibrary(contentId: String) = false
+    @Synchronized override fun hiddenFromLibrary(contentId: String): Boolean =
+        id.matches(contentId) && layered(contentId, "").record.optBoolean("hidden")
+
+    private fun layered(contentId: String, fileName: String): CatalogFieldLayers.Result {
+        val sources = ArrayList<CatalogFieldLayers.Source>()
+        if (id.matches(contentId)) {
+            val prefix = contentId.substringAfter(':').take(2)
+            fun add(name: String, value: JSONObject?) {
+                sources += CatalogFieldLayers.Source(name, value)
+                selectVariant(value, fileName)?.let {
+                    sources += CatalogFieldLayers.Source(name, it)
+                }
+            }
+            add("Shipped catalog", bundledShard(prefix)
+                ?.optJSONObject("games")?.optJSONObject(contentId))
+            add("Updated catalog", shard(prefix)
+                ?.optJSONObject("games")?.optJSONObject(contentId))
+            add("User catalog", userCatalog.optJSONObject("games")
+                ?.optJSONObject(contentId))
+            add("User override", overrides.record(contentId))
+        }
+        return CatalogFieldLayers.merge(sources, ::objectField, ::validValue)
+    }
+
+    private fun objectField(path: List<String>): Boolean =
+        path == listOf("artwork") || path == listOf("launch") ||
+            path == listOf("launch", "configs")
+
+    private fun validValue(path: List<String>, value: Any): Boolean = when {
+        path == listOf("title") -> value is String && value.isNotBlank() && value.length <= 160
+        path == listOf("description") -> value is String && value.isNotBlank() &&
+            value.length <= 8000
+        path == listOf("hidden") -> value is Boolean
+        path == listOf("tags") -> value is org.json.JSONArray && value.length() <= 32 &&
+            (0 until value.length()).all { index ->
+                (value.opt(index) as? String)?.let { it.isNotBlank() && it.length <= 100 } == true
+            }
+        path.size == 2 && path[0] == "artwork" &&
+            path[1] in setOf("boxArt", "preview") ->
+            value is String && safeArtPath(value) != null
+        path == listOf("launch", "folder") -> value is String && value.length in 1..128 &&
+            !value.contains("..") && !value.contains('/') && !value.contains('\\')
+        path == listOf("launch", "exception") -> value is Boolean
+        path.size == 3 && path[0] == "launch" && path[1] == "configs" ->
+            path[2].length in 1..128 && !path[2].contains("..") &&
+                !path[2].contains('/') && !path[2].contains('\\') &&
+                value is String && value.length <= 262144
+        else -> false
+    }
+
+    @Synchronized fun sourceOf(contentId: String, fileName: String,
+                               vararg path: String): String =
+        layered(contentId, fileName).sourceOf(*path)
+            ?: if (path.size == 1 && path[0] == "title") "Filename" else "App default"
+
+    private fun readUserCatalog(): JSONObject = runCatching {
+        val output = ByteArrayOutputStream()
+        AtomicFile(userCatalogFile).openRead().use { input ->
+            val buffer = ByteArray(8192)
+            while (true) {
+                val count = input.read(buffer)
+                if (count < 0) break
+                require(output.size() + count <= 8 * 1024 * 1024) {
+                    "User catalog is too large"
+                }
+                output.write(buffer, 0, count)
+            }
+        }
+        JSONObject(output.toString(Charsets.UTF_8.name())).takeIf {
+            it.optInt("schemaVersion") == 1 && it.optJSONObject("games") != null
+        } ?: JSONObject()
+    }.getOrDefault(JSONObject())
 
     @Synchronized fun contentIdsForFolder(folder: String): List<String> {
         val matches = folderIndex.optJSONArray(folder.lowercase(Locale.ROOT)) ?: return emptyList()
@@ -120,10 +195,6 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         require(title == null || title.length in 1..160) { "Invalid title" }
         overrides.set(contentId, "title", title)
     }
-
-    fun hasArtworkOverride(contentId: String?, kind: String): Boolean =
-        contentId != null && overrides.record(contentId)?.optJSONObject("artwork")
-            ?.has(kind) == true
 
     fun setArtworkOverride(contentId: String, kind: String, path: String?) {
         require(id.matches(contentId)) { "Hash this game first" }
@@ -146,7 +217,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     private fun shard(prefix: String): JSONObject? {
         cache.get(prefix)?.let { return it }
-        val parsed = readCatalog("$prefix.json")
+        val parsed = online.read("$prefix.json") ?: JSONObject()
         cache.put(prefix, parsed)
         return parsed
     }

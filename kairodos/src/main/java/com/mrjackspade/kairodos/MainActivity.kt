@@ -372,8 +372,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun artworkSettingsLabel(game: DosLibrary.Game, kind: String, path: String?): String {
-        val source = if (catalog.hasArtworkOverride(game.contentId, kind))
-            "User override" else "Catalog"
+        val source = catalog.sourceOf(game.contentId ?: "", game.displayName,
+            "artwork", kind)
         return "${if (path == null) "None" else "Available"} · $source"
     }
 
