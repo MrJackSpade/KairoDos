@@ -3,11 +3,10 @@ package com.mrjackspade.kairodos
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.util.AtomicFile
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.LibraryItem
-import org.json.JSONArray
+import com.mrjackspade.kairo.frontend.VersionedLibraryCache
 import org.json.JSONObject
 import java.io.File
 import java.security.MessageDigest
@@ -54,6 +53,8 @@ class DosLibrary(private val context: Context) {
     }
 
     private val store = File(context.filesDir, "dos-library-v1.json")
+    private val storeCache = VersionedLibraryCache(store, 2, "games", 64 * 1024 * 1024,
+        50_000, ::decodeCacheEntry, ::encodeCacheEntry)
     private val walker = DocumentTreeWalker(context.contentResolver)
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
     private val archiveExtensions = setOf("zip", "dosz")
@@ -531,36 +532,34 @@ class DosLibrary(private val context: Context) {
         return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
     }
 
-    private fun readStore(): Pair<String?, List<Game>> = try {
-        val json = JSONObject(AtomicFile(store).readFully().toString(Charsets.UTF_8))
-        if (json.optInt("schemaVersion") != 2) null to emptyList() else {
-            val array = json.optJSONArray("games") ?: JSONArray()
-            json.optString("treeUri") to (0 until array.length()).mapNotNull { index ->
-                array.optJSONObject(index)?.let { item ->
-                    Game(item.optString("id"), item.optString("uri"), item.optString("path"),
-                        item.optBoolean("folder"), item.optBoolean("rootFolder"),
-                        item.optString("fingerprint"),
-                        item.optString("contentId").takeIf { it.isNotEmpty() },
-                        item.optString("error").takeIf { it.isNotEmpty() },
-                        item.optBoolean("installer"))
-                }
-            }
-        }
-    } catch (_: Exception) { null to emptyList() }
+    private fun readStore(): Pair<String?, List<Game>> =
+        storeCache.read()?.let { it.treeUri to it.entries } ?: (null to emptyList())
+
+    private fun decodeCacheEntry(item: JSONObject): Game? {
+        val id = item.optString("id")
+        val uri = item.optString("uri")
+        val path = item.optString("path")
+        val fingerprint = item.optString("fingerprint")
+        val contentId = item.optString("contentId").takeIf { it.isNotEmpty() }
+        val error = item.optString("error").takeIf { it.isNotEmpty() }
+        if (!id.matches(Regex("[0-9a-f]{64}")) || !uri.startsWith("content://") ||
+            path.isBlank() || path.length > 4096 || fingerprint.length > 256 ||
+            (contentId != null && !contentId.matches(
+                Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}"))) ||
+            (error != null && error.length > 1024)) return null
+        return Game(id, uri, path, item.optBoolean("folder"),
+            item.optBoolean("rootFolder"), fingerprint, contentId, error,
+            item.optBoolean("installer"))
+    }
+
+    private fun encodeCacheEntry(game: Game) = JSONObject().put("id", game.id)
+        .put("uri", game.uri).put("path", game.path).put("folder", game.folder)
+        .put("rootFolder", game.rootFolder).put("fingerprint", game.fingerprint)
+        .put("contentId", game.contentId ?: "").put("error", game.error ?: "")
+        .put("installer", game.installer)
 
     private fun saveStore(tree: Uri, games: List<Game>) {
-        val array = JSONArray()
-        games.forEach { game -> array.put(JSONObject().put("id", game.id).put("uri", game.uri)
-            .put("path", game.path).put("folder", game.folder)
-            .put("rootFolder", game.rootFolder)
-            .put("fingerprint", game.fingerprint).put("contentId", game.contentId ?: "")
-            .put("error", game.error ?: "").put("installer", game.installer)) }
-        val bytes = JSONObject().put("schemaVersion", 2).put("treeUri", tree.toString())
-            .put("games", array).toString().toByteArray(Charsets.UTF_8)
-        val atomic = AtomicFile(store)
-        val stream = atomic.startWrite()
-        try { stream.write(bytes); atomic.finishWrite(stream) }
-        catch (failure: Exception) { atomic.failWrite(stream); throw failure }
+        storeCache.write(tree.toString(), games)
     }
 
     private fun extension(path: String) = path.substringAfterLast('.', "").lowercase(Locale.ROOT)
