@@ -47,82 +47,8 @@ internal object GpuRenderingFixture {
         }
     }
 
-    // Use a user-supplied installed archive, copied unchanged into test cache.
-    // Its saves/configuration and game files remain isolated from normal play.
+    // Emulator lifecycle acceptance now uses Staging's software renderer.
     fun verifyCore(instrumentation: Instrumentation, archivePath: String) {
-        val root = File(instrumentation.targetContext.cacheDir, "gles-core-fixture")
-        check(!root.exists()) { "Fixture cache already exists; inspect it before retrying" }
-        check(root.mkdirs())
-        val worker = Executors.newSingleThreadExecutor()
-        var host: MainActivity? = null
-        instrumentation.runOnMainSync { host = MainActivity() }
-        fun call(name: String, vararg args: Any?): Any? {
-            val method = MainActivity::class.java.declaredMethods.single { it.name == name }
-            method.isAccessible = true
-            return method.invoke(host, *args)
-        }
-        try {
-            val archive = File(root, "game.zip")
-            File(archivePath).copyTo(archive)
-            val executable = ZipFile(archive).use { zip -> zip.entries().asSequence()
-                .first { it.name.substringAfterLast('/').equals("doom.exe", true) }.name }
-            val directory = executable.substringBeforeLast('/', "").replace('/', '\\')
-            File(root, "game.conf").writeText("[autoexec]\nC:\n" +
-                (if (directory.isEmpty()) "" else "cd \\$directory\n") + "doom.exe -nosound\n")
-            for (mode in listOf(0, 1)) {
-                val reader = ImageReader.newInstance(640, 480, PixelFormat.RGBA_8888, 3)
-                val frameCount = AtomicInteger()
-                val drain = Executors.newSingleThreadExecutor()
-                val running = AtomicBoolean(true)
-                val images = drain.submit {
-                    while (running.get()) {
-                        reader.acquireLatestImage()?.use { frameCount.incrementAndGet() }
-                        Thread.sleep(4)
-                    }
-                }
-                try {
-                    call("nativeConfigure", 0, 0, mode)
-                    call("nativeSetSurface", reader.surface)
-                    val saves = File(root, "saves-$mode").apply { mkdirs() }
-                    val system = File(root, "system-$mode").apply { mkdirs() }
-                    val core = worker.submit<Boolean> { call("nativeRun", archive.absolutePath,
-                        saves.absolutePath, system.absolutePath, false, true) as Boolean }
-                    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10)
-                    while (call("nativeStatus") != 2 && !core.isDone && System.nanoTime() < deadline) Thread.sleep(10)
-                    check(call("nativeStatus") == 2) { "Core did not start: ${call("nativeLastError")}" }
-                    Thread.sleep(1500)
-                    fun key(code: Int) { call("nativeKey", code, true); Thread.sleep(70); call("nativeKey", code, false); Thread.sleep(180) }
-                    key(27); repeat(3) { key(13) }
-                    Thread.sleep(700)
-                    call("nativePause", true)
-                    val state = File(root, "roundtrip-$mode.state")
-                    check(call("nativeSaveState", state.absolutePath) == 0) { "Save state failed in rendering mode $mode" }
-                    check(call("nativeLoadState", state.absolutePath) == 0) { "Load state failed in rendering mode $mode" }
-                    call("nativePause", false)
-                    Thread.sleep(350)
-                    call("nativeSetSurface", null)
-                    Thread.sleep(150)
-                    call("nativeSetSurface", reader.surface)
-                    Thread.sleep(350)
-                    call("nativeReset")
-                    Thread.sleep(700)
-                    check(frameCount.get() > 20) { "No sustained game frames in rendering mode $mode" }
-                    call("nativeStop")
-                    check(core.get(5, TimeUnit.SECONDS)) { "Core failed: ${call("nativeLastError")}" }
-                } finally {
-                    call("nativeStop")
-                    call("nativeSetSurface", null)
-                    running.set(false)
-                    images.get(2, TimeUnit.SECONDS)
-                    drain.shutdownNow()
-                    reader.close()
-                }
-            }
-        } finally {
-            call("nativeStop")
-            worker.shutdown()
-            check(worker.awaitTermination(10, TimeUnit.SECONDS)) { "Core did not stop; fixture cache retained for inspection" }
-            root.deleteRecursively()
-        }
+        StagingCoreFixture.verify(instrumentation, archivePath)
     }
 }

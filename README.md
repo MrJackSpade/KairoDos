@@ -1,6 +1,6 @@
 # KairoDos
 
-KairoDos is an Android DOS emulator built around [DOSBox Pure](https://github.com/schellingb/dosbox-pure). It offers a game library, controller and touch mapping, an on-screen keyboard, and per-game settings. The emulator core is copied into this project's source; KairoDos is an independent app.
+KairoDos is an independent Android DOS emulator using [DOSBox Staging](https://www.dosbox-staging.org/). It offers a game library, controller and touch mapping, an on-screen keyboard, and per-game settings. The audited emulator source is copied into this project.
 
 [![Kairo98: the companion PC-98 emulator for Android](docs/kairo98-banner.svg)](https://github.com/MrJackSpade/Kairo98)
 
@@ -8,15 +8,17 @@ KairoDos is an Android DOS emulator built around [DOSBox Pure](https://github.co
 
 ## Add games
 
-Choose a folder containing your DOS games from the library menu. KairoDos scans ZIP and DOSZ archives, standalone programs and disk images, and extracted game folders. Select a game and tap **Play**. The app stages the selected game for DOSBox Pure. Games and operating system files are not bundled.
+Choose a DOS game folder from the library menu, then select a game and tap **Play**. KairoDos prepares a persistent writable DOS drive in private app storage, leaving your original archives intact. Games and proprietary operating system files are not bundled. ZIP/DOSZ archives, programs and game folders are supported; standalone media support follows Staging (ISO/CUE and IMG/IMA, rather than Pure's CHD/JRC formats).
 
 Known games receive a title, description, tags, and artwork from a hash-keyed catalog seeded from eXoDOS metadata. Your games do not need to be in an eXoDOS directory. An unknown game appears by filename and can still launch. See [catalog behavior](docs/catalog.md).
 
-An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a catalog entry, and appears with ` - Installer` in the library. On first launch, KairoDos creates an installed ZIP alongside it in a writable selected folder, verifies the copy, and runs it. After play, it offers to remove the source ZIP; you can keep it. If an external frontend grants access to only one ZIP, the installed copy goes into private app storage instead. DOSBox Pure stores later game writes in its own save overlay.
+An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a catalog entry, and appears with ` - Installer` in the library. On first launch, KairoDos creates and verifies an installed ZIP in the writable selected folder, then offers to remove the installer. You can keep it. If an external frontend grants access to only one ZIP, the installed copy goes into private app storage. Game writes go to the persistent Staging drive. Existing Pure overlay files are preserved while ordinary in-game saves are imported once.
+
+Staging does not support emulator save states. Use a game's own save system. Existing Pure state files stay on disk but cannot be loaded in Staging.
 
 To remove a game file or game folder from device storage, open its **Game settings** and choose **Delete game file** or **Delete game folder**. KairoDos names the source in a confirmation before deleting it. Saves and settings are kept.
 
-Some eXoDOS Windows launchers rely on companion programs or other emulators. Those steps are outside DOSBox Pure and may need manual setup.
+Some eXoDOS launchers require companion programs or features of other emulators. These may need manual setup.
 
 ## External frontends
 
@@ -27,6 +29,6 @@ Use the [external frontend setup guide](docs/frontends.md) to launch KairoDos ga
 
 ## Build and source
 
-Clone with `git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git`, then run `./gradlew :kairodos:assembleDebug` (or `gradlew.bat` on Windows). The build uses JDK 17, Android SDK 36, NDK 28.2.13676358, and CMake 3.22.1 and targets ARM64.
+Clone with `git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git`. Run `pwsh tools/PrepareStagingDependencies.ps1` before `./gradlew :kairodos:assembleDebug`. The build uses JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1 and ARM64. See [Windows instructions](docs/build-windows.md).
 
 First-party KairoDos and Kairo frontend code is [GPL-2.0-or-later](COPYING). See [source provenance](docs/source-import.md) and [licensing](docs/licensing.md). Free GitHub and paid Google Play editions must have the same features and behavior from the same revision.

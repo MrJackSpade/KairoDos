@@ -27,7 +27,16 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
+
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/staging-assets"))
 }
+
+val stagingResources by tasks.registering(Sync::class) {
+    from(rootProject.file("third_party/dosbox-staging/resources"))
+    into(layout.buildDirectory.dir("generated/staging-assets/staging-resources"))
+    exclude("meson.build")
+}
+tasks.named("preBuild") { dependsOn(stagingResources) }
 
 dependencies {
     implementation(project(":frontend"))

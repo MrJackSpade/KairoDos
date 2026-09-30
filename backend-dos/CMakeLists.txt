@@ -1,0 +1,116 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(kairo_staging VERSION 0.83.0 LANGUAGES C CXX)
+
+if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+    message(FATAL_ERROR "KairoDos currently supports Android ARM64")
+endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# The emulation engine must be optimized even in a debuggable frontend APK.
+add_compile_options(-O2)
+add_compile_definitions(NDEBUG SDL_MAIN_HANDLED KAIRO_STAGING)
+
+set(STAGING_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dosbox-staging")
+set(DOSBOX_VERSION "0.83.0")
+set(BUILD_GIT_HASH "7b40053-kairo")
+set(C_TARGET_CPU_ARM ON)
+set(C_DYNREC ON)
+set(C_PER_PAGE_W_OR_X ON)
+set(C_MT32EMU ON)
+# Shader metadata in 0.83.0 requires its glad helpers even for texture output.
+# The Android renderer is supplied by Kairo and never creates a desktop context.
+set(C_OPENGL ON)
+set(OPT_TESTS OFF)
+set(OPT_MANYMOUSE OFF)
+set(HAS_STACK_INCLUDES OFF CACHE BOOL "Android API 26 lacks execinfo backtrace" FORCE)
+
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckSymbolExists)
+include(CheckStructHasMember)
+foreach(header libgen.h netinet/in.h stdlib.h strings.h sys/types.h sys/xattr.h)
+    string(TOUPPER "${header}" variable)
+    string(REPLACE "/" "_" variable "${variable}")
+    string(REPLACE "." "_" variable "${variable}")
+    check_include_file("${header}" "HAVE_${variable}")
+endforeach()
+set(HAVE_BUILTIN_CLEAR_CACHE ON)
+set(HAVE_FD_ZERO ON)
+set(HAVE_SYS_SOCKET_H ON)
+set(CUSTOM_DATADIR "/nonexistent/kairo-staging")
+check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
+check_symbol_exists(mprotect sys/mman.h HAVE_MPROTECT)
+check_symbol_exists(mmap sys/mman.h HAVE_MMAP)
+check_symbol_exists(setpriority sys/resource.h HAVE_SETPRIORITY)
+check_symbol_exists(strnlen string.h HAVE_STRNLEN)
+check_symbol_exists(pthread_setname_np pthread.h HAVE_PTHREAD_SETNAME_NP)
+check_struct_has_member("struct dirent" d_type dirent.h HAVE_STRUCT_DIRENT_D_TYPE)
+configure_file("${STAGING_SOURCE}/src/dosbox_config.h.in.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/include/dosbox_config.h")
+
+# Dependency sources/build recipes are pinned with the imported engine.
+# PrepareStagingDependencies.ps1 builds this prefix from the shipped sources.
+if(NOT KAIRO_STAGING_DEPS)
+    message(FATAL_ERROR "Run tools/PrepareStagingDependencies.ps1 before building")
+endif()
+list(PREPEND CMAKE_PREFIX_PATH "${KAIRO_STAGING_DEPS}")
+list(PREPEND CMAKE_FIND_ROOT_PATH "${KAIRO_STAGING_DEPS}")
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_TEST OFF CACHE BOOL "" FORCE)
+set(SDL_HIDAPI OFF CACHE BOOL "" FORCE)
+set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
+set(SDL_POWER OFF CACHE BOOL "" FORCE)
+set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
+set(SDL_LOCALE OFF CACHE BOOL "" FORCE)
+set(SDL_MISC OFF CACHE BOOL "" FORCE)
+set(SDL_KAIRO_EMBEDDED ON)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/staging-deps/sdl2" sdl2)
+target_compile_definitions(SDL2-static PRIVATE SDL_KAIRO_EMBEDDED)
+target_sources(SDL2-static PRIVATE src/main/cpp/sdl_embedded_android.c)
+find_package(SDL2_image CONFIG REQUIRED)
+find_package(iir CONFIG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(MT32Emu CONFIG REQUIRED)
+find_package(FluidSynth CONFIG REQUIRED)
+find_package(OpusFile CONFIG REQUIRED)
+
+# The Android presenter supplies the render backend; desktop OpenGL is unused.
+add_library(OpenGL::GL INTERFACE IMPORTED)
+foreach(dep SPEEXDSP ZLIB_NG)
+    if(dep STREQUAL "SPEEXDSP")
+        set(lib speexdsp)
+    else()
+        set(lib z-ng)
+    endif()
+    find_library(${dep}_LIBRARY NAMES ${lib} PATHS "${KAIRO_STAGING_DEPS}/lib" NO_DEFAULT_PATH REQUIRED)
+    add_library(PkgConfig::${dep} STATIC IMPORTED)
+    set_target_properties(PkgConfig::${dep} PROPERTIES
+        IMPORTED_LOCATION "${${dep}_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${KAIRO_STAGING_DEPS}/include")
+endforeach()
+# Upstream's bundled ZMBV requests zlib-ng via pkg-config. Supply its pinned
+# imported target without depending on a host pkg-config installation.
+function(pkg_check_modules prefix)
+    if(NOT prefix STREQUAL "ZLIB_NG")
+        message(FATAL_ERROR "Unexpected pkg-config dependency: ${prefix}")
+    endif()
+endfunction()
+
+include_directories("${STAGING_SOURCE}/include" "${STAGING_SOURCE}/src"
+    "${STAGING_SOURCE}/src/libs" "${CMAKE_CURRENT_BINARY_DIR}/include"
+    "${KAIRO_STAGING_DEPS}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp")
+add_library(dosbox SHARED "${STAGING_SOURCE}/src/main.cpp"
+    "${STAGING_SOURCE}/src/dosbox.cpp" src/main/cpp/staging_bridge.cpp
+    src/main/cpp/kairo_renderer.cpp)
+set_target_properties(dosbox PROPERTIES OUTPUT_NAME dosbox_staging)
+add_library(libdosboxcommon STATIC)
+add_subdirectory("${STAGING_SOURCE}/src" staging)
+target_link_libraries(libdosboxcommon PRIVATE
+    $<IF:$<TARGET_EXISTS:iir::iir>,iir::iir,iir::iir_static>
+    loguru libdecoders libglad PkgConfig::SPEEXDSP
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+target_link_libraries(dosbox PRIVATE libdosboxcommon libglad dl log
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)

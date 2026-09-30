@@ -20,6 +20,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
+    private var stagingStorage = false
+    private var stagingArchive: String? = null
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
         hardwareRender = arguments?.getString("hardwareRender") == "true"
@@ -31,12 +33,23 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
+        stagingStorage = arguments?.getString("stagingStorage") == "true"
+        stagingArchive = arguments?.getString("stagingArchive")
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
         try {
+            if (stagingStorage || stagingArchive != null) {
+                val message = if (stagingStorage) {
+                    StagingStorageFixture.verify(targetContext.cacheDir)
+                    "Staging storage migration, preserved saves, cancellation, path safety and launch configuration: OK"
+                } else StagingCoreFixture.verify(this, stagingArchive!!)
+                result.putString("stream", "$message\n")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (presentationArchive != null) {
                 val metrics = VideoPresentationFixture.measure(this, presentationArchive!!,
                     presentationGame, presentationSeconds)
@@ -59,7 +72,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             else if (catalogOverrides) { CatalogOverrideFixture.verify(targetContext.cacheDir); verify() }
             else if (stateSlots) StateSlotStoreFixture.verify(targetContext.cacheDir) else verify()
             result.putString("stream", if (hardwareRender) "Shared GLES contexts, fenced frames, orientation and display lifecycle: OK\n"
-                else if (hardwareGame != null) "DOS GLES/software boot, save/load, pause, surface recreation, reset and exit: OK\n"
+                else if (hardwareGame != null) "Staging video/audio boot, pause, surface recreation, reset and exit: OK\n"
                 else if (controllerMouse) "Shared controller mouse speed, persistence and Doom preset: OK\n"
                 else if (catalogOverrides) "Shared catalog override transactions and DOS merge: OK\n"
                 else if (inputDispatch) "Shared input routing and lifecycle: OK\n"

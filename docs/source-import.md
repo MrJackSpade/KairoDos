@@ -1,16 +1,54 @@
 # Source provenance
 
-The Kairo frontend is a pinned first-party submodule at `shared/`. [DOSBox Pure](https://github.com/schellingb/dosbox-pure) is copied into `third_party/dosbox-pure/` as ordinary source. KairoDos does not use a DOSBox Pure Git submodule or automated upstream merge.
+The pinned first-party frontend is at `shared/`. Emulator sources are copied, without upstream remotes, submodules or automated merges.
 
-## DOSBox Pure snapshot
+## DOSBox Staging
 
-- Upstream release: `1.0-preview6`
-- Source commit: `a4a0bab7f8931433588f2fcad9045c85b277373d`
-- [Source archive](https://github.com/schellingb/dosbox-pure/archive/a4a0bab7f8931433588f2fcad9045c85b277373d.tar.gz) SHA-256: `f0d04f087bb1c63a4cf1d46e314a9e0336afad427ddebbefde3daffe64b9005b`
-- Import: complete extracted archive tree in `third_party/dosbox-pure/`
+- Stable release **0.83.0**, August 27, 2026.
+- Commit `7b40053b7ac580843d0461eba8c36a47a990e66c`.
+- [Complete source archive](https://codeload.github.com/dosbox-staging/dosbox-staging/tar.gz/7b40053b7ac580843d0461eba8c36a47a990e66c).
+- SHA-256 `40d4e32d23c4fa04901f004f57f46c64e181bf66801a7d164c915433c00dc536`.
+- Extracted tree: `third_party/dosbox-staging/`, including licenses and corresponding source for freely licensed DOS utilities and keyboard resources in `extras/dos-programs/`.
 
-KairoDos patches `dosbox_pure_libretro.cpp` to enter a game ZIP's single wrapper folder when needed. It patches `src/dos/dos_programs.cpp` with generated `KAIRO:` and `KAIROZIP:` mount sources for game directories and separately staged user-owned media. These allow eXoDOS startup profiles to refer to their original game and disc paths without bundling the media. A local GPL-2.0-or-later telemetry bridge in `src/kairo_input_telemetry.*`, with hooks in `src/ints/bios_keyboard.cpp` and `src/ints/mouse.cpp`, reports guest keyboard waits, keyboard polls, and mouse reads to the shared touch mode decision logic.
+Android changes are guarded by `KAIRO_STAGING`:
 
-KairoDos also patches `src/dos/drive_zip.cpp` so the ZIP seek-cache compressor does not hash past the final bytes of its input buffer. Without this bound check, launching a large compressed game file can crash the native core while writing its seek cache.
+- `src/main.cpp`: callable entry, no process exit/signal handlers, cleanup on failure.
+- `src/dosbox.cpp`: frontend restart instead of fork/exec; reset host timing after pause.
+- `src/gui/sdl_gui.cpp`: frontend renderer/event polling and Android mouse capture routing.
+- `src/audio/mixer.cpp`: AudioTrack consumes samples; dummy SDL device stays paused.
+- `src/ints/bios_keyboard.cpp` and `src/hardware/input/mouseif_dos_driver.cpp`: shared touch-mode telemetry.
+- `src/misc/fs_utils_posix.cpp`: case-insensitive paths on API 26 without Bionic glob.
+- `src/misc/support.cpp`: session errors instead of aborting the Android process.
+- `src/libs/loguru/loguru.cpp`: session-owned logging cleanup instead of process exit callbacks.
 
-`backend-dos/` builds the copied core into `libretro.so`; `kairodos/` builds the app host into `libkairodos_host.so`. The native build targets ARM64 and uses the core's dynamic recompiler selection. License details are in [licensing](licensing.md).
+`backend-dos/CMakeLists.txt` builds `libdosbox_staging.so` from upstream component lists, using ARM64 dynamic recompilation, per-page W^X and optimized core code even in debug APKs. First-party adapters are in `backend-dos/src/main/cpp/`; JNI presents frames and routes input/audio. Game code is not patched.
+
+## Dependencies
+
+Complete original archives and recipe sources are in `third_party/staging-deps/sources/`. `sources.json` records every SHA-256, recipe commit `6283825b81bb60f952af1d0703638df1de611243` and verified tool release. Archives are corresponding source, not APK assets.
+
+| Component | Version | License |
+| --- | --- | --- |
+| Asio | 1.32.0 | Boost 1.0 |
+| FluidSynth | 2.5.2 | LGPL-2.1-or-later |
+| GCEM | 1.18.0 | Apache-2.0 |
+| iir1 | 1.10.0 | MIT |
+| Munt/libmt32emu | 2.7.3 | LGPL-2.1-or-later |
+| libogg | 1.3.6 | BSD-3-Clause |
+| libpng | 1.6.54 | libpng license |
+| Opus | 1.5.2 | BSD-3-Clause and source notices |
+| opusfile | 9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166 | BSD-3-Clause |
+| SDL2 | 2.32.10 | Zlib and source notices |
+| SDL2_image | 2.8.8 | Zlib and source notices |
+| SpeexDSP | 1.2.1 | BSD-3-Clause and source notices |
+| zlib | 1.3.1 | Zlib |
+| zlib-ng | 2.3.3 | Zlib and source notices |
+| vcpkg recipes | 6283825b81bb60f952af1d0703638df1de611243 | MIT build tooling |
+
+The complete extracted SDL2 tree at `third_party/staging-deps/sdl2/` includes pinned recipe patches and guarded `SDL_KAIRO_EMBEDDED` changes to CMake, `src/file/SDL_rwops.c` and `src/thread/pthread/SDL_systhread.c`: POSIX files/threads and dummy audio/video without SDLActivity. First-party `sdl_embedded_android.c` supplies platform queries. Other libraries use shipped recipe patches only.
+
+Run `pwsh tools/PrepareStagingDependencies.ps1` to verify sources and build static API 26 libraries. The bootstrap downloads the pinned vcpkg tool and host tools needed by its recipes. See [Windows build](build-windows.md).
+
+## Previous core
+
+Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in earlier revisions with corresponding source. Existing overlays/states on devices are preserved. Ordinary game file changes can be imported; Pure emulator states cannot be loaded by Staging.

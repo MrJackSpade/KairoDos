@@ -1,0 +1,78 @@
+{
+  "tools": [
+    {
+      "name": "vcpkg.exe",
+      "digest": "sha256:837a4bebbbda84fb16edcb4f21193b7e013b5b6f0e7665057f084734eb281a7d",
+      "browser_download_url": "https://github.com/microsoft/vcpkg-tool/releases/download/2025-12-16/vcpkg.exe"
+    },
+    {
+      "name": "vcpkg-glibc",
+      "digest": "sha256:81faeebbe98a61c9449750354c448865f8eac3cca7c65add11a14da7bc8203a6",
+      "browser_download_url": "https://github.com/microsoft/vcpkg-tool/releases/download/2025-12-16/vcpkg-glibc"
+    }
+  ],
+  "toolRelease": "2025-12-16",
+  "sources": [
+    {
+      "sha256": "13b53f14d276adf6cafd3564fcda1d4b3e72342108d1c40ec4b4f0c7fc3ac95a",
+      "file": "berndporr-iir1-1.10.0.tar.gz"
+    },
+    {
+      "sha256": "f1b94b80eeb00bb63a3c8cef5047d4e409df4d8a3fe502305976965827d95672",
+      "file": "chriskohlhoff-asio-asio-1-32-0.tar.gz"
+    },
+    {
+      "sha256": "1dcb13308b3aa383db658c60a7b63d73d0ff4601ccee589582ba7a816475410e",
+      "file": "FluidSynth-fluidsynth-v2.5.2.tar.gz"
+    },
+    {
+      "sha256": "8e71a9f5b62956da6c409dda44b483f98c4a98ae72184f3aa4659ae5b3462e61",
+      "file": "kthohr-gcem-v1.18.0.tar.gz"
+    },
+    {
+      "sha256": "2bd2c17cab3744ebfe7351ded8c70dc2078d8c7c24eb9f4ebb1b26a623e2a747",
+      "file": "libsdl-org-SDL_image-release-2.8.8.tar.gz"
+    },
+    {
+      "sha256": "03f9d7c191a837525c9cda6406af2f2e48be02b5e7eb03d949cc9f1e9ca41c8b",
+      "file": "libsdl-org-SDL-release-2.32.10.tar.gz"
+    },
+    {
+      "sha256": "17e88863f3600672ab49182f217281b6fc4d3c762bde361935e436a95214d05c",
+      "file": "madler-zlib-v1.3.1.tar.gz"
+    },
+    {
+      "sha256": "e51f3475771c9d07116e6cb5ae2e095ef3b11b3107d92c01d3a1dc03be13ff98",
+      "file": "munt-munt-libmt32emu_2_7_3.tar.gz"
+    },
+    {
+      "sha256": "ba7efce137409079989df4667706c339bebfbb10e9f413474718012a13c8cd4c",
+      "file": "pnggroup-libpng-v1.6.54.tar.gz"
+    },
+    {
+      "sha256": "8c777343e4a6399569c72abc38a95b24db56882c83dbdb6c6424a5f4aeb54d3d",
+      "file": "speexdsp-1.2.1.tar.gz"
+    },
+    {
+      "sha256": "95b643da661155d79db9de2fca55daed3a8d491039829def246aacb3d9201c81",
+      "file": "xiph-ogg-v1.3.6.tar.gz"
+    },
+    {
+      "sha256": "9480e329e989f70d69886ded470c7f8cfe6c0667cc4196d4837ac9e668fb7404",
+      "file": "xiph-opus-v1.5.2.tar.gz"
+    },
+    {
+      "sha256": "69be13745ce58cf2351bd05d5beb49389550b1114c99667dac23045cd3888728",
+      "file": "xiph-opusfile-9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166.tar.gz"
+    },
+    {
+      "sha256": "f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1",
+      "file": "zlib-ng-zlib-ng-2.3.3.tar.gz"
+    },
+    {
+      "sha256": "452f195096c5813fe48be1beac407a47cac7f92e7f05ad2f6c1294c95915b910",
+      "file": "vcpkg-6283825.tar.gz"
+    }
+  ],
+  "recipesCommit": "6283825b81bb60f952af1d0703638df1de611243"
+}

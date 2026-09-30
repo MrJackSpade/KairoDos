@@ -77,7 +77,7 @@ Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileConfiguratio
 #ifdef KAIRO_OPTIMIZED_PROFILE
     return env->NewStringUTF("Release-equivalent host (-O2 -DNDEBUG)");
 #else
-    return env->NewStringUTF("Debug host (-O0)");
+    return env->NewStringUTF("Optimized Android host (-O2), Staging CPU presenter");
 #endif
 }
 #else

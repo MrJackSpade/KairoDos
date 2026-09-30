@@ -15,6 +15,7 @@ import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipFile
 
 internal object VideoPresentationFixture {
@@ -45,21 +46,15 @@ internal object VideoPresentationFixture {
         try {
             val archive = File(root, "game.zip")
             File(archivePath).copyTo(archive)
-            val executable = if (game == "doom") "doom.exe" else "duke3d.exe"
-            val directory = ZipFile(archive).use { zip -> zip.entries().asSequence()
-                .first { it.name.substringAfterLast('/').equals(executable, true) }.name
-                .substringBeforeLast('/', "").replace('/', '\\') }
-            // Private sidecar only. Original game binaries, ZIP, settings and saves
-            // are untouched. Duke uses the supplied SB16 files, as the normal app does.
-            File(root, "game.conf").writeText("[autoexec]\nC:\n" +
-                (if (directory.isEmpty()) "" else "cd \\$directory\n") +
-                (if (game == "duke") "copy SB16\\*.* .\n" else "") +
-                "$executable\n")
+            val cancelled = AtomicBoolean(false)
+            val contentId = DosContentHash.zip(archive, cancelled)
+            val launch = DosGameCatalog(context).resolve(contentId, archive.name).launch
+            val resources = DosStagingResources.prepare(context, cancelled)
             val display = context.getSystemService(DisplayManager::class.java).displays
                 .firstOrNull { it.displayId == 2 }?.displayId ?: 0
-            // ABBA reduces order/temperature bias. Identical attract sequences and
-            // settings; sound runs normally although this fixture does not consume PCM.
-            for ((index, mode) in listOf(1, 0, 0, 1).withIndex()) {
+            // Staging always uses the CPU presenter. Consume audio at its real
+            // sample rate so the mixer has the same playback clock as the app.
+            for ((index, mode) in listOf(0).withIndex()) {
                 // Match showGame()/showLibrary(): every session owns a fresh surface.
                 // ANativeWindow_lock connects the CPU API until the SurfaceView is
                 // destroyed; reusing it for EGL gives EGL_BAD_ALLOC and stale pixels.
@@ -73,14 +68,33 @@ internal object VideoPresentationFixture {
                 call("nativeConfigure", 0, 0, mode)
                 call("nativeSetSurface", screen.holder.surface)
                 val saves = File(root, "saves-$index").apply { mkdirs() }
-                val system = File(root, "system-$index").apply { mkdirs() }
-                val core = worker.submit<Boolean> { call("nativeRun", archive.absolutePath,
-                    saves.absolutePath, system.absolutePath, false, true) as Boolean }
+                val drive = DosStagingStorage.prepare(archive, saves, contentId, cancelled, launch?.folder)
+                val config = DosStagingLaunchConfig.write(File(saves, "game.conf"), drive,
+                    launch, "dosbox.conf", emptyMap(), null, false, false)
+                val core = worker.submit<Boolean> { call("nativeRun", config.absolutePath,
+                    saves.absolutePath, resources.absolutePath) as Boolean }
+                val sound = Thread {
+                    val pcm = ShortArray(960)
+                    var next = System.nanoTime()
+                    while (!core.isDone) {
+                        val frames = call("nativeReadAudio", pcm, 480) as Int
+                        next = maxOf(next, System.nanoTime()) + frames * 1_000_000_000L / 48000L
+                        val wait = next - System.nanoTime()
+                        if (wait > 0) TimeUnit.NANOSECONDS.sleep(wait) else Thread.sleep(2)
+                    }
+                }.apply { name = "Staging-profile-audio"; start() }
                 try {
                     val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10)
                     while (call("nativeStatus") != 2 && !core.isDone && System.nanoTime() < deadline) Thread.sleep(20)
                     check(call("nativeStatus") == 2) { "Start failed: ${call("nativeLastError")}" }
-                    Thread.sleep(12000) // intro/loading excluded; native game attract mode
+                    Thread.sleep(3500)
+                    fun key(code: Int) {
+                        call("nativeKey", code, true); Thread.sleep(100)
+                        call("nativeKey", code, false); Thread.sleep(180)
+                    }
+                    key(if (game == "doom") '2'.code else '1'.code)
+                    key('n'.code)
+                    Thread.sleep(12000) // original launcher and game startup excluded
                     nativeProfileReset(true)
                     val start = System.nanoTime()
                     Log.i("VideoPresentation", "PROFILE_START $game mode=$mode run=$index ns=$start")
@@ -111,6 +125,8 @@ internal object VideoPresentationFixture {
                 } finally {
                     call("nativeStop")
                     check(core.get(10, TimeUnit.SECONDS)) { "Core did not exit" }
+                    sound.join(2000)
+                    check(!sound.isAlive) { "Audio consumer did not exit" }
                     nativeProfileReset(false)
                     call("nativeSetSurface", null)
                     instrumentation.runOnMainSync { activity?.finish() }

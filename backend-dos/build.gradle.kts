@@ -8,14 +8,22 @@ android {
     namespace = "com.mrjackspade.kairodos.backend"
 
     defaultConfig {
+        externalNativeBuild {
+            cmake {
+                arguments += "-DKAIRO_STAGING_DEPS=" +
+                    providers.gradleProperty("stagingDeps").orElse(
+                        rootProject.file(".downloads/staging-deps/installed/arm64-kairo-android").absolutePath).get()
+                arguments += "-DANDROID_STL=c++_shared"
+            }
+        }
         ndk {
             abiFilters += "arm64-v8a"
         }
     }
 
     externalNativeBuild {
-        ndkBuild {
-            path = file("../third_party/dosbox-pure/jni/Android.mk")
+        cmake {
+            path = file("CMakeLists.txt")
         }
     }
 }

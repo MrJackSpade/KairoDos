@@ -17,4 +17,11 @@ jobs:
       - name: Verify downloadable DOS catalog
         shell: pwsh
         run: ./tools/BuildPublicDosCatalog.ps1 -Check
+      - name: Build pinned Staging Android dependencies
+        shell: pwsh
+        run: ./tools/PrepareStagingDependencies.ps1
+      - name: Verify offline emulator notices
+        run: |
+          python3 tools/GenerateStagingNotices.py
+          git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
       - run: ./gradlew --no-daemon :kairodos:assembleDebug

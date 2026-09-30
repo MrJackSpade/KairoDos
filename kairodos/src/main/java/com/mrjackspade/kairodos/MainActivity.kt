@@ -59,8 +59,8 @@ import com.mrjackspade.kairo.frontend.SessionFlow
 import com.mrjackspade.kairo.frontend.SessionNavigationCoordinator
 import com.mrjackspade.kairo.frontend.SessionNavigationState
 import com.mrjackspade.kairo.frontend.SessionStatusDialog
-import com.mrjackspade.kairo.frontend.StateSlotCoordinator
-import com.mrjackspade.kairo.frontend.StateSlotStore
+
+
 import com.mrjackspade.kairo.frontend.GameSettingsRow
 import com.mrjackspade.kairo.frontend.GameSettingsCoordinator
 import com.mrjackspade.kairo.frontend.CommonGameSettings
@@ -84,15 +84,12 @@ import java.io.File
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-/** DOS library and session UI. Pure is compiled in :backend-dos and hosted via JNI. */
+/** DOS library and session UI. Staging is compiled in :backend-dos and hosted via JNI. */
 class MainActivity : Activity(), SurfaceHolder.Callback {
-    private external fun nativeRun(path: String, saveDir: String, systemDir: String,
-                                   enterSoloRoot: Boolean, useOutsideConf: Boolean): Boolean
+    private external fun nativeRun(config: String, saveDir: String, resources: String): Boolean
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
     private external fun nativeReset()
-    private external fun nativeSaveState(path: String): Int
-    private external fun nativeLoadState(path: String): Int
     private external fun nativeStatus(): Int
     private external fun nativeInputTelemetry(): LongArray
     private external fun nativeAudioRate(): Int
@@ -289,27 +286,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var installerPromptOpen = false
     private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
-    private val stateFlow by lazy {
-        StateSlotCoordinator(this, handler,
-            { currentGame?.contentId?.takeIf { nativeStatus() == 2 &&
-                libraryScreen.visibility != View.VISIBLE } },
-            { sessionGameTitle ?: currentGame?.displayName },
-            { StateSlotStore(File(filesDir, "states"), it, "state.dos", ".state") },
-            { secondaryDisplay.activeGameSurface ?: surface },
-            { store, scratch -> nativeSaveState(store.stateFileIn(scratch).absolutePath) },
-            { nativeLoadState(it.stateFile.absolutePath) }, ::stateError,
-            { statusLabel?.text = it }, { Ui.message(this, it) },
-            {
-                gamepad.releaseAll()
-                keys.releaseAll()
-                inputModeDecider.reset()
-                userPaused = false
-                closeMenu()
-            }, { code ->
-                // A rejected DOS state can leave the native machine partly changed.
-                if (code == 4) { userPaused = false; nativeReset(); closeMenu() }
-            }, "Start a DOS game from the library before using save states", R.drawable.ic_save)
-    }
     @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
@@ -541,7 +517,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
             true) { showGameCpuSettings(entry) },
             GameSettingsRow("3dfx rendering", "${voodooLabels[effectiveVoodoo(entry)]} · " +
-                if (gameSettings.has(entry.contentId, "voodoo_mode")) "Game" else "Global", true) {
+                if (gameSettings.has(entry.contentId, "staging_voodoo_threads")) "Game" else "Global", true) {
                 showVoodooSettings(entry)
             }) +
             (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
@@ -652,7 +628,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         val playerName = game.contentId?.let(dosGameSettings::playerName)
-        val mountsParent = launch?.let { DosLaunchConfig.mountsParent(it, configName) } == true
         val availableGames = games.toList()
         val generation = ++launchGeneration
         prepareCancelled.set(true)
@@ -683,7 +658,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionFromFrontend = fromFrontend
         gamepad.bindings = controllerFlow.load(game)
         showGame()
-        val systemDir = File(filesDir, "system").apply { mkdirs() }
         configureGuest()
         gameThread = Thread {
             oldThread?.join()
@@ -713,16 +687,25 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         val dependency = availableGames.firstOrNull { it.contentId in ids }
                             ?: error("This game also needs the $folder archive in your DOS library")
                         val dependencyFile = dosLibrary.prepare(dependency, selected, cancelled)
-                        DosLaunchConfig.Dependency(dependencyFile, !dependency.folder &&
-                            dosLibrary.hasOuterFolder(dependencyFile, folder))
+                        val stored = DosStagingStorage.prepare(dependencyFile,
+                            File(filesDir, "saves/${dependency.id}"), dependency.contentId!!, cancelled, folder)
+                        stored.directory.listFiles().orEmpty().firstOrNull {
+                            it.isDirectory && it.name.equals(folder, true)
+                        } ?: stored.directory
                     }
-                val file = dosLibrary.prepare(playableGame, selected, cancelled,
-                    if (mountsParent) launch?.folder else null)
+                val file = dosLibrary.prepare(playableGame, selected, cancelled)
                 if (generation != launchGeneration) return@Thread
                 runOnUiThread {
-                    if (generation == launchGeneration) loadingStatus?.text = "Starting DOSBox Pure…"
+                    if (generation == launchGeneration) loadingStatus?.text = "Starting DOSBox Staging…"
                 }
-                DosLaunchConfig.write(file, launch, configName, dependencies, playerName)
+                val drive = DosStagingStorage.prepare(file, saveDir, playableGame.contentId!!,
+                    cancelled, launch?.folder) { progress -> runOnUiThread {
+                        if (generation == launchGeneration) loadingStatus?.text = progress
+                    } }
+                val resources = DosStagingResources.prepare(this, cancelled)
+                val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
+                    drive, launch, configName, dependencies, playerName,
+                    effectiveVoodoo() == 1, effectiveDirectTouch())
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
@@ -731,12 +714,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         showInstallerRemovalPrompt(game, playableGame)
                     }
                 }
-                val enterOuterFolder = launch != null && !mountsParent && !playableGame.folder &&
-                    dosLibrary.hasOuterFolder(file, launch.folder)
-                val started = nativeRun(file.absolutePath, saveDir.absolutePath,
-                    systemDir.absolutePath, enterOuterFolder, launch != null)
+                if (cancelled.get() || generation != launchGeneration) return@Thread
+                val started = nativeRun(configuration.absolutePath, saveDir.absolutePath,
+                    resources.absolutePath)
                 if (!started) message = nativeLastError().ifBlank {
-                    "DOSBox Pure could not start this game."
+                    "DOSBox Staging could not start this game."
                 }
                 started
             } catch (failure: Exception) {
@@ -786,7 +768,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
-        SettingsEntry("3dfx rendering", { voodooLabels[preferences.getInt("voodoo_mode", 1).coerceIn(0, 1)] },
+        SettingsEntry("3dfx rendering", { voodooLabels[preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1)] },
             { showVoodooSettings(null) }),
         SettingsEntry("Graphics", graphics::settingsLabel, graphics::show),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
@@ -850,12 +832,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 userPaused = false
                 closeMenu()
             },
-            SessionAction("Save", R.drawable.ic_save) {
-                showStateSlots(saving = true)
-            },
-            SessionAction("Load", R.drawable.ic_load) {
-                showStateSlots(saving = false)
-            },
             SessionAction("Restart", com.mrjackspade.kairo.frontend.R.drawable.ic_restart) {
                 confirmRestart()
             },
@@ -909,7 +885,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         val details = mutableListOf(
             "Game" to (sessionGameTitle ?: "Unknown"),
-            "Core" to "DOSBox Pure",
+            "Core" to "DOSBox Staging",
             "State" to state,
             "DOS CPU speed" to if (effectiveCycles() == 0) "Auto" else "Maximum",
             "Touch input" to configuredTouchMode().name.lowercase()
@@ -990,7 +966,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 }
             }
             when (nativeStatus()) {
-                1 -> statusLabel?.text = "Loading DOSBox Pure…"
+                1 -> statusLabel?.text = "Loading DOSBox Staging…"
                 2 -> {
                     loadingStatus?.visibility = View.GONE
                     statusLabel?.text = "${sessionGameTitle ?: "Game"} · running"
@@ -1097,21 +1073,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }.setNegativeButton("Cancel", null).show()
     }
 
-    private val voodooLabels = arrayOf("Hardware when available", "Software")
+    private val voodooLabels = arrayOf("Automatic CPU threads", "Single CPU thread")
 
     private fun showVoodooSettings(game: DosLibrary.Game?) {
         val id = game?.contentId
         val perGame = id != null
         val options = if (perGame) arrayOf("Use global setting", *voodooLabels) else voodooLabels
         val selected = if (perGame) {
-            if (gameSettings.has(id, "voodoo_mode")) effectiveVoodoo(game) + 1 else 0
-        } else preferences.getInt("voodoo_mode", 1).coerceIn(0, 1)
+            if (gameSettings.has(id, "staging_voodoo_threads")) effectiveVoodoo(game) + 1 else 0
+        } else preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1)
         val dialog = AlertDialog.Builder(this).setTitle("3dfx rendering · relaunch to apply")
             .setSingleChoiceItems(options, selected) { current, choice ->
                 if (id != null) {
-                    if (choice == 0) gameSettings.clear(id, "voodoo_mode")
-                    else gameSettings.setInt(id, "voodoo_mode", choice - 1)
-                } else preferences.edit().putInt("voodoo_mode", choice).apply()
+                    if (choice == 0) gameSettings.clear(id, "staging_voodoo_threads")
+                    else gameSettings.setInt(id, "staging_voodoo_threads", choice - 1)
+                } else preferences.edit().putInt("staging_voodoo_threads", choice).apply()
                 configureGuest()
                 sessionDrawer?.refreshValues()
                 current.dismiss()
@@ -1123,7 +1099,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun confirmRestart() {
         val title = sessionGameTitle ?: "the DOS game"
         val dialog = AlertDialog.Builder(this).setTitle("Restart $title?")
-            .setMessage("Progress since your last save state or in-game save is lost.")
+            .setMessage("Progress since your last in-game save is lost.")
             .setPositiveButton("Restart") { _, _ ->
                 userPaused = false
                 nativeReset()
@@ -1165,7 +1141,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun confirmExit() {
         val dialog = AlertDialog.Builder(this).setTitle("Exit KairoDos?")
-            .setMessage("The DOS game stops. Progress since your last save state or in-game save is lost.")
+            .setMessage("The DOS game stops. Progress since your last in-game save is lost.")
             .setPositiveButton("Exit") { _, _ ->
                 leaveGame()
                 if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
@@ -1176,17 +1152,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showAbout() {
         AboutDocuments.show(this, "KairoDos",
-            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Pure emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
+            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
             "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt")
-    }
-
-    private fun showStateSlots(saving: Boolean) = stateFlow.show(saving)
-
-    private fun stateError(code: Int) = when (code) {
-        1 -> "game is not running"
-        2 -> "state is unavailable or incompatible"
-        3 -> "storage is unavailable"
-        else -> "DOSBox Pure rejected the state"
     }
 
     private fun startAudio() {
@@ -1327,8 +1294,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             preferences.getInt("cycles_mode", 0)).coerceIn(0, 1)
 
     private fun effectiveVoodoo(game: DosLibrary.Game? = currentGame): Int =
-        gameSettings.int(game?.contentId, "voodoo_mode",
-            preferences.getInt("voodoo_mode", 1)).coerceIn(0, 1)
+        gameSettings.int(game?.contentId, "staging_voodoo_threads",
+            preferences.getInt("staging_voodoo_threads", 0)).coerceIn(0, 1)
 
     private fun configureGuest() {
         nativeConfigure(if (effectiveDirectTouch()) 1 else 0, effectiveCycles(), effectiveVoodoo())

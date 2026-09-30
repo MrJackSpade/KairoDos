@@ -1,22 +1,20 @@
 package com.mrjackspade.kairodos
 
-import android.util.AtomicFile
-import java.io.File
+
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-/** Adapts eXoDOS's per-game DOSBox configuration to Pure's mounted game ZIP. */
+/** Catalog startup profile and player setup helpers for the DOS backend. */
 internal object DosLaunchConfig {
-    data class Dependency(val file: File, val stripRoot: Boolean)
+
     private val mountC = Regex("(?i)^@?mount\\s+c\\s+(.+)$")
-    private val mountDrive = Regex("(?i)^(\\s*@?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
-    private val imageC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
-    private val driveC = Regex("(?i)^@?c:\\s*$")
+    private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
 
     fun needsPlayer(launch: DosGameCatalog.Launch?): Boolean =
         launch?.folder?.lowercase() in setOf("azalta", "dom_door", "legord")
 
-    private fun setupLines(folder: String, player: String?): List<String> {
+    fun setupLines(folder: String, player: String?): List<String> {
         if (folder.lowercase() !in setOf("azalta", "dom_door", "legord")) return emptyList()
         require(player != null && player.matches(Regex("[A-Z0-9_]{1,8}"))) {
             "Choose a DOS player name"
@@ -69,102 +67,4 @@ internal object DosLaunchConfig {
         }.toSet()
     }
 
-    fun write(file: File, launch: DosGameCatalog.Launch?, name: String = "dosbox.conf",
-              dependencies: Map<String, Dependency> = emptyMap(), player: String? = null) {
-        val sidecar = File(file.parentFile, file.nameWithoutExtension + ".conf")
-        val source = launch?.configs?.get(name)
-        if (source == null) { sidecar.delete(); return }
-        val parentMount = mountsParent(launch, name)
-        val folder = launch.folder
-        val autoexecMarker = Regex("(?im)^\\s*\\[autoexec]\\s*$").find(source)
-        val autoexecText = autoexecMarker?.let { source.substring(it.range.last + 1) } ?: ""
-        val hasMountC = autoexecText.lineSequence().any { mountC.matches(it.trim()) }
-        val contentDrive = if (!hasMountC && autoexecText.lineSequence().any {
-                imageC.matches(it.trim()) }) "X" else "C"
-        val prefix = if (parentMount) "$contentDrive:\\$folder\\" else "$contentDrive:\\"
-        val sourceFolder = ".\\eXoDOS\\$folder"
-        val sourceGamePath = Regex("(?i)\\.[\\\\/]eXoDOS[\\\\/]${Regex.escape(folder)}[\\\\/]")
-        val sourceGameRoot = Regex("(?i)\\.[\\\\/]eXoDOS[\\\\/]${Regex.escape(folder)}(?=\\s|\"|$)")
-        val sourceDiscs = Regex("(?i)\\.[\\\\/]discs[\\\\/]")
-        val sourceFloppy = Regex("(?i)\\.[\\\\/]floppy[\\\\/]")
-        val ideOption = Regex("(?i)\\s+-ide\\s+\\S+")
-        val lines = ArrayList<String>()
-        var autoexec = false
-        for (original in source.lineSequence()) {
-            val line = original.trimEnd('\r')
-            if (line.trim().equals("[autoexec]", true)) {
-                autoexec = true
-                lines += line
-                if (contentDrive == "X") lines += "REMOUNT C X"
-                lines += setupLines(folder, player)
-                continue
-            }
-            if (!autoexec) { lines += line; continue }
-            val trimmed = line.trim()
-            if (mountC.matches(trimmed) ||
-                (contentDrive == "C" && driveC.matches(trimmed))) continue
-            val mount = mountDrive.matchEntire(line)
-            if (mount != null) {
-                val path = mount.groupValues[4].trim('"')
-                val foreign = Regex("(?i)^\\.[\\\\/]eXoDOS[\\\\/]([^\\\\/]+)(?:[\\\\/](.*))?$")
-                    .matchEntire(path)
-                if (foreign != null && !foreign.groupValues[1].equals(folder, true)) {
-                    val other = foreign.groupValues[1].lowercase()
-                    val dependency = dependencies[other]
-                        ?: error("Missing eXoDOS dependency: $other")
-                    val subdir = foreign.groupValues[2].replace('/', '\\').trim('\\')
-                    val option = if (dependency.stripRoot) "1" else "0"
-                    val root = "KAIROZIP:$option:${dependency.file.absolutePath}|$subdir"
-                    lines += "${mount.groupValues[1]}${mount.groupValues[2]}" +
-                        "${mount.groupValues[3]}\"$root\"${mount.groupValues[5]}"
-                    continue
-                }
-                if (path.equals(sourceFolder, true) ||
-                    path.startsWith("$sourceFolder\\", true)) {
-                    if (!path.endsWith(".img", true) && !path.endsWith(".ima", true)) {
-                        val subdir = path.substring(sourceFolder.length).trim('\\', '/')
-                        val inside = (if (parentMount) "$folder\\$subdir" else subdir)
-                            .trimEnd('\\')
-                        lines += "${mount.groupValues[1]}${mount.groupValues[2]}${mount.groupValues[3]}" +
-                            "KAIRO:$contentDrive:$inside${mount.groupValues[5]}"
-                        continue
-                    }
-                    // A few source launchers use MOUNT for a list of disk images.
-                    // Pure handles those with IMGMOUNT instead.
-                    val imageLine = line.replaceFirst(Regex("(?i)mount"), "imgmount")
-                    lines += sourceGamePath.replace(imageLine) { prefix }
-                    continue
-                }
-            }
-            var adapted = sourceGamePath.replace(line) { prefix }
-            adapted = sourceGameRoot.replace(adapted) { prefix.trimEnd('\\') }
-            adapted = sourceDiscs.replace(adapted) { prefix + "discs\\" }
-            adapted = sourceFloppy.replace(adapted) { prefix + "floppy\\" }
-            if (imageC.matches(adapted.trim()) ||
-                adapted.trim().startsWith("imgmount ", true) ||
-                adapted.trim().startsWith("@imgmount ", true)) {
-                adapted = ideOption.replace(adapted, "")
-            }
-            if (folder.equals("duke3d", true) && name.equals("dosbox.conf", true) &&
-                adapted.trim().equals("@call run", true)) {
-                // This eXoDOS launcher defaults to a Gravis profile that crashes
-                // DOSBox Pure. Use its bundled SB16 profile on the first run and
-                // recover an existing Gravis selection without editing the ZIP.
-                // Preserve working SB16/SC55 selections and later game settings.
-                lines += "if exist DUKE3D\\GUS.SEL del DUKE3D\\GUS.SEL"
-                lines += "if not exist DUKE3D\\*.SEL copy DUKE3D\\SB16\\*.* DUKE3D"
-                lines += "if not exist DUKE3D\\*.SEL type .>DUKE3D\\SB16.SEL"
-            }
-            lines += adapted
-        }
-        val atomic = AtomicFile(sidecar)
-        val output = atomic.startWrite()
-        try {
-            output.write((lines.joinToString("\r\n") + "\r\n").toByteArray(Charsets.UTF_8))
-            atomic.finishWrite(output)
-        } catch (failure: Exception) {
-            atomic.failWrite(output)
-            throw failure
-        }
-    }
 }

@@ -1,8 +1,10 @@
 # Project instructions
 
-- KairoDos is an independent Android DOS app. Credit DOSBox Pure accurately without using its name as this app's brand.
+- KairoDos is an independent Android DOS app. Credit DOSBox Staging accurately without using its name as this app's brand.
 - Keep only this project's `origin` remote and the pinned first-party Kairo frontend submodule at `shared/`. Do not add upstream remotes, fork relationships, or automated merges.
-- Copy an audited DOSBox Pure source release into `third_party/` before building the emulator. Do not make DOSBox Pure a submodule or add its Git remote. Record provenance and transitive licenses in `docs/source-import.md` and `docs/licensing.md`.
+- The emulator is DOSBox Staging 0.83.0, copied into `third_party/dosbox-staging/`. Do not restore DOSBox Pure, add an upstream emulator Git remote, or make the emulator a submodule. Record provenance and transitive licenses in `docs/source-import.md` and `docs/licensing.md`.
+- Run `pwsh -File tools/PrepareStagingDependencies.ps1` before the first Android build. The pinned dependency sources and build recipes are under `third_party/staging-deps/`; generated libraries stay in ignored `.downloads/staging-deps/`. Never commit prebuilt emulator libraries in place of corresponding source.
+- Staging does not implement emulator save states. Preserve existing Pure state files and game overlays; import overlays transactionally into Staging's writable drive. Do not expose unsupported Save/Load actions or discard legacy files.
 - Do not bundle proprietary BIOS, ROM, operating system, or game files.
 - First-party code is GPL-2.0-or-later. Preserve each third-party notice and supply complete corresponding source for distributed binaries.
 - Free GitHub and paid Google Play builds must have the same features and behavior and come from the same revision.
@@ -14,7 +16,7 @@
 - Android toolchain versions, Gradle conventions, wrapper distribution and CI setup live in pinned `shared/` (see `shared/docs/android-build.md`). Initialize that submodule before building. Product wrappers delegate to it; do not restore duplicate plugin versions or CI setup in either app.
 
 - This workstation has the Android SDK at `D:\android-sdk` (platform 36, NDK `28.2.13676358`, CMake `3.22.1`) and a populated Gradle cache at `C:\Users\Service Account\.gradle`. Environment variables may be unset; check these locations before claiming the toolchain is unavailable.
-- The checkout path contains a space, which makes `ndk-build` reject `Android.mk`. Temporarily map the checkout to an unused drive letter (verified with `K:` here), build from that drive, and remove the mapping afterward. The exact working command is in `docs/build-windows.md`.
+- The checkout path contains a space. Temporarily map it to an unused drive letter (verified with `K:` here) for native builds, then remove the mapping. The current dependency bootstrap and CMake/Gradle commands are in `docs/build-windows.md`; the previous Pure `ndk-build` commands are obsolete.
 
 # Local Kairo98 signing and device updates
 

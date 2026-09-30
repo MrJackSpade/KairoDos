@@ -14,5 +14,6 @@ endif()
 target_compile_features(kairodos_host PRIVATE cxx_std_17)
 target_include_directories(kairodos_host PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../../shared/frontend/src/main/cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/dosbox-pure/libretro-common/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../backend-dos/src/main/cpp)
+target_compile_options(kairodos_host PRIVATE -O2)
 target_link_libraries(kairodos_host PRIVATE android log dl EGL GLESv3)

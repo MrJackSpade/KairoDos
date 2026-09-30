@@ -1,11 +1,17 @@
 # Licensing and third-party credits
 
-KairoDos first-party source and the pinned [Kairo frontend](https://github.com/MrJackSpade/Kairo) are GPL-2.0-or-later; see [COPYING](../COPYING). The generated Spleen UI font remains BSD-2-Clause, with its source and notice in `shared/third_party/spleen/`.
+First-party KairoDos and pinned Kairo code remain GPL-2.0-or-later; see [COPYING](../COPYING). Spleen is BSD-2-Clause with source/notice under `shared/third_party/spleen/`.
 
-The copied [DOSBox Pure](https://github.com/schellingb/dosbox-pure) core and its DOSBox-derived code state GPL-2.0-or-later. Its complete source and license text are in `third_party/dosbox-pure/`. Preserve its per-file notices, `DOSBOX-AUTHORS`, and `DOSBOX-THANKS` when distributing source. The copied tree also contains components under their own notices, including Nuked OPL3 and Munt (LGPL-2.1-or-later), TinySoundFont and libretro headers (MIT), SIMDe (MIT or CC0 as marked), and Voodoo emulation code with a BSD-style notice.
+Staging is predominantly GPL-2.0-or-later. The mixer includes MVerb under GPL-3.0-or-later; GCEM is Apache-2.0. **Distribute the combined APK under GPLv3 terms**, using first-party "or later" permission. Per-file licenses are preserved. GPL-2.0-only FreeDOS resources/utilities are separate works in the aggregate; source snapshots are supplied in `extras/dos-programs/`.
 
-A distributed APK requires the corresponding KairoDos source, pinned shared frontend commit, copied DOSBox Pure source, host and build scripts, and applicable third-party notices. See [source provenance](source-import.md) for the exact core revision and project patches.
+Preserve Staging's LICENSE, licenses directory and per-file notices. These cover DOSBox/Staging authors, MAME emulators, NE2000, Nuked OPL3, ESFMu, MVerb, TAL chorus, reSID, decoders, SIMD helpers, Unicode mappings and freely licensed DOS utilities. [Source provenance](source-import.md) records external dependency versions and complete sources.
 
-The app's About screen packages an offline `THIRD_PARTY_NOTICES.txt` with the GPL text, notices from the copied DOSBox Pure components, Spleen's license, and the Android NDK 28.2.13676358 LLVM toolchain notice. The full source tree remains the authoritative source for per-file copyright and license statements.
+## Distribution audit
 
-KairoDos does not distribute games, operating systems, BIOS files, or Windows launchers. The hash catalog may include descriptions, startup profiles, and downscaled images derived from eXoDOS and LaunchBox material. Access to those sources does not itself grant redistribution rights. Review creator, redistribution, and derivative rights for included metadata and artwork before public distribution. The project owner's launcher artwork is separate from the code license.
+- ARM64 builds link copied Staging and static dependencies, with Android `c++_shared`.
+- `tools/GenerateStagingNotices.py` generates the offline About notice from copied license texts and embedded notices, dependency notices, Spleen and NDK notices.
+- Corresponding source must include the exact app revision, pinned shared revision, complete Staging/SDL trees, dependency/recipe archives, adapters and build scripts. A checkout without shared is incomplete.
+- No proprietary ROM, BIOS, operating system, soundfont or game is supplied. Freely licensed Staging keyboard/codepage resources and DOS utilities include notices and source.
+- Device boot acceptance and source/license checks are required before an APK is described as release-ready. Build success alone is insufficient.
+
+Existing eXoDOS/LaunchBox-derived metadata and artwork still need creator/redistribution/derivative rights review before public distribution. Access to source data does not grant redistribution rights. Project-owner artwork is separate from the code license.
