@@ -168,7 +168,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val record = catalog.resolve(game.contentId ?: "", game.displayName)
                 ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt)
             }, { DosCatalogFields.safeArtPath(it) != null }, catalog::setArtworkOverride,
-            "art/catalog/dos/example.webp", { libraryScreen.showEntries(games) },
+            { libraryScreen.showEntries(games) },
             ::showGameDetails, { Ui.message(this, it) })
     }
     private val catalogUpdates by lazy {
@@ -339,6 +339,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        artwork.restoreInstanceState(savedInstanceState)
         if (RgDsDisplayRouter.routeToUpper(this)) {
             relocating = true
             return
@@ -409,6 +410,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }
             catalogUpdates.check(true)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        artwork.saveInstanceState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onNewIntent(intent: Intent) {
