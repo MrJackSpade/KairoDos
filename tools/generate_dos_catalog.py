@@ -80,7 +80,9 @@ def game_records(metadata: zipfile.ZipFile) -> dict[str, ET.Element]:
 def launch_configs(root: Path, records: dict[str, ET.Element]) -> tuple[dict[str, dict], dict[str, dict]]:
     """Read launch settings separately from LaunchBox's descriptive metadata."""
     archive_path = root / "Content" / "!DOSmetadata.zip"
-    with zipfile.ZipFile(archive_path) as archive:
+    # The small configuration ZIP contains thousands of tiny members. Buffer it
+    # once so an SMB source does not incur a network seek for every config read.
+    with zipfile.ZipFile(io.BytesIO(archive_path.read_bytes())) as archive:
         entries = {name.casefold(): name for name in archive.namelist()}
         by_folder: dict[str, list[str]] = {}
         for name in entries.values():
@@ -245,6 +247,162 @@ def art_image(raw: bytes, target: Path) -> None:
         image.save(target, "WEBP", quality=70, method=4)
 
 
+def retired_identities(old: dict[str, dict], current: dict[str, dict]) -> dict[str, set[str]]:
+    """Find obsolete identities with an unambiguous current catalog title."""
+    by_title: dict[str, set[str]] = {}
+    for content_id, record in current.items():
+        for variant in record.get("variants", {"": record}).values():
+            by_title.setdefault(" ".join(variant["title"].casefold().split()), set()).add(content_id)
+    result: dict[str, set[str]] = {}
+    for content_id in old.keys() - current.keys():
+        for variant in old[content_id].get("variants", {"": old[content_id]}).values():
+            targets = by_title.get(" ".join(variant["title"].casefold().split()), set())
+            if len(targets) == 1:
+                result.setdefault(content_id, set()).update(targets)
+    return result
+
+
+def refresh_from_staging(root: Path, staging: Path) -> None:
+    """Reconcile a completed private scan with bundled metadata, without new art."""
+    project = Path(__file__).resolve().parent.parent
+    catalog = project / "kairodos/src/main/assets/catalog/dos"
+    manifest = json.loads((staging / "manifest.json").read_text(encoding="utf-8"))
+    if manifest["errors"]:
+        raise ValueError("resolve archive errors before refreshing the catalog")
+    with sqlite3.connect(staging / "hashes.sqlite") as database:
+        cached = {name: (size, modified, content_id, error) for name, size, modified,
+                  content_id, error in database.execute("SELECT * FROM games")}
+    files = sorted((item for item in os.scandir(root / "eXo/eXoDOS")
+                    if item.is_file() and item.name.lower().endswith(".zip")),
+                   key=lambda item: item.name.casefold())
+    if len(files) != manifest["archives"]:
+        raise ValueError("source inventory changed; regenerate staging first")
+    for item in files:
+        stat = item.stat()
+        scan = cached.get(item.name)
+        if not scan or scan[:2] != (stat.st_size, stat.st_mtime_ns) or scan[3]:
+            raise ValueError(f"source archive changed or failed scan: {item.name}")
+    old = {key: value for path in catalog.glob("[0-9a-f][0-9a-f].json")
+           for key, value in json.loads(path.read_text(encoding="utf-8"))["games"].items()}
+    old_by_title: dict[str, list[tuple[str, dict]]] = {}
+    old_by_stem: dict[str, list[tuple[str, dict]]] = {}
+    for content_id, record in old.items():
+        for stem, variant in record.get("variants", {"": record}).items():
+            old_by_title.setdefault(" ".join(variant["title"].casefold().split()), []).append((content_id, variant))
+            if stem:
+                old_by_stem.setdefault(stem, []).append((content_id, variant))
+    with zipfile.ZipFile(root / "Content/XODOSMetadata.zip") as metadata:
+        xml = game_records(metadata)
+    configs, by_folder = launch_configs(root, xml)
+    rows: dict[str, list[tuple[str, dict]]] = {}
+    archive_index = []
+    migrations: dict[str, set[str]] = {}
+    missing_config = []
+    retained_art = {}
+    current_ids = {cached[item.name][2] for item in files}
+    for item in files:
+        content_id = cached[item.name][2]
+        stem = Path(item.name).stem.casefold()
+        game = xml.get(item.name.casefold())
+        title = (game.findtext("Title") if game is not None else None) or Path(item.name).stem
+        previous_record = old.get(content_id, {})
+        previous = previous_record.get("variants", {}).get(stem)
+        if previous is None and "variants" not in previous_record and previous_record:
+            previous = previous_record
+        candidates = old_by_stem.get(stem) or old_by_title.get(" ".join(title.casefold().split()), [])
+        if previous is None:
+            # Prefer a former identity no longer present in this scan. Ambiguous
+            # matches never transfer launch settings or controller profiles.
+            stale = [pair for pair in candidates if pair[0] not in current_ids]
+            selected = stale if len(stale) == 1 else candidates
+            if len(selected) == 1:
+                previous = selected[0][1]
+                migrations.setdefault(selected[0][0], set()).add(content_id)
+        previous = previous or {}
+        year = ((game.findtext("ReleaseDate") if game is not None else None) or "")[:4]
+        variant = {key: value for key, value in previous.items()
+                   if key not in ("title", "description", "tags", "artwork", "launch", "variants")}
+        variant.update({"title": title,
+                        "description": ((game.findtext("Notes") or "").strip()
+                                        if game is not None else previous.get("description", "")),
+                        "tags": [value for value in (year, game.findtext("Genre"),
+                                  game.findtext("PlayMode")) if value] if game is not None
+                                else previous.get("tags", []),
+                        "artwork": {kind: asset for kind, asset in previous.get("artwork", {}).items()
+                                    if (project / "kairodos/src/main/assets" / asset).is_file()}})
+        config = configs.get(item.name.casefold())
+        if config is None:
+            with zipfile.ZipFile(item.path) as archive:
+                roots = {name.split("/", 1)[0].casefold() for name in archive.namelist()
+                         if "/" in name}
+            if len(roots) == 1:
+                config = by_folder.get(next(iter(roots)))
+        if config:
+            if item.name.casefold() == "blood (1997).zip":
+                config = {**config, "configs": {name: body.replace("BLOOD121.CUE", "BLOODCD1.cue")
+                          for name, body in config["configs"].items()}}
+            variant["launch"] = config
+        else:
+            missing_config.append(item.name)
+        for asset in variant["artwork"].values():
+            retained_art.setdefault(asset, set()).add(content_id)
+        rows.setdefault(content_id, []).append((stem, variant))
+        archive_index.append({"archive": item.name, "contentId": content_id, "title": title})
+    if missing_config:
+        raise ValueError(f"missing launch metadata: {missing_config}")
+    refreshed = {content_id: variants[0][1] if len(variants) == 1 else
+                 {"title": " / ".join(value["title"] for _, value in variants),
+                  "variants": dict(variants)} for content_id, variants in rows.items()}
+    shards = {f"{index:02x}": {"schemaVersion": 1, "games": {}} for index in range(256)}
+    for content_id, record in refreshed.items():
+        shards[content_id.split(":", 1)[1][:2]]["games"][content_id] = record
+    provenance_path = project / "docs/catalog-provenance.json"
+    previous_provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    # Earlier imports may already contain both an obsolete identity and its
+    # replacement. Record those retirements even when no new ID was added.
+    retired = retired_identities(old, refreshed)
+    artwork = [{**item, "contentId": content_id}
+               for item in previous_provenance["artwork"]
+               for content_id in sorted(retained_art.get(item["asset"], []))]
+    profile_path = catalog / "controller-profiles-v1.json"
+    profiles = json.loads(profile_path.read_text(encoding="utf-8"))
+    profile_migrations = retired | migrations
+    for profile, ids in profiles["profiles"].items():
+        profiles["profiles"][profile] = sorted({target for content_id in ids
+            for target in ({content_id} if content_id in refreshed else profile_migrations.get(content_id, set()))
+            if target in refreshed})
+    added = sorted(refreshed.keys() - old.keys())
+    removed = sorted(old.keys() - refreshed.keys())
+    changed = sorted(key for key in old.keys() & refreshed.keys() if old[key] != refreshed[key])
+    report = {"schemaVersion": 1, "source": manifest["source"],
+              "archives": len(files), "previousIds": len(old), "currentIds": len(refreshed),
+              "addedIds": [{"contentId": key, "title": refreshed[key]["title"]} for key in added],
+              "removedIds": [{"contentId": key, "title": old[key]["title"]} for key in removed],
+              "changedIdentities": [{"previousId": key, "currentIds": sorted(targets),
+                                     "title": old[key]["title"]}
+                                    for key, targets in sorted((retired | migrations).items()) if key in removed],
+              "metadataChanges": [{"contentId": key, "title": refreshed[key]["title"],
+                                   "fields": sorted(field for field in old[key].keys() | refreshed[key].keys()
+                                                    if old[key].get(field) != refreshed[key].get(field))}
+                                  for key in changed],
+              "unmatchedArchives": manifest["unmatchedArchives"], "errors": [],
+              "artworkPolicy": "Preserve existing bundled artwork; import no new images."}
+    for prefix, shard in shards.items():
+        (catalog / f"{prefix}.json").write_text(json.dumps(shard, ensure_ascii=False,
+            separators=(",", ":")), encoding="utf-8")
+    write_folder_index(catalog, shards)
+    profile_path.write_text(json.dumps(profiles, indent=2) + "\n", encoding="utf-8")
+    provenance_path.write_text(json.dumps({**manifest, "matches": len(files),
+        "uniqueIds": len(refreshed), "sharedIds": {key: [stem for stem, _ in variants]
+            for key, variants in rows.items() if len(variants) > 1},
+        "artwork": artwork, "shards": sorted(shards), "archiveIndex": archive_index},
+        ensure_ascii=False, indent=2), encoding="utf-8")
+    (project / "docs/catalog-refresh.json").write_text(json.dumps(report, ensure_ascii=False,
+        indent=2) + "\n", encoding="utf-8")
+    print(f"Refreshed {len(files)} archives: {len(refreshed)} identities, {len(added)} added, "
+          f"{len(removed)} removed, {len(changed)} metadata changes", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path, help="eXoDOS v6 root")
@@ -255,7 +413,12 @@ def main() -> None:
                         help="attach eXoDOS launch configs to existing catalog shards")
     parser.add_argument("--folder-index-only", action="store_true",
                         help="rebuild the source-folder lookup from catalog shards")
+    parser.add_argument("--refresh-from-staging", action="store_true",
+                        help="reconcile a completed scan with bundled catalog and provenance")
     args = parser.parse_args()
+    if args.refresh_from_staging:
+        refresh_from_staging(args.root, args.output)
+        return
     if args.folder_index_only:
         write_folder_index(Path(__file__).resolve().parent.parent /
                            "kairodos" / "src" / "main" / "assets" / "catalog" / "dos")

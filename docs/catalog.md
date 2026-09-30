@@ -22,4 +22,14 @@ The source ZIP already holds the extracted game files; KairoDos does not run the
 
 `tools/generate_dos_catalog.py` reads eXoDOS LaunchBox XML and images, DOSBox configuration metadata, and game archives to produce the hash catalog and optional downscaled artwork. Its generated provenance manifest records image sources and checksums. Keep source games and staging data out of Git. Review descriptions, images, and their redistribution rights before packaging them; see [licensing](licensing.md).
 
+To refresh the bundled index from the owner's current collection, first generate a complete private scan, then reconcile it with the bundled catalog:
+
+```powershell
+python tools/generate_dos_catalog.py '<current eXoDOS root>' .tmp/catalog-refresh
+python tools/generate_dos_catalog.py '<current eXoDOS root>' .tmp/catalog-refresh --refresh-from-staging
+pwsh -File tools/BuildPublicDosCatalog.ps1
+```
+
+The refresh rejects incomplete or changed scans and missing launch metadata. It removes identities absent from the current directory, refreshes descriptions, tags, and launch configurations, and preserves existing bundled artwork without importing new images. Unambiguous title or filename matches carry artwork and controller profiles to changed identities. Archives without LaunchBox records remain indexed by filename with launch settings from their source folder. `docs/catalog-provenance.json` records every current archive and its resolved identity; `docs/catalog-refresh.json` reports added and removed identities, identity migrations, and changed metadata fields. No game files are copied. Review both reports and the generated catalog before committing; the public export also updates the first-party `shared/catalog/dos/` snapshot.
+
 The catalog enriches the shared Kairo library. It does not create a separate eXoDOS UI or require the user to keep the original collection layout.
