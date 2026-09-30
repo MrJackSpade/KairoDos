@@ -44,7 +44,10 @@ internal object DukeResolutionFixture {
         game.writeText(settings)
         val config = File(copied, "launch.conf")
         config.writeText(config.readText().replace(sourcePath, copied.path).replace(source.path, copied.path))
-        if (noDouble) config.writeText(config.readText().replace("output = texture", "output = texturenb"))
+        // Select either side explicitly, even after native-size output becomes
+        // the installed default. Never append "nb" to an existing "texturenb".
+        config.writeText(config.readText().replace(Regex("(?m)^output[ \\t]*=[^\\r\\n]*"),
+            "output = " + if (noDouble) "texturenb" else "texture"))
         check(config.readText().contains(copied.path + "/drive")) { "Copied drive was not mounted" }
         check(!config.readText().contains(sourcePath) && !config.readText().contains(source.path))
         File(report, "launch.conf").writeText(config.readText())
@@ -98,8 +101,10 @@ internal object DukeResolutionFixture {
             phase("ready")
             val timeout = System.nanoTime() + TimeUnit.MINUTES.toNanos(10)
             var demoStarted = false
+            var lastSize = ""
             while (!File(report, "stop").exists() && !core.isDone && System.nanoTime() < timeout) {
-                File(report, "buffer-size.txt").writeText("${call("nativeVideoWidth")}x${call("nativeVideoHeight")}")
+                val size = "${call("nativeVideoWidth")}x${call("nativeVideoHeight")}"
+                if (size != lastSize) { File(report, "buffer-size.txt").writeText(size); lastSize = size }
                 if (!demoStarted && File(report, "go").exists()) {
                     call("nativeKey", 'n'.code, true); Thread.sleep(100)
                     call("nativeKey", 'n'.code, false)
