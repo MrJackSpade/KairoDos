@@ -24,7 +24,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         preferences.edit().putString(playerKey(id), name).apply()
 
     fun reset(id: String) {
-        common.clear(id, "touch_mode", "direct_touch", "cycles_mode")
+        common.clear(id, "touch_mode", "direct_touch", "cycles_mode", "voodoo_mode")
         preferences.edit().remove(controllerKey(id)).remove(variantKey(id))
             .remove(playerKey(id)).apply()
     }

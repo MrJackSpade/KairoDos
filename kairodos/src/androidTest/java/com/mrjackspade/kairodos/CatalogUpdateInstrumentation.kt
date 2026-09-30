@@ -11,12 +11,16 @@ import java.util.zip.ZipOutputStream
 
 /** Device fixture for partial catalog layers and rejection before snapshot activation. */
 class CatalogUpdateInstrumentation : Instrumentation() {
+    private var hardwareRender = false
+    private var hardwareGame: String? = null
     private var controllerMouse = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
+        hardwareRender = arguments?.getString("hardwareRender") == "true"
+        hardwareGame = arguments?.getString("hardwareGame")
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
@@ -27,7 +31,9 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     override fun onStart() {
         val result = Bundle()
         try {
-            if (controllerMouse) {
+            if (hardwareRender) GpuRenderingFixture.verify()
+            else if (hardwareGame != null) GpuRenderingFixture.verifyCore(this, hardwareGame!!)
+            else if (controllerMouse) {
                 var failure: Throwable? = null
                 runOnMainSync { failure = runCatching { ControllerMouseFixture.verify(targetContext) }.exceptionOrNull() }
                 failure?.let { throw it }
@@ -39,7 +45,9 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             }
             else if (catalogOverrides) { CatalogOverrideFixture.verify(targetContext.cacheDir); verify() }
             else if (stateSlots) StateSlotStoreFixture.verify(targetContext.cacheDir) else verify()
-            result.putString("stream", if (controllerMouse) "Shared controller mouse speed, persistence and Doom preset: OK\n"
+            result.putString("stream", if (hardwareRender) "Shared GLES contexts, fenced frames, orientation and display lifecycle: OK\n"
+                else if (hardwareGame != null) "DOS GLES/software boot, save/load, pause, surface recreation, reset and exit: OK\n"
+                else if (controllerMouse) "Shared controller mouse speed, persistence and Doom preset: OK\n"
                 else if (catalogOverrides) "Shared catalog override transactions and DOS merge: OK\n"
                 else if (inputDispatch) "Shared input routing and lifecycle: OK\n"
                 else if (stateSlots) "Shared state slot transactions: OK\n"

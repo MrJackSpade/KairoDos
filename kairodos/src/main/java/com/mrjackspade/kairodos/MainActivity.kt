@@ -106,7 +106,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeMouseMove(dx: Int, dy: Int)
     private external fun nativeMouseButton(button: Int, down: Boolean)
     private external fun nativePointer(x: Int, y: Int, pressed: Boolean)
-    private external fun nativeConfigure(mouseMode: Int, cyclesMode: Int)
+    private external fun nativeConfigure(mouseMode: Int, cyclesMode: Int, voodooMode: Int)
     private external fun nativeReadAudio(buffer: ShortArray, maxFrames: Int): Int
 
     companion object {
@@ -533,7 +533,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             deleteKind = if (!entry.external && !entry.rootFolder)
                 if (entry.folder) "game folder" else "game file" else null)
         val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
-            true) { showGameCpuSettings(entry) }) +
+            true) { showGameCpuSettings(entry) },
+            GameSettingsRow("3dfx rendering", "${voodooLabels[effectiveVoodoo(entry)]} · " +
+                if (gameSettings.has(entry.contentId, "voodoo_mode")) "Game" else "Global", true) {
+                showVoodooSettings(entry)
+            }) +
             (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
                 id?.let(dosGameSettings::startupVariant) ?: "Choose on first play", false) {
                 chooseLaunchVariant(entry, false)
@@ -776,6 +780,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
+        SettingsEntry("3dfx rendering", { voodooLabels[preferences.getInt("voodoo_mode", 1).coerceIn(0, 1)] },
+            { showVoodooSettings(null) }),
         SettingsEntry("Graphics", graphics::settingsLabel, graphics::show),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
             closeMenu()
@@ -1085,6 +1091,29 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }.setNegativeButton("Cancel", null).show()
     }
 
+    private val voodooLabels = arrayOf("Hardware when available", "Software")
+
+    private fun showVoodooSettings(game: DosLibrary.Game?) {
+        val id = game?.contentId
+        val perGame = id != null
+        val options = if (perGame) arrayOf("Use global setting", *voodooLabels) else voodooLabels
+        val selected = if (perGame) {
+            if (gameSettings.has(id, "voodoo_mode")) effectiveVoodoo(game) + 1 else 0
+        } else preferences.getInt("voodoo_mode", 1).coerceIn(0, 1)
+        val dialog = AlertDialog.Builder(this).setTitle("3dfx rendering · relaunch to apply")
+            .setSingleChoiceItems(options, selected) { current, choice ->
+                if (id != null) {
+                    if (choice == 0) gameSettings.clear(id, "voodoo_mode")
+                    else gameSettings.setInt(id, "voodoo_mode", choice - 1)
+                } else preferences.edit().putInt("voodoo_mode", choice).apply()
+                configureGuest()
+                sessionDrawer?.refreshValues()
+                current.dismiss()
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
+
     private fun confirmRestart() {
         val title = sessionGameTitle ?: "the DOS game"
         val dialog = AlertDialog.Builder(this).setTitle("Restart $title?")
@@ -1291,8 +1320,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gameSettings.int(game?.contentId, "cycles_mode",
             preferences.getInt("cycles_mode", 0)).coerceIn(0, 1)
 
+    private fun effectiveVoodoo(game: DosLibrary.Game? = currentGame): Int =
+        gameSettings.int(game?.contentId, "voodoo_mode",
+            preferences.getInt("voodoo_mode", 1)).coerceIn(0, 1)
+
     private fun configureGuest() {
-        nativeConfigure(if (effectiveDirectTouch()) 1 else 0, effectiveCycles())
+        nativeConfigure(if (effectiveDirectTouch()) 1 else 0, effectiveCycles(), effectiveVoodoo())
     }
 
     private fun configuredTouchMode() = touchSelection().selection.mode

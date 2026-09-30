@@ -18,6 +18,7 @@
 #include <thread>
 #include <vector>
 #include "libretro.h"
+#include "kairo/gpu_frame_queue.h"
 
 namespace {
 constexpr const char* TAG = "KairoDos";
@@ -42,6 +43,24 @@ std::atomic<bool> mouse_left{false}, mouse_right{false};
 std::atomic<int> pointer_x{0}, pointer_y{0};
 std::atomic<bool> pointer_pressed{false};
 std::atomic<int> mouse_mode{0}, cycles_mode{0};
+std::atomic<int> voodoo_mode{1};
+kairo::GpuFrameQueue hardware;
+retro_hw_render_callback hardware_callback{};
+std::atomic<bool> hardware_active{false};
+
+uintptr_t current_framebuffer() { return hardware.framebuffer(); }
+retro_proc_address_t hardware_proc(const char* name) {
+    auto address = eglGetProcAddress(name);
+    return address ? reinterpret_cast<retro_proc_address_t>(address) :
+        reinterpret_cast<retro_proc_address_t>(dlsym(RTLD_DEFAULT, name));
+}
+// Called under core_execution_mutex. Save states may arrive on the UI thread;
+// release the offscreen context before another thread executes the core.
+struct HardwareScope {
+    bool active = hardware_active.load();
+    bool ok = !active || hardware.makeCurrent();
+    ~HardwareScope() { if (active) hardware.releaseCurrent(); }
+};
 std::atomic<bool> outside_conf{false};
 std::atomic<bool> option_dirty{false};
 std::mutex audio_mutex;
@@ -146,6 +165,10 @@ bool environment(unsigned command, void* data) {
                 variable->value = outside_conf.load() ? "outside" : "false";
                 return true;
             }
+            if (std::strcmp(variable->key, "dosbox_pure_voodoo_perf") == 0) {
+                variable->value = voodoo_mode.load() == 1 ? "1" : "auto";
+                return true;
+            }
             if (std::strcmp(variable->key, "dosbox_pure_menu_time") == 0) {
                 variable->value = "0"; // Return to KairoDos when the game or its script exits.
                 return true;
@@ -155,13 +178,41 @@ bool environment(unsigned command, void* data) {
         case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
             keyboard_callback = *static_cast<retro_keyboard_callback*>(data); return true;
         case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
-            *static_cast<unsigned*>(data) = RETRO_HW_CONTEXT_NONE; return true;
-        case RETRO_ENVIRONMENT_SET_HW_RENDER:
-            return false; // Software renderer until an EGL libretro host is implemented.
+            *static_cast<unsigned*>(data) = RETRO_HW_CONTEXT_OPENGLES_VERSION; return true;
+        case RETRO_ENVIRONMENT_SET_HW_RENDER: {
+            auto* callback = static_cast<retro_hw_render_callback*>(data);
+            if (callback->context_type == RETRO_HW_CONTEXT_NONE) {
+                hardware_active = false;
+                hardware.useSoftware();
+                return true;
+            }
+            if (voodoo_mode.load() == 1 || callback->depth || callback->stencil ||
+                !callback->context_reset || hardware.ready()) return false;
+            unsigned major = 3, minor = 0;
+            if (callback->context_type == RETRO_HW_CONTEXT_OPENGLES_VERSION) {
+                major = callback->version_major; minor = callback->version_minor;
+                if (major != 3 || minor > 1) return false;
+            } else if (callback->context_type != RETRO_HW_CONTEXT_OPENGLES3) return false;
+            if (!hardware.create(major, minor)) {
+                __android_log_print(ANDROID_LOG_WARN, TAG,
+                    "GLES %u.%u unavailable; using software Voodoo rendering", major, minor);
+                return false;
+            }
+            callback->get_current_framebuffer = current_framebuffer;
+            callback->get_proc_address = hardware_proc;
+            hardware_callback = *callback;
+            hardware_active = true;
+            return true;
+        }
         case RETRO_ENVIRONMENT_GET_FASTFORWARDING:
             *static_cast<bool*>(data) = false; return true;
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO: {
             const auto& info = *static_cast<retro_system_av_info*>(data);
+            if (hardware_active && !hardware.resize(info.geometry.max_width, info.geometry.max_height)) {
+                set_error("The graphics device cannot allocate this game resolution. Try Software under 3dfx rendering.");
+                stop_requested.store(true);
+                return false;
+            }
             if (info.timing.fps > 1) fps.store(info.timing.fps);
             if (info.timing.sample_rate > 1000) sample_rate.store(static_cast<int>(info.timing.sample_rate));
             if (info.geometry.aspect_ratio > 0) aspect.store(info.geometry.aspect_ratio);
@@ -180,10 +231,14 @@ bool environment(unsigned command, void* data) {
 }
 
 void video(const void* data, unsigned width, unsigned height, size_t pitch) {
-    if (core_crashed.load() || !data || data == RETRO_HW_FRAME_BUFFER_VALID ||
+    if (core_crashed.load() || !data ||
         width == 0 || height == 0) return;
     video_width.store(static_cast<int>(width));
     video_height.store(static_cast<int>(height));
+    if (data == RETRO_HW_FRAME_BUFFER_VALID) {
+        if (hardware_active) hardware.publish(width, height, hardware_callback.bottom_left_origin);
+        return;
+    }
     // Posting to a 60 Hz Surface can block for a full refresh. Keep that wait off
     // the emulation thread, which must run at the DOS video rate (often 70 Hz).
     std::lock_guard<std::mutex> lock(frame_mutex);
@@ -205,6 +260,11 @@ void video(const void* data, unsigned width, unsigned height, size_t pitch) {
 }
 
 void render_frames() {
+    if (hardware_active) hardware.render([] {
+        std::lock_guard<std::mutex> lock(surface_mutex);
+        if (surface) ANativeWindow_acquire(surface);
+        return surface;
+    });
     std::vector<uint8_t> frame;
     while (true) {
         unsigned width, height;
@@ -350,6 +410,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     guest_keyboard_waits.store(0); guest_keyboard_polls.store(0);
     guest_mouse_reads.store(0); guest_keyboard_waiting.store(0);
     keyboard_callback = {};
+    hardware_callback = {};
+    hardware_active = false;
     outside_conf.store(use_outside_conf);
     if (!load_core()) { if (core_handle) dlclose(core_handle); core_handle = nullptr; status.store(3); return false; }
     core.set_zip_root(enter_solo_root);
@@ -362,7 +424,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     retro_game_info game{path.c_str(), nullptr, 0, nullptr};
     if (!core.load_game(&game)) {
         set_error("DOSBox Pure could not open this game file");
-        core.deinit(); dlclose(core_handle); core_handle = nullptr; status.store(3); return false;
+        core.deinit(); hardware.destroy(); dlclose(core_handle); core_handle = nullptr; status.store(3); return false;
     }
     core.reset_input_telemetry();
     // Two DOS joysticks: left/right analog axes and B/Y/A/X as button lines 1-4.
@@ -370,6 +432,15 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     core.set_controller_port_device(0, RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 7));
     retro_system_av_info av{};
     core.get_system_av_info(&av);
+    if (hardware_active) {
+        if (!hardware.resize(av.geometry.max_width, av.geometry.max_height)) {
+            set_error("The graphics device cannot allocate this game resolution. Try Software under 3dfx rendering.");
+            core.unload_game(); core.deinit(); hardware.destroy();
+            dlclose(core_handle); core_handle = nullptr; status.store(3); return false;
+        }
+        hardware_callback.context_reset();
+        hardware.releaseCurrent();
+    }
     if (av.timing.fps > 1) fps.store(av.timing.fps);
     if (av.timing.sample_rate > 1000) sample_rate.store(static_cast<int>(av.timing.sample_rate));
     if (av.geometry.aspect_ratio > 0) aspect.store(av.geometry.aspect_ratio);
@@ -389,11 +460,16 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
             keyboard_callback.callback(change.down, change.code, change.code < 128 ? change.code : 0, 0);
         if (reset_requested.exchange(false)) {
             std::lock_guard<std::mutex> lock(core_execution_mutex);
-            core.reset();
+            HardwareScope graphics;
+            if (graphics.ok) core.reset();
         }
         {
             std::lock_guard<std::mutex> lock(core_execution_mutex);
-            core.run();
+            HardwareScope graphics;
+            if (!graphics.ok || hardware.failed()) {
+                set_error("The graphics context was lost. Relaunch the game or select Software under 3dfx rendering.");
+                core_crashed.store(true); stop_requested.store(true);
+            } else core.run();
         }
         uint64_t waits = 0, polls = 0, reads = 0;
         int waiting = 0;
@@ -411,12 +487,17 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         renderer_stopping = true;
     }
     frame_ready.notify_one();
+    hardware.stop();
     renderer.join();
     {
         std::lock_guard<std::mutex> lock(core_execution_mutex);
         status.store(1);
+        if (hardware_active) hardware.makeCurrent();
         core.unload_game();
+        if (hardware_active && hardware_callback.context_destroy) hardware_callback.context_destroy();
+        hardware_active = false;
         core.deinit();
+        hardware.destroy();
         dlclose(core_handle); core_handle = nullptr;
         status.store(0);
     }
@@ -434,6 +515,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeSaveState(JNIEnv* env, jobject,
     const std::string path = string(env, path_j);
     std::lock_guard<std::mutex> lock(core_execution_mutex);
     if (status.load() != 2 || !core_handle) return 1;
+    HardwareScope graphics;
+    if (!graphics.ok) return 4;
     const size_t size = core.serialize_size();
     if (!size || size > 512ull * 1024 * 1024) return 2;
     std::vector<uint8_t> state(size);
@@ -450,6 +533,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeLoadState(JNIEnv* env, jobject,
     const std::string path = string(env, path_j);
     std::lock_guard<std::mutex> lock(core_execution_mutex);
     if (status.load() != 2 || !core_handle) return 1;
+    HardwareScope graphics;
+    if (!graphics.ok) return 4;
     FILE* file = std::fopen(path.c_str(), "rb");
     if (!file) return 3;
     if (std::fseek(file, 0, SEEK_END) != 0) { std::fclose(file); return 3; }
@@ -533,9 +618,11 @@ Java_com_mrjackspade_kairodos_MainActivity_nativePointer(JNIEnv*, jobject, jint 
     pointer_pressed.store(down);
 }
 extern "C" JNIEXPORT void JNICALL
-Java_com_mrjackspade_kairodos_MainActivity_nativeConfigure(JNIEnv*, jobject, jint mouse, jint cycles) {
+Java_com_mrjackspade_kairodos_MainActivity_nativeConfigure(JNIEnv*, jobject, jint mouse, jint cycles, jint voodoo) {
     mouse_mode.store(mouse == 1 ? 1 : 0);
     cycles_mode.store(cycles == 1 ? 1 : 0);
+    // The core negotiates hardware only at launch; a mode change needs relaunch.
+    if (status.load() != 2) voodoo_mode.store(voodoo == 1 ? 1 : 0);
     option_dirty.store(true);
 }
 extern "C" JNIEXPORT jint JNICALL
