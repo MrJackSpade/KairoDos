@@ -13,6 +13,9 @@ import java.util.zip.ZipOutputStream
 class CatalogUpdateInstrumentation : Instrumentation() {
     private var hardwareRender = false
     private var hardwareGame: String? = null
+    private var presentationArchive: String? = null
+    private var presentationGame = "doom"
+    private var presentationSeconds = 30
     private var controllerMouse = false
     private var stateSlots = false
     private var inputDispatch = false
@@ -21,6 +24,9 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         super.onCreate(arguments)
         hardwareRender = arguments?.getString("hardwareRender") == "true"
         hardwareGame = arguments?.getString("hardwareGame")
+        presentationArchive = arguments?.getString("presentationArchive")
+        presentationGame = arguments?.getString("presentationGame") ?: "doom"
+        presentationSeconds = arguments?.getString("presentationSeconds")?.toInt() ?: 30
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
@@ -31,6 +37,13 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     override fun onStart() {
         val result = Bundle()
         try {
+            if (presentationArchive != null) {
+                val metrics = VideoPresentationFixture.measure(this, presentationArchive!!,
+                    presentationGame, presentationSeconds)
+                result.putString("stream", "Video presentation profile: $metrics\n")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (hardwareRender) GpuRenderingFixture.verify()
             else if (hardwareGame != null) GpuRenderingFixture.verifyCore(this, hardwareGame!!)
             else if (controllerMouse) {

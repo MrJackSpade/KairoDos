@@ -19,6 +19,7 @@
 #include <vector>
 #include "libretro.h"
 #include "kairo/gpu_frame_queue.h"
+#include "video_profile.h"
 
 namespace {
 constexpr const char* TAG = "KairoDos";
@@ -31,6 +32,7 @@ std::mutex frame_mutex;
 std::condition_variable frame_ready;
 std::vector<uint8_t> pending_frame;
 unsigned pending_width = 0, pending_height = 0;
+uint64_t pending_frame_time = 0;
 bool has_pending_frame = false, renderer_stopping = false;
 std::mutex input_mutex;
 struct KeyChange { unsigned code; bool down; };
@@ -236,12 +238,20 @@ void video(const void* data, unsigned width, unsigned height, size_t pitch) {
     video_width.store(static_cast<int>(width));
     video_height.store(static_cast<int>(height));
     if (data == RETRO_HW_FRAME_BUFFER_VALID) {
-        if (hardware_active) hardware.publish(width, height, hardware_callback.bottom_left_origin);
+        if (hardware_active) {
+            const auto start = video_profile::now();
+            hardware.publish(width, height, hardware_callback.bottom_left_origin);
+            video_profile::elapsed(video_profile::HardwarePublish, start);
+            video_profile::record(video_profile::HardwareFrame);
+        }
         return;
     }
     // Posting to a 60 Hz Surface can block for a full refresh. Keep that wait off
     // the emulation thread, which must run at the DOS video rate (often 70 Hz).
+    const auto arrival = video_profile::now();
     std::lock_guard<std::mutex> lock(frame_mutex);
+    video_profile::elapsed(video_profile::FrameMutex, arrival);
+    const auto conversion = video_profile::now();
     pending_frame.resize(static_cast<size_t>(width) * height * 4);
     const auto* src = static_cast<const uint8_t*>(data);
     for (unsigned y = 0; y < height; ++y) {
@@ -255,6 +265,10 @@ void video(const void* data, unsigned width, unsigned height, size_t pitch) {
     }
     pending_width = width;
     pending_height = height;
+    video_profile::elapsed(video_profile::Convert, conversion);
+    video_profile::record(video_profile::Produced);
+    if (has_pending_frame) video_profile::record(video_profile::Replaced);
+    pending_frame_time = arrival;
     has_pending_frame = true;
     frame_ready.notify_one();
 }
@@ -268,6 +282,7 @@ void render_frames() {
     std::vector<uint8_t> frame;
     while (true) {
         unsigned width, height;
+        uint64_t arrival;
         {
             std::unique_lock<std::mutex> lock(frame_mutex);
             frame_ready.wait(lock, [] { return renderer_stopping || has_pending_frame; });
@@ -275,10 +290,13 @@ void render_frames() {
             frame.swap(pending_frame);
             width = pending_width;
             height = pending_height;
+            arrival = pending_frame_time;
             has_pending_frame = false;
         }
+        const auto surfaceWait = video_profile::now();
         std::lock_guard<std::mutex> lock(surface_mutex);
-        if (!surface) continue;
+        video_profile::elapsed(video_profile::WindowMutex, surfaceWait);
+        if (!surface) { video_profile::record(video_profile::NoSurface); continue; }
         if (surface_width != static_cast<int>(width) || surface_height != static_cast<int>(height)) {
             if (ANativeWindow_setBuffersGeometry(surface, static_cast<int>(width),
                     static_cast<int>(height), WINDOW_FORMAT_RGBA_8888) != 0) continue;
@@ -286,13 +304,23 @@ void render_frames() {
             surface_height = static_cast<int>(height);
         }
         ANativeWindow_Buffer buffer{};
-        if (ANativeWindow_lock(surface, &buffer, nullptr) != 0) continue;
+        const auto windowLock = video_profile::now();
+        const int locked = ANativeWindow_lock(surface, &buffer, nullptr);
+        video_profile::elapsed(video_profile::WindowLock, windowLock);
+        if (locked != 0) { video_profile::record(video_profile::WindowFailure); continue; }
+        const auto copy = video_profile::now();
         for (unsigned y = 0; y < height && y < static_cast<unsigned>(buffer.height); ++y) {
             auto* out = static_cast<uint32_t*>(buffer.bits) + y * buffer.stride;
             const auto* row = reinterpret_cast<const uint32_t*>(frame.data()) + y * width;
             std::memcpy(out, row, std::min(width, static_cast<unsigned>(buffer.width)) * 4);
         }
-        ANativeWindow_unlockAndPost(surface);
+        video_profile::elapsed(video_profile::WindowCopy, copy);
+        const auto post = video_profile::now();
+        const int posted = ANativeWindow_unlockAndPost(surface);
+        video_profile::elapsed(video_profile::WindowPost, post);
+        if (posted == 0) video_profile::record(video_profile::Presented);
+        else video_profile::record(video_profile::WindowFailure);
+        video_profile::elapsed(video_profile::AgeAtPost, arrival);
     }
 }
 
@@ -469,7 +497,11 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
             if (!graphics.ok || hardware.failed()) {
                 set_error("The graphics context was lost. Relaunch the game or select Software under 3dfx rendering.");
                 core_crashed.store(true); stop_requested.store(true);
-            } else core.run();
+            } else {
+                const auto run = video_profile::now();
+                core.run();
+                video_profile::elapsed(video_profile::CoreRun, run);
+            }
         }
         uint64_t waits = 0, polls = 0, reads = 0;
         int waiting = 0;

@@ -1,0 +1,2511 @@
+{
+  "dateUtc": "2026-09-30",
+  "device": "RGDS, Android 14, arm64, 640x480 game surface, charging",
+  "baseCommit": "210e8ec2c6410de0603f25464940221c9a4d9e6c",
+  "sharedCommit": "78352785914502f75ee3c2f793ff19dbd87d02ba",
+  "measurementApkSha256": "7907fa8c212353a8828b908f9be2c0d9f38f782b578e400e9b427283a9509713",
+  "hostFlags": "-O2 -DNDEBUG, matching release RelWithDebInfo; debug profiling enabled",
+  "limitations": "Attract sequences, phases not synchronized; no AudioTrack consumer; charging prevents power attribution; no input-to-photon or internal GPU frame age measurement; Retroid deferred.",
+  "runs": {
+    "doom": {
+      "nativeProfile": {
+        "schemaVersion": 1,
+        "game": "doom",
+        "configuration": "Release-equivalent host (-O2 -DNDEBUG)",
+        "runs": [
+          {
+            "game": "doom",
+            "mode": 1,
+            "run": 0,
+            "durationNs": 30000639973,
+            "startNs": 4523458405322,
+            "endNs": 4553459045295,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 320,
+            "videoHeight": 200,
+            "metrics": {
+              "convert": {
+                "count": 2103,
+                "sumNs": 313057216,
+                "p50Ns": 136500,
+                "p95Ns": 187834,
+                "maxNs": 3417166
+              },
+              "frameMutex": {
+                "count": 2103,
+                "sumNs": 1419834,
+                "p50Ns": 584,
+                "p95Ns": 875,
+                "maxNs": 25959
+              },
+              "windowMutex": {
+                "count": 1802,
+                "sumNs": 531105,
+                "p50Ns": 292,
+                "p95Ns": 583,
+                "maxNs": 35000
+              },
+              "windowLock": {
+                "count": 1802,
+                "sumNs": 28392664396,
+                "p50Ns": 15851500,
+                "p95Ns": 16102042,
+                "maxNs": 19434333
+              },
+              "windowCopy": {
+                "count": 1803,
+                "sumNs": 247374468,
+                "p50Ns": 129208,
+                "p95Ns": 176459,
+                "maxNs": 2418208
+              },
+              "windowPost": {
+                "count": 1803,
+                "sumNs": 1342679659,
+                "p50Ns": 604916,
+                "p95Ns": 1143917,
+                "maxNs": 7681917
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "coreRun": {
+                "count": 2103,
+                "sumNs": 2195697297,
+                "p50Ns": 215250,
+                "p95Ns": 4881625,
+                "maxNs": 10033625
+              },
+              "ageAtPost": {
+                "count": 1801,
+                "sumNs": 42963441812,
+                "p50Ns": 23898292,
+                "p95Ns": 30292500,
+                "maxNs": 33202750
+              },
+              "produced": {
+                "count": 2103,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 302,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 1803,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "doom",
+            "mode": 0,
+            "run": 1,
+            "durationNs": 30000579306,
+            "startNs": 4567180827093,
+            "endNs": 4597181406399,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 320,
+            "videoHeight": 200,
+            "metrics": {
+              "convert": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "frameMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowLock": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowCopy": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwarePublish": {
+                "count": 2103,
+                "sumNs": 1238694328,
+                "p50Ns": 494667,
+                "p95Ns": 1092875,
+                "maxNs": 7197166
+              },
+              "coreRun": {
+                "count": 2103,
+                "sumNs": 5636376940,
+                "p50Ns": 1481083,
+                "p95Ns": 9187792,
+                "maxNs": 16763250
+              },
+              "ageAtPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "produced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 2103,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "doom",
+            "mode": 0,
+            "run": 2,
+            "durationNs": 30000624223,
+            "startNs": 4610544689905,
+            "endNs": 4640545314128,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 320,
+            "videoHeight": 200,
+            "metrics": {
+              "convert": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "frameMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowLock": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowCopy": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwarePublish": {
+                "count": 2103,
+                "sumNs": 1347251513,
+                "p50Ns": 521208,
+                "p95Ns": 1213625,
+                "maxNs": 7668500
+              },
+              "coreRun": {
+                "count": 2103,
+                "sumNs": 6553411699,
+                "p50Ns": 1649667,
+                "p95Ns": 10245958,
+                "maxNs": 22526875
+              },
+              "ageAtPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "produced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 2103,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "doom",
+            "mode": 1,
+            "run": 3,
+            "durationNs": 30000632098,
+            "startNs": 4653789336301,
+            "endNs": 4683789968399,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 320,
+            "videoHeight": 200,
+            "metrics": {
+              "convert": {
+                "count": 2103,
+                "sumNs": 308415055,
+                "p50Ns": 137667,
+                "p95Ns": 187833,
+                "maxNs": 853709
+              },
+              "frameMutex": {
+                "count": 2103,
+                "sumNs": 1431472,
+                "p50Ns": 583,
+                "p95Ns": 875,
+                "maxNs": 52791
+              },
+              "windowMutex": {
+                "count": 1803,
+                "sumNs": 488268,
+                "p50Ns": 292,
+                "p95Ns": 583,
+                "maxNs": 875
+              },
+              "windowLock": {
+                "count": 1803,
+                "sumNs": 28270070821,
+                "p50Ns": 15841875,
+                "p95Ns": 16081625,
+                "maxNs": 32444125
+              },
+              "windowCopy": {
+                "count": 1804,
+                "sumNs": 234088762,
+                "p50Ns": 119000,
+                "p95Ns": 165958,
+                "maxNs": 2413542
+              },
+              "windowPost": {
+                "count": 1804,
+                "sumNs": 1359960852,
+                "p50Ns": 649250,
+                "p95Ns": 1158500,
+                "maxNs": 4019750
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "coreRun": {
+                "count": 2103,
+                "sumNs": 2775318869,
+                "p50Ns": 213792,
+                "p95Ns": 5985875,
+                "maxNs": 17606459
+              },
+              "ageAtPost": {
+                "count": 1803,
+                "sumNs": 42622863791,
+                "p50Ns": 23755958,
+                "p95Ns": 30410334,
+                "maxNs": 48037500
+              },
+              "produced": {
+                "count": 2103,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 300,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 1804,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          }
+        ]
+      },
+      "analysis": {
+        "game": "doom",
+        "configuration": "Release-equivalent host (-O2 -DNDEBUG)",
+        "runs": [
+          {
+            "run": 0,
+            "mode": "software",
+            "seconds": 30.000639973,
+            "submittedPerSecond": 70.09850462832325,
+            "completedPresentations": 1763,
+            "observedPresentationSpanSeconds": 29.340451306,
+            "maxObservationGapSeconds": 1.66,
+            "presentationsPerSecond": 60.05360931989749,
+            "presentationIntervalP50Ms": 16.653,
+            "presentationIntervalP95Ms": 16.739334,
+            "presentationIntervalMaxMs": 16.863292,
+            "readyToPresentP50Ms": 26.319125,
+            "readyToPresentP95Ms": 28.315292,
+            "pendingReplacements": 302,
+            "pendingReplacementPercent": 14.360437470280552,
+            "coreRunMeanMs": 1.0440786005706133,
+            "approxProcessCpuPercent": 97.4964234620887,
+            "socCMin": 48.333,
+            "socCMax": 51.875,
+            "gpuCMax": 48.888,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 2103,
+                "meanMs": 0.14886220446980503,
+                "p50Ms": 0.1365,
+                "p95Ms": 0.187834,
+                "maxMs": 3.417166
+              },
+              "frameMutex": {
+                "count": 2103,
+                "meanMs": 0.0006751469329529244,
+                "p50Ms": 0.000584,
+                "p95Ms": 0.000875,
+                "maxMs": 0.025959
+              },
+              "windowMutex": {
+                "count": 1802,
+                "meanMs": 0.00029473085460599333,
+                "p50Ms": 0.000292,
+                "p95Ms": 0.000583,
+                "maxMs": 0.035
+              },
+              "windowLock": {
+                "count": 1802,
+                "meanMs": 15.75619555826859,
+                "p50Ms": 15.8515,
+                "p95Ms": 16.102042,
+                "maxMs": 19.434333
+              },
+              "windowCopy": {
+                "count": 1803,
+                "meanMs": 0.13720159068219634,
+                "p50Ms": 0.129208,
+                "p95Ms": 0.176459,
+                "maxMs": 2.418208
+              },
+              "windowPost": {
+                "count": 1803,
+                "meanMs": 0.7446919905712701,
+                "p50Ms": 0.604916,
+                "p95Ms": 1.143917,
+                "maxMs": 7.681917
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "coreRun": {
+                "count": 2103,
+                "meanMs": 1.0440786005706133,
+                "p50Ms": 0.21525,
+                "p95Ms": 4.881625,
+                "maxMs": 10.033625
+              },
+              "ageAtPost": {
+                "count": 1801,
+                "meanMs": 23.855325825652418,
+                "p50Ms": 23.898292,
+                "p95Ms": 30.2925,
+                "maxMs": 33.20275
+              },
+              "produced": {
+                "count": 2103,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 302,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 1803,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 1,
+            "mode": "gles",
+            "seconds": 30.000579306,
+            "submittedPerSecond": 70.09864638111866,
+            "completedPresentations": 1760,
+            "observedPresentationSpanSeconds": 29.290502223,
+            "maxObservationGapSeconds": 1.71,
+            "presentationsPerSecond": 60.05359643914768,
+            "presentationIntervalP50Ms": 16.65125,
+            "presentationIntervalP95Ms": 16.719792,
+            "presentationIntervalMaxMs": 16.907917,
+            "readyToPresentP50Ms": 36.00975,
+            "readyToPresentP95Ms": 37.99425,
+            "pendingReplacements": null,
+            "pendingReplacementPercent": null,
+            "coreRunMeanMs": 2.68016021873514,
+            "approxProcessCpuPercent": 117.90835956628192,
+            "socCMin": 53.125,
+            "socCMax": 55.0,
+            "gpuCMax": 52.5,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "frameMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowLock": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowCopy": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwarePublish": {
+                "count": 2103,
+                "meanMs": 0.5890129947693771,
+                "p50Ms": 0.494667,
+                "p95Ms": 1.092875,
+                "maxMs": 7.197166
+              },
+              "coreRun": {
+                "count": 2103,
+                "meanMs": 2.68016021873514,
+                "p50Ms": 1.481083,
+                "p95Ms": 9.187792,
+                "maxMs": 16.76325
+              },
+              "ageAtPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "produced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 2103,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 2,
+            "mode": "gles",
+            "seconds": 30.000624223,
+            "submittedPerSecond": 70.09854142927244,
+            "completedPresentations": 1802,
+            "observedPresentationSpanSeconds": 29.989848889,
+            "maxObservationGapSeconds": 1.73,
+            "presentationsPerSecond": 60.05365371015891,
+            "presentationIntervalP50Ms": 16.652125,
+            "presentationIntervalP95Ms": 16.731459,
+            "presentationIntervalMaxMs": 16.840542,
+            "readyToPresentP50Ms": 29.220333,
+            "readyToPresentP95Ms": 31.535583,
+            "pendingReplacements": null,
+            "pendingReplacementPercent": null,
+            "coreRunMeanMs": 3.1162204940561105,
+            "approxProcessCpuPercent": 118.17865832464372,
+            "socCMin": 55.0,
+            "socCMax": 57.222,
+            "gpuCMax": 54.375,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "frameMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowLock": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowCopy": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwarePublish": {
+                "count": 2103,
+                "meanMs": 0.6406331493105087,
+                "p50Ms": 0.521208,
+                "p95Ms": 1.213625,
+                "maxMs": 7.6685
+              },
+              "coreRun": {
+                "count": 2103,
+                "meanMs": 3.1162204940561105,
+                "p50Ms": 1.649667,
+                "p95Ms": 10.245958,
+                "maxMs": 22.526875
+              },
+              "ageAtPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "produced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 2103,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 3,
+            "mode": "software",
+            "seconds": 30.000632098,
+            "submittedPerSecond": 70.09852302879301,
+            "completedPresentations": 1782,
+            "observedPresentationSpanSeconds": 29.656812222,
+            "maxObservationGapSeconds": 1.66,
+            "presentationsPerSecond": 60.05365602574169,
+            "presentationIntervalP50Ms": 16.653292,
+            "presentationIntervalP95Ms": 16.73875,
+            "presentationIntervalMaxMs": 16.8805,
+            "readyToPresentP50Ms": 38.41075,
+            "readyToPresentP95Ms": 40.399916,
+            "pendingReplacements": 300,
+            "pendingReplacementPercent": 14.265335235378032,
+            "coreRunMeanMs": 1.3196951350451736,
+            "approxProcessCpuPercent": 98.67715409367179,
+            "socCMin": 55.0,
+            "socCMax": 56.666,
+            "gpuCMax": 53.125,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 2103,
+                "meanMs": 0.14665480504041847,
+                "p50Ms": 0.137667,
+                "p95Ms": 0.187833,
+                "maxMs": 0.853709
+              },
+              "frameMutex": {
+                "count": 2103,
+                "meanMs": 0.0006806809320019021,
+                "p50Ms": 0.000583,
+                "p95Ms": 0.000875,
+                "maxMs": 0.052791
+              },
+              "windowMutex": {
+                "count": 1803,
+                "meanMs": 0.00027080865224625623,
+                "p50Ms": 0.000292,
+                "p95Ms": 0.000583,
+                "maxMs": 0.000875
+              },
+              "windowLock": {
+                "count": 1803,
+                "meanMs": 15.679462463117028,
+                "p50Ms": 15.841875,
+                "p95Ms": 16.081625,
+                "maxMs": 32.444125
+              },
+              "windowCopy": {
+                "count": 1804,
+                "meanMs": 0.12976095454545455,
+                "p50Ms": 0.119,
+                "p95Ms": 0.165958,
+                "maxMs": 2.413542
+              },
+              "windowPost": {
+                "count": 1804,
+                "meanMs": 0.7538585654101996,
+                "p50Ms": 0.64925,
+                "p95Ms": 1.1585,
+                "maxMs": 4.01975
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "coreRun": {
+                "count": 2103,
+                "meanMs": 1.3196951350451736,
+                "p50Ms": 0.213792,
+                "p95Ms": 5.985875,
+                "maxMs": 17.606459
+              },
+              "ageAtPost": {
+                "count": 1803,
+                "meanMs": 23.63996882473655,
+                "p50Ms": 23.755958,
+                "p95Ms": 30.410334,
+                "maxMs": 48.0375
+              },
+              "produced": {
+                "count": 2103,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 300,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 1804,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "duke": {
+      "nativeProfile": {
+        "schemaVersion": 1,
+        "game": "duke",
+        "configuration": "Release-equivalent host (-O2 -DNDEBUG)",
+        "runs": [
+          {
+            "game": "duke",
+            "mode": 1,
+            "run": 0,
+            "durationNs": 30000818473,
+            "startNs": 5240628406414,
+            "endNs": 5270629224887,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 1024,
+            "videoHeight": 768,
+            "metrics": {
+              "convert": {
+                "count": 2088,
+                "sumNs": 4169582642,
+                "p50Ns": 1747084,
+                "p95Ns": 3137750,
+                "maxNs": 11882792
+              },
+              "frameMutex": {
+                "count": 2088,
+                "sumNs": 1667727,
+                "p50Ns": 584,
+                "p95Ns": 1167,
+                "maxNs": 18667
+              },
+              "windowMutex": {
+                "count": 1794,
+                "sumNs": 561760,
+                "p50Ns": 292,
+                "p95Ns": 584,
+                "maxNs": 4083
+              },
+              "windowLock": {
+                "count": 1794,
+                "sumNs": 22257869408,
+                "p50Ns": 13374959,
+                "p95Ns": 14376541,
+                "maxNs": 29411667
+              },
+              "windowCopy": {
+                "count": 1795,
+                "sumNs": 3603970704,
+                "p50Ns": 1845375,
+                "p95Ns": 3065709,
+                "maxNs": 13816541
+              },
+              "windowPost": {
+                "count": 1795,
+                "sumNs": 2419762617,
+                "p50Ns": 1188833,
+                "p95Ns": 2194209,
+                "maxNs": 13558125
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "coreRun": {
+                "count": 2088,
+                "sumNs": 16491418421,
+                "p50Ns": 6945166,
+                "p95Ns": 16492291,
+                "maxNs": 39280208
+              },
+              "ageAtPost": {
+                "count": 1793,
+                "sumNs": 41089412296,
+                "p50Ns": 23095916,
+                "p95Ns": 31171875,
+                "maxNs": 39726458
+              },
+              "produced": {
+                "count": 2088,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 295,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 1795,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "duke",
+            "mode": 0,
+            "run": 1,
+            "durationNs": 30000722806,
+            "startNs": 5284298834518,
+            "endNs": 5314299557324,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 1024,
+            "videoHeight": 768,
+            "metrics": {
+              "convert": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "frameMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowLock": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowCopy": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwarePublish": {
+                "count": 2074,
+                "sumNs": 2289131274,
+                "p50Ns": 921666,
+                "p95Ns": 2299500,
+                "maxNs": 10589250
+              },
+              "coreRun": {
+                "count": 2073,
+                "sumNs": 24369518283,
+                "p50Ns": 12365500,
+                "p95Ns": 19322042,
+                "maxNs": 41013292
+              },
+              "ageAtPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "produced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 2074,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "duke",
+            "mode": 0,
+            "run": 2,
+            "durationNs": 30000796597,
+            "startNs": 5327746215206,
+            "endNs": 5357747011803,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 1024,
+            "videoHeight": 768,
+            "metrics": {
+              "convert": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "frameMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowMutex": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowLock": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowCopy": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwarePublish": {
+                "count": 2090,
+                "sumNs": 2475118633,
+                "p50Ns": 1038625,
+                "p95Ns": 2497250,
+                "maxNs": 8814459
+              },
+              "coreRun": {
+                "count": 2089,
+                "sumNs": 23260858826,
+                "p50Ns": 11797625,
+                "p95Ns": 18570125,
+                "maxNs": 37314959
+              },
+              "ageAtPost": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "produced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 2090,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          },
+          {
+            "game": "duke",
+            "mode": 1,
+            "run": 3,
+            "durationNs": 30000824889,
+            "startNs": 5371102679018,
+            "endNs": 5401103503907,
+            "width": 640,
+            "height": 480,
+            "videoWidth": 1024,
+            "videoHeight": 768,
+            "metrics": {
+              "convert": {
+                "count": 2086,
+                "sumNs": 4261727181,
+                "p50Ns": 1750875,
+                "p95Ns": 3350958,
+                "maxNs": 10789625
+              },
+              "frameMutex": {
+                "count": 2086,
+                "sumNs": 1617006,
+                "p50Ns": 584,
+                "p95Ns": 1167,
+                "maxNs": 4083
+              },
+              "windowMutex": {
+                "count": 1792,
+                "sumNs": 580126,
+                "p50Ns": 292,
+                "p95Ns": 584,
+                "maxNs": 1750
+              },
+              "windowLock": {
+                "count": 1792,
+                "sumNs": 21358887996,
+                "p50Ns": 12980334,
+                "p95Ns": 14288167,
+                "maxNs": 27749458
+              },
+              "windowCopy": {
+                "count": 1792,
+                "sumNs": 4086458826,
+                "p50Ns": 1984791,
+                "p95Ns": 3779708,
+                "maxNs": 10754917
+              },
+              "windowPost": {
+                "count": 1792,
+                "sumNs": 2555099454,
+                "p50Ns": 1234041,
+                "p95Ns": 2560250,
+                "maxNs": 8864625
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "coreRun": {
+                "count": 2085,
+                "sumNs": 18493234950,
+                "p50Ns": 8773334,
+                "p95Ns": 17410750,
+                "maxNs": 41485500
+              },
+              "ageAtPost": {
+                "count": 1791,
+                "sumNs": 40552456594,
+                "p50Ns": 22667750,
+                "p95Ns": 31115583,
+                "maxNs": 37849583
+              },
+              "produced": {
+                "count": 2086,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "replaced": {
+                "count": 295,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "presented": {
+                "count": 1793,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "noSurface": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "windowFailure": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "sumNs": 0,
+                "p50Ns": 0,
+                "p95Ns": 0,
+                "maxNs": 0
+              }
+            }
+          }
+        ]
+      },
+      "analysis": {
+        "game": "duke",
+        "configuration": "Release-equivalent host (-O2 -DNDEBUG)",
+        "runs": [
+          {
+            "run": 0,
+            "mode": "software",
+            "seconds": 30.000818473,
+            "submittedPerSecond": 69.59810119444404,
+            "completedPresentations": 1793,
+            "observedPresentationSpanSeconds": 29.990230097,
+            "maxObservationGapSeconds": 0.94,
+            "presentationsPerSecond": 59.75279263293343,
+            "presentationIntervalP50Ms": 16.653,
+            "presentationIntervalP95Ms": 16.844333,
+            "presentationIntervalMaxMs": 33.361416,
+            "readyToPresentP50Ms": 33.731542,
+            "readyToPresentP95Ms": 36.134583,
+            "pendingReplacements": 295,
+            "pendingReplacementPercent": 14.128352490421456,
+            "coreRunMeanMs": 7.898188898946359,
+            "approxProcessCpuPercent": 121.98702628883578,
+            "socCMin": 50.0,
+            "socCMax": 55.555,
+            "gpuCMax": 52.5,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 2088,
+                "meanMs": 1.9969265526819924,
+                "p50Ms": 1.747084,
+                "p95Ms": 3.13775,
+                "maxMs": 11.882792
+              },
+              "frameMutex": {
+                "count": 2088,
+                "meanMs": 0.0007987198275862068,
+                "p50Ms": 0.000584,
+                "p95Ms": 0.001167,
+                "maxMs": 0.018667
+              },
+              "windowMutex": {
+                "count": 1794,
+                "meanMs": 0.00031313266443701223,
+                "p50Ms": 0.000292,
+                "p95Ms": 0.000584,
+                "maxMs": 0.004083
+              },
+              "windowLock": {
+                "count": 1794,
+                "meanMs": 12.406839134894092,
+                "p50Ms": 13.374959,
+                "p95Ms": 14.376541,
+                "maxMs": 29.411667
+              },
+              "windowCopy": {
+                "count": 1795,
+                "meanMs": 2.0077831220055713,
+                "p50Ms": 1.845375,
+                "p95Ms": 3.065709,
+                "maxMs": 13.816541
+              },
+              "windowPost": {
+                "count": 1795,
+                "meanMs": 1.3480571682451252,
+                "p50Ms": 1.188833,
+                "p95Ms": 2.194209,
+                "maxMs": 13.558125
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "coreRun": {
+                "count": 2088,
+                "meanMs": 7.898188898946359,
+                "p50Ms": 6.945166,
+                "p95Ms": 16.492291,
+                "maxMs": 39.280208
+              },
+              "ageAtPost": {
+                "count": 1793,
+                "meanMs": 22.91657127495817,
+                "p50Ms": 23.095916,
+                "p95Ms": 31.171875,
+                "maxMs": 39.726458
+              },
+              "produced": {
+                "count": 2088,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 295,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 1795,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 1,
+            "mode": "gles",
+            "seconds": 30.000722806,
+            "submittedPerSecond": 69.13166770719305,
+            "completedPresentations": 1790,
+            "observedPresentationSpanSeconds": 29.973273473,
+            "maxObservationGapSeconds": 0.98,
+            "presentationsPerSecond": 59.686507101452754,
+            "presentationIntervalP50Ms": 16.652417,
+            "presentationIntervalP95Ms": 16.837333,
+            "presentationIntervalMaxMs": 50.133125,
+            "readyToPresentP50Ms": 28.732083,
+            "readyToPresentP95Ms": 31.270458,
+            "pendingReplacements": null,
+            "pendingReplacementPercent": null,
+            "coreRunMeanMs": 11.755676933429811,
+            "approxProcessCpuPercent": 134.1819416157502,
+            "socCMin": 56.666,
+            "socCMax": 58.888,
+            "gpuCMax": 57.222,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "frameMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowLock": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowCopy": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwarePublish": {
+                "count": 2074,
+                "meanMs": 1.103727711668274,
+                "p50Ms": 0.921666,
+                "p95Ms": 2.2995,
+                "maxMs": 10.58925
+              },
+              "coreRun": {
+                "count": 2073,
+                "meanMs": 11.755676933429811,
+                "p50Ms": 12.3655,
+                "p95Ms": 19.322042,
+                "maxMs": 41.013292
+              },
+              "ageAtPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "produced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 2074,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 2,
+            "mode": "gles",
+            "seconds": 30.000796597,
+            "submittedPerSecond": 69.66481684052998,
+            "completedPresentations": 1794,
+            "observedPresentationSpanSeconds": 29.973191514,
+            "maxObservationGapSeconds": 0.99,
+            "presentationsPerSecond": 59.82012289757393,
+            "presentationIntervalP50Ms": 16.651834,
+            "presentationIntervalP95Ms": 16.853958,
+            "presentationIntervalMaxMs": 33.3305,
+            "readyToPresentP50Ms": 23.902958,
+            "readyToPresentP95Ms": 38.2585,
+            "pendingReplacements": null,
+            "pendingReplacementPercent": null,
+            "coreRunMeanMs": 11.134925239827668,
+            "approxProcessCpuPercent": 137.98530954879328,
+            "socCMin": 59.444,
+            "socCMax": 61.666,
+            "gpuCMax": 58.888,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "frameMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowMutex": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowLock": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowCopy": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwarePublish": {
+                "count": 2090,
+                "meanMs": 1.1842672885167465,
+                "p50Ms": 1.038625,
+                "p95Ms": 2.49725,
+                "maxMs": 8.814459
+              },
+              "coreRun": {
+                "count": 2089,
+                "meanMs": 11.134925239827668,
+                "p50Ms": 11.797625,
+                "p95Ms": 18.570125,
+                "maxMs": 37.314959
+              },
+              "ageAtPost": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "produced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 2090,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          },
+          {
+            "run": 3,
+            "mode": "software",
+            "seconds": 30.000824889,
+            "submittedPerSecond": 69.53142147650898,
+            "completedPresentations": 1791,
+            "observedPresentationSpanSeconds": 29.989722306,
+            "maxObservationGapSeconds": 0.97,
+            "presentationsPerSecond": 59.6871148634103,
+            "presentationIntervalP50Ms": 16.651834,
+            "presentationIntervalP95Ms": 16.876125,
+            "presentationIntervalMaxMs": 49.910875,
+            "readyToPresentP50Ms": 30.646583,
+            "readyToPresentP95Ms": 33.619833,
+            "pendingReplacements": 295,
+            "pendingReplacementPercent": 14.14189837008629,
+            "coreRunMeanMs": 8.869657050359713,
+            "approxProcessCpuPercent": 120.80514208389715,
+            "socCMin": 60.555,
+            "socCMax": 61.666,
+            "gpuCMax": 58.333,
+            "thermalCoolingActive": false,
+            "batteryStatuses": [
+              "Charging"
+            ],
+            "stages": {
+              "convert": {
+                "count": 2086,
+                "meanMs": 2.0430139889741135,
+                "p50Ms": 1.750875,
+                "p95Ms": 3.350958,
+                "maxMs": 10.789625
+              },
+              "frameMutex": {
+                "count": 2086,
+                "meanMs": 0.0007751706615532119,
+                "p50Ms": 0.000584,
+                "p95Ms": 0.001167,
+                "maxMs": 0.004083
+              },
+              "windowMutex": {
+                "count": 1792,
+                "meanMs": 0.0003237310267857143,
+                "p50Ms": 0.000292,
+                "p95Ms": 0.000584,
+                "maxMs": 0.00175
+              },
+              "windowLock": {
+                "count": 1792,
+                "meanMs": 11.91902231919643,
+                "p50Ms": 12.980334,
+                "p95Ms": 14.288167,
+                "maxMs": 27.749458
+              },
+              "windowCopy": {
+                "count": 1792,
+                "meanMs": 2.2803899698660715,
+                "p50Ms": 1.984791,
+                "p95Ms": 3.779708,
+                "maxMs": 10.754917
+              },
+              "windowPost": {
+                "count": 1792,
+                "meanMs": 1.4258367488839285,
+                "p50Ms": 1.234041,
+                "p95Ms": 2.56025,
+                "maxMs": 8.864625
+              },
+              "hardwarePublish": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "coreRun": {
+                "count": 2085,
+                "meanMs": 8.869657050359713,
+                "p50Ms": 8.773334,
+                "p95Ms": 17.41075,
+                "maxMs": 41.4855
+              },
+              "ageAtPost": {
+                "count": 1791,
+                "meanMs": 22.64235432384143,
+                "p50Ms": 22.66775,
+                "p95Ms": 31.115583,
+                "maxMs": 37.849583
+              },
+              "produced": {
+                "count": 2086,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "replaced": {
+                "count": 295,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "presented": {
+                "count": 1793,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "noSurface": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "windowFailure": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              },
+              "hardwareFrame": {
+                "count": 0,
+                "meanMs": 0.0,
+                "p50Ms": 0.0,
+                "p95Ms": 0.0,
+                "maxMs": 0.0
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "debugSoftwareBaseline": [
+    {
+      "game": "doom",
+      "run": 0,
+      "configuration": "Debug host (-O0)",
+      "durationNs": 30000709389,
+      "metrics": {
+        "convert": {
+          "count": 2103,
+          "sumNs": 2181933541,
+          "p50Ns": 940041,
+          "p95Ns": 1393875,
+          "maxNs": 6901125
+        },
+        "frameMutex": {
+          "count": 2103,
+          "sumNs": 2816893,
+          "p50Ns": 875,
+          "p95Ns": 2334,
+          "maxNs": 193375
+        },
+        "windowMutex": {
+          "count": 1803,
+          "sumNs": 1096939,
+          "p50Ns": 583,
+          "p95Ns": 875,
+          "maxNs": 96833
+        },
+        "windowLock": {
+          "count": 1803,
+          "sumNs": 28110768597,
+          "p50Ns": 15721708,
+          "p95Ns": 16014250,
+          "maxNs": 22372583
+        },
+        "windowCopy": {
+          "count": 1804,
+          "sumNs": 339081730,
+          "p50Ns": 167708,
+          "p95Ns": 261333,
+          "maxNs": 6192959
+        },
+        "windowPost": {
+          "count": 1804,
+          "sumNs": 1389388888,
+          "p50Ns": 652166,
+          "p95Ns": 1181833,
+          "maxNs": 6051500
+        },
+        "hardwarePublish": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "coreRun": {
+          "count": 2103,
+          "sumNs": 4011115792,
+          "p50Ns": 1206334,
+          "p95Ns": 5217333,
+          "maxNs": 12595333
+        },
+        "ageAtPost": {
+          "count": 1802,
+          "sumNs": 42767090338,
+          "p50Ns": 23595541,
+          "p95Ns": 30491125,
+          "maxNs": 36893208
+        },
+        "produced": {
+          "count": 2103,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "replaced": {
+          "count": 301,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "presented": {
+          "count": 1804,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "noSurface": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "windowFailure": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "hardwareFrame": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        }
+      }
+    },
+    {
+      "game": "doom",
+      "run": 3,
+      "configuration": "Debug host (-O0)",
+      "durationNs": 30000674681,
+      "metrics": {
+        "convert": {
+          "count": 2103,
+          "sumNs": 2203931342,
+          "p50Ns": 945291,
+          "p95Ns": 1448417,
+          "maxNs": 9459334
+        },
+        "frameMutex": {
+          "count": 2103,
+          "sumNs": 2859815,
+          "p50Ns": 875,
+          "p95Ns": 2625,
+          "maxNs": 42583
+        },
+        "windowMutex": {
+          "count": 1802,
+          "sumNs": 1025513,
+          "p50Ns": 583,
+          "p95Ns": 1167,
+          "maxNs": 3791
+        },
+        "windowLock": {
+          "count": 1802,
+          "sumNs": 28043785330,
+          "p50Ns": 15750583,
+          "p95Ns": 16037000,
+          "maxNs": 21551542
+        },
+        "windowCopy": {
+          "count": 1803,
+          "sumNs": 354524313,
+          "p50Ns": 178792,
+          "p95Ns": 258417,
+          "maxNs": 5432583
+        },
+        "windowPost": {
+          "count": 1803,
+          "sumNs": 1391474029,
+          "p50Ns": 620375,
+          "p95Ns": 1179500,
+          "maxNs": 6992709
+        },
+        "hardwarePublish": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "coreRun": {
+          "count": 2103,
+          "sumNs": 4278893525,
+          "p50Ns": 1282167,
+          "p95Ns": 5460000,
+          "maxNs": 14912333
+        },
+        "ageAtPost": {
+          "count": 1802,
+          "sumNs": 42846180469,
+          "p50Ns": 23746041,
+          "p95Ns": 30504542,
+          "maxNs": 35326959
+        },
+        "produced": {
+          "count": 2103,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "replaced": {
+          "count": 302,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "presented": {
+          "count": 1803,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "noSurface": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "windowFailure": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "hardwareFrame": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        }
+      }
+    },
+    {
+      "game": "duke",
+      "run": 0,
+      "configuration": "Debug host (-O0)",
+      "durationNs": 30004630556,
+      "metrics": {
+        "convert": {
+          "count": 2022,
+          "sumNs": 25956217334,
+          "p50Ns": 12555375,
+          "p95Ns": 15168417,
+          "maxNs": 23487625
+        },
+        "frameMutex": {
+          "count": 2022,
+          "sumNs": 4180780,
+          "p50Ns": 1458,
+          "p95Ns": 4375,
+          "maxNs": 125708
+        },
+        "windowMutex": {
+          "count": 1663,
+          "sumNs": 2055958,
+          "p50Ns": 1166,
+          "p95Ns": 2041,
+          "maxNs": 54250
+        },
+        "windowLock": {
+          "count": 1663,
+          "sumNs": 6764874387,
+          "p50Ns": 1884750,
+          "p95Ns": 12288209,
+          "maxNs": 21634375
+        },
+        "windowCopy": {
+          "count": 1663,
+          "sumNs": 4765093664,
+          "p50Ns": 2720667,
+          "p95Ns": 3410750,
+          "maxNs": 14320250
+        },
+        "windowPost": {
+          "count": 1663,
+          "sumNs": 2119317952,
+          "p50Ns": 1090542,
+          "p95Ns": 1863459,
+          "maxNs": 10659542
+        },
+        "hardwarePublish": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "coreRun": {
+          "count": 2022,
+          "sumNs": 29686395096,
+          "p50Ns": 13818292,
+          "p95Ns": 20387500,
+          "maxNs": 37160083
+        },
+        "ageAtPost": {
+          "count": 1662,
+          "sumNs": 35438416125,
+          "p50Ns": 19556833,
+          "p95Ns": 29821167,
+          "maxNs": 39801417
+        },
+        "produced": {
+          "count": 2023,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "replaced": {
+          "count": 360,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "presented": {
+          "count": 1663,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "noSurface": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "windowFailure": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "hardwareFrame": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        }
+      }
+    },
+    {
+      "game": "duke",
+      "run": 3,
+      "configuration": "Debug host (-O0)",
+      "durationNs": 30000759848,
+      "metrics": {
+        "convert": {
+          "count": 1997,
+          "sumNs": 25970422362,
+          "p50Ns": 12682250,
+          "p95Ns": 15488375,
+          "maxNs": 25897083
+        },
+        "frameMutex": {
+          "count": 1997,
+          "sumNs": 4911954,
+          "p50Ns": 1167,
+          "p95Ns": 4084,
+          "maxNs": 990792
+        },
+        "windowMutex": {
+          "count": 1642,
+          "sumNs": 2519707,
+          "p50Ns": 1166,
+          "p95Ns": 1750,
+          "maxNs": 376250
+        },
+        "windowLock": {
+          "count": 1642,
+          "sumNs": 7180062468,
+          "p50Ns": 2531083,
+          "p95Ns": 12573167,
+          "maxNs": 20613834
+        },
+        "windowCopy": {
+          "count": 1642,
+          "sumNs": 4479638310,
+          "p50Ns": 2671375,
+          "p95Ns": 3234000,
+          "maxNs": 10081166
+        },
+        "windowPost": {
+          "count": 1642,
+          "sumNs": 2228707252,
+          "p50Ns": 1210417,
+          "p95Ns": 2037000,
+          "maxNs": 7277083
+        },
+        "hardwarePublish": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "coreRun": {
+          "count": 1997,
+          "sumNs": 29619943213,
+          "p50Ns": 13869917,
+          "p95Ns": 21072916,
+          "maxNs": 39685625
+        },
+        "ageAtPost": {
+          "count": 1642,
+          "sumNs": 35661724598,
+          "p50Ns": 20372625,
+          "p95Ns": 29868125,
+          "maxNs": 37373000
+        },
+        "produced": {
+          "count": 1998,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "replaced": {
+          "count": 357,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "presented": {
+          "count": 1642,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "noSurface": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "windowFailure": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        },
+        "hardwareFrame": {
+          "count": 0,
+          "sumNs": 0,
+          "p50Ns": 0,
+          "p95Ns": 0,
+          "maxNs": 0
+        }
+      }
+    }
+  ]
+}
