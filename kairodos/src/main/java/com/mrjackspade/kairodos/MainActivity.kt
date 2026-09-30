@@ -141,6 +141,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             DosLibrary.Game::contentId,
             { game: DosLibrary.Game ->
                 dosGameSettings.controllerBindings(game.contentId!!)?.let(DosControllerBindings::parse)
+                    ?: DosControllerBindings.builtInFor(game.contentId)
                     ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
                         "doom-v1" -> DosControllerBindings.doom()
                         else -> controllerProfiles.global()

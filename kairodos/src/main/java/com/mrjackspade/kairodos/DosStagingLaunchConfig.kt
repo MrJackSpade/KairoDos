@@ -134,7 +134,9 @@ internal object DosStagingLaunchConfig {
         }
         // Product-owned host settings override desktop settings in the source
         // profile. They do not change the emulated VGA refresh rate.
-        lines += listOf("[sdl]", "output = texture", "vsync = off",
+        // Disable CPU pixel/scan doubling: Android scales the native-size surface.
+        // Plain texture enables a redundant 320x200 -> 640x400 CPU expansion.
+        lines += listOf("[sdl]", "output = texturenb", "vsync = off",
             "presentation_mode = dos-rate", "window_size = 800x600",
             "fullscreen = false", "pause_when_inactive = false", "[mixer]",
             "rate = 48000", "blocksize = 512", "prebuffer = 30", "negotiate = false",

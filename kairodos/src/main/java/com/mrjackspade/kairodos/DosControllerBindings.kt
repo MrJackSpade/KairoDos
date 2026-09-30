@@ -40,6 +40,25 @@ internal object DosControllerBindings {
     }
     fun toJson(bindings: List<ControllerBinding>) = codec.toJson(bindings)
 
+    /** Match catalog identities, never a ZIP filename or a user-edited title. */
+    fun builtInFor(contentId: String): List<ControllerBinding>? = when (contentId) {
+        "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158",
+        "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6" -> duke3d()
+        else -> null
+    }
+
+    /** Duke's shipped keyboard controls; joystick calibration is not required. */
+    fun duke3d() = doom().map { binding ->
+        when (binding.input) {
+            "virtual:x" -> ControllerBinding(binding.input, keys = listOf(97)) // Jump
+            "virtual:y" -> ControllerBinding(binding.input, keys = listOf(122)) // Crouch
+            "virtual:l2" -> ControllerBinding(binding.input, keys = listOf(59)) // Previous weapon
+            "virtual:r2" -> ControllerBinding(binding.input, keys = listOf(39)) // Next weapon
+            else -> binding
+        }
+    } + listOf(ControllerBinding("button:106", keys = listOf(304)),
+        ControllerBinding("button:107", keys = listOf(9)))
+
     /** Upgrade profiles that only saved the previous built-in layout. */
     private fun oldDefaults() = listOf(
         ControllerBinding("virtual:up", joystick = "up"),

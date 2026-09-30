@@ -11,6 +11,12 @@ import kotlin.math.abs
 /** Real shared mapper, profile persistence and relative movement at controlled elapsed times. */
 object ControllerMouseFixture {
     fun verify(context: Context) {
+        verifyKeyboard(context)
+        val duke = DosControllerBindings.duke3d()
+        check(DosControllerBindings.parse(DosControllerBindings.toJson(duke).toString()) == duke)
+        check(duke.none { it.joystick != null })
+        check(duke.single { it.input == "virtual:l2" }.keys == listOf(59))
+        check(duke.single { it.input == "virtual:r2" }.keys == listOf(39))
         val moves = mutableListOf<Pair<Int, Int>>()
         val clicks = mutableListOf<Pair<Int, Boolean>>()
         val mouse = MouseInputRouter({ x, y -> moves.add(x to y) }, { b, d -> clicks.add(b to d) })
@@ -112,5 +118,39 @@ object ControllerMouseFixture {
                 .controllerBindings("fixture-game")) == tuned)
             check(store().global() == binding)
         } finally { context.deleteSharedPreferences(name) }
+    }
+
+    private fun verifyKeyboard(context: Context) {
+        val router = InputRouter({ _, _ -> }, 341)
+        val panel = GuestKeyboardPanel(context, router, DosKeyboardLayout.value, {})
+        fun descendants(view: android.view.View): List<android.view.View> = listOf(view) +
+            if (view is android.view.ViewGroup) (0 until view.childCount).flatMap {
+                descendants(view.getChildAt(it))
+            } else emptyList()
+        for ((label, code) in listOf("Shift" to 304, "Ctrl" to 306)) {
+            val key = descendants(panel).filterIsInstance<android.widget.TextView>()
+                .first { it.text.toString() == label }
+            fun gesture(duration: Long, cancel: Boolean = false) {
+                val start = android.os.SystemClock.uptimeMillis()
+                MotionEvent.obtain(start, start, MotionEvent.ACTION_DOWN, 0f, 0f, 0).also {
+                    key.dispatchTouchEvent(it); it.recycle()
+                }
+                check(code in router.pressedKeys())
+                MotionEvent.obtain(start, start + duration,
+                    if (cancel) MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP, 0f, 0f, 0).also {
+                    key.dispatchTouchEvent(it); it.recycle()
+                }
+            }
+            gesture(50)
+            check(code !in router.pressedKeys()) { "$label tap stayed pressed" }
+            gesture(android.view.ViewConfiguration.getLongPressTimeout().toLong() + 1)
+            check(code in router.pressedKeys()) { "$label long press did not latch" }
+            gesture(50)
+            check(code !in router.pressedKeys()) { "$label latch did not clear" }
+            gesture(1000, cancel = true)
+            check(code !in router.pressedKeys()) { "$label cancel latched" }
+        }
+        panel.close()
+        check(router.pressedKeys().isEmpty())
     }
 }

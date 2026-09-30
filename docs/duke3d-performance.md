@@ -22,6 +22,7 @@ Demo scene alignment varies; small differences require additional evidence.
 | Automatic cycles, original scanline path | 1.85 | 0.988 |
 | Automatic cycles, indexed scanline reuse | 3.53 | 0.958 |
 | Indexed reuse plus experimental inline ARM64 RAM reads | 3.41 | 0.962 |
+| Indexed reuse with Cortex-A55, O3, frame-pointer omission and ThinLTO | 3.57 | 0.959 |
 
 Clock ratios are separate 30-second samples within the capture. The fixed
 cycle run did not maintain real-time DOS execution and is not a valid speed
@@ -41,6 +42,10 @@ Discarded experiments:
   The complete game capture did not improve, so the implementation was removed.
   Its larger generated code and scene differences prevent inferring a benefit
   from the vanished helper samples alone.
+- Cortex-A55/O3/ThinLTO build matching the reference optimization choices:
+  no demonstrated game-level improvement over 3.53 submissions/s. Build
+  settings were restored; do not ship a higher ARM ISA requirement based on
+  this inconclusive result.
 
 ## Remaining bottleneck
 
@@ -60,10 +65,11 @@ CPU accounting, not additional wall time.
 The original XFCE ARM64 emitter, memory helpers, and opcode implementations
 match the imported implementation in the paths inspected. XFCE's
 `cleanbuild.sh` selects Cortex-A55, `-O3`, frame-pointer omission, and IPO.
-Android uses optimized `-O2` with assertions disabled; earlier generic O3/LTO
-experiments were discarded and do not establish the result of an exactly
-matched Cortex-A55 build. There is no measured Linux baseline yet. Obtain one
-before claiming the Linux/Android discrepancy has been explained.
+Android uses optimized `-O2` with assertions disabled. The controlled A55/O3/
+ThinLTO comparison used the same game, auto cycles, and indexed reuse; it did
+not explain the performance gap. It still uses Android's Clang and libraries,
+so it is not equivalent to running the Linux executable. There is no measured
+Linux baseline yet. Obtain one before claiming the discrepancy is explained.
 
 ## Hardware findings
 
@@ -78,7 +84,65 @@ before claiming the Linux/Android discrepancy has been explained.
 - Android's DMC driver is unbound. Do not force-bind it or change firmware/clock
   registers without identifying the cause and a supported operating point.
 
+## Archived XFCE installation
+
+The user supplied <https://archive.org/details/rgds-xfce-0.3>, while warning
+that later revisions may differ. The ZIP contains a 63,279,464,448-byte disk
+image. Its length and ZIP CRC were verified during local extraction; no SD
+card was flashed or changed.
+
+The actual archived files provide a more specific reference than current
+GitHub source:
+
+- `/usr/local/bin/dosbox` is AArch64 Staging `0.83.0-alpha (6f2f5)`.
+- Its IBM-PC launcher selects `svga_s3`, loads `ibmpc.conf`, and makes the
+  window fullscreen through the window manager. That configuration specifies
+  `core=dynamic` and fixed `cycles=30000`.
+- `/home/trixie/dosbox/DUKE3D/DUKE3D/DUKE3D.CFG` specifies ScreenMode 2,
+  ScreenWidth 320, ScreenHeight 200. Its SHA-256 is
+  `42d30fdfed7098a1606272f280687bae6f0c688f33cdc6293814fea3b851a424`.
+- DEMO1.DMO and DEMO2.DMO match the current archive exactly. DUKE3D.EXE has
+  the same length but differs in 124 bytes. Neither executable was patched.
+
+1024x768 contains 12.288 times as many pixels as 320x200. This is a substantial
+workload difference, but the archived configuration does not prove the settings
+used in the user's later, unarchived revisions. The user authorized isolated
+320x200 and 640x480 benchmarks while retaining the installed game's 1024x768
+configuration. These comparisons use copies of the current writable session,
+changing only ScreenMode/ScreenWidth/ScreenHeight and preserving auto cycles,
+the current executable, audio, and other game settings.
+
 ## Local evidence
+
+### Low-resolution comparisons and CPU doubling
+
+Using the same 60-second warmup and 120-second demo capture, the isolated
+320x200 session produced 16.50 surface submissions/s; 640x480 produced 7.97/s.
+Guest clock ratios were approximately 0.999 and 0.987 respectively. The user
+subsequently requested playing at 320x200; the installed CFG was backed up
+locally as `.tmp/duke-before-play-320.cfg`, then only its three display fields
+were changed to ScreenMode 2, ScreenWidth 320, ScreenHeight 200.
+
+The renderer investigation confirmed a redundant expansion: `output=texture`
+enables Staging pixel/scan doubling. The native video-size getters reported
+640x400 for a 320x200 game. `output=texturenb` disables that doubling and
+produced an actual 320x200 buffer. The Android wrapper still converts colour
+order and copies rows at source size; ANativeWindow/SurfaceFlinger handles
+display enlargement. No game executable changes or GLES rewrite were needed.
+
+The isolated no-doubling run produced 20.33 submissions/s, median interval
+33.31 ms, p95 133.11 ms, with guest clock ratio 0.9985. CPU frequency remained
+1992 MHz and DDR 920 MHz, with no active cooling state. This is approximately
+23% higher submission throughput in one comparison, not proof of a constant
+game FPS or a 60 FPS result. Native-size output is retained in the launch
+adapter. Evidence: `.tmp/real-duke-320-single/`; the previous captures are
+`.tmp/real-duke-320/` and `.tmp/real-duke-640/`.
+
+The Duke default controller preset now uses its existing keyboard controls,
+matched by catalog content identity and preserving explicit per-game overrides.
+The shared keyboard makes modifiers momentary on tap and latched on long press
+(Caps retains its lock behavior). Android instrumentation verifies Shift/Ctrl
+tap, long press, unlatching, cancellation, and controller JSON round trips.
 
 Ignored artifacts are under `.tmp/real-duke-{auto,indexed-reuse,fast-read}/`.
 Each includes screenshots, samples, counters, guest-clock samples, and matching

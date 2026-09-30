@@ -22,6 +22,9 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var catalogOverrides = false
     private var stagingStorage = false
     private var stagingArchive: String? = null
+    private var resolutionSource: String? = null
+    private var resolutionWidth = 320
+    private var resolutionNoDouble = false
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
         hardwareRender = arguments?.getString("hardwareRender") == "true"
@@ -35,12 +38,20 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
         stagingStorage = arguments?.getString("stagingStorage") == "true"
         stagingArchive = arguments?.getString("stagingArchive")
+        resolutionSource = arguments?.getString("resolutionSource")
+        resolutionWidth = arguments?.getString("resolutionWidth")?.toInt() ?: 320
+        resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
         try {
+            if (resolutionSource != null) {
+                result.putString("stream", DukeResolutionFixture.run(this, resolutionSource!!, resolutionWidth, resolutionNoDouble))
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (stagingStorage || stagingArchive != null) {
                 val message = if (stagingStorage) {
                     StagingStorageFixture.verify(targetContext.cacheDir)
