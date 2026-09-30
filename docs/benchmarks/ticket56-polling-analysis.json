@@ -1,0 +1,115 @@
+{
+  "issue": 56,
+  "basedOn": "ticket55-guest-hotspots.json",
+  "workload": "RGDS Duke3D 320x200 rendered demo, 60s warmup / 120s capture; no fresh performance comparison or optimization",
+  "sampledEmulationCpuSeconds": 103.30302927,
+  "analysis": {
+    "capstoneVersion": "5.0.7",
+    "readOnlySnapshotBytes": 4194304,
+    "snapshotProcess": 9453,
+    "coreMemBaseSymbolOffset": "0x348de38",
+    "sourceCoreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+    "validatedBlockForms": 1841,
+    "rejectedBlockForms": 0,
+    "matchedTop40OpcodeStarts": 604,
+    "short32BitBackwardEdges512Bytes": 113,
+    "wider32BitBackwardEdges4096Bytes": 143,
+    "mappedGuestAndHelperCpuSeconds": 61.83838322,
+    "unattributedToGuestCpuSeconds": 41.46464605,
+    "sixteenBitFormsNotLoopScreened": 82,
+    "sixteenBitMappedCpuSeconds": 2.96969694
+  },
+  "confirmedStatusPolling": {
+    "description": "VGA port 0x3da bit 0: first loop waits while set, second while clear; status transition exits each loop.",
+    "isolatedLoopBlocks": {
+      "blockStarts": [
+        "0x2647fb",
+        "0x264805"
+      ],
+      "directCpuSeconds": 0.01010101,
+      "helperCpuSeconds": 0.08080808,
+      "combinedCpuSeconds": 0.09090909,
+      "percentOfSampledEmulationCpu": 0.08800234672924612
+    },
+    "includingSecondLoopPortSetupBlock": {
+      "blockStarts": [
+        "0x2647fb",
+        "0x264800",
+        "0x264805"
+      ],
+      "directCpuSeconds": 0.01010101,
+      "helperCpuSeconds": 0.09090909,
+      "combinedCpuSeconds": 0.10101009999999999,
+      "percentOfSampledEmulationCpu": 0.0977803852547179
+    },
+    "semantics": "Read derives blanking state from PIC time and resets attribute-controller/PCjr flip-flops. Not a side-effect-free RAM read.",
+    "source": "third_party/dosbox-staging/src/hardware/video/vga_misc.cpp:vga_read_p3da"
+  },
+  "fixedIoDelays": {
+    "description": "OPL writer loops decrement EBX from 6 and 27; port return values do not control the loop exits.",
+    "isolatedRepeatedBlocks": {
+      "blockStarts": [
+        "0x29f7d8",
+        "0x29f7ee"
+      ],
+      "directCpuSeconds": 0.06060606,
+      "helperCpuSeconds": 0.40404039999999997,
+      "combinedCpuSeconds": 0.46464646,
+      "percentOfSampledEmulationCpu": 0.4497897721717024
+    },
+    "mixedFunctionEntryAndWriteBlocksExcluded": {
+      "blockStarts": [
+        "0x29f7c0",
+        "0x29f7e0"
+      ],
+      "directCpuSeconds": 0.04040404,
+      "helperCpuSeconds": 6.050504989999999,
+      "combinedCpuSeconds": 6.09090903,
+      "percentOfSampledEmulationCpu": 5.89615723085949
+    },
+    "semantics": "OPL port reads consume emulated cycles, update I/O-delay bookkeeping and update OPL timers; cannot be removed as generic idle RAM polling.",
+    "source": "third_party/dosbox-staging/src/hardware/audio/opl.cpp:Opl::PortRead and OplChip::Read"
+  },
+  "inspectedNonPollingExamples": [
+    {
+      "range": "0x294a44..0x294ab5",
+      "associatedBlockCpuSeconds": 3.11111108,
+      "reason": "Saturates and writes 16-bit sample values, advances sample pointer, decrements finite sample count."
+    },
+    {
+      "range": "0x2b5613..0x2b5684",
+      "associatedBlockCpuSeconds": 2.30303028,
+      "reason": "Reads indexed values, updates arithmetic state, writes packed output, advances destination by 320."
+    },
+    {
+      "range": "0x2b5160..0x2b51f4",
+      "associatedBlockCpuSeconds": 1.57575756,
+      "reason": "Writes output and advances sample/coordinate state and a finite output counter."
+    },
+    {
+      "range": "0x274b22..0x274b33",
+      "associatedBlockCpuSeconds": 0.1010101,
+      "reason": "Searches a changing array index; exits on match or exhausted index."
+    },
+    {
+      "range": "0x2a05f4..0x2a0602",
+      "associatedBlockCpuSeconds": 0.01010101,
+      "reason": "Traverses a linked list, changes node pointer, exits on match or null."
+    }
+  ],
+  "limitations": [
+    "CPU-time estimates are not guest instruction counts. Isolated repeated blocks omit first iterations included in mixed setup/write blocks.",
+    "Snapshot opcode starts and instruction boundaries match all sampled forms; operand-only changes between capture and snapshot are not excluded.",
+    "Backward-edge candidate intervals overlap and do not prove all paths inside an interval execute; do not sum their costs.",
+    "Screen covers sampled 32-bit backward edges up to 4096 bytes, not unsampled code, all 16-bit code, larger call-spanning waits, or every game.",
+    "41.46 sampled CPU seconds lack guest caller attribution, although most have host symbols. The confirmed polling cost is not an exact whole-emulator polling fraction.",
+    "Snapshot/disassembly is diagnostic only. No loop skipping, game changes, timing changes or production code changes were made."
+  ],
+  "decision": "No measured dominant RAM polling loop justifies an acceleration implementation. #57 should assess a no-go for generic skipping on this evidence; keep audio/helper costs separate and continue the other measured investigations.",
+  "localArtifactSha256": {
+    "guest-ram.bin": "70a29d2b91db98664cae56b2282d4a95bfe0cf8cf8b6492a6e04dcaa297ddd81",
+    "all-hotspots.json": "5cc6abcca2761f3350170e36f64adae7285018f06e56066cc0fc7fdd1d68ad32",
+    "inspected-loops.json": "bffc15bab92e79b36cbad2d161bbca3b2279252675b9b6438b18cbdcf77edff1",
+    "inspected-loops-4096.json": "64e295288bb8e735640e8d4c632e2a8abf5aa6eb4c8a3e0f6d51fb37b5b6a288"
+  }
+}

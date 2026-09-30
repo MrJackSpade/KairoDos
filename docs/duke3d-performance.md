@@ -230,3 +230,23 @@ The largest combined block, guest `0x29f7c0`, accounts for 5.76 seconds, of whic
 The enabled run had 3.39% fewer display submissions. This single pair measures the observed difference, not logging overhead independently of run-to-run variation. Both retained maximum observed CPU/RAM clocks (1.992 GHz / 920 MHz) with no active cooling-device throttling. Logging is suitable for locating hotspots, not claiming small speedups; validate later changes without it. Earlier normal-build cadence was 19.53 submissions/s and also differs in code layout and capture conditions.
 
 Two preliminary captures were invalid because the device slept. The second sleep was explicitly recorded as `power_button`, not timeout; those runs were excluded. Both accepted runs checked wakefulness throughout and preserved rendered start/intermediate/end screenshots. The marker was removed and the exact normal APK restored afterward, verified by SHA-256. No runtime optimization is adopted by this ticket. Next: #56 must inspect candidate loops' state and exit conditions before labeling any workload as polling.
+
+## Ticket #56: polling classification (September 30)
+
+Used the accepted #55 capture, expanded to all 1,841 attributed block forms, and a read-only 4 MiB snapshot of the normal app's guest RAM. All recorded opcode starts and instruction boundaries matched. Capstone 5.0.7 screened 113 sampled 32-bit backward edges shorter than 512 bytes, then 143 shorter than 4 KiB. Candidate spans overlap; the screening tool does not label them idle automatically. Three inspector tests and the four mapping tests pass.
+
+Evidence: [polling analysis](benchmarks/ticket56-polling-analysis.json). Snapshot, disassembly and complete block forms remain local under `.tmp/ticket56`; raw artifact hashes are recorded. No game/core settings or production code changed.
+
+| Inspected region | State and exit condition | Associated sampled CPU time |
+| --- | --- | ---: |
+| `0x2647fb`, `0x264805` | Reads VGA `0x3da` bit 0; waits first while set, then while clear | 0.091 s (0.088% of sampled emulation CPU) |
+| `0x29f7d8`, `0x29f7ee` | Reads OPL port but exits on EBX counter, initially six or 27 | 0.465 s (0.450%); fixed I/O delay, not status polling |
+| `0x294a44..0x294ab5` | Saturates/writes sample values, advances output pointer, decrements count | 3.111 s; productive work |
+| `0x2b5613..0x2b5684` | Indexed reads, arithmetic state updates, packed writes, 320-byte destination steps | 2.303 s; productive work |
+| `0x2b5160..0x2b51f4` | Output writes, coordinate changes, finite output count | 1.576 s; productive work |
+
+The VGA loops sit among palette writes. `vga_read_p3da` derives bit 0 from emulated horizontal/vertical blanking and resets attribute-controller/PCjr flip-flops. The OPL loops discard read results; `Opl::PortRead` nevertheless consumes emulated cycles, changes I/O-delay bookkeeping and updates timers through `OplChip::Read`. These are not side-effect-free RAM wait loops. Array searches and linked-list traversals among other no-store candidates also change their index/node and terminate on a match or exhaustion.
+
+The isolated loop-block costs omit first iterations embedded in mixed setup/write blocks. Adding the VGA port-setup block changes its associated cost to 0.101 s. Do not count the 6.091 s in the mixed OPL entry/write blocks as polling: their time includes the already-identified synthesis work. Snapshot operand-only changes are not excluded, and 41.46 sampled CPU seconds lack guest caller attribution. The 82 mapped 16-bit forms (2.97 s), unsampled code and larger call-spanning waits are outside this branch screen. Consequently these are measured costs for identified loops, **not an exact whole-emulator polling percentage**.
+
+Decision: the dominant inspected candidates do not establish a large RAM-polling bottleneck like the historical PC-98 case. No idle skipping is justified. Complete the separate correctness assessment in #57, then continue the remaining cost investigations. This conclusion does not imply that polling acceleration can never help another DOS workload.

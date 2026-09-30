@@ -38,3 +38,15 @@ Limitations:
 Repeat the same benchmark with the **same APK** after removing the enable marker and restarting the session. Keep simpleperf and hardware sampling identical. Compare CPU use, display submissions, and frame intervals, recording run-to-run uncertainty; display submissions are not necessarily unique game frames. Default-build comparisons additionally include compiler-layout differences.
 
 Remove the marker and restore the saved normal APK after measurement. Never ship a measurement build as a performance fix. Publish aggregate measurements and relevant addresses rather than raw guest opcode dumps.
+
+## Inspecting polling candidates
+
+For #56, rerun the analyzer with `--limit 0` to retain every attributed block form. Take a read-only guest RAM snapshot from the same game/configuration. On rooted RGDS, the snapshot used the installed core's ELF `MemBase` symbol and `/proc/<KairoDos-pid>/mem`: resolve the core's runtime load bias from `/proc/<pid>/maps` and the APK's uncompressed library offset, read the pointer, then read only the first 4 MiB of guest RAM. Do not reuse a previous process's host address. This snapshot did not stop or modify the emulator.
+
+```powershell
+python tools/inspect_guest_loops.py --profile <capture>/all-hotspots.json `
+  --ram <local>/guest-ram.bin --max-span 4096 --output <local>/loop-candidates.json
+python tools/test_guest_loop_inspection.py
+```
+
+The optional host analysis dependency is Capstone; #56 used 5.0.7. The inspector rejects snapshot blocks whose first opcode bytes or instruction boundaries differ from translation metadata. Matching these does not prove unchanged operands. It enumerates short backward branches; it does **not** classify them as idle. Manually inspect memory writes, evolving pointers/counters, calls, polled state and branch exit conditions. Consult the core's read handlers for timing and side effects. Keep disassembly and snapshots local. Candidate ranges overlap, and their whole-block costs must not be added together or presented as exact polling time.

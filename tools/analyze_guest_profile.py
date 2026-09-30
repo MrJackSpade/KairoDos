@@ -48,7 +48,7 @@ class Timeline:
         return matches[0] if matches else None
 
 
-def summarize(events, samples):
+def summarize(events, samples, limit=40):
     timeline = Timeline()
     pending = iter(events)
     event = next(pending, None)
@@ -100,7 +100,7 @@ def summarize(events, samples):
                               for name, count in helper_symbols[key].most_common(8)],
             'instructions': [{'guestLinear': hex(i[1]), 'opcodeByte': hex(i[2])}
                              for i in definitions[key]['instructions']]
-        } for key, _ in combined.most_common(40)],
+        } for key, _ in combined.most_common(limit or None)],
         'limitations': [
             'CPU-time sampling is not an instruction execution count.',
             'Opcode bytes include prefixes; operands are not recorded.',
@@ -120,6 +120,7 @@ def main():
     parser.add_argument('--symbols')
     parser.add_argument('--tid', required=True, type=int)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--limit', type=int, default=40, help='Hot block forms to report; 0 includes all')
     args = parser.parse_args()
     sys.path.insert(0, args.simpleperf_dir)
     from simpleperf_report_lib import ReportLib
@@ -144,7 +145,9 @@ def main():
         lib.Close()
     if not samples:
         raise ValueError('No on-CPU samples for the requested emulation thread')
-    result = summarize(events, samples)
+    if args.limit < 0:
+        raise ValueError('Hot block limit must be nonnegative')
+    result = summarize(events, samples, args.limit)
     result['metadataEvents'] = len(events)
     args.output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({k: v for k, v in result.items() if k not in ('hotBlocks', 'limitations')}, indent=2))
