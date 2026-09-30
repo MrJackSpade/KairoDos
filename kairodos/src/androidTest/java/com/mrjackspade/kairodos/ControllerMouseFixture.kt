@@ -53,7 +53,7 @@ object ControllerMouseFixture {
         check(runCatching { mouse.hold("bad", "moveRight", speed = Float.NaN) }.isFailure)
 
         val keys = mutableListOf<Pair<Int, Boolean>>()
-        val mapper = GamepadMapper(InputRouter({ code, down -> keys.add(code to down) }),
+        val mapper = GamepadMapper(InputRouter({ code, down -> keys.add(code to down) }, 341),
             JoystickInputRouter({ _, _ -> }), mouse, {}, {}, DosControllerBindings.doom())
         fun motion(value: Float, axis: Int = MotionEvent.AXIS_Z) {
             val properties = MotionEvent.PointerProperties().apply { id = 0 }
@@ -85,6 +85,18 @@ object ControllerMouseFixture {
         check(keys.last() == (46 to true) && moves.isEmpty())
         motion(0f, MotionEvent.AXIS_X)
         check(keys.last() == (46 to false))
+        mapper.releaseAll()
+
+        mapper.bindings = duke
+        check(abs(sample(1f) - 960) <= 1) // Half the previous Duke speed (4 -> 2).
+        motion(-1f, MotionEvent.AXIS_RZ)
+        check(keys.last() == (278 to true))
+        motion(0f, MotionEvent.AXIS_RZ)
+        check(keys.last() == (278 to false))
+        motion(1f, MotionEvent.AXIS_RZ)
+        check(keys.last() == (279 to true))
+        motion(0f, MotionEvent.AXIS_RZ)
+        check(keys.last() == (279 to false))
         mapper.releaseAll()
 
         val codec = ControllerBindingsCodec({ emptyList() }, { it in 0..340 }, emptyList(), emptyList())

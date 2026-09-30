@@ -50,14 +50,18 @@ internal object DosControllerBindings {
     /** Duke's shipped keyboard controls; joystick calibration is not required. */
     fun duke3d() = doom().map { binding ->
         when (binding.input) {
-            "virtual:rsleft", "virtual:rsright" -> binding.copy(mouseSpeed = 4f)
+            "virtual:rsleft", "virtual:rsright" -> binding.copy(mouseSpeed = 2f)
             "virtual:x" -> ControllerBinding(binding.input, keys = listOf(97)) // Jump
             "virtual:y" -> ControllerBinding(binding.input, keys = listOf(122)) // Crouch
             "virtual:l2" -> ControllerBinding(binding.input, keys = listOf(59)) // Previous weapon
             "virtual:r2" -> ControllerBinding(binding.input, keys = listOf(39)) // Next weapon
             else -> binding
         }
-    } + listOf(ControllerBinding("button:106", keys = listOf(304)),
+    } + listOf(
+        // Native aim keys work without toggling the game's mouse-aiming mode.
+        ControllerBinding("virtual:rsup", keys = listOf(278)), // Home: aim up
+        ControllerBinding("virtual:rsdown", keys = listOf(279)), // End: aim down
+        ControllerBinding("button:106", keys = listOf(304)),
         ControllerBinding("button:107", keys = listOf(9)))
 
     /** Upgrade profiles that only saved the previous built-in layout. */
