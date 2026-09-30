@@ -22,15 +22,17 @@ def add(path, body=None):
         parts.append(f"\n--- {path.relative_to(ROOT).as_posix()} ---\n\n{body}\n")
 
 add(CORE / "LICENSE")
-for path in sorted((CORE / "licenses").glob("*.txt")):
+for path in sorted((CORE / "licenses").glob("*.txt"), key=lambda p: p.as_posix()):
     add(path)
 add(ROOT / "shared/third_party/spleen/LICENSE")
-for path in sorted((ROOT / "third_party/staging-deps/notices").glob("*.txt")):
+for path in sorted((ROOT / "third_party/staging-deps/notices").glob("*.txt"), key=lambda p: p.as_posix()):
     add(path)
 
 for base in [CORE / "src", CORE / "include", CORE / "resources",
              ROOT / "third_party/staging-deps/sdl2"]:
-    for path in sorted(base.rglob("*")):
+    # Path ordering is case-insensitive on Windows, but case-sensitive on Linux.
+    # Sort portable names explicitly so the shipped notice is reproducible.
+    for path in sorted(base.rglob("*"), key=lambda p: p.as_posix()):
         if not path.is_file():
             continue
         if re.search(r"(?:^|[._-])(license|copying|copyright|notice)(?:$|[._-])", path.name, re.I):
