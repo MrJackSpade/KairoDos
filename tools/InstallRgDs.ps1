@@ -8,13 +8,29 @@ if (-not (Test-Path -LiteralPath $adb)) { throw "ADB not found: $adb" }
 function Get-RgDsSerial {
     $devices = & $adb devices -l
     if ($LASTEXITCODE -ne 0) { throw 'Could not list ADB devices.' }
-    foreach ($line in $devices) {
-        if ($line -match '^(\S+)\s+device\b.*\bmodel:RG_DS\b') { return $Matches[1] }
+    $candidates = @($devices | ForEach-Object {
+        if ($_ -match '^(\S+)\s+device\b.*\bmodel:RG_DS\b') { $Matches[1] }
+    })
+    # USB avoids large-transfer Wi-Fi failures. Fixed TCP survives TLS restarts.
+    foreach ($candidate in $candidates) {
+        if ($candidate -eq 'dd437d64c337800f') { return $candidate }
     }
-    return $null
+    foreach ($candidate in $candidates) {
+        if ($candidate -match ':5555$') { return $candidate }
+    }
+    return $candidates | Select-Object -First 1
 }
 
 $serial = Get-RgDsSerial
+if ($serial -ne 'dd437d64c337800f' -and $serial -notmatch ':5555$') {
+    # User-authorized persistent endpoint; do not enable TCP debugging here.
+    $fixedEndpoint = '192.168.1.118:5555'
+    if ($serial -match '^(\d+\.\d+\.\d+\.\d+):\d+$') {
+        $fixedEndpoint = "$($Matches[1]):5555"
+    }
+    & $adb connect $fixedEndpoint | Out-Host
+    $serial = Get-RgDsSerial
+}
 if (-not $serial) {
     # The port changes whenever Android restarts wireless debugging.
     $services = & $adb mdns services
