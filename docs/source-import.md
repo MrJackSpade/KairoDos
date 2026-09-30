@@ -45,7 +45,7 @@ Complete original archives and recipe sources are in `third_party/staging-deps/s
 | zlib-ng | 2.3.3 | Zlib and source notices |
 | vcpkg recipes | 6283825b81bb60f952af1d0703638df1de611243 | MIT build tooling |
 
-The complete extracted SDL2 tree at `third_party/staging-deps/sdl2/` includes pinned recipe patches and guarded `SDL_KAIRO_EMBEDDED` changes to CMake, `src/file/SDL_rwops.c` and `src/thread/pthread/SDL_systhread.c`: POSIX files/threads and dummy audio/video without SDLActivity. First-party `sdl_embedded_android.c` supplies platform queries. Other libraries use shipped recipe patches only.
+The extracted SDL2 tree at `third_party/staging-deps/sdl2/` includes pinned recipe patches and guarded `SDL_KAIRO_EMBEDDED` changes to CMake, `src/file/SDL_rwops.c` and `src/thread/pthread/SDL_systhread.c`: POSIX files/threads and dummy audio/video without SDLActivity. First-party `sdl_embedded_android.c` supplies platform queries. The unused upstream Android sample Gradle wrapper JAR is omitted from the extracted tree so CI validates only the actual Kairo wrapper; the original SDL2 archive remains complete. Other libraries use shipped recipe patches only.
 
 Run `pwsh tools/PrepareStagingDependencies.ps1` to verify sources and build static API 26 libraries. The bootstrap downloads the pinned vcpkg tool and host tools needed by its recipes. See [Windows build](build-windows.md).
 
