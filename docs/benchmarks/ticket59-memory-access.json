@@ -1,0 +1,614 @@
+{
+  "issue": 59,
+  "implementationFollowup": 71,
+  "normalCoreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "normalApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "measurementCoreBuildId": "c46ae875ab49311e49c8ceeeba7d7064cf48beb5",
+  "measurementApkSha256": "d5157b0662c7100d24f0c841b6cc6da1f9b6d944ec72979c0c1a78ab396fb122",
+  "protocol": "RGDS, Duke3D 320x200, core=dynamic, cycles=auto, output=texturenb; each run 60s warmup and 120s rendered-demo capture; awake-state checks and screenshots.",
+  "normalBuildCost": {
+    "helperSelfCpuSeconds": 10.51515141,
+    "lookupInlineCpuSeconds": 2.73737371,
+    "selfByHelper": {
+      "mem_readd_checked_drc(unsigned int)": 3.747474709999999,
+      "mem_readb_checked_drc(unsigned int)": 2.34343432,
+      "mem_readw_checked_drc(unsigned int)": 2.6363636100000005,
+      "mem_writew_checked_drc(unsigned int, unsigned short)": 0.29292929000000006,
+      "mem_writed_checked_drc(unsigned int, unsigned int)": 1.3131313000000004,
+      "mem_writeb_checked_drc(unsigned int, unsigned char)": 0.18181817999999997
+    },
+    "sourceLines": [
+      {
+        "helper": "mem_readd_checked_drc(unsigned int)",
+        "line": 674,
+        "seconds": 1.5555555399999998
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 662,
+        "seconds": 1.46464645
+      },
+      {
+        "helper": "mem_readb_checked_drc(unsigned int)",
+        "line": 650,
+        "seconds": 0.9999999900000001
+      },
+      {
+        "helper": "mem_readd_checked_drc(unsigned int)",
+        "line": 667,
+        "seconds": 0.9191919099999999
+      },
+      {
+        "helper": "mem_readb_checked_drc(unsigned int)",
+        "line": 642,
+        "seconds": 0.88888888
+      },
+      {
+        "helper": "mem_readd_checked_drc(unsigned int)",
+        "line": 666,
+        "seconds": 0.65656565
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 655,
+        "seconds": 0.45454545
+      },
+      {
+        "helper": "mem_readd_checked_drc(unsigned int)",
+        "line": 668,
+        "seconds": 0.45454545
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 701,
+        "seconds": 0.40404039999999997
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 656,
+        "seconds": 0.38383838
+      },
+      {
+        "helper": "mem_readb_checked_drc(unsigned int)",
+        "line": 643,
+        "seconds": 0.38383838
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 702,
+        "seconds": 0.36363636
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 703,
+        "seconds": 0.34343434
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 653,
+        "seconds": 0.17171717
+      },
+      {
+        "helper": "mem_readd_checked_drc(unsigned int)",
+        "line": 669,
+        "seconds": 0.16161616
+      },
+      {
+        "helper": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "line": 689,
+        "seconds": 0.1010101
+      },
+      {
+        "helper": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "line": 692,
+        "seconds": 0.09090909
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 657,
+        "seconds": 0.08080808
+      },
+      {
+        "helper": "mem_readw_checked_drc(unsigned int)",
+        "line": 654,
+        "seconds": 0.08080808
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 708,
+        "seconds": 0.08080808
+      },
+      {
+        "helper": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "line": 691,
+        "seconds": 0.07070707000000001
+      },
+      {
+        "helper": "mem_readb_checked_drc(unsigned int)",
+        "line": 644,
+        "seconds": 0.07070707
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 680,
+        "seconds": 0.07070707
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 706,
+        "seconds": 0.06060606
+      },
+      {
+        "helper": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "line": 704,
+        "seconds": 0.06060606
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 679,
+        "seconds": 0.04040404
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 684,
+        "seconds": 0.04040404
+      },
+      {
+        "helper": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "line": 693,
+        "seconds": 0.02020202
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 0,
+        "seconds": 0.01010101
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 686,
+        "seconds": 0.01010101
+      },
+      {
+        "helper": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "line": 690,
+        "seconds": 0.01010101
+      },
+      {
+        "helper": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "line": 681,
+        "seconds": 0.01010101
+      }
+    ]
+  },
+  "diagnosticCounts": {
+    "intervalSeconds": 119.085898515,
+    "startMonotonicNs": 38885671800416,
+    "endMonotonicNs": 39004757698931,
+    "operations": {
+      "readByte": {
+        "counts": {
+          "mainMemoryDirect": 147375232,
+          "otherDirect": 0,
+          "handler": 217,
+          "pageCrossing": 0
+        },
+        "total": 147375449,
+        "mainMemoryDirectPercent": 99.99985275702197,
+        "faults": 0,
+        "handlerFlags": {
+          "48": 217
+        }
+      },
+      "readWord": {
+        "counts": {
+          "mainMemoryDirect": 118757387,
+          "otherDirect": 0,
+          "handler": 0,
+          "pageCrossing": 0
+        },
+        "total": 118757387,
+        "mainMemoryDirectPercent": 100.0,
+        "faults": 0,
+        "handlerFlags": {}
+      },
+      "readDword": {
+        "counts": {
+          "mainMemoryDirect": 251056329,
+          "otherDirect": 0,
+          "handler": 1,
+          "pageCrossing": 821
+        },
+        "total": 251057151,
+        "mainMemoryDirectPercent": 99.99967258451045,
+        "faults": 0,
+        "handlerFlags": {
+          "48": 1
+        }
+      },
+      "writeByte": {
+        "counts": {
+          "mainMemoryDirect": 9049811,
+          "otherDirect": 0,
+          "handler": 1060682,
+          "pageCrossing": 0
+        },
+        "total": 10110493,
+        "mainMemoryDirectPercent": 89.50909713304782,
+        "faults": 0,
+        "handlerFlags": {
+          "9": 1060482,
+          "48": 4,
+          "65": 196
+        }
+      },
+      "writeWord": {
+        "counts": {
+          "mainMemoryDirect": 27341082,
+          "otherDirect": 0,
+          "handler": 7253,
+          "pageCrossing": 13
+        },
+        "total": 27348348,
+        "mainMemoryDirectPercent": 99.97343166760932,
+        "faults": 0,
+        "handlerFlags": {
+          "48": 7,
+          "65": 7246
+        }
+      },
+      "writeDword": {
+        "counts": {
+          "mainMemoryDirect": 101523517,
+          "otherDirect": 0,
+          "handler": 4677176,
+          "pageCrossing": 4586
+        },
+        "total": 106205279,
+        "mainMemoryDirectPercent": 95.59178032948815,
+        "faults": 0,
+        "handlerFlags": {
+          "9": 4677175,
+          "48": 1
+        }
+      }
+    },
+    "allPaths": {
+      "mainMemoryDirect": 655103358,
+      "otherDirect": 0,
+      "handler": 5745329,
+      "pageCrossing": 5420
+    }
+  },
+  "readDirectSummary": {
+    "totalReadOperations": 517189987,
+    "mainAllocationDirectReadOperations": 517188948,
+    "mainAllocationDirectReadPercent": 99.99979910670622
+  },
+  "handlerInterpretation": {
+    "48": "PFLAG_INIT|PFLAG_NOCODE; initialization-class handler, not necessarily a fault or a unique cache-miss cause",
+    "9": "PFLAG_READABLE|PFLAG_HASCODE32; translated code writes must retain invalidation",
+    "65": "PFLAG_READABLE|PFLAG_HASCODE16; translated code writes must retain invalidation"
+  },
+  "observerComparison": {
+    "countersEnabled": {
+      "intervalSeconds": 117.75,
+      "threadCpuPercent": [
+        [
+          9702,
+          "KairoDos-emulat",
+          83.16
+        ],
+        [
+          9719,
+          "dosbox:mixer",
+          24.61
+        ],
+        [
+          9712,
+          "KairoDos-emulat",
+          1.58
+        ],
+        [
+          9722,
+          "KairoDos-audio",
+          1.44
+        ],
+        [
+          9718,
+          "SDLAudioP2",
+          0.93
+        ],
+        [
+          9650,
+          "loxifi.kairodos",
+          0.39
+        ],
+        [
+          9670,
+          "binder:9650_3",
+          0.22
+        ],
+        [
+          9667,
+          "binder:9650_1",
+          0.21
+        ]
+      ],
+      "hardwareLineValues": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1992000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000"
+        ],
+        "5": [
+          "800000000"
+        ],
+        "7": [
+          "64444",
+          "65000",
+          "65625",
+          "66250",
+          "66875",
+          "67500",
+          "68125",
+          "68750"
+        ],
+        "9": [
+          "61666",
+          "62222",
+          "62777",
+          "63333",
+          "63888",
+          "64444",
+          "65000"
+        ],
+        "13": [
+          "0"
+        ],
+        "15": [
+          "0"
+        ],
+        "17": [
+          "0"
+        ]
+      },
+      "presentations": {
+        "count": 1627,
+        "rate": 13.817409766454352,
+        "medianIntervalMs": 49.9442705,
+        "p95IntervalMs": 199.83425,
+        "note": "Surface submissions, not necessarily unique game frames"
+      }
+    },
+    "countersDisabledSameApk": {
+      "intervalSeconds": 118.84400000004098,
+      "threadCpuPercent": [
+        [
+          12940,
+          "KairoDos-emulat",
+          82.08
+        ],
+        [
+          12957,
+          "dosbox:mixer",
+          24.5
+        ],
+        [
+          12950,
+          "KairoDos-emulat",
+          1.71
+        ],
+        [
+          12960,
+          "KairoDos-audio",
+          1.47
+        ],
+        [
+          12956,
+          "SDLAudioP2",
+          0.92
+        ],
+        [
+          12898,
+          "loxifi.kairodos",
+          0.39
+        ],
+        [
+          12913,
+          "binder:12898_3",
+          0.3
+        ],
+        [
+          12996,
+          "binder:12898_5",
+          0.18
+        ]
+      ],
+      "hardwareLineValues": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1992000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000",
+          "800000000"
+        ],
+        "5": [
+          "800000000"
+        ],
+        "7": [
+          "65625",
+          "66250",
+          "66875",
+          "67500",
+          "68125",
+          "68750",
+          "69375"
+        ],
+        "9": [
+          "62222",
+          "62777",
+          "63333",
+          "63888",
+          "64444",
+          "65000",
+          "65625",
+          "66250"
+        ],
+        "13": [
+          "0"
+        ],
+        "15": [
+          "0"
+        ],
+        "17": [
+          "0"
+        ]
+      },
+      "presentations": {
+        "count": 1804,
+        "rate": 15.17956312476337,
+        "medianIntervalMs": 49.850209,
+        "p95IntervalMs": 183.092292,
+        "note": "Surface submissions, not necessarily unique game frames"
+      }
+    },
+    "freshNormalBuild": {
+      "intervalSeconds": 119.88999999995576,
+      "threadCpuPercent": [
+        [
+          16198,
+          "KairoDos-emulat",
+          83.03
+        ],
+        [
+          16215,
+          "dosbox:mixer",
+          24.46
+        ],
+        [
+          16205,
+          "KairoDos-emulat",
+          2.12
+        ],
+        [
+          16217,
+          "KairoDos-audio",
+          1.45
+        ],
+        [
+          16214,
+          "SDLAudioP2",
+          0.94
+        ],
+        [
+          16252,
+          "binder:16153_5",
+          0.51
+        ],
+        [
+          16153,
+          "loxifi.kairodos",
+          0.39
+        ],
+        [
+          16208,
+          "binder:16153_3",
+          0.21
+        ]
+      ],
+      "hardwareLineValues": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1992000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000"
+        ],
+        "5": [
+          "800000000"
+        ],
+        "7": [
+          "65000",
+          "66250",
+          "66875",
+          "67500",
+          "68125",
+          "68750",
+          "69375",
+          "70000"
+        ],
+        "9": [
+          "62222",
+          "62777",
+          "63333",
+          "63888",
+          "64444",
+          "65000",
+          "65625",
+          "66250"
+        ],
+        "13": [
+          "0"
+        ],
+        "15": [
+          "0"
+        ],
+        "17": [
+          "0"
+        ]
+      },
+      "presentations": {
+        "count": 2262,
+        "rate": 18.86729502044236,
+        "medianIntervalMs": 33.3165,
+        "p95IntervalMs": 149.828,
+        "note": "Surface submissions, not necessarily unique game frames"
+      }
+    },
+    "presentationRateChangePercent": -8.973600538521765,
+    "enabledVersusFreshNormalPercent": -26.765284840866443,
+    "disabledVersusFreshNormalPercent": -19.545631165905874,
+    "interpretation": "Single comparison pair, not exact pure counter overhead. Per-access instrumentation materially perturbs this workload; same-build disabled counters still leave diagnostic branches and compiler layout. Use path proportions diagnostically, normal-build profiles for cost, and uninstrumented builds for optimization validation."
+  },
+  "counterValidation": [
+    "timestamps and counts monotonic",
+    "handler-flag sums equal handler path counts",
+    "fault counts bounded by handler plus crossing counts",
+    "complete snapshots selected inside perf sample times"
+  ],
+  "limitations": [
+    "Only six dynrec checked-memory helpers are counted; interpreter, bulk/string, DMA and other paths are excluded.",
+    "Main-allocation backing can include ROM; it is not proof of writable RAM. Direct TLB entries remain the access authority.",
+    "No observed other-direct mapping does not mean no VRAM/device access elsewhere.",
+    "Fault counters count returned checked failures; zero is only an observation for this capture and these paths.",
+    "CPU sampling/source lines do not measure exact per-instruction latency or guaranteed recoverable cost."
+  ],
+  "decision": "The measured read-helper call/scratch-result round trip is a specific candidate for guarded inlining in #71 at the current baseline. Do not bypass TLB, page-boundary or fault guards; do not inline writes. No production optimization adopted by #59.",
+  "localArtifactSha256": {
+    ".tmp\\ticket59-memory-enabled\\perf.data": "8fda1ef40fe6edf44657a3897d101daf3c0ec4c9e155a5edada591670e9df99c",
+    ".tmp\\ticket59-memory-enabled\\samples.jsonl": "2ea04ecf1f24e892e6cfd62f52af11c78718798759f562cc8db060f894d7ad53",
+    ".tmp\\ticket59-memory-enabled\\memory-counts.jsonl": "a156794363b28af42595ee041c897294de04c0dae3d95f429c583742209a52d2",
+    ".tmp\\ticket59-memory-disabled\\perf.data": "c6b808de129cffb2f7cba3e607e99bf8de6d39f4ae2b8c7cad11fc924b9a6840",
+    ".tmp\\ticket59-memory-disabled\\samples.jsonl": "33294e21d4f876542e7f77aef1a4549eb6239a174aa1053cd700b212025937a3",
+    ".tmp\\ticket59-normal-current\\perf.data": "581ec5432c999625134871f088ce14700991ed3ab17e42d1e970b3a212673eb1",
+    ".tmp\\ticket59-normal-current\\samples.jsonl": "26c3540b7600d34d0328132775de1a690e532463eb5532a49c8ad9d0ebab6243"
+  }
+}

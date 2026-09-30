@@ -273,3 +273,24 @@ The separate #55 diagnostic metadata records 48,731 translations at 9,158 guest 
 Source inspection explains when fetching recurs: a missing translated block invokes `CreateCacheBlock` (up to 32 opcodes); changed code invalidates affected ranges; cache reuse/eviction also removes blocks; frequently modified, unsupported or special instructions may run through the normal interpreter. Existing translated/linked blocks do not re-decode the instruction stream on every execution. `decode_fetch*_imm` already supports memory-backed mutable immediates where its guards permit. The guest snapshot contains writes to executable operands (for example, `0x2b511b` writes `0x2b516c`), so self-modifying rendering code is real. The metadata does not identify the cause of each individual invalidation; do not call all retranslations a cache bug.
 
 Decision: no fetch-cache or unchecked-fetch change justified. Fetch-attributed cost is small in this dynamic-core workload, unlike the historical PC-98 interpreter case. Preserve mutable code handling, page boundaries and faults. Continue #59 for ordinary data accesses and #62 for code-page lookup/dispatch. No runtime changes, new APK, or new device capture were required; this analysis reused the accepted measurements and inspected matching symbols/source.
+
+## Ticket #59: RAM access paths (September 30)
+
+[Measurements](benchmarks/ticket59-memory-access.json), [method and limitations](memory-access-measurement.md), and [isolated diagnostic source](benchmarks/ticket59-memory-probe.patch). The normal-build profile places 10.52 sampled CPU seconds in the six checked helper bodies, including 8.73 seconds in reads and 2.74 seconds attributed to their cached-pointer lookup frames. Those costs overlap; none is a guaranteed recoverable gain.
+
+A separate full 60/120-second diagnostic run counted the six dynrec helpers. Complete counter records within the perf window span 119.09 seconds:
+
+| Operation | Total calls | Direct main-allocation hits | Handler calls | Page crossings |
+| --- | ---: | ---: | ---: | ---: |
+| Byte read | 147,375,449 | 147,375,232 | 217 | 0 |
+| Word read | 118,757,387 | 118,757,387 | 0 | 0 |
+| Dword read | 251,057,151 | 251,056,329 | 1 | 821 |
+| Byte write | 10,110,493 | 9,049,811 | 1,060,682 | 0 |
+| Word write | 27,348,348 | 27,341,082 | 7,253 | 13 |
+| Dword write | 106,205,279 | 101,523,517 | 4,677,176 | 4,586 |
+
+**99.999799% of measured reads used the existing direct main-memory-backed TLB path.** Their 218 handler calls had initialization-class flags; those are not necessarily faults or a unique kind of miss. Of all handler calls, 5,737,657 targeted 32-bit translated-code handlers and 7,442 targeted 16-bit translated-code handlers; these write paths must retain invalidation behavior. No counted checked call returned a fault, and no counted direct pointer lay outside the main allocation. This does not establish fault-free execution in other workloads or no device access elsewhere: interpreter, REP/bulk, DMA and other paths are excluded. Main-allocation backing can include ROM.
+
+The diagnostic helper counters materially affect performance: 13.817 display submissions/s enabled versus 15.180 disabled in the same APK, an observed 8.97% reduction. Disabled branches and compiler-layout changes remain in that APK. The fresh restored normal build measured **18.867 submissions/s**, confirming additional probe-build overhead; single-run differences also include scene/run variation. Do not use either diagnostic APK as the optimization baseline. All runs retain the agreed resolution/configuration, rendered screenshots and awake-state checks; each perf recording reported zero lost samples. The fresh normal run observed 1.992 GHz CPU and 920 MHz RAM clocks with cooling-device states zero.
+
+Decision: direct hits already avoid page-table walks; no redundant permission walk was found in that path. The generated read sequence still calls a helper, stores to shared scratch space, checks failure and reloads the result. That is a concrete candidate for **guarded inline reads**, tracked separately in [#71](https://github.com/MrJackSpade/KairoDos/issues/71). Do not inline writes or remove miss, boundary, wrap or fault handling. The earlier 1024x768 experiment did not establish a benefit; #71 must measure the current workload without counters and pass generated-code correctness checks before adoption. The measurement marker and source hooks were removed and the exact normal APK restored; no optimization is adopted by #59.

@@ -1,0 +1,290 @@
+diff --git a/backend-dos/src/main/cpp/kairo_memory_profile.h b/backend-dos/src/main/cpp/kairo_memory_profile.h
+new file mode 100644
+--- /dev/null
++++ b/backend-dos/src/main/cpp/kairo_memory_profile.h
+@@ -0,0 +1,51 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#pragma once
++#ifdef KAIRO_GUEST_PROFILE
++#include <cstdio>
++#include <cstdint>
++#include <ctime>
++#include <string>
++#include <cstring>
++namespace kairo_memory_profile {
++inline FILE* output = nullptr;
++inline uintptr_t ram_begin=0, ram_end=0;
++inline uint64_t counts[6][4] = {}, faults[6] = {}, handler_flags[6][128] = {};
++inline uint64_t last_flush=0;
++inline uint64_t now() { timespec t{}; clock_gettime(CLOCK_MONOTONIC,&t); return uint64_t(t.tv_sec)*1000000000ull+t.tv_nsec; }
++inline void close() { if(output){std::fclose(output);output=nullptr;} }
++inline void open(const std::string& dir) {
++ close(); ram_begin=ram_end=last_flush=0;
++ std::memset(counts,0,sizeof(counts));std::memset(faults,0,sizeof(faults));std::memset(handler_flags,0,sizeof(handler_flags));
++ FILE* marker=std::fopen((dir+"/kairo-memory-profile.enable").c_str(),"rb");
++ if(!marker)return;std::fclose(marker);
++ output=std::fopen((dir+"/kairo-memory-profile.jsonl").c_str(),"wb");
++}
++inline void set_ram(const void* base,size_t bytes) {
++ if(output&&!ram_begin){ram_begin=reinterpret_cast<uintptr_t>(base);ram_end=ram_begin+bytes;}
++}
++inline void direct(unsigned op,const void* ptr) {
++ if(output){const auto p=reinterpret_cast<uintptr_t>(ptr);++counts[op][p>=ram_begin&&p<ram_end?0:1];}
++}
++inline void handler(unsigned op,unsigned flags) {if(output){++counts[op][2];++handler_flags[op][flags&127];}}
++inline void crossing(unsigned op) {if(output)++counts[op][3];}
++inline void fault(unsigned op,bool failed) {if(output&&failed)++faults[op];}
++inline void flush() {
++ if(!output)return;const auto time=now();if(time-last_flush<1000000000ull)return;last_flush=time;
++ std::fprintf(output,"{\"time\":%llu,\"counts\":[",(unsigned long long)time);
++ for(unsigned i=0;i<6;++i){std::fprintf(output,"%s[",i?",":"");for(unsigned j=0;j<4;++j)std::fprintf(output,"%s%llu",j?",":"",(unsigned long long)counts[i][j]);std::fputs("]",output);}
++ std::fputs("],\"faults\":[",output);for(unsigned i=0;i<6;++i)std::fprintf(output,"%s%llu",i?",":"",(unsigned long long)faults[i]);
++ std::fputs("],\"handlerFlags\":[",output);
++ for(unsigned i=0;i<6;++i){std::fprintf(output,"%s[",i?",":"");for(unsigned j=0;j<128;++j)std::fprintf(output,"%s%llu",j?",":"",(unsigned long long)handler_flags[i][j]);std::fputs("]",output);}
++ std::fputs("]}\n",output);std::fflush(output);
++}
++}
++#define KAIRO_MEM_DIRECT(op,ptr) kairo_memory_profile::direct(op,ptr)
++#define KAIRO_MEM_HANDLER(op,flags) kairo_memory_profile::handler(op,flags)
++#define KAIRO_MEM_CROSS(op) kairo_memory_profile::crossing(op)
++#define KAIRO_MEM_FAULT(op,value) kairo_memory_profile::fault(op,value)
++#else
++#define KAIRO_MEM_DIRECT(op,ptr) ((void)0)
++#define KAIRO_MEM_HANDLER(op,flags) ((void)0)
++#define KAIRO_MEM_CROSS(op) ((void)0)
++#define KAIRO_MEM_FAULT(op,value) ((void)0)
++#endif
+diff --git a/backend-dos/src/main/cpp/staging_bridge.cpp b/backend-dos/src/main/cpp/staging_bridge.cpp
+--- a/backend-dos/src/main/cpp/staging_bridge.cpp
++++ b/backend-dos/src/main/cpp/staging_bridge.cpp
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_memory_profile.h"
+ #include "dosbox.h"
+ #include "SDL.h"
+ #include "gui/common.h"
+@@ -80,6 +81,7 @@
+     if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::open(config_dir);
++    kairo_memory_profile::open(config_dir);
+ #endif
+     callbacks = *cb;
+     kairo_staging_cpu_counters = {};
+@@ -106,6 +108,7 @@
+     std::filesystem::current_path(original_directory, error);
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::close();
++    kairo_memory_profile::close();
+ #endif
+     loguru::shutdown();
+     return result;
+@@ -114,6 +117,7 @@
+ bool KairoStagingPoll() {
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::flush();
++    kairo_memory_profile::flush();
+ #endif
+     if (callbacks.telemetry)
+         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
+diff --git a/third_party/dosbox-staging/src/cpu/core_dynrec.cpp b/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
+@@ -8,6 +8,7 @@
+ #ifdef KAIRO_STAGING
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_memory_profile.h"
+ #endif
+ 
+ #include <cassert>
+@@ -203,6 +204,9 @@
+ 
+ Bits CPU_Core_Dynrec_Run() noexcept
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_memory_profile::set_ram(MemBase, size_t(MEM_TotalPages()) * 4096);
++#endif
+ 	for (;;) {
+ 		// Determine the linear address of CS:EIP
+ 		PhysPt ip_point=SegPhys(cs)+reg_eip;
+diff --git a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+@@ -639,72 +639,119 @@
+ 
+ bool DRC_CALL_CONV mem_readb_checked_drc(PhysPt address) DRC_FC;
+ bool DRC_CALL_CONV mem_readb_checked_drc(PhysPt address) {
+-	HostPt tlb_addr=get_tlb_read(address);
+-	if (tlb_addr) {
+-		const uint8_t byte = host_readb(tlb_addr + address);
+-		memcpy(&core_dynrec.readdata, &byte, sizeof(byte));
+-		return false;
+-	} else {
+-		return get_tlb_readhandler(address)->readb_checked(address, (uint8_t*)(&core_dynrec.readdata));
+-	}
++    HostPt tlb_addr = get_tlb_read(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(0, tlb_addr + address);
++        const uint8_t value = host_readb(tlb_addr + address);
++        memcpy(&core_dynrec.readdata, &value, sizeof(value));
++        return false;
++    }
++    auto* handler = get_tlb_readhandler(address);
++    KAIRO_MEM_HANDLER(0, handler->flags);
++    const bool failed = handler->readb_checked(address, (uint8_t*)(&core_dynrec.readdata));
++    KAIRO_MEM_FAULT(0, failed);
++    return failed;
+ }
+ 
+ bool DRC_CALL_CONV mem_readw_checked_drc(PhysPt address) DRC_FC;
+ bool DRC_CALL_CONV mem_readw_checked_drc(PhysPt address) {
+-	if ((address & 0xfff)<0xfff) {
+-		HostPt tlb_addr=get_tlb_read(address);
+-		if (tlb_addr) {
+-			const uint16_t word = host_readw(tlb_addr + address);
+-			memcpy(&core_dynrec.readdata, &word, sizeof(word));
+-			return false;
+-		} else return get_tlb_readhandler(address)->readw_checked(address, (uint16_t*)(&core_dynrec.readdata));
+-	} else return mem_unalignedreadw_checked(address, ((uint16_t*)(&core_dynrec.readdata)));
++    if ((address & 0xfff) >= 0xfff) {
++        KAIRO_MEM_CROSS(1);
++        const bool failed = mem_unalignedreadw_checked(address, ((uint16_t*)(&core_dynrec.readdata)));
++        KAIRO_MEM_FAULT(1, failed);
++        return failed;
++    }
++    HostPt tlb_addr = get_tlb_read(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(1, tlb_addr + address);
++        const uint16_t value = host_readw(tlb_addr + address);
++        memcpy(&core_dynrec.readdata, &value, sizeof(value));
++        return false;
++    }
++    auto* handler = get_tlb_readhandler(address);
++    KAIRO_MEM_HANDLER(1, handler->flags);
++    const bool failed = handler->readw_checked(address, (uint16_t*)(&core_dynrec.readdata));
++    KAIRO_MEM_FAULT(1, failed);
++    return failed;
+ }
+ 
+ bool DRC_CALL_CONV mem_readd_checked_drc(PhysPt address) DRC_FC;
+ bool DRC_CALL_CONV mem_readd_checked_drc(PhysPt address) {
+-	if ((address & 0xfff)<0xffd) {
+-		HostPt tlb_addr=get_tlb_read(address);
+-		if (tlb_addr) {
+-			const uint32_t dword = host_readd(tlb_addr + address);
+-			memcpy(&core_dynrec.readdata, &dword, sizeof(dword));
+-			return false;
+-		} else return get_tlb_readhandler(address)->readd_checked(address, (uint32_t*)(&core_dynrec.readdata));
+-	} else return mem_unalignedreadd_checked(address, ((uint32_t*)(&core_dynrec.readdata)));
++    if ((address & 0xfff) >= 0xffd) {
++        KAIRO_MEM_CROSS(2);
++        const bool failed = mem_unalignedreadd_checked(address, ((uint32_t*)(&core_dynrec.readdata)));
++        KAIRO_MEM_FAULT(2, failed);
++        return failed;
++    }
++    HostPt tlb_addr = get_tlb_read(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(2, tlb_addr + address);
++        const uint32_t value = host_readd(tlb_addr + address);
++        memcpy(&core_dynrec.readdata, &value, sizeof(value));
++        return false;
++    }
++    auto* handler = get_tlb_readhandler(address);
++    KAIRO_MEM_HANDLER(2, handler->flags);
++    const bool failed = handler->readd_checked(address, (uint32_t*)(&core_dynrec.readdata));
++    KAIRO_MEM_FAULT(2, failed);
++    return failed;
+ }
+ 
+ bool DRC_CALL_CONV mem_writeb_checked_drc(PhysPt address, uint8_t val) DRC_FC;
+-bool DRC_CALL_CONV mem_writeb_checked_drc(PhysPt address, uint8_t val)
+-{
+-	HostPt tlb_addr = get_tlb_write(address);
+-	if (tlb_addr) {
+-		host_writeb(tlb_addr + address, val);
+-		return false;
+-	} else {
+-		return get_tlb_writehandler(address)->writeb_checked(address, val);
+-	}
+-}
+-
+-bool DRC_CALL_CONV mem_writew_checked_drc(PhysPt address,uint16_t val) DRC_FC;
+-bool DRC_CALL_CONV mem_writew_checked_drc(PhysPt address,uint16_t val) {
+-	if ((address & 0xfff)<0xfff) {
+-		HostPt tlb_addr=get_tlb_write(address);
+-		if (tlb_addr) {
+-			host_writew(tlb_addr+address,val);
+-			return false;
+-		} else return get_tlb_writehandler(address)->writew_checked(address,val);
+-	} else return mem_unalignedwritew_checked(address,val);
+-}
+-
+-bool DRC_CALL_CONV mem_writed_checked_drc(PhysPt address,uint32_t val) DRC_FC;
+-bool DRC_CALL_CONV mem_writed_checked_drc(PhysPt address,uint32_t val) {
+-	if ((address & 0xfff)<0xffd) {
+-		HostPt tlb_addr=get_tlb_write(address);
+-		if (tlb_addr) {
+-			host_writed(tlb_addr+address,val);
+-			return false;
+-		} else return get_tlb_writehandler(address)->writed_checked(address,val);
+-	} else return mem_unalignedwrited_checked(address,val);
++bool DRC_CALL_CONV mem_writeb_checked_drc(PhysPt address, uint8_t val) {
++    HostPt tlb_addr = get_tlb_write(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(3, tlb_addr + address);
++        host_writeb(tlb_addr + address, val);
++        return false;
++    }
++    auto* handler = get_tlb_writehandler(address);
++    KAIRO_MEM_HANDLER(3, handler->flags);
++    const bool failed = handler->writeb_checked(address, val);
++    KAIRO_MEM_FAULT(3, failed);
++    return failed;
++}
++
++bool DRC_CALL_CONV mem_writew_checked_drc(PhysPt address, uint16_t val) DRC_FC;
++bool DRC_CALL_CONV mem_writew_checked_drc(PhysPt address, uint16_t val) {
++    if ((address & 0xfff) >= 0xfff) {
++        KAIRO_MEM_CROSS(4);
++        const bool failed = mem_unalignedwritew_checked(address, val);
++        KAIRO_MEM_FAULT(4, failed);
++        return failed;
++    }
++    HostPt tlb_addr = get_tlb_write(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(4, tlb_addr + address);
++        host_writew(tlb_addr + address, val);
++        return false;
++    }
++    auto* handler = get_tlb_writehandler(address);
++    KAIRO_MEM_HANDLER(4, handler->flags);
++    const bool failed = handler->writew_checked(address, val);
++    KAIRO_MEM_FAULT(4, failed);
++    return failed;
++}
++
++bool DRC_CALL_CONV mem_writed_checked_drc(PhysPt address, uint32_t val) DRC_FC;
++bool DRC_CALL_CONV mem_writed_checked_drc(PhysPt address, uint32_t val) {
++    if ((address & 0xfff) >= 0xffd) {
++        KAIRO_MEM_CROSS(5);
++        const bool failed = mem_unalignedwrited_checked(address, val);
++        KAIRO_MEM_FAULT(5, failed);
++        return failed;
++    }
++    HostPt tlb_addr = get_tlb_write(address);
++    if (tlb_addr) {
++        KAIRO_MEM_DIRECT(5, tlb_addr + address);
++        host_writed(tlb_addr + address, val);
++        return false;
++    }
++    auto* handler = get_tlb_writehandler(address);
++    KAIRO_MEM_HANDLER(5, handler->flags);
++    const bool failed = handler->writed_checked(address, val);
++    KAIRO_MEM_FAULT(5, failed);
++    return failed;
+ }
+ 
+ 
