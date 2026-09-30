@@ -31,7 +31,12 @@ internal object DosControllerBindings {
         spec.actions.map { it.first })
 
     fun parse(text: String?) = codec.parse(text).let { parsed ->
-        if (text != null && parsed == oldDefaults()) defaults() else parsed
+        when {
+            text != null && parsed == oldDefaults() -> defaults()
+            // Upgrade only an untouched saved Doom preset; customized mappings keep their speed.
+            text != null && parsed == doom().map { it.copy(mouseSpeed = 1f) } -> doom()
+            else -> parsed
+        }
     }
     fun toJson(bindings: List<ControllerBinding>) = codec.toJson(bindings)
 
@@ -90,8 +95,8 @@ internal object DosControllerBindings {
         ControllerBinding("virtual:lsdown", keys = listOf(274)),
         ControllerBinding("virtual:lsleft", keys = listOf(44)),
         ControllerBinding("virtual:lsright", keys = listOf(46)),
-        ControllerBinding("virtual:rsleft", mouse = "moveLeft"),
-        ControllerBinding("virtual:rsright", mouse = "moveRight"),
+        ControllerBinding("virtual:rsleft", mouse = "moveLeft", mouseSpeed = 8f),
+        ControllerBinding("virtual:rsright", mouse = "moveRight", mouseSpeed = 8f),
         ControllerBinding("virtual:a", keys = listOf(306)),
         ControllerBinding("virtual:b", keys = listOf(32)),
         ControllerBinding("virtual:x", keys = listOf(304)),
