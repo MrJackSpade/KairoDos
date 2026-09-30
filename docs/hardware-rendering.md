@@ -49,8 +49,29 @@ archive unchanged into test cache, boots hardware and software sessions, checks
 save/load, pause/resume, surface recreation, reset and exit, then removes the
 isolated cache. It never writes the user's original archive or saves.
 
-RGDS USB checks have verified the host fixtures, real GLES Doom rendering, and
-Kairo98 Steam Heart's rendering after EGL consolidation. These checks do **not**
-prove the emulated 3dfx rendering path. Issue #41 remains open until a legally
-supplied 3dfx game is checked for rendering, lifecycle and performance against
-software. No game data is part of the app or source distribution.
+RGDS checks have verified the host fixtures, real GLES/software Doom rendering,
+and Kairo98 Steam Heart's rendering after EGL consolidation. The original,
+user-supplied **Tomb Raider Gold (1998)** archive then verified the emulated
+3dfx path using its existing launcher option 3 (`TOMB3D/tomb.exe`). The archive
+and executables were not modified. Hardware negotiation selected GLES 3.1;
+the same 3dfx executable also rendered through the software Voodoo mode.
+
+Both modes displayed the title ring and textured gameplay with the expected
+orientation, colors and geometry. The hardware session passed Home/resume,
+in-app pause/resume, moving the game to the bottom screen and back while the
+keyboard moved to the other screen, exit and relaunch. Returning to hardware
+after the software session selected GLES 3.1 again and rendered correctly.
+
+Short SurfaceFlinger samples of the animated title scene measured **52.9
+presentations/second in hardware mode** (127 completed presentations over
+2.381 seconds) and **33.1 in software mode** (126 over 3.780 seconds). These
+measure Android presentation cadence, not unique game frames or simulation
+speed; the rotating menu items were not synchronized. A separate hardware
+gameplay sample reached 59.6 presentations/second. This is a device smoke
+comparison, not a general performance guarantee. Software and hardware
+Voodoo filtering/dithering can differ within the copied core.
+
+The test ran on the RGDS; Retroid checks remain deferred at the user's request.
+No game data is part of the app or source distribution. Actual driver context
+loss still requires relaunching, optionally with Software selected; only
+negotiation/initialization failures automatically use the software fallback.
