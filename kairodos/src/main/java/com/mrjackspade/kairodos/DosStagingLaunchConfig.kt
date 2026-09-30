@@ -34,7 +34,7 @@ internal object DosStagingLaunchConfig {
 
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, player: String?,
-              singleVoodooThread: Boolean, directTouch: Boolean): File {
+              singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0): File {
         val source = launch?.configs?.get(name)
         val folder = launch?.folder.orEmpty()
         val parentMount = launch?.let { DosLaunchConfig.mountsParent(it, name) } == true
@@ -148,6 +148,11 @@ internal object DosStagingLaunchConfig {
         // fixed desktop budgets. Keep this after the imported CPU settings.
         lines += listOf("[cpu]", "core = ${cpuCore(source)}", "cycles = auto")
         lines += listOf("[voodoo]", "voodoo_threads = ${if (singleVoodooThread) "1" else "auto"}")
+        // Automatic preserves the catalog's machine (Staging defaults to S3).
+        // Explicit user choices follow imported settings so they take precedence.
+        DosVideoHardware.machine(videoHardware)?.let {
+            lines += listOf("[dosbox]", "machine = $it")
+        }
         val atomic = AtomicFile(config)
         val output = atomic.startWrite()
         try {

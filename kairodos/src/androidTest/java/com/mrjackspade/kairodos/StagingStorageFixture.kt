@@ -59,6 +59,19 @@ internal object StagingStorageFixture {
             check(config.contains("mount C \"${drive.absolutePath}\"") && config.contains("cd GAME"))
             check(config.contains("cycles=12000") && !config.contains("KAIRO:") && !config.contains("eXoDOS"))
             check(config.contains("core = dynamic"))
+            check(config.contains("output = texturenb"))
+            val videoLaunch = launch.copy(configs = mapOf("dosbox.conf" to
+                "[dosbox]\nmachine=ega\n[autoexec]\nGAME.EXE\n"))
+            for (choice in DosVideoHardware.choices.indices) {
+                val generated = DosStagingLaunchConfig.write(File(root, "video.conf"),
+                    DosStagingStorage.Drive(drive), videoLaunch, "dosbox.conf", emptyMap(),
+                    null, false, false, choice).readText()
+                val expected = DosVideoHardware.machine(choice) ?: "ega"
+                val machines = Regex("(?m)^machine\\s*=\\s*([^\\r\\n]+)").findAll(generated)
+                    .map { it.groupValues[1].trim() }.toList()
+                check(machines.last() == expected) { "Video choice $choice did not override catalog" }
+                if (choice == 0) check(machines.size == 1)
+            }
             for ((profile, expected) in listOf(
                 "core=auto" to "dynamic", "core=normal" to "normal",
                 "core=full" to "full", "core=simple" to "simple",

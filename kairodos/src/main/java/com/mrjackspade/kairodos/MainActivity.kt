@@ -497,6 +497,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val controllerSource = when {
             id == null -> "Global"
             dosGameSettings.controllerBindings(id) != null -> "User override"
+            DosControllerBindings.builtInFor(id) != null -> "Game default"
             record.controllerProfile != null -> "Catalog"
             else -> "Global"
         }
@@ -518,6 +519,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (entry.folder) "game folder" else "game file" else null)
         val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
             true) { showGameCpuSettings(entry) },
+            GameSettingsRow("Emulated video card", videoHardwareLabel(entry), true) {
+                showVideoHardwareSettings(entry)
+            },
             GameSettingsRow("3dfx rendering", "${voodooLabels[effectiveVoodoo(entry)]} · " +
                 if (gameSettings.has(entry.contentId, "staging_voodoo_threads")) "Game" else "Global", true) {
                 showVoodooSettings(entry)
@@ -707,7 +711,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val resources = DosStagingResources.prepare(this, cancelled)
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, playerName,
-                    effectiveVoodoo() == 1, effectiveDirectTouch())
+                    effectiveVoodoo() == 1, effectiveDirectTouch(),
+                    dosGameSettings.videoHardware(playableGame.contentId))
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
@@ -770,6 +775,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
+        SettingsEntry("Emulated video card", { DosVideoHardware.label(dosGameSettings.videoHardware()) },
+            { showVideoHardwareSettings(null) }),
         SettingsEntry("3dfx rendering", { voodooLabels[preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1)] },
             { showVoodooSettings(null) }),
         SettingsEntry("Graphics", graphics::settingsLabel, graphics::show),
@@ -1076,6 +1083,30 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private val voodooLabels = arrayOf("Automatic CPU threads", "Single CPU thread")
+
+    private fun videoHardwareLabel(game: DosLibrary.Game): String =
+        DosVideoHardware.label(dosGameSettings.videoHardware(game.contentId)) + " Â· " +
+            if (gameSettings.has(game.contentId, DosVideoHardware.setting)) "Game" else "Global"
+
+    private fun showVideoHardwareSettings(game: DosLibrary.Game?) {
+        val id = game?.contentId
+        val labels = DosVideoHardware.choices.map { it.second }
+        val options = (if (id != null) listOf("Use global setting") + labels else labels).toTypedArray()
+        val selected = if (id == null) dosGameSettings.videoHardware()
+            else if (gameSettings.has(id, DosVideoHardware.setting)) dosGameSettings.videoHardware(id) + 1 else 0
+        val dialog = AlertDialog.Builder(this).setTitle("Emulated video card Â· relaunch to apply")
+            .setSingleChoiceItems(options, selected) { current, choice ->
+                if (id == null) preferences.edit().putInt(DosVideoHardware.setting, choice).apply()
+                else if (choice == 0) gameSettings.clear(id, DosVideoHardware.setting)
+                else gameSettings.setInt(id, DosVideoHardware.setting, choice - 1)
+                current.dismiss()
+                sessionDrawer?.refreshValues()
+                libraryScreen.refreshSettingValues()
+                if (game != null) showGameDetails(game)
+            }.setNegativeButton("Cancel", null).create()
+        dialog.show()
+        Ui.styleDialog(dialog)
+    }
 
     private fun showVoodooSettings(game: DosLibrary.Game?) {
         val id = game?.contentId

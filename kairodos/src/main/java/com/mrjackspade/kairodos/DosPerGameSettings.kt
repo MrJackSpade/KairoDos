@@ -23,8 +23,12 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
     fun setPlayerName(id: String, name: String) =
         preferences.edit().putString(playerKey(id), name).apply()
 
+    fun videoHardware(id: String? = null): Int = DosVideoHardware.normalize(
+        common.int(id, DosVideoHardware.setting, preferences.getInt(DosVideoHardware.setting, 0)))
+
     fun reset(id: String) {
         common.clear(id, "touch_mode", "direct_touch", "cycles_mode", "voodoo_mode")
+        common.clear(id, DosVideoHardware.setting)
         preferences.edit().remove(controllerKey(id)).remove(variantKey(id))
             .remove(playerKey(id)).apply()
     }
