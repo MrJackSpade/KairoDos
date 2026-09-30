@@ -5,6 +5,10 @@
 
 #if (C_DYNREC)
 
+#ifdef KAIRO_STAGING
+#include "staging_bridge.h"
+#endif
+
 #include <cassert>
 // simde needs std::isnan
 #include <cmath>
@@ -227,6 +231,9 @@ Bits CPU_Core_Dynrec_Run() noexcept
 			if (!chandler->invalidation_map || (chandler->invalidation_map[ip_point&4095]<4)) {
 				// translate up to 32 instructions
 				block=CreateCacheBlock(chandler,ip_point,32);
+#ifdef KAIRO_STAGING
+				++kairo_staging_cpu_counters.translated_blocks;
+#endif
 			} else {
 				// let the normal core handle this instruction to avoid zero-sized blocks
 				Bitu old_cycles=CPU_Cycles;
@@ -246,6 +253,11 @@ run_block:
 		// now we're ready to run the dynamic code block
 //		BlockReturn ret=((BlockReturn (*)(void))(block->cache.start))();
 		BlockReturn ret=core_dynrec.runcode(block->cache.start);
+#ifdef KAIRO_STAGING
+		// Count only after generated host code has returned successfully.
+		// Plain counters stay on this thread; polling publishes snapshots.
+		++kairo_staging_cpu_counters.executed_blocks;
+#endif
 
 		switch (ret) {
 		case BR_Iret:

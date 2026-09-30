@@ -11,7 +11,17 @@ struct KairoStagingCallbacks {
     int (*poll)();
     void (*restart)();
     void (*telemetry)(uint64_t waits, uint64_t polls, uint64_t mouse_reads, int waiting);
+    void (*cpu_telemetry)(int dynrec_available, int dynamic_active,
+        uint64_t translated_blocks, uint64_t executed_blocks);
 };
+
+// Owned and updated by the emulation thread. Publish snapshots from its event
+// poll; the Android thread must never read these counters directly.
+struct KairoStagingCpuCounters {
+    uint64_t translated_blocks = 0;
+    uint64_t executed_blocks = 0;
+};
+extern KairoStagingCpuCounters kairo_staging_cpu_counters;
 
 extern "C" {
 int kairo_staging_run(const char* config, const char* config_dir,

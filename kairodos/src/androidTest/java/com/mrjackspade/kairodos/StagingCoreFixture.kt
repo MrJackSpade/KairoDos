@@ -30,6 +30,7 @@ internal object StagingCoreFixture {
         var samples = 0L
         var peak = 0
         var nextAudio = 0L
+        val cpuReports = mutableListOf<String>()
         try {
             val archive = File(root, "game.zip")
             File(archivePath).copyTo(archive)
@@ -43,6 +44,14 @@ internal object StagingCoreFixture {
             File(report, "launch.conf").writeText(config.readText())
             val resources = DosStagingResources.prepare(context, cancelled)
             val reader = ImageReader.newInstance(640, 480, PixelFormat.RGBA_8888, 3)
+            fun anonymousExecutableBytes(): Long = File("/proc/self/maps").readLines().sumOf { line ->
+                val fields = line.trim().split(Regex("\\s+"), limit = 6)
+                if (fields.size == 5 && 'x' in fields[1] && fields[3] == "00:00" && fields[4] == "0") {
+                    val range = fields[0].split('-')
+                    range[1].toLong(16) - range[0].toLong(16)
+                } else 0L
+            }
+            val executableBaseline = anonymousExecutableBytes()
             val pcm = ShortArray(2048)
             fun pump(ms: Long, screenshot: Boolean = false) {
                 val end = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(ms)
@@ -79,10 +88,37 @@ internal object StagingCoreFixture {
                 call("nativeKey", code, true); pump(100)
                 call("nativeKey", code, false); pump(180)
             }
+            fun bootGame() {
+                if (launch?.folder?.contains("doom", true) == true) {
+                    key('2'.code); key('n'.code); pump(12000)
+                    key(27); repeat(3) { key(13) }
+                } else key('1'.code)
+                pump(10000)
+            }
+            fun verifyCpu(label: String, requireDynamic: Boolean) {
+                val before = call("nativeCpuTelemetry") as LongArray
+                check(before[0] == 1L) { "ARM64 dynarec is not available" }
+                if (requireDynamic) {
+                    check(before[2] > 0 && before[3] > 100) {
+                        "$label did not translate and execute host code: ${before.toList()}"
+                    }
+                    pump(1000)
+                    val after = call("nativeCpuTelemetry") as LongArray
+                    check(after[3] > before[3]) {
+                        "$label stopped executing generated host code: ${after.toList()}"
+                    }
+                    cpuReports += "$label: translated=${after[2]}, executed=${after[3]}"
+                }
+            }
             try {
                 // Two sessions in the same process catch stale core globals and
                 // dlclose/thread cleanup errors that a fresh launch can hide.
                 for (session in 0..1) {
+                    // Session 0 uses the product's actual default. Doom's next
+                    // session also verifies upstream automatic mode switches
+                    // to dynarec after entering protected mode.
+                    if (session == 1 && launch?.folder?.contains("doom", true) == true)
+                        config.appendText("\n[cpu]\ncore = auto\n")
                     call("nativeConfigure", 0, 0, 0)
                     call("nativeSetSurface", reader.surface)
                     val core = worker.submit<Boolean> { call("nativeRun", config.absolutePath,
@@ -92,16 +128,17 @@ internal object StagingCoreFixture {
                         while (call("nativeStatus") != 2 && !core.isDone && System.nanoTime() - start < TimeUnit.SECONDS.toNanos(15)) pump(20)
                         check(call("nativeStatus") == 2) { "Start failed: ${call("nativeLastError")}" }
                         pump(3500)
-                        if (launch?.folder?.contains("doom", true) == true) {
-                            key('2'.code); key('n'.code); pump(12000)
-                            key(27); repeat(3) { key(13) }
-                        } else key('1'.code)
-                        pump(10000)
+                        bootGame()
+                        verifyCpu(if (session == 0) "default" else "second launch", true)
                         call("nativePause", true); Thread.sleep(300)
                         call("nativePause", false); pump(500)
                         call("nativeSetSurface", null); pump(150)
                         call("nativeSetSurface", reader.surface); pump(500)
-                        if (session == 0) { call("nativeReset"); pump(4500) }
+                        if (session == 0) {
+                            call("nativeReset"); pump(4500)
+                            bootGame()
+                            verifyCpu("reset", true)
+                        }
                         pump(60, screenshot = true)
                         call("nativePause", true)
                         call("nativeStop") // stop must wake a paused session
@@ -110,11 +147,13 @@ internal object StagingCoreFixture {
                         call("nativeStop")
                         check(core.get(10, TimeUnit.SECONDS)) { "Core did not stop" }
                     }
+                    val retained = anonymousExecutableBytes() - executableBaseline
+                    check(retained <= 0) { "JIT memory remained after session $session: $retained executable bytes" }
                 }
                 check(frames > 60) { "Too few video frames: $frames" }
                 check(samples > 48000 && peak > 0) { "No sustained audible PCM: $samples frames, peak=$peak" }
             } finally { call("nativeSetSurface", null); reader.close() }
-            return "Staging ${launch?.folder ?: archivePath}: frames=$frames, PCM frames=$samples, peak=$peak; pause, surface, reset, sequential launches and paused exit OK"
+            return "Staging ${launch?.folder ?: archivePath}: frames=$frames, PCM frames=$samples, peak=$peak; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec ${cpuReports.joinToString("; ")}; JIT mappings released"
         } finally {
             call("nativeStop"); worker.shutdown()
             check(worker.awaitTermination(15, TimeUnit.SECONDS)) { "Core still running; fixture retained" }

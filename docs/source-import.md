@@ -16,6 +16,8 @@ Android changes are guarded by `KAIRO_STAGING`:
 - `src/dosbox.cpp`: frontend restart instead of fork/exec; reset host timing after pause.
 - `src/gui/sdl_gui.cpp`: frontend renderer/event polling and Android mouse capture routing.
 - `src/audio/mixer.cpp`: AudioTrack consumes samples; dummy SDL device stays paused.
+- `src/cpu/core_dynrec.cpp`: emulation-thread counters for translated blocks and returns from generated ARM64 code; the adapter publishes snapshots for device verification.
+- `src/cpu/dyn_cache.h`: release JIT mappings, code-page handlers and invalidation maps during `CPU_Destroy`, before guest memory is destroyed. Desktop cache retention is unsuitable for repeated embedded sessions.
 - `src/ints/bios_keyboard.cpp` and `src/hardware/input/mouseif_dos_driver.cpp`: shared touch-mode telemetry.
 - `src/misc/fs_utils_posix.cpp`: case-insensitive paths on API 26 without Bionic glob.
 - `src/misc/support.cpp`: session errors instead of aborting the Android process.

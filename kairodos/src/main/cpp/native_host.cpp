@@ -42,6 +42,8 @@ std::atomic<bool> stop_requested{false}, paused{false}, reset_requested{false};
 std::atomic<int> status{0}; // idle, loading, running, failed
 std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
 std::atomic<int> guest_keyboard_waiting{0};
+std::atomic<int> dynrec_available{0}, dynamic_active{0};
+std::atomic<uint64_t> translated_blocks{0}, executed_blocks{0};
 std::string last_error;
 
 // The worker owns input and the event loop. The audio thread reads concurrently.
@@ -84,6 +86,7 @@ void unload_core() {
     // (including the shutdown flag) before launching another game.
     if (core_handle) dlclose(core_handle);
     core_handle = nullptr;
+    dynrec_available = 0; dynamic_active = 0;
 }
 std::string string(JNIEnv* env, jstring value) {
     if (!value) return {};
@@ -184,6 +187,10 @@ void telemetry(uint64_t waits, uint64_t polls, uint64_t reads, int waiting) {
     guest_keyboard_waits = waits; guest_keyboard_polls = polls;
     guest_mouse_reads = reads; guest_keyboard_waiting = waiting;
 }
+void cpu_telemetry(int available, int active, uint64_t translated, uint64_t executed) {
+    dynrec_available = available; dynamic_active = active;
+    translated_blocks = translated; executed_blocks = executed;
+}
 void restart() {
     { std::lock_guard lock(control_mutex); reset_requested = true; }
     control_changed.notify_all();
@@ -209,7 +216,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         { std::lock_guard lock(input_mutex); key_changes.clear(); keys.fill(0); joypad.fill(0); }
         telemetry(0, 0, 0, 0); status = 1;
         if (!load_core()) { result = 1; unload_core(); break; }
-        const KairoStagingCallbacks callbacks{1, video, poll, restart, telemetry};
+        cpu_telemetry(0, 0, 0, 0);
+        const KairoStagingCallbacks callbacks{2, video, poll, restart, telemetry, cpu_telemetry};
         try {
             result = core.run(config.c_str(), config_dir.c_str(), resources.c_str(), &callbacks);
         } catch (const std::exception& failure) {
@@ -259,6 +267,14 @@ extern "C" JNIEXPORT jlongArray JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeInputTelemetry(JNIEnv* env, jobject) {
     jlong values[]{jlong(guest_keyboard_waits), jlong(guest_keyboard_polls), jlong(guest_mouse_reads), jlong(guest_keyboard_waiting)};
     jlongArray result = env->NewLongArray(4); if (result) env->SetLongArrayRegion(result, 0, 4, values); return result;
+}
+extern "C" JNIEXPORT jlongArray JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeCpuTelemetry(JNIEnv* env, jobject) {
+    jlong values[]{jlong(dynrec_available), jlong(dynamic_active),
+        jlong(translated_blocks), jlong(executed_blocks)};
+    jlongArray result = env->NewLongArray(4);
+    if (result) env->SetLongArrayRegion(result, 0, 4, values);
+    return result;
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeSetSurface(JNIEnv* env, jobject, jobject value) {

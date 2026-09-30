@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "gui/common.h"
 #include "config/setup.h"
+#include "cpu/cpu.h"
 #include "hardware/input/joystick.h"
 #include "hardware/input/mouse.h"
 #include "libs/loguru/loguru.hpp"
@@ -16,6 +17,10 @@
 
 int KairoStagingMain(int argc, char** argv);
 void KairoResetHostTiming();
+
+static_assert(C_DYNREC && C_TARGET_CPU_ARM,
+    "KairoDos requires the ARM64 dynamic recompiler");
+KairoStagingCpuCounters kairo_staging_cpu_counters{};
 
 namespace {
 KairoStagingCallbacks callbacks{};
@@ -71,8 +76,9 @@ SDL_Scancode scancode(int code) {
 
 extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     const char* resources, const KairoStagingCallbacks* cb) {
-    if (!cb || cb->version != 1 || !config || !config_dir || !resources) return 1;
+    if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
     callbacks = *cb;
+    kairo_staging_cpu_counters = {};
     std::filesystem::create_directories(config_dir);
     SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
     SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
@@ -101,6 +107,11 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
 bool KairoStagingPoll() {
     if (callbacks.telemetry)
         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
+    if (callbacks.cpu_telemetry)
+        callbacks.cpu_telemetry(1,
+            cpudecoder == &CPU_Core_Dynrec_Run || cpudecoder == &CPU_Core_Dynrec_Trap_Run,
+            kairo_staging_cpu_counters.translated_blocks,
+            kairo_staging_cpu_counters.executed_blocks);
     const int result = callbacks.poll ? callbacks.poll() : 1;
     if (result == 2) KairoResetHostTiming();
     if (result) return true;

@@ -58,6 +58,19 @@ internal object StagingStorageFixture {
                 launch, "dosbox.conf", emptyMap(), null, false, false).readText()
             check(config.contains("mount C \"${drive.absolutePath}\"") && config.contains("cd GAME"))
             check(config.contains("cycles=12000") && !config.contains("KAIRO:") && !config.contains("eXoDOS"))
+            check(config.contains("core = dynamic"))
+            for ((profile, expected) in listOf(
+                "core=auto" to "dynamic", "core=normal" to "normal",
+                "core=full" to "full", "core=simple" to "simple",
+                "core=dynamic_nodhfpu" to "dynamic",
+                "core=auto\ncputype=386_prefetch" to "auto",
+                "core=normal\ncputype=386_prefetch" to "normal")) {
+                val cpuLaunch = launch.copy(configs = mapOf("dosbox.conf" to
+                    "[cpu]\n$profile\ncycles=12000\n[autoexec]\nmount c .\\eXoDOS\\\nc:\ncd GAME\nGAME.EXE\n"))
+                val cpuConfig = DosStagingLaunchConfig.write(File(root, "cpu.conf"), DosStagingStorage.Drive(drive),
+                    cpuLaunch, "dosbox.conf", emptyMap(), null, false, false).readText()
+                check(cpuConfig.contains("core = $expected") && cpuConfig.contains("cycles=12000"))
+            }
         } finally { check(root.deleteRecursively()) }
     }
 }

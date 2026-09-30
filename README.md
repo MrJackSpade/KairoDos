@@ -14,6 +14,8 @@ Known games receive a title, description, tags, and artwork from a hash-keyed ca
 
 An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a catalog entry, and appears with ` - Installer` in the library. On first launch, KairoDos creates and verifies an installed ZIP in the writable selected folder, then offers to remove the installer. You can keep it. If an external frontend grants access to only one ZIP, the installed copy goes into private app storage. Game writes go to the persistent Staging drive. Existing Pure overlay files are preserved while ordinary in-game saves are imported once.
 
+ARM64 dynamic recompilation is enabled for default/auto CPU profiles in both real and protected modes. Explicit interpreter and prefetch CPU compatibility settings are preserved.
+
 Staging does not support emulator save states. Use a game's own save system. Existing Pure state files stay on disk but cannot be loaded in Staging.
 
 To remove a game file or game folder from device storage, open its **Game settings** and choose **Delete game file** or **Delete game folder**. KairoDos names the source in a confirmation before deleting it. Saves and settings are kept.

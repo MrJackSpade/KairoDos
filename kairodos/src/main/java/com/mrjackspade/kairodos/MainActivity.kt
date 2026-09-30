@@ -92,6 +92,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeReset()
     private external fun nativeStatus(): Int
     private external fun nativeInputTelemetry(): LongArray
+    private external fun nativeCpuTelemetry(): LongArray
     private external fun nativeAudioRate(): Int
     private external fun nativeAspect(): Double
     private external fun nativeVideoWidth(): Int

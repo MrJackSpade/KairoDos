@@ -1,5 +1,7 @@
 # Software DOS frame presentation evaluation
 
+These measurements used the previous DOSBox Pure core. The current Staging adapter retains the latest-frame CPU presenter; see [Staging migration](staging-migration.md) for current integration and device acceptance.
+
 Ticket: [KairoDos #42](https://github.com/MrJackSpade/KairoDos/issues/42).
 
 ## Decision

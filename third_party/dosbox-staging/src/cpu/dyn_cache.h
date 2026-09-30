@@ -1067,6 +1067,34 @@ static void cache_init(bool enable) {
 }
 
 static void cache_close(void) {
+#ifdef KAIRO_STAGING
+	// Desktop Staging keeps this cache for its process lifetime. Kairo unloads
+	// a session's DSO, so anonymous mappings and heap page handlers must be
+	// released while guest memory and paging still exist (CPU_Destroy order).
+	while (cache.used_pages) {
+		cache.used_pages->ClearRelease();
+	}
+	while (cache.free_pages) {
+		auto* page = cache.free_pages;
+		cache.free_pages = page->next;
+		delete[] page->invalidation_map;
+		delete page;
+	}
+	if (cache_code_start_ptr) {
+#if defined(HAVE_MMAP)
+		if (munmap(cache_code_start_ptr, cache_code_size) != 0) {
+			LOG_WARNING("DYNCACHE: Could not release session cache: %s", strerror(errno));
+		}
+#else
+		free(cache_code_start_ptr);
+#endif
+	}
+	cache_code_start_ptr = nullptr;
+	cache_code = nullptr;
+	cache_code_link_blocks = nullptr;
+	cache = {};
+	cache_initialized = false;
+#endif
 /*	for (;;) {
 		if (cache.used_pages) {
 			CodePageHandler * cpage=cache.used_pages;

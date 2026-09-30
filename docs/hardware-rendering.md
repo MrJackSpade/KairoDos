@@ -1,4 +1,10 @@
-# Android 3dfx rendering host
+# DOS graphics on Android
+
+The current DOSBox Staging adapter presents CPU framebuffers through Kairo's latest-frame queue and Android native windows. The 3dfx setting selects automatic or single CPU rendering threads. Shared EGL helpers remain available to Kairo98 and graphics fixtures. See [Staging migration](staging-migration.md) for the current engine integration.
+
+## Previous DOSBox Pure implementation and measurements
+
+The remaining sections record the implementation and RGDS measurements before the September 30, 2026 Staging migration. Their hardware-mode and save-state instructions describe that earlier core.
 
 KairoDos can supply DOSBox Pure's existing OpenGL ES hardware-render interface.
 Choose **3dfx rendering → Hardware when available** in global or game settings,

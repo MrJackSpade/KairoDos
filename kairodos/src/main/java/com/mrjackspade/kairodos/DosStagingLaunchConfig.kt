@@ -11,6 +11,27 @@ internal object DosStagingLaunchConfig {
     private val mountC = Regex("(?i)^@?mount\\s+c\\s+.+$")
     private val imgC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
 
+    private fun cpuCore(source: String?): String {
+        var inCpu = false
+        var core = "auto"
+        var type = "auto"
+        for (original in source.orEmpty().lineSequence()) {
+            val line = original.substringBefore('#').substringBefore(';').trim()
+            if (line.startsWith('[')) inCpu = line.equals("[cpu]", true)
+            else if (inCpu && '=' in line) {
+                val key = line.substringBefore('=').trim().lowercase()
+                val value = line.substringAfter('=').trim().lowercase()
+                if (key == "core") core = value
+                if (key == "cputype") type = value
+            }
+        }
+        // Prefetch CPU types require their interpreter. Explicit compatibility
+        // cores stay intact; ordinary profiles use ARM64 dynarec in real mode
+        // as well as protected mode. ARM dynarec already uses software x87.
+        if (type.endsWith("_prefetch") && core in setOf("", "auto", "dynamic", "dynamic_nodhfpu")) return "auto"
+        return if (core in setOf("", "auto", "dynamic_nodhfpu")) "dynamic" else core
+    }
+
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean): File {
@@ -119,6 +140,7 @@ internal object DosStagingLaunchConfig {
             "rate = 48000", "blocksize = 512", "prebuffer = 30", "negotiate = false",
             "[mouse]", "mouse_capture = ${if (directTouch) "seamless" else "onstart"}",
             "mouse_raw_input = false", "[joystick]", "joysticktype = 2axis")
+        lines += listOf("[cpu]", "core = ${cpuCore(source)}")
         lines += listOf("[voodoo]", "voodoo_threads = ${if (singleVoodooThread) "1" else "auto"}")
         val atomic = AtomicFile(config)
         val output = atomic.startWrite()
