@@ -16,6 +16,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var presentationArchive: String? = null
     private var presentationGame = "doom"
     private var presentationSeconds = 30
+    private var menuNavigation = false
     private var controllerMouse = false
     private var stateSlots = false
     private var inputDispatch = false
@@ -32,6 +33,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         presentationArchive = arguments?.getString("presentationArchive")
         presentationGame = arguments?.getString("presentationGame") ?: "doom"
         presentationSeconds = arguments?.getString("presentationSeconds")?.toInt() ?: 30
+        menuNavigation = arguments?.getString("menuNavigation") == "true"
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
@@ -47,6 +49,12 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     override fun onStart() {
         val result = Bundle()
         try {
+            if (menuNavigation) {
+                ControllerMenuFixture.verify(this)
+                result.putString("stream", "Controller-only mapping, slider and dialog navigation: OK")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (resolutionSource != null) {
                 result.putString("stream", DukeResolutionFixture.run(this, resolutionSource!!, resolutionWidth, resolutionNoDouble))
                 finish(Activity.RESULT_OK, result)

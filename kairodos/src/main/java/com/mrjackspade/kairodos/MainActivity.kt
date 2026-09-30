@@ -519,12 +519,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (entry.folder) "game folder" else "game file" else null)
         val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
             true) { showGameCpuSettings(entry) },
-            GameSettingsRow("Emulated video card", videoHardwareLabel(entry), true) {
-                showVideoHardwareSettings(entry)
-            },
-            GameSettingsRow("3dfx rendering", "${voodooLabels[effectiveVoodoo(entry)]} · " +
-                if (gameSettings.has(entry.contentId, "staging_voodoo_threads")) "Game" else "Global", true) {
-                showVoodooSettings(entry)
+            GameSettingsRow("Graphics", videoHardwareLabel(entry), true) {
+                showGraphicsSettings(entry)
             }) +
             (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
                 id?.let(dosGameSettings::startupVariant) ?: "Choose on first play", false) {
@@ -616,7 +612,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 game.contentId?.let { dosGameSettings.setStartupVariant(it, selected) }
                 if (play) startGame(game, selected, fromFrontend)
                 else showGameDetails(game)
-            }.setNegativeButton("Cancel", null).show()
+            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
     }
 
     private fun startGame(game: DosLibrary.Game, configName: String,
@@ -736,7 +732,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (generation == launchGeneration && currentGame?.id == game.id) {
                     leaveGame(success)
                     if (!success) AlertDialog.Builder(this).setMessage(message)
-                        .setPositiveButton("OK", null).show()
+                        .setPositiveButton("OK", null).show().also(Ui::styleDialog)
                 }
             }
         }.apply { name = "KairoDos-emulation"; start() }
@@ -761,7 +757,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     if (playConfig == null) showGameDetails(game)
                     else startGame(game, playConfig, fromFrontend)
                 } else Ui.message(this, "Use 1–8 letters, digits, or underscores")
-            }.setNegativeButton("Cancel", null).show()
+            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
     }
 
     private fun settingsEntries() = listOf(
@@ -775,11 +771,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
-        SettingsEntry("Emulated video card", { DosVideoHardware.label(dosGameSettings.videoHardware()) },
-            { showVideoHardwareSettings(null) }),
-        SettingsEntry("3dfx rendering", { voodooLabels[preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1)] },
-            { showVoodooSettings(null) }),
-        SettingsEntry("Graphics", graphics::settingsLabel, graphics::show),
+        SettingsEntry("Graphics", graphics::settingsLabel, { showGraphicsSettings(null) }),
         SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
             closeMenu()
             showOnScreenControls()
@@ -1079,14 +1071,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 preferences.edit().putInt("cycles_mode", value).apply()
                 configureGuest()
                 dialog.dismiss()
-            }.setNegativeButton("Cancel", null).show()
+            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
     }
 
     private val voodooLabels = arrayOf("Automatic CPU threads", "Single CPU thread")
 
     private fun videoHardwareLabel(game: DosLibrary.Game): String =
-        DosVideoHardware.label(dosGameSettings.videoHardware(game.contentId)) + " Â· " +
+        DosVideoHardware.label(dosGameSettings.videoHardware(game.contentId)) + " · " +
             if (gameSettings.has(game.contentId, DosVideoHardware.setting)) "Game" else "Global"
+
+    private fun showGraphicsSettings(game: DosLibrary.Game?) = graphics.show(listOf(
+        SettingsEntry("Emulated video card", {
+            if (game == null) DosVideoHardware.label(dosGameSettings.videoHardware()) else videoHardwareLabel(game)
+        }, { showVideoHardwareSettings(game) }),
+        SettingsEntry("3dfx rendering", { voodooLabels[effectiveVoodoo(game)] }, { showVoodooSettings(game) })
+    ), includeDisplaySettings = game == null)
 
     private fun showVideoHardwareSettings(game: DosLibrary.Game?) {
         val id = game?.contentId
@@ -1094,7 +1093,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val options = (if (id != null) listOf("Use global setting") + labels else labels).toTypedArray()
         val selected = if (id == null) dosGameSettings.videoHardware()
             else if (gameSettings.has(id, DosVideoHardware.setting)) dosGameSettings.videoHardware(id) + 1 else 0
-        val dialog = AlertDialog.Builder(this).setTitle("Emulated video card Â· relaunch to apply")
+        val dialog = AlertDialog.Builder(this).setTitle("Emulated video card · relaunch to apply")
             .setSingleChoiceItems(options, selected) { current, choice ->
                 if (id == null) preferences.edit().putInt(DosVideoHardware.setting, choice).apply()
                 else if (choice == 0) gameSettings.clear(id, DosVideoHardware.setting)
@@ -1249,7 +1248,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                                 finishAfterInstallerPrompt = false
                                 AlertDialog.Builder(this)
                                     .setMessage(failure.message ?: "Could not remove installer")
-                                    .setPositiveButton("Close") { _, _ -> finish() }.show()
+                                    .setPositiveButton("Close") { _, _ -> finish() }.show().also(Ui::styleDialog)
                             } else Ui.message(this, failure.message ?: "Could not remove installer")
                         } }
                 }.apply { name = "KairoDos-remove-installer"; start() }

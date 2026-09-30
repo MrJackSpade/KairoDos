@@ -50,6 +50,7 @@ internal object DosControllerBindings {
     /** Duke's shipped keyboard controls; joystick calibration is not required. */
     fun duke3d() = doom().map { binding ->
         when (binding.input) {
+            "virtual:rsleft", "virtual:rsright" -> binding.copy(mouseSpeed = 4f)
             "virtual:x" -> ControllerBinding(binding.input, keys = listOf(97)) // Jump
             "virtual:y" -> ControllerBinding(binding.input, keys = listOf(122)) // Crouch
             "virtual:l2" -> ControllerBinding(binding.input, keys = listOf(59)) // Previous weapon
