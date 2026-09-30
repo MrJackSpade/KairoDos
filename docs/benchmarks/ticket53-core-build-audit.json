@@ -1,0 +1,2186 @@
+{
+  "ticket": 53,
+  "result": "No unoptimized generated core/integration/bundled native objects found. No runtime change justified.",
+  "apkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "coreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "device": "RG_DS USB dd437d64c337800f",
+  "compileCommandsSha256": "09ef78e891f2e2d3599f6dc80e6fc6175cf39b442db047ba31245a1467ea91f2",
+  "configuration": {
+    "C_TARGET_CPU_ARM": 1,
+    "C_DYNREC": 1,
+    "C_DEBUGGER": 0,
+    "nativeCompilationCount": 433,
+    "optimization": "-O2",
+    "NDEBUG": true,
+    "debugSymbols": true,
+    "verificationBuild": false
+  },
+  "limits": "Generated commands cover the backend CMake build, not the compilation provenance of separately prebuilt static dependency archives. Those archives are supplied by the pinned dependency recipe. #51 owns shared host optimization policy. Debug symbols do not imply unoptimized code. Existing lightweight bridge telemetry remains enabled; this audit does not claim its cost is zero.",
+  "objects": [
+    {
+      "source": "third_party/dosbox-staging/src/main.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dosbox.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "backend-dos/src/main/cpp/staging_bridge.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "backend-dos/src/main/cpp/kairo_renderer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_files.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/port_containers.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/messages.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/shell_cmds.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/clap/event_list.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/clap/library.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/clap/plugin.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/clap/plugin_manager.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/disk_noise.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/compressor.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/envelope.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/mixer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/noise_gate.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/audio/opl_capture.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/capture.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/capture_audio.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/capture_midi.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/capture_video.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/image/image_capturer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/image/image_saver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/image/image_scaler.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/capture/image/png_writer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/config/config.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/config/setup.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/callback.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_dyn_x86.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_dynrec.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_full.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_normal.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_prefetch.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/core_simple.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/cpu.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/flags.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/mmx.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/modrm.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/cpu/paging.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/cdrom.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/cdrom_image.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/cdrom_ioctl_linux.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/cdrom_win32.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_classes.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_code_page.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_devices.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_execute.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_ioctl.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_keyboard_layout.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_locale.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_locale_data.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_memory.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_misc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_mscdex.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_programs.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_tables.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/dos_windows.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_cache.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_fat.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_iso.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_local.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_overlay.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drive_virtual.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/drives.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/attrib.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/autotype.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/biostest.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/boot.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/choice.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/clip.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/guide.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/help.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/keyb.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/loadfix.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/loadrom.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/ls.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/makeimg.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/manual.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mem.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mixer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mode.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/more.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/more_output.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mount.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mount_common.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mouse.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/mousectl.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/move.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/rescan.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/serial.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/setver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/showpic.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/subst.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/dos/programs/tree.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/fpu/fpu.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/clipboard.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/mapper.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/sdl_gui.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/titlebar.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/auto_image_adjustments.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/auto_shader_switcher.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/deinterlacer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/opengl_renderer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/render.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/scaler/scalers.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/sdl_renderer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/shader.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/shader_manager.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/gui/render/shader_pipeline.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/adlib_gold.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/cms.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/covox.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/disney.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/gus.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/imfc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/innovation.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/lpt_dac.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/mame/saa1099.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/mame/sn76496.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/mpu401.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/opl.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/pcspeaker.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/pcspeaker_discrete.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/pcspeaker_impulse.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/ps1audio.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/soundblaster.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/speaker.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/ston1_dac.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/audio/tandy_sound.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/intel8042.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/intel8255.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/joystick.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/keyboard.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/keyboard_scancodes.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouse.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouse_common.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouse_config.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouse_interfaces.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouse_manymouse.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouseif_dos_driver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouseif_dos_driver_state.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouseif_ps2_bios.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/input/mouseif_virtual_machines.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/network/ipx.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/network/ipxserver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/network/ne2000.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/misc_util.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/nullmodem.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/serialdummy.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/serialmouse.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/serialport.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/serialport/softmodem.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/reelmagic/driver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/reelmagic/player.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/reelmagic/video_mixer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_attr.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_crtc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_dac.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_draw.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_gfx.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_misc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_other.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_paradise.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_s3.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_seq.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_tseng.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/vga_xga.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/video/voodoo.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/cmos.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/dma.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/ide.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/memory.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/pci_bus.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/pic.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/port.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/timer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/virtualbox.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/hardware/vmware.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/bios.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/bios_disk.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/bios_keyboard.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/bios_pci.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/ems.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_char.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_memory.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_misc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_modes.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_pal.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_put_pixel.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_vesa.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_video_state.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/int10_vptable.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/ints/xms.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/alsa.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/coreaudio.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/coremidi.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/fluidsynth.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/midi.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/midi_synth.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/mt32.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/mt32_lasynth_model.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/soundcanvas.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/midi/win32.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/network/ethernet.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/network/ethernet_slirp.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/ansi_code_markup.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/console.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/cross.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/dos_rwops.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/fs_utils.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/fs_utils_posix.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/fs_utils_win32.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/help_util.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/host_locale.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/host_locale_macos.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/host_locale_posix.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/host_locale_win32.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/image_decoder.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/iso_locale_codes.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/messages_adjust.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/messages_po_entry.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/rwqueue.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/support.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/unicode.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/unicode_encodings.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/misc/video.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/autoexec.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/command_line.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/file_reader.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/shell.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/shell_batch.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/shell_history.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/shell/shell_misc.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/utils/env_utils.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/utils/string_utils.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/webserver/bridge.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/webserver/webserver.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/webserver/cpu.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/webserver/memory.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/webserver/dos.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/main/dummy/SDL_dummy_main.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_assert.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_dataqueue.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_error.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_guid.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_hints.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_list.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_log.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/SDL_utils.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/atomic/SDL_atomic.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/atomic/SDL_spinlock.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_audio.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_audiocvt.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_audiodev.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_audiotypecvt.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_mixer.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/SDL_wave.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/cpuinfo/SDL_cpuinfo.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/dynapi/SDL_dynapi.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_clipboardevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_displayevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_dropevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_events.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_gesture.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_keyboard.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_keysym_to_scancode.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_mouse.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_quit.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_scancode_tables.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_touch.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/SDL_windowevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/events/imKStoUCS.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/file/SDL_rwops.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/haptic/SDL_haptic.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/hidapi/SDL_hidapi.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/joystick/SDL_gamecontroller.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/joystick/SDL_joystick.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/joystick/SDL_steam_virtual_gamepad.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/joystick/controller_type.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_atan2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_exp.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_fmod.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_log.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_log10.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_pow.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_rem_pio2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/e_sqrt.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/k_cos.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/k_rem_pio2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/k_sin.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/k_tan.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_atan.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_copysign.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_cos.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_fabs.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_floor.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_scalbn.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_sin.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/libm/s_tan.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/locale/SDL_locale.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/misc/SDL_url.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/power/SDL_power.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/SDL_d3dmath.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/SDL_render.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/SDL_yuv_sw.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d/SDL_render_d3d.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d/SDL_shaders_d3d.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d11/SDL_render_d3d11.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d11/SDL_shaders_d3d11.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d12/SDL_render_d3d12.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/direct3d12/SDL_shaders_d3d12.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/opengl/SDL_render_gl.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/opengl/SDL_shaders_gl.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/opengles/SDL_render_gles.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/opengles2/SDL_render_gles2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/opengles2/SDL_shaders_gles2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/ps2/SDL_render_ps2.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/psp/SDL_render_psp.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_blendfillrect.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_blendline.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_blendpoint.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_drawline.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_drawpoint.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_render_sw.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_rotate.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/software/SDL_triangle.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/vitagxm/SDL_render_vita_gxm.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/vitagxm/SDL_render_vita_gxm_memory.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/render/vitagxm/SDL_render_vita_gxm_tools.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/sensor/SDL_sensor.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_crc16.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_crc32.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_getenv.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_iconv.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_malloc.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_mslibc.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_qsort.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_stdlib.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_string.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/stdlib/SDL_strtokr.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/SDL_thread.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/timer/SDL_timer.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_RLEaccel.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_0.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_1.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_A.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_N.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_auto.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_copy.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_blit_slow.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_bmp.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_clipboard.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_egl.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_fillrect.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_pixels.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_rect.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_shape.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_stretch.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_surface.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_video.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_vulkan_utils.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/SDL_yuv.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/yuv2rgb/yuv_rgb_lsx.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/yuv2rgb/yuv_rgb_sse.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/yuv2rgb/yuv_rgb_std.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/dummy/SDL_dummyaudio.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/audio/disk/SDL_diskaudio.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/loadso/dlopen/SDL_sysloadso.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/dummy/SDL_nullevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/dummy/SDL_nullframebuffer.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/dummy/SDL_nullvideo.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/offscreen/SDL_offscreenevents.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/offscreen/SDL_offscreenframebuffer.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/offscreen/SDL_offscreenopengles.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/offscreen/SDL_offscreenvideo.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/video/offscreen/SDL_offscreenwindow.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "D:/android-sdk/ndk/28.2.13676358/sources/android/cpufeatures/cpu-features.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/filesystem/unix/SDL_sysfilesystem.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/timer/unix/SDL_systimer.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/pthread/SDL_systhread.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/pthread/SDL_sysmutex.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/pthread/SDL_syscond.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/pthread/SDL_systls.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/thread/pthread/SDL_syssem.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/joystick/dummy/SDL_sysjoystick.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/haptic/dummy/SDL_syshaptic.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/sensor/dummy/SDL_dummysensor.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/locale/dummy/SDL_syslocale.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/staging-deps/sdl2/src/misc/dummy/SDL_sysurl.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "backend-dos/src/main/cpp/sdl_embedded_android.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/flac.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/mp3.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/mp3_seek_table.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/opus.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/SDL_sound.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/vorbis.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/decoders/wav.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/glad/debug/src/gl.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/ESFMu/esfm.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/ESFMu/esfm_registers.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/loguru/loguru.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/nuked/opl3.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/resample/SincResampler.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Dac.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/EnvelopeGenerator.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/ExternalFilter.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Filter.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Filter6581.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Filter8580.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/FilterModelConfig.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/FilterModelConfig6581.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/FilterModelConfig8580.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Integrator6581.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Integrator8580.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/OpAmp.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/SID.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/Spline.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/WaveformCalculator.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/residfp/WaveformGenerator.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/riffcpp/membuffer.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/riffcpp/riffcpp.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/tal-chorus/Lfo.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/whereami/whereami.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/YM7128B_emu/YM7128B_emu.c",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    },
+    {
+      "source": "third_party/dosbox-staging/src/libs/zmbv/zmbv.cpp",
+      "effectiveOptimization": "-O2",
+      "ndebug": true
+    }
+  ]
+}
