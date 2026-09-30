@@ -23,6 +23,9 @@
 #include "utils/math_utils.h"
 #include "utils/mem_unaligned.h"
 #include "utils/rgb565.h"
+#if defined(KAIRO_STAGING)
+#include "kairo_palette_cache.h"
+#endif
 
 // This is a high-level overview of the VGA drawing emulation:
 //
@@ -472,6 +475,23 @@ static uint8_t* draw_unwrapped_line_from_dac_palette(Bitu vidstart,
 
 	return TempLine;
 }
+
+#if defined(KAIRO_STAGING)
+static uint8_t* draw_cached_vesa_palette_line(Bitu vidstart, Bitu line)
+{
+	const auto width = vga.draw.line_length / sizeof(vga.dac.palette_map[0]);
+	const auto offset = vidstart & vga.draw.linear_mask;
+	// Wrapped VRAM and hardware cursors retain upstream handling. The cache
+	// only replaces a pure palette conversion, never scanout scheduling.
+	if (width <= vga.draw.linear_mask + 1 - offset && !ReelMagic_IsVideoMixerEnabled()) {
+		if (KairoTryReusePaletteLine(vga.draw.linear_base + offset,
+		                            vga.dac.palette_map, width,
+		                            vga.draw.lines_total, vga.draw.lines_done))
+			return nullptr; // Renderer already consumed this unchanged line.
+	} else KairoInvalidatePaletteLines();
+	return draw_unwrapped_line_from_dac_palette(vidstart, line);
+}
+#endif
 
 static uint8_t* draw_linear_line_from_dac_palette(Bitu vidstart, Bitu /*line*/)
 {
@@ -1304,7 +1324,10 @@ static void VGA_DrawPart(uint32_t lines)
 {
 	while (lines--) {
 		uint8_t* data = VGA_DrawLine(vga.draw.address, vga.draw.address_line);
-		ReelMagic_RENDER_DrawLine(data);
+#if defined(KAIRO_STAGING)
+		if (data) // Indexed cache may have already consumed the unchanged line.
+#endif
+			ReelMagic_RENDER_DrawLine(data);
 
 		++vga.draw.address_line;
 		if (vga.draw.address_line >= vga.draw.address_line_total) {
@@ -1719,6 +1742,10 @@ PixelFormat VGA_ActivateHardwareCursor()
 		VGA_DrawLine = use_hw_cursor
 		                     ? draw_unwrapped_line_from_dac_palette_with_hwcursor
 		                     : draw_unwrapped_line_from_dac_palette;
+#if defined(KAIRO_STAGING)
+		if (vga.mode == M_LIN8 && !use_hw_cursor && vga.draw.mode == DrawMode::Part)
+			VGA_DrawLine = draw_cached_vesa_palette_line;
+#endif
 		break;
 	}
 	return pixel_format;

@@ -140,7 +140,11 @@ internal object DosStagingLaunchConfig {
             "rate = 48000", "blocksize = 512", "prebuffer = 30", "negotiate = false",
             "[mouse]", "mouse_capture = ${if (directTouch) "seamless" else "onstart"}",
             "mouse_raw_input = false", "[joystick]", "joysticktype = 2axis")
-        lines += listOf("[cpu]", "core = ${cpuCore(source)}")
+        // Desktop catalog cycle counts can exceed the handheld's capacity and
+        // slow the DOS clock itself. Auto keeps real-mode compatibility and
+        // adapts protected-mode cycles to the host instead of inheriting those
+        // fixed desktop budgets. Keep this after the imported CPU settings.
+        lines += listOf("[cpu]", "core = ${cpuCore(source)}", "cycles = auto")
         lines += listOf("[voodoo]", "voodoo_threads = ${if (singleVoodooThread) "1" else "auto"}")
         val atomic = AtomicFile(config)
         val output = atomic.startWrite()

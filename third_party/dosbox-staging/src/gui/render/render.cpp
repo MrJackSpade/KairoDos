@@ -30,11 +30,19 @@
 #include "utils/fraction.h"
 #include "utils/math_utils.h"
 #include "utils/string_utils.h"
+#if defined(KAIRO_STAGING)
+#include "kairo_palette_cache.h"
+#endif
 
 CHECK_NARROWING();
 
 Render render;
 ScalerLineHandler RENDER_DrawLine;
+#if defined(KAIRO_STAGING)
+static KairoPaletteCache kairo_palette_cache;
+static uint64_t kairo_palette_frame = 0;
+void KairoInvalidatePaletteLines() { kairo_palette_cache.Invalidate(); }
+#endif
 
 static void render_callback(GFX_CallbackFunctions_t function);
 
@@ -98,6 +106,9 @@ static bool maybe_gfx_start_update()
 	int pitch            = 0;
 
 	if (!GFX_StartUpdate(pixel_data, pitch)) {
+#if defined(KAIRO_STAGING)
+		KairoInvalidatePaletteLines();
+#endif
 		return false;
 	}
 
@@ -125,9 +136,10 @@ static void empty_line_handler(const void*) {}
 static void start_line_handler(const void* src_line_data)
 {
 	if (src_line_data) {
-		if (std::memcmp(src_line_data,
-		                render.scale.cache_read,
-		                render.scale.cache_pitch) != 0) {
+		const bool unchanged = std::memcmp(src_line_data,
+		                                   render.scale.cache_read,
+		                                   render.scale.cache_pitch) == 0;
+		if (!unchanged) {
 
 			// This triggers transferring the pixel data to the
 			// render backend if the contents of the current frame
@@ -157,6 +169,35 @@ static void start_line_handler(const void* src_line_data)
 
 	scaler_changed_lines[0] += render.scale.y_scale;
 }
+
+#if defined(KAIRO_STAGING)
+bool KairoTryReusePaletteLine(const uint8_t* indices, const void* palette,
+                             size_t width, size_t rows, size_t row)
+{
+	// Only paths that maintain the RGB scaler cache can establish history.
+	// Unhandled paths fall back to upstream conversion.
+	if (!render.render_in_progress || is_deinterlacing() ||
+	    render.src.pixel_format != PixelFormat::BGRX32_ByteArray ||
+	    width != static_cast<size_t>(render.src.width) ||
+	    rows != static_cast<size_t>(render.src.height) || row >= rows ||
+	    render.scale.cache_read != reinterpret_cast<uint8_t*>(render.scale.cache.data()) +
+	                                       row * render.scale.cache_pitch ||
+	    (RENDER_DrawLine != start_line_handler &&
+	     RENDER_DrawLine != render.scale.line_handler)) {
+		KairoInvalidatePaletteLines();
+		return false;
+	}
+	const bool same = kairo_palette_cache.Remember(indices, palette, width,
+	                                              rows, row, kairo_palette_frame);
+	if (same && RENDER_DrawLine == start_line_handler) {
+		// Exact same input as this row's previous RGB cache: advance the
+		// unchanged-line bookkeeping without expanding or re-comparing RGB.
+		start_line_handler(nullptr);
+		return true;
+	}
+	return false;
+}
+#endif
 
 static void finish_line_handler(const void* src_line_data)
 {
@@ -206,6 +247,9 @@ bool RENDER_StartUpdate()
 	if (!render.active) {
 		return false;
 	}
+#if defined(KAIRO_STAGING)
+	++kairo_palette_frame;
+#endif
 
 	if (render.scale.line_palette_handler) {
 		check_palette();
@@ -350,6 +394,9 @@ static void deinterlace_rendered_output()
 
 void RENDER_EndUpdate([[maybe_unused]] bool abort)
 {
+#if defined(KAIRO_STAGING)
+	if (abort) KairoInvalidatePaletteLines();
+#endif
 	if (!render.render_in_progress) {
 		return;
 	}
@@ -397,6 +444,9 @@ static void render_reset()
 	// be called from the rendering callback, which might come from a video
 	// driver operating in a different thread or process.
 	std::lock_guard<std::mutex> guard(render_reset_mutex);
+#if defined(KAIRO_STAGING)
+	KairoInvalidatePaletteLines();
+#endif
 
 	int render_width_px = render.src.width;
 	bool double_width   = render.src.double_width;

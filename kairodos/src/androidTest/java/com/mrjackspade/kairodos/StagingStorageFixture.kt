@@ -70,6 +70,9 @@ internal object StagingStorageFixture {
                 val cpuConfig = DosStagingLaunchConfig.write(File(root, "cpu.conf"), DosStagingStorage.Drive(drive),
                     cpuLaunch, "dosbox.conf", emptyMap(), null, false, false).readText()
                 check(cpuConfig.contains("core = $expected") && cpuConfig.contains("cycles=12000"))
+                // The product's last CPU section overrides desktop cycle budgets.
+                check(cpuConfig.substringAfterLast("[cpu]").lineSequence()
+                    .first { it.trim().startsWith("cycles") }.trim() == "cycles = auto")
             }
         } finally { check(root.deleteRecursively()) }
     }
