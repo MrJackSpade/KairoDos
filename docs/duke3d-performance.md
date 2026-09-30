@@ -254,3 +254,22 @@ Decision: the dominant inspected candidates do not establish a large RAM-polling
 ## Ticket #57: idle-acceleration decision (September 30)
 
 [Source-reviewed assessment and differential test requirements](idle-acceleration-assessment.md): no-go for the measured candidates. VGA polling has controller side effects; OPL counter delays change emulated timing. No material pure-RAM wait loop has been established. The assessment covers memory/code changes, IRQ/event ordering, DMA and residual Staging dynrec cycles, including the PC-98 residual-cycle correction as a reference. Future test requirements are explicitly not claimed as executed tests. No runtime change or new benchmark was necessary for this design decision; continue #58.
+
+## Ticket #58: instruction fetch and decoding (September 30)
+
+[Measured costs and attribution](benchmarks/ticket58-instruction-fetch.json) use the accepted normal-build profile, matching core Build ID, emulation TID 24345 and on-CPU samples. LLVM's matching DWARF inline frames were resolved for every sampled core PC, rather than relying only on outlined function names.
+
+| Path | Sampled CPU seconds | Interpretation |
+| --- | ---: | --- |
+| Fetch-attributed union | 0.172 (0.166% of 103.24 s) | 0.141 s in source-attributed inline/outlined fetch PCs plus 0.030 s in additional named-fetch callees, deduplicated |
+| `CreateCacheBlock` inclusive | 0.949 | Includes decoding, code emission, cache maintenance and other work; not all fetching |
+| `CPU_Core_Normal_Run` inclusive | 0.697 | Includes fallback instruction execution; not all fetching |
+| `MakeCodePage` inclusive | 2.162 | Separate code-page lookup/dispatch work; retained for #62 |
+
+These categories overlap. Sampling, incomplete call chains and optimized source attribution limit precision; the broad path totals are context, not a mathematical bound on all fetch cost.
+
+The separate #55 diagnostic metadata records 48,731 translations at 9,158 guest starts during the 120.30-second sample timestamp window (405.1/s), with 470,609 decoded instruction-start records. These are translation records, **not executed instructions**. The three most repeatedly translated starts are `0x2b522c`, `0x2b50b2`, and `0x2b5085`. Logging overhead and differing capture windows mean these counts cannot be presented as normal-build throughput.
+
+Source inspection explains when fetching recurs: a missing translated block invokes `CreateCacheBlock` (up to 32 opcodes); changed code invalidates affected ranges; cache reuse/eviction also removes blocks; frequently modified, unsupported or special instructions may run through the normal interpreter. Existing translated/linked blocks do not re-decode the instruction stream on every execution. `decode_fetch*_imm` already supports memory-backed mutable immediates where its guards permit. The guest snapshot contains writes to executable operands (for example, `0x2b511b` writes `0x2b516c`), so self-modifying rendering code is real. The metadata does not identify the cause of each individual invalidation; do not call all retranslations a cache bug.
+
+Decision: no fetch-cache or unchecked-fetch change justified. Fetch-attributed cost is small in this dynamic-core workload, unlike the historical PC-98 interpreter case. Preserve mutable code handling, page boundaries and faults. Continue #59 for ordinary data accesses and #62 for code-page lookup/dispatch. No runtime changes, new APK, or new device capture were required; this analysis reused the accepted measurements and inspected matching symbols/source.

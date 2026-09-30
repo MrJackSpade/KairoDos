@@ -1,0 +1,266 @@
+{
+  "issue": 58,
+  "coreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "baselineApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "capture": "Accepted normal-build 320x200 rendered demo: 60s warmup, 120s capture, 99 Hz CPU-clock, on-CPU mode, emulation TID 24345",
+  "sampleCount": 10221,
+  "sampledCpuSeconds": 103.24242321,
+  "namedFunctions": {
+    "selfSeconds": {
+      "codePageLookup": 2.03030301,
+      "translation": 0.34343434,
+      "interpreter": 0.55555555,
+      "namedFetch": 0.02020202
+    },
+    "inclusiveSeconds": {
+      "codePageLookup": 2.16161614,
+      "translation": 0.94949494,
+      "interpreter": 0.69696969,
+      "namedFetch": 0.05050505
+    },
+    "patterns": {
+      "fetch": "(^|::)(decode_fetch\\w*|(?:the_)?Fetch\\w*)\\(",
+      "translation": "^CreateCacheBlock\\(",
+      "interpreter": "^CPU_Core_Normal_Run\\(",
+      "codePageLookup": "^MakeCodePage\\("
+    }
+  },
+  "inlineFetch": {
+    "sourceAttributedCpuSeconds": 0.14141414000000002,
+    "additionalNamedCallerCpuSeconds": 0.03030303,
+    "unionCpuSeconds": 0.17171717000000003,
+    "unionPercentOfSampledCpu": 0.1663242344193328,
+    "method": "Resolve every sampled libdosbox_staging.so PC using matching llvm-symbolizer DWARF inline frames, then union source-attributed PCs with named-fetch caller samples, counting each sample once.",
+    "sourceAttributedSamples": [
+      {
+        "coreAddress": "0x3e1d9c",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 203,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3e1a30",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 208,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ff9d8",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "Fetchb()",
+            "line": 105,
+            "file": "dosbox-staging/src/cpu/core_normal.cpp"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3f98c0",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb_imm(unsigned long&)",
+            "line": 240,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3e13d0",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 209,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3eaf38",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchd()",
+            "line": 232,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ffedc",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "Fetchb()",
+            "line": 105,
+            "file": "dosbox-staging/src/cpu/core_normal.cpp"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x400ddc",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "Fetchb()",
+            "line": 105,
+            "file": "dosbox-staging/src/cpu/core_normal.cpp"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x40bf04",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "Fetchb()",
+            "line": 105,
+            "file": "dosbox-staging/src/cpu/core_normal.cpp"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ea9d0",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 0,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ece84",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 206,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ec400",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 206,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x3ece74",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "decode_fetchb()",
+            "line": 203,
+            "file": "dosbox-staging/src/cpu/core_dynrec/decoder_basic.h"
+          }
+        ]
+      },
+      {
+        "coreAddress": "0x400828",
+        "seconds": 0.01010101,
+        "fetchFrames": [
+          {
+            "function": "Fetchb()",
+            "line": 105,
+            "file": "dosbox-staging/src/cpu/core_normal.cpp"
+          }
+        ]
+      }
+    ]
+  },
+  "translationFrequency": {
+    "windowSeconds": 120.298264683,
+    "translatedBlocks": 48731,
+    "uniqueGuestStarts": 9158,
+    "retranslationsAtSameStart": 39573,
+    "translationEventsPerSecond": 405.08481255662235,
+    "decodedInstructionStarts": 470609,
+    "emittedHostBytes": 36209008,
+    "clearEvents": 48102,
+    "clearEventsForLiveBlocks": 47967,
+    "mostTranslatedStarts": [
+      {
+        "guestLinear": "0x2b522c",
+        "translations": 6682
+      },
+      {
+        "guestLinear": "0x2b50b2",
+        "translations": 5984
+      },
+      {
+        "guestLinear": "0x2b5085",
+        "translations": 5967
+      },
+      {
+        "guestLinear": "0x6db8",
+        "translations": 101
+      },
+      {
+        "guestLinear": "0x2b5b95",
+        "translations": 67
+      },
+      {
+        "guestLinear": "0x2b5b3d",
+        "translations": 67
+      },
+      {
+        "guestLinear": "0x2b607d",
+        "translations": 6
+      },
+      {
+        "guestLinear": "0x2b6081",
+        "translations": 6
+      },
+      {
+        "guestLinear": "0x2b58f0",
+        "translations": 5
+      },
+      {
+        "guestLinear": "0x21e94e",
+        "translations": 5
+      }
+    ],
+    "note": "Instrumented capture, not the normal-build CPU-cost capture. Repeated addresses do not identify why a block was invalidated; opcode starts are not executions or unique decoded instructions."
+  },
+  "sourceFindings": [
+    "CPU_Core_Dynrec_Run checks the code-page cache and calls CreateCacheBlock only when no block is found; up to 32 opcodes per translation. Linked existing blocks execute generated code without re-decoding their instruction streams.",
+    "CodePageHandler write handlers invalidate affected translated ranges on changed code bytes; identical writes are already ignored. Cache reuse/eviction can also require translation; the metadata does not encode the reason for each clear.",
+    "Frequently modified instruction starts and unsupported/special instructions use the normal interpreter fallback; measured interpreter time includes execution, not just fetching.",
+    "decode_fetch*_imm already supports reading some frequently modified immediates through guest-memory pointers where a usable TLB entry exists. Removing invalidation or caching mutable code blindly would change guest behavior.",
+    "The guest snapshot contains explicit stores into nearby executable immediates, for example instruction 0x2b511b writes operand storage at 0x2b516c. This confirms self-modifying rendering code exists; it does not prove the reason for every recorded retranslation."
+  ],
+  "decision": "No instruction-fetch optimization justified by this profile. Fetch-attributed work is small; even the broader translation and interpreter paths are only a small share. Preserve required reads/invalidation. Keep the separately measured MakeCodePage cost for #62, and investigate data accesses in #59.",
+  "limitations": [
+    "CPU sampling and optimized DWARF attribution are estimates, not an exact count of fetches or a proof of zero cost elsewhere. Incomplete call chains and unresolved PCs remain.",
+    "Inclusive category totals overlap and must not be summed with their contained fetch costs. Translation includes code emission; interpreter includes instruction execution.",
+    "The 48,731 translation events come from the separate #55 instrumented capture. Its measured overhead is documented in #55; these counts are not normal-build execution throughput.",
+    "Repeated guest starts do not identify invalidation cause or establish a cache bug. Guest opcode-start counts include retranslations and are not executed-instruction counts.",
+    "This decision covers the measured dynamic-core workload, not every interpreter-heavy or self-modifying game."
+  ],
+  "localArtifactSha256": {
+    ".tmp\\duke-current-320-profile\\perf.data": "f8c19018490e4c779c555f1ad8818cb7c0f5b33d658f764ee75a06e399ff4d65",
+    ".tmp\\ticket58\\costs.json": "e1dced2bd55a5950e01856ff55a4018387d244671d71d966c4ea29cd3bb37b2f",
+    ".tmp\\ticket58\\inline-source-attribution.json": "ab430934ad24de22fc831968781556e4bcbb7ce8cbc8b53c0b741da467a8eb89",
+    ".tmp\\ticket58\\translation-frequency.json": "c2fb8932bb5e014827075b07c6aab2824708d890dd40d36b749fb4f6bf7e2daf"
+  }
+}
