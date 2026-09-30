@@ -17,6 +17,11 @@
 
 static CacheBlock *CreateCacheBlock(CodePageHandler *codepage, PhysPt start, Bitu max_opcodes)
 {
+#ifdef KAIRO_GUEST_PROFILE
+    kairo_guest_profile::Translation profile;
+    const auto profile_cs_base = SegPhys(cs);
+    const bool profile_code32 = cpu.code.big;
+#endif
 	// initialize a load of variables
 	decode.code_start=start;
 	decode.code=start;
@@ -77,6 +82,9 @@ static CacheBlock *CreateCacheBlock(CodePageHandler *codepage, PhysPt start, Bit
 				}
 			}
 		}
+#ifdef KAIRO_GUEST_PROFILE
+        profile.instruction(cache.pos, decode.op_start, opcode);
+#endif
 		switch (opcode) {
 		// instructions 'op reg8,reg8' and 'op [],reg8'
 		case 0x00:dyn_dop_ebgb(DOP_ADD);break;
@@ -993,5 +1001,9 @@ finish_block:
 	assert(decode.block->cache.size <= cache_bytes);
 	//	LOG_MSG("Created block size %d start %d end
 	//%d",decode.block->cache.size,decode.block->page.start,decode.block->page.end);
+#ifdef KAIRO_GUEST_PROFILE
+    profile.publish(decode.block, decode.block->cache.start, decode.block->cache.size,
+                    start, decode.code, profile_cs_base, profile_code32);
+#endif
 	return decode.block;
 }

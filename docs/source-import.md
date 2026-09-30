@@ -26,6 +26,8 @@ Android changes are guarded by `KAIRO_STAGING`:
 
 `backend-dos/CMakeLists.txt` builds `libdosbox_staging.so` from upstream component lists, using ARM64 dynamic recompilation, per-page W^X and optimized core code even in debug APKs. First-party adapters are in `backend-dos/src/main/cpp/`; JNI presents frames and routes input/audio. Game code is not patched.
 
+Optional measurement builds additionally define `KAIRO_GUEST_PROFILE`: `src/cpu/core_dynrec/decoder.h` records translation addresses and already-decoded opcode bytes, and `src/cpu/dyn_cache.h` records invalidation. The first-party recorder is `backend-dos/src/main/cpp/kairo_guest_profile.h`. These hooks add no guest memory reads or generated guest instructions, are compiled out by default, and are prohibited in Release builds. See [guest profiling](guest-profiling.md).
+
 ## Dependencies
 
 Complete original archives and recipe sources are in `third_party/staging-deps/sources/`. `sources.json` records every SHA-256, recipe commit `6283825b81bb60f952af1d0703638df1de611243` and verified tool release. Archives are corresponding source, not APK assets.

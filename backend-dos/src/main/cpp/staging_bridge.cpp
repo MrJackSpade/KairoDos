@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include "staging_bridge.h"
+#include "kairo_guest_profile.h"
 #include "dosbox.h"
 #include "SDL.h"
 #include "gui/common.h"
@@ -77,6 +78,9 @@ SDL_Scancode scancode(int code) {
 extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     const char* resources, const KairoStagingCallbacks* cb) {
     if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
+#ifdef KAIRO_GUEST_PROFILE
+    kairo_guest_profile::open(config_dir);
+#endif
     callbacks = *cb;
     kairo_staging_cpu_counters = {};
     std::filesystem::create_directories(config_dir);
@@ -100,11 +104,17 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     const auto result = KairoStagingMain(static_cast<int>(args.size()), argv.data());
     std::error_code error;
     std::filesystem::current_path(original_directory, error);
+#ifdef KAIRO_GUEST_PROFILE
+    kairo_guest_profile::close();
+#endif
     loguru::shutdown();
     return result;
 }
 
 bool KairoStagingPoll() {
+#ifdef KAIRO_GUEST_PROFILE
+    kairo_guest_profile::flush();
+#endif
     if (callbacks.telemetry)
         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
     if (callbacks.cpu_telemetry)

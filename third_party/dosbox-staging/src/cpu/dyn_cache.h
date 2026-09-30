@@ -643,6 +643,9 @@ inline void CacheBlock::Cache::AddDwordToWriteMaskAt(const size_t page_index)
 
 void CacheBlock::Clear()
 {
+#ifdef KAIRO_GUEST_PROFILE
+    kairo_guest_profile::clear(this);
+#endif
 	Bitu ind;
 	// check if this is not a cross page block
 	if (hash.index) for (ind=0;ind<2;ind++) {

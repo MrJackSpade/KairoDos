@@ -14,6 +14,8 @@ android {
                     providers.gradleProperty("stagingDeps").orElse(
                         rootProject.file(".downloads/staging-deps/installed/arm64-kairo-android").absolutePath).get()
                 arguments += "-DANDROID_STL=c++_shared"
+                arguments += "-DKAIRO_GUEST_PROFILE=" +
+                    if (providers.gradleProperty("guestProfile").orNull == "true") "ON" else "OFF"
             }
         }
         ndk {

@@ -7,6 +7,7 @@
 
 #ifdef KAIRO_STAGING
 #include "staging_bridge.h"
+#include "kairo_guest_profile.h"
 #endif
 
 #include <cassert>

@@ -210,3 +210,23 @@ to turn this benchmark into an apparent success.
 Compact results: `docs/benchmarks/rgds-current-320-profile-20260930.json`.
 Full ignored evidence: `.tmp/duke-current-320-profile/` and
 `.tmp/duke-vga-cache-profile/`, including the discarded patch and matched symbols.
+## Ticket #55: guest-address hotspot attribution (September 30)
+
+Completed a valid 60-second warmup / 120-second rendered-demo capture on RGDS at 320x200, `core=dynamic`, `cycles=auto`, `output=texturenb`. The optional Debug-only translation recorder and `tools/analyze_guest_profile.py` resolve sampled generated-code addresses using translation/invalidation timestamps. Linked blocks are covered without counting only outer dynrec entries. Default builds compile out the hooks; guest code and memory reads are unchanged.
+
+Evidence: [sanitized measurements](benchmarks/ticket55-guest-hotspots.json), [procedure and limitations](guest-profiling.md). Raw perf/translation data and screenshots remain in ignored `.tmp/ticket55-guest-profile-run3`; the same-APK logging-disabled comparison is `.tmp/ticket55-profile-disabled`. Matching installed APK SHA-256 and core Build ID are recorded in the evidence. Four mapping tests pass, including invalidation/address reuse, linked blocks/helper attribution, ambiguous mappings, and interval boundaries.
+
+Of 103.30 sampled emulation CPU seconds, 40.58 mapped directly to generated guest blocks and 21.26 through their nearest mapped helper caller. There were 1,841 attributed opcode/address block forms. Only 0.61 seconds remained symbolized as `unknown` without a guest mapping; other unattributed work has host symbols but lacks a usable guest caller. Counts represent estimated CPU time, not executed instructions.
+
+The largest combined block, guest `0x29f7c0`, accounts for 5.76 seconds, of which 5.73 are helper work dominated by OPL synthesis. It is not evidence that this block itself burns 5.76 seconds in a tight guest loop. Next is `0x2b5613` at 2.30 seconds, with arithmetic/flag helpers. Preserve this distinction when investigating polling in #56.
+
+| Same measurement APK | Logging enabled | Logging disabled |
+| --- | ---: | ---: |
+| Display submissions/s | 18.287 | 18.928 |
+| Emulation thread, % of one CPU | 82.52 | 82.66 |
+| Median submission interval | 33.33 ms | 33.31 ms |
+| p95 submission interval | 149.93 ms | 133.31 ms |
+
+The enabled run had 3.39% fewer display submissions. This single pair measures the observed difference, not logging overhead independently of run-to-run variation. Both retained maximum observed CPU/RAM clocks (1.992 GHz / 920 MHz) with no active cooling-device throttling. Logging is suitable for locating hotspots, not claiming small speedups; validate later changes without it. Earlier normal-build cadence was 19.53 submissions/s and also differs in code layout and capture conditions.
+
+Two preliminary captures were invalid because the device slept. The second sleep was explicitly recorded as `power_button`, not timeout; those runs were excluded. Both accepted runs checked wakefulness throughout and preserved rendered start/intermediate/end screenshots. The marker was removed and the exact normal APK restored afterward, verified by SHA-256. No runtime optimization is adopted by this ticket. Next: #56 must inspect candidate loops' state and exit conditions before labeling any workload as polling.

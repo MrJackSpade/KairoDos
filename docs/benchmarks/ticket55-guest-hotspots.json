@@ -1,0 +1,2066 @@
+{
+  "issue": 55,
+  "purpose": "Locate guest CPU hotspots, not optimize guest execution",
+  "device": "RGDS, USB dd437d64c337800f, Android API 34",
+  "measurementApkSha256": "68b07d903f94ca94d59c1572345cb89a9b526a620fcaacb4dbc41d4717053e0d",
+  "measurementCoreBuildId": "8edba213ab7db7ba8a0bac8333095fe5fcce8546",
+  "normalApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "configuration": {
+    "gameResolution": [
+      320,
+      200
+    ],
+    "core": "dynamic",
+    "cycles": "auto",
+    "output": "texturenb"
+  },
+  "protocol": {
+    "warmupSeconds": 60,
+    "captureSeconds": 120,
+    "frequencyHz": 99,
+    "clock": "CLOCK_MONOTONIC",
+    "mode": "on-cpu",
+    "callgraph": "frame pointers"
+  },
+  "validity": {
+    "awakeCheckedThroughout": true,
+    "renderedScreenshotsChecked": true,
+    "lostSamplesEnabled": 0,
+    "excludedRuns": [
+      "Initial sleeping launch",
+      "run2: power_button sleep at 20:43:26.707"
+    ]
+  },
+  "profile": {
+    "sampleCount": 10227,
+    "sampledCpuSeconds": 103.30302927,
+    "firstSampleMonotonicNs": 36251756568826,
+    "lastSampleMonotonicNs": 36372054833509,
+    "attributedGuestBlockForms": 1841,
+    "directJitSeconds": 40.57575717,
+    "jitCallerSeconds": 21.26262605,
+    "unattributedSeconds": 41.46464605,
+    "unattributedSymbols": [
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "seconds": 4.51515147
+      },
+      {
+        "symbol": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+        "seconds": 2.60606058
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "seconds": 2.49494947
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "seconds": 2.48484846
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "seconds": 2.47474745
+      },
+      {
+        "symbol": "MakeCodePage(unsigned long, CodePageHandler*&)",
+        "seconds": 1.9191919
+      },
+      {
+        "symbol": "@plt",
+        "seconds": 1.52525251
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "seconds": 1.29292928
+      },
+      {
+        "symbol": "finish_task_switch",
+        "seconds": 1.27272726
+      },
+      {
+        "symbol": "__memcmp_aarch64",
+        "seconds": 1.16161615
+      },
+      {
+        "symbol": "CPU_Core_Normal_Run()",
+        "seconds": 0.93939393
+      },
+      {
+        "symbol": "Scale1x_32(void const*)",
+        "seconds": 0.67676767
+      },
+      {
+        "symbol": "unknown",
+        "seconds": 0.6060606
+      },
+      {
+        "symbol": "PIC_RunQueue()",
+        "seconds": 0.52525252
+      },
+      {
+        "symbol": "get_ZF()",
+        "seconds": 0.48484848
+      },
+      {
+        "symbol": "__vfprintf",
+        "seconds": 0.47474747
+      },
+      {
+        "symbol": "dynrec_cmp_dword(unsigned int, unsigned int)",
+        "seconds": 0.45454545
+      },
+      {
+        "symbol": "handle_softirqs",
+        "seconds": 0.44444444
+      },
+      {
+        "symbol": "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)",
+        "seconds": 0.38383838
+      },
+      {
+        "symbol": "dynrec_pop_dword()",
+        "seconds": 0.31313131
+      }
+    ],
+    "limitations": [
+      "CPU-time sampling is not an instruction execution count.",
+      "Opcode bytes include prefixes; operands are not recorded.",
+      "Nearest mapped caller attribution depends on call-chain completeness.",
+      "Translation regions include generated guards and helper exits.",
+      "Block identities include guest address and opcode form, not complete operands."
+    ],
+    "metadataEvents": 156146
+  },
+  "hotBlocks": [
+    {
+      "guestLinear": "0x29f7c0",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.03030303,
+      "callerSeconds": 5.72727267,
+      "helperSymbols": [
+        {
+          "symbol": "OPL3_ProcessSlot",
+          "seconds": 3.58585855
+        },
+        {
+          "symbol": "OPL3_Generate4Ch",
+          "seconds": 0.76767676
+        },
+        {
+          "symbol": "OPL3_EnvelopeCalcSin3",
+          "seconds": 0.35353535
+        },
+        {
+          "symbol": "OPL3_EnvelopeCalcSin0",
+          "seconds": 0.24242424
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.18181818
+        },
+        {
+          "symbol": "OPL3_EnvelopeCalcSin1",
+          "seconds": 0.09090909
+        },
+        {
+          "symbol": "Opl::RenderFrame()",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "OPL3_GenerateStream",
+          "seconds": 0.07070707
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x29f7c0",
+        "0x29f7c1",
+        "0x29f7c2",
+        "0x29f7c4",
+        "0x29f7c7",
+        "0x29f7c9",
+        "0x29f7cc",
+        "0x29f7ce",
+        "0x29f7d0",
+        "0x29f7d5",
+        "0x29f7d6",
+        "0x29f7d8",
+        "0x29f7d9",
+        "0x29f7db",
+        "0x29f7dc",
+        "0x29f7de"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5613",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 1.64646463,
+      "callerSeconds": 0.65656565,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.4040404
+        },
+        {
+          "symbol": "dynrec_adc_byte(unsigned char, unsigned char)",
+          "seconds": 0.12121212
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "dynrec_adc_dword_simple(unsigned int, unsigned int)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "_raw_spin_unlock_irqrestore",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5613",
+        "0x2b5616",
+        "0x2b5618",
+        "0x2b561e",
+        "0x2b5624",
+        "0x2b562a",
+        "0x2b5630",
+        "0x2b5636",
+        "0x2b5638",
+        "0x2b563b",
+        "0x2b5641",
+        "0x2b5647",
+        "0x2b5649",
+        "0x2b564c",
+        "0x2b5652",
+        "0x2b5655",
+        "0x2b565b",
+        "0x2b565e",
+        "0x2b5664",
+        "0x2b566a",
+        "0x2b5670",
+        "0x2b5676",
+        "0x2b567c",
+        "0x2b5682",
+        "0x2b5684"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5160",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.86868686,
+      "callerSeconds": 0.29292929,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.12121212
+        },
+        {
+          "symbol": "dynrec_sbb_dword_simple(unsigned int, unsigned int)",
+          "seconds": 0.11111111
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5160",
+        "0x2b5162",
+        "0x2b5165",
+        "0x2b516a",
+        "0x2b5170",
+        "0x2b5176",
+        "0x2b5179",
+        "0x2b517f",
+        "0x2b5181",
+        "0x2b5184",
+        "0x2b5189",
+        "0x2b518f",
+        "0x2b5195",
+        "0x2b519b",
+        "0x2b51a1",
+        "0x2b51a3",
+        "0x2b51a6",
+        "0x2b51ac",
+        "0x2b51b1",
+        "0x2b51b4",
+        "0x2b51ba",
+        "0x2b51c0",
+        "0x2b51c6",
+        "0x2b51c8",
+        "0x2b51cb",
+        "0x2b51d0",
+        "0x2b51d6",
+        "0x2b51dc",
+        "0x2b51e2",
+        "0x2b51e8",
+        "0x2b51ea",
+        "0x2b51ed"
+      ]
+    },
+    {
+      "guestLinear": "0x294a44",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.59595959,
+      "callerSeconds": 0.31313131,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.16161616
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.08080808
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "rcu_cblist_dequeue",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "rcu_core",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x294a44",
+        "0x294a4c",
+        "0x294a4f",
+        "0x294a57",
+        "0x294a59",
+        "0x294a5f",
+        "0x294a66",
+        "0x294a6b"
+      ]
+    },
+    {
+      "guestLinear": "0x26bf9b",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.0,
+      "callerSeconds": 0.77777777,
+      "helperSymbols": [
+        {
+          "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+          "seconds": 0.29292929
+        },
+        {
+          "symbol": "mem_writed(unsigned int, unsigned int)",
+          "seconds": 0.18181818
+        },
+        {
+          "symbol": "dynrec_movsd_dword(unsigned int, int, unsigned int, unsigned int)",
+          "seconds": 0.17171717
+        },
+        {
+          "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+          "seconds": 0.08080808
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.05050505
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x26bf9b",
+        "0x26bf9d"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5788",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.55555555,
+      "callerSeconds": 0.2020202,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.1010101
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.06060606
+        },
+        {
+          "symbol": "dynrec_adc_byte_simple(unsigned char, unsigned char)",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "_raw_spin_unlock_irqrestore",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5788",
+        "0x2b578a",
+        "0x2b578c",
+        "0x2b578f",
+        "0x2b5792",
+        "0x2b5798",
+        "0x2b579e",
+        "0x2b57a4",
+        "0x2b57aa",
+        "0x2b57ac",
+        "0x2b57ae",
+        "0x2b57b1",
+        "0x2b57b3",
+        "0x2b57b9",
+        "0x2b57bf",
+        "0x2b57c1",
+        "0x2b57c4",
+        "0x2b57c7",
+        "0x2b57cd",
+        "0x2b57cf",
+        "0x2b57d1",
+        "0x2b57d7",
+        "0x2b57dd",
+        "0x2b57df",
+        "0x2b57e2",
+        "0x2b57e8",
+        "0x2b57ee",
+        "0x2b57f0",
+        "0x2b57f2",
+        "0x2b57f8",
+        "0x2b57fb",
+        "0x2b57fd"
+      ]
+    },
+    {
+      "guestLinear": "0x294aa1",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.28282828,
+      "callerSeconds": 0.32323232,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_dec_dword(unsigned int)",
+          "seconds": 0.1010101
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.1010101
+        },
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "dynrec_get_nzf()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x294aa1",
+        "0x294aa3",
+        "0x294aaa",
+        "0x294aad",
+        "0x294ab0",
+        "0x294ab4",
+        "0x294ab5"
+      ]
+    },
+    {
+      "guestLinear": "0x294a94",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.2020202,
+      "callerSeconds": 0.37373737,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.1010101
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.09090909
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.08080808
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "dynrec_get_zf_or_sf_neq_of()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x294a94",
+        "0x294a9a"
+      ]
+    },
+    {
+      "guestLinear": "0x294a80",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.31313131,
+      "callerSeconds": 0.23232323,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.09090909
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "dynrec_get_sf_eq_of()",
+          "seconds": 0.05050505
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x294a80",
+        "0x294a82",
+        "0x294a85",
+        "0x294a8b"
+      ]
+    },
+    {
+      "guestLinear": "0x294a74",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.18181818,
+      "callerSeconds": 0.29292929,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.11111111
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.06060606
+        },
+        {
+          "symbol": "dynrec_get_zf_or_sf_neq_of()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x294a74",
+        "0x294a79"
+      ]
+    },
+    {
+      "guestLinear": "0x26d055",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.35353535,
+      "callerSeconds": 0.07070707,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "dynrec_get_sf_eq_of()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x26d055",
+        "0x26d058",
+        "0x26d05b",
+        "0x26d05d",
+        "0x26d061",
+        "0x26d064",
+        "0x26d067",
+        "0x26d06d",
+        "0x26d06f",
+        "0x26d071",
+        "0x26d073",
+        "0x26d075"
+      ]
+    },
+    {
+      "guestLinear": "0x29f7ee",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.04040404,
+      "callerSeconds": 0.33333333,
+      "helperSymbols": [
+        {
+          "symbol": "std::__ndk1::pair<std::__ndk1::__hash_iterator<std::__ndk1::__hash_node<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<unsigned int (unsigned short, io_width_t)>>, void*>*>, bool> std::__ndk1::__hash_table<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<unsigned int (unsigned short, io_width_t)>>, std::__ndk1::__unordered_map_hasher<unsigned short, std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<unsigned int (unsigned short, io_width_t)>>, std::__ndk1::hash<unsigned short>, std::__ndk1::equal_to<unsigned short>, true>, std::__ndk1::__unordered_map_equal<unsigned short, std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<unsigned int (unsigned short, io_width_t)>>, std::__ndk1::equal_to<unsigned short>, std::__ndk1::hash<unsigned short>, true>, std::__ndk1::allocator<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<unsigned int (unsigned short, io_width_t)>>>>::__emplace_unique_key_args<unsigned short, std::__ndk1::piecewise_construct_t const&, std::__ndk1::tuple<unsigned short const&>, std::__ndk1::tuple<unsigned int (&)(unsigned short, io_width_t)>>(unsigned short const&, std::__ndk1::piecewise_construct_t const&, std::__ndk1::tuple<unsigned short const&>&&, std::__ndk1::tuple<unsigned int (&)(unsigned short, io_width_t)>&&)",
+          "seconds": 0.06060606
+        },
+        {
+          "symbol": "OplChip::Read()",
+          "seconds": 0.05050505
+        },
+        {
+          "symbol": "Opl::PortRead(unsigned short, io_width_t)",
+          "seconds": 0.05050505
+        },
+        {
+          "symbol": "IO_ReadB(unsigned short)",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "read_byte_from_port(unsigned short)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "CPU_IO_Exception(unsigned long, unsigned long)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x29f7ee",
+        "0x29f7ef",
+        "0x29f7f1",
+        "0x29f7f2",
+        "0x29f7f4"
+      ]
+    },
+    {
+      "guestLinear": "0x29f7e0",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.01010101,
+      "callerSeconds": 0.32323232,
+      "helperSymbols": [
+        {
+          "symbol": "OPL3_ProcessSlot",
+          "seconds": 0.13131313
+        },
+        {
+          "symbol": "OPL3_Generate4Ch",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "Opl::RenderUpToNow()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "pthread_mutex_unlock",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "read_byte_from_port(unsigned short)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "Opl::PortRead(unsigned short, io_width_t)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "__kernel_clock_gettime",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x29f7e0",
+        "0x29f7e3",
+        "0x29f7e6",
+        "0x29f7eb",
+        "0x29f7ec",
+        "0x29f7ee",
+        "0x29f7ef",
+        "0x29f7f1",
+        "0x29f7f2",
+        "0x29f7f4"
+      ]
+    },
+    {
+      "guestLinear": "0x26d0a3",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.15151515,
+      "callerSeconds": 0.15151515,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "dynrec_get_nzf()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "dynrec_dec_dword(unsigned int)",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x26d0a3",
+        "0x26d0a7",
+        "0x26d0aa",
+        "0x26d0ab",
+        "0x26d0af"
+      ]
+    },
+    {
+      "guestLinear": "0x2b6081",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.24242424,
+      "callerSeconds": 0.04040404,
+      "helperSymbols": [
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b6081",
+        "0x2b6084",
+        "0x2b6086",
+        "0x2b6089",
+        "0x2b608f",
+        "0x2b6091",
+        "0x2b6097",
+        "0x2b609e",
+        "0x2b60a5",
+        "0x2b60a8",
+        "0x2b60aa",
+        "0x2b60ad",
+        "0x2b60af",
+        "0x2b60b2",
+        "0x2b60b4"
+      ]
+    },
+    {
+      "guestLinear": "0x275c80",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.2020202,
+      "callerSeconds": 0.07070707,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "rcu_do_batch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x275c80",
+        "0x275c82",
+        "0x275c85",
+        "0x275c8b",
+        "0x275c8f",
+        "0x275c95",
+        "0x275c99",
+        "0x275c9b",
+        "0x275c9d",
+        "0x275ca1",
+        "0x275ca7",
+        "0x275cab",
+        "0x275cb1",
+        "0x275cb5",
+        "0x275cb7",
+        "0x275cb9",
+        "0x275cbd",
+        "0x275cc1",
+        "0x275cc5",
+        "0x275cc7",
+        "0x275cca",
+        "0x275cce",
+        "0x275cd2",
+        "0x275cd4",
+        "0x275cd7",
+        "0x275cd9",
+        "0x275cdb",
+        "0x275cdd"
+      ]
+    },
+    {
+      "guestLinear": "0x2308ed",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.19191919,
+      "callerSeconds": 0.07070707,
+      "helperSymbols": [
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "dynrec_get_sf_eq_of()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2308ed",
+        "0x2308f4",
+        "0x2308f5",
+        "0x2308f7",
+        "0x2308fe",
+        "0x230900"
+      ]
+    },
+    {
+      "guestLinear": "0x269031",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.13131313,
+      "callerSeconds": 0.11111111,
+      "helperSymbols": [
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.05050505
+        },
+        {
+          "symbol": "dynrec_dimul_dword(unsigned int, unsigned int)",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x269031",
+        "0x269035",
+        "0x269037",
+        "0x26903e",
+        "0x269045",
+        "0x269047",
+        "0x26904e",
+        "0x269050",
+        "0x269054",
+        "0x269057",
+        "0x269059",
+        "0x26905f",
+        "0x269062",
+        "0x269065",
+        "0x26906b",
+        "0x269072",
+        "0x269075",
+        "0x269077",
+        "0x26907e",
+        "0x26907f",
+        "0x269082",
+        "0x269088",
+        "0x26908a",
+        "0x269091",
+        "0x269095",
+        "0x269096",
+        "0x269098",
+        "0x26909a"
+      ]
+    },
+    {
+      "guestLinear": "0x274671",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.13131313,
+      "callerSeconds": 0.11111111,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_dimul_dword(unsigned int, unsigned int)",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x274671",
+        "0x274673",
+        "0x27467a",
+        "0x27467d",
+        "0x274681",
+        "0x274688",
+        "0x27468a",
+        "0x274691",
+        "0x274698",
+        "0x27469a",
+        "0x27469c",
+        "0x2746a3",
+        "0x2746aa",
+        "0x2746b1",
+        "0x2746b3",
+        "0x2746b6",
+        "0x2746b9",
+        "0x2746bb",
+        "0x2746bd",
+        "0x2746c1",
+        "0x2746c8",
+        "0x2746ca",
+        "0x2746cc",
+        "0x2746cf",
+        "0x2746d1"
+      ]
+    },
+    {
+      "guestLinear": "0x2b531a",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.15151515,
+      "callerSeconds": 0.08080808,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_dec_dword(unsigned int)",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "dynrec_get_nzf()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b531a",
+        "0x2b531c",
+        "0x2b531f",
+        "0x2b5325",
+        "0x2b5328",
+        "0x2b532a",
+        "0x2b532b",
+        "0x2b532f",
+        "0x2b5331"
+      ]
+    },
+    {
+      "guestLinear": "0x2b54e0",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.11111111,
+      "callerSeconds": 0.12121212,
+      "helperSymbols": [
+        {
+          "symbol": "CodePageHandler::writed_checked(unsigned int, unsigned int)",
+          "seconds": 0.08080808
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.04040404
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b54e0",
+        "0x2b54e1",
+        "0x2b54e8",
+        "0x2b54ea",
+        "0x2b54ef",
+        "0x2b54f1",
+        "0x2b54f6",
+        "0x2b54fc",
+        "0x2b5502",
+        "0x2b5508",
+        "0x2b550e",
+        "0x2b5514",
+        "0x2b5519",
+        "0x2b551f",
+        "0x2b5524",
+        "0x2b552a",
+        "0x2b5530",
+        "0x2b5536",
+        "0x2b553c",
+        "0x2b5542",
+        "0x2b5547",
+        "0x2b554d",
+        "0x2b5553",
+        "0x2b5559",
+        "0x2b555f",
+        "0x2b5564",
+        "0x2b556a",
+        "0x2b5570",
+        "0x2b5573",
+        "0x2b5576",
+        "0x2b5578",
+        "0x2b557a"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5162",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.15151515,
+      "callerSeconds": 0.04040404,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "dynrec_sbb_dword_simple(unsigned int, unsigned int)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5162",
+        "0x2b5165",
+        "0x2b516a",
+        "0x2b5170",
+        "0x2b5176",
+        "0x2b5179",
+        "0x2b517f",
+        "0x2b5181",
+        "0x2b5184",
+        "0x2b5189",
+        "0x2b518f",
+        "0x2b5195",
+        "0x2b519b",
+        "0x2b51a1",
+        "0x2b51a3",
+        "0x2b51a6",
+        "0x2b51ac",
+        "0x2b51b1",
+        "0x2b51b4",
+        "0x2b51ba",
+        "0x2b51c0",
+        "0x2b51c6",
+        "0x2b51c8",
+        "0x2b51cb",
+        "0x2b51d0",
+        "0x2b51d6",
+        "0x2b51dc",
+        "0x2b51e2",
+        "0x2b51e8",
+        "0x2b51ea",
+        "0x2b51ed",
+        "0x2b51ee"
+      ]
+    },
+    {
+      "guestLinear": "0x2b51ee",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.12121212,
+      "callerSeconds": 0.07070707,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.05050505
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "kmem_cache_free",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b51ee",
+        "0x2b51f4"
+      ]
+    },
+    {
+      "guestLinear": "0x19033a",
+      "csBase": "0x18f490",
+      "code32": false,
+      "directSeconds": 0.13131313,
+      "callerSeconds": 0.05050505,
+      "helperSymbols": [
+        {
+          "symbol": "CPU_SetSegGeneral(SegNames, unsigned long)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "mem_writed(unsigned int, unsigned int)",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x19033a",
+        "0x19033e",
+        "0x190343",
+        "0x190345",
+        "0x190349",
+        "0x19034c",
+        "0x19034e",
+        "0x190351",
+        "0x190353",
+        "0x190358",
+        "0x19035a",
+        "0x19035e",
+        "0x190361",
+        "0x190363",
+        "0x190365",
+        "0x190369",
+        "0x19036e",
+        "0x190371",
+        "0x190374",
+        "0x190375",
+        "0x190378",
+        "0x19037a",
+        "0x19037d",
+        "0x19037f",
+        "0x190383",
+        "0x190387",
+        "0x19038b",
+        "0x19038f",
+        "0x190393",
+        "0x190397",
+        "0x19039b",
+        "0x19039f"
+      ]
+    },
+    {
+      "guestLinear": "0x2b4f00",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.02020202,
+      "callerSeconds": 0.16161616,
+      "helperSymbols": [
+        {
+          "symbol": "CodePageHandler::writeb_checked(unsigned int, unsigned char)",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "__vfprintf",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "CacheBlock::Clear()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "CodePageHandler::writed_checked(unsigned int, unsigned int)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "__sfvwrite",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b4f00",
+        "0x2b4f05",
+        "0x2b4f0a",
+        "0x2b4f0f",
+        "0x2b4f11",
+        "0x2b4f16",
+        "0x2b4f1b",
+        "0x2b4f20",
+        "0x2b4f25",
+        "0x2b4f2a",
+        "0x2b4f30",
+        "0x2b4f36",
+        "0x2b4f3c",
+        "0x2b4f42",
+        "0x2b4f48",
+        "0x2b4f4e",
+        "0x2b4f54",
+        "0x2b4f5a",
+        "0x2b4f60",
+        "0x2b4f66",
+        "0x2b4f6c",
+        "0x2b4f72",
+        "0x2b4f78",
+        "0x2b4f7e",
+        "0x2b4f84",
+        "0x2b4f8a",
+        "0x2b4f8f",
+        "0x2b4f91",
+        "0x2b4f93",
+        "0x2b4f95",
+        "0x2b4f9b",
+        "0x2b4fa1"
+      ]
+    },
+    {
+      "guestLinear": "0x25a3a6",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.06060606,
+      "callerSeconds": 0.11111111,
+      "helperSymbols": [
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "kmem_cache_free",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "dynrec_get_nsf()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x25a3a6",
+        "0x25a3ad",
+        "0x25a3b3",
+        "0x25a3b5",
+        "0x25a3bb",
+        "0x25a3bd",
+        "0x25a3bf"
+      ]
+    },
+    {
+      "guestLinear": "0x25a4a6",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.05050505,
+      "callerSeconds": 0.12121212,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_pop_dword()",
+          "seconds": 0.07070707
+        },
+        {
+          "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x25a4a6",
+        "0x25a4a9",
+        "0x25a4aa",
+        "0x25a4ab",
+        "0x25a4ac",
+        "0x25a4ad",
+        "0x25a4ae"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5780",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.1010101,
+      "callerSeconds": 0.06060606,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "dynrec_dec_byte(unsigned char)",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5780",
+        "0x2b5782"
+      ]
+    },
+    {
+      "guestLinear": "0x26d02c",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.15151515,
+      "callerSeconds": 0.01010101,
+      "helperSymbols": [
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x26d02c",
+        "0x26d02f",
+        "0x26d031",
+        "0x26d034",
+        "0x26d036",
+        "0x26d039",
+        "0x26d040",
+        "0x26d042",
+        "0x26d045",
+        "0x26d04c",
+        "0x26d051",
+        "0x26d055",
+        "0x26d058",
+        "0x26d05b",
+        "0x26d05d",
+        "0x26d061",
+        "0x26d064",
+        "0x26d067",
+        "0x26d06d",
+        "0x26d06f",
+        "0x26d071",
+        "0x26d073",
+        "0x26d075"
+      ]
+    },
+    {
+      "guestLinear": "0x18ee73",
+      "csBase": "0x189b20",
+      "code32": false,
+      "directSeconds": 0.03030303,
+      "callerSeconds": 0.13131313,
+      "helperSymbols": [
+        {
+          "symbol": "std::__ndk1::pair<std::__ndk1::__hash_iterator<std::__ndk1::__hash_node<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<void (unsigned short, unsigned int, io_width_t)>>, void*>*>, bool> std::__ndk1::__hash_table<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<void (unsigned short, unsigned int, io_width_t)>>, std::__ndk1::__unordered_map_hasher<unsigned short, std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<void (unsigned short, unsigned int, io_width_t)>>, std::__ndk1::hash<unsigned short>, std::__ndk1::equal_to<unsigned short>, true>, std::__ndk1::__unordered_map_equal<unsigned short, std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<void (unsigned short, unsigned int, io_width_t)>>, std::__ndk1::equal_to<unsigned short>, std::__ndk1::hash<unsigned short>, true>, std::__ndk1::allocator<std::__ndk1::__hash_value_type<unsigned short, std::__ndk1::function<void (unsigned short, unsigned int, io_width_t)>>>>::__emplace_unique_key_args<unsigned short, std::__ndk1::piecewise_construct_t const&, std::__ndk1::tuple<unsigned short const&>, std::__ndk1::tuple<void (&)(unsigned short, unsigned int, io_width_t)>>(unsigned short const&, std::__ndk1::piecewise_construct_t const&, std::__ndk1::tuple<unsigned short const&>&&, std::__ndk1::tuple<void (&)(unsigned short, unsigned int, io_width_t)>&&)",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "write_byte_to_port(unsigned short, unsigned char)",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "IO_WriteB(unsigned short, unsigned char)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "CPU_IO_Exception(unsigned long, unsigned long)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.02020202
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x18ee73",
+        "0x18ee75",
+        "0x18ee76",
+        "0x18ee77"
+      ]
+    },
+    {
+      "guestLinear": "0x25a390",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.06060606,
+      "callerSeconds": 0.09090909,
+      "helperSymbols": [
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "mem_writed(unsigned int, unsigned int)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "dynrec_push_dword(unsigned int)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "dynrec_get_sf_eq_of()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x25a390",
+        "0x25a391",
+        "0x25a392",
+        "0x25a393",
+        "0x25a394",
+        "0x25a395",
+        "0x25a398",
+        "0x25a39a",
+        "0x25a39c",
+        "0x25a3a4"
+      ]
+    },
+    {
+      "guestLinear": "0x26af0e",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.1010101,
+      "callerSeconds": 0.04040404,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_dimul_dword(unsigned int, unsigned int)",
+          "seconds": 0.04040404
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x26af0e",
+        "0x26af14",
+        "0x26af16",
+        "0x26af1c",
+        "0x26af1e",
+        "0x26af24",
+        "0x26af26",
+        "0x26af29",
+        "0x26af2d",
+        "0x26af31",
+        "0x26af36",
+        "0x26af39",
+        "0x26af3f",
+        "0x26af42",
+        "0x26af48",
+        "0x26af4b",
+        "0x26af50",
+        "0x26af55",
+        "0x26af58",
+        "0x26af5e",
+        "0x26af64",
+        "0x26af69",
+        "0x26af6f",
+        "0x26af71",
+        "0x26af73"
+      ]
+    },
+    {
+      "guestLinear": "0x25a3c3",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.1010101,
+      "callerSeconds": 0.04040404,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_dimul_dword(unsigned int, unsigned int)",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x25a3c3",
+        "0x25a3c5",
+        "0x25a3cc",
+        "0x25a3d2",
+        "0x25a3d5",
+        "0x25a3db",
+        "0x25a3dd",
+        "0x25a3df"
+      ]
+    },
+    {
+      "guestLinear": "0x275ce3",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.08080808,
+      "callerSeconds": 0.06060606,
+      "helperSymbols": [
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "dynrec_dimul_dword(unsigned int, unsigned int)",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x275ce3",
+        "0x275ce6",
+        "0x275cea",
+        "0x275cec",
+        "0x275cf0",
+        "0x275cf2",
+        "0x275cf5",
+        "0x275cf9",
+        "0x275cfb",
+        "0x275cff",
+        "0x275d04",
+        "0x275d06"
+      ]
+    },
+    {
+      "guestLinear": "0x242e69",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.08080808,
+      "callerSeconds": 0.05050505,
+      "helperSymbols": [
+        {
+          "symbol": "get_CF()",
+          "seconds": 0.05050505
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x242e69",
+        "0x242e6e",
+        "0x242e70",
+        "0x242e73",
+        "0x242e76"
+      ]
+    },
+    {
+      "guestLinear": "0x2322fa",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.06060606,
+      "callerSeconds": 0.07070707,
+      "helperSymbols": [
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.03030303
+        },
+        {
+          "symbol": "get_OF()",
+          "seconds": 0.02020202
+        },
+        {
+          "symbol": "finish_task_switch",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_ZF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2322fa",
+        "0x2322fc",
+        "0x2322ff",
+        "0x232305",
+        "0x232309",
+        "0x23230d",
+        "0x232311",
+        "0x232318",
+        "0x23231b",
+        "0x232323"
+      ]
+    },
+    {
+      "guestLinear": "0x2b5113",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.08080808,
+      "callerSeconds": 0.05050505,
+      "helperSymbols": [
+        {
+          "symbol": "CodePageHandler::writed_checked(unsigned int, unsigned int)",
+          "seconds": 0.04040404
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x2b5113",
+        "0x2b5118",
+        "0x2b511b",
+        "0x2b5120",
+        "0x2b5125",
+        "0x2b512a",
+        "0x2b512f",
+        "0x2b5131",
+        "0x2b5136",
+        "0x2b5138",
+        "0x2b513d",
+        "0x2b5142",
+        "0x2b5147",
+        "0x2b514c",
+        "0x2b514e"
+      ]
+    },
+    {
+      "guestLinear": "0x274337",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.1010101,
+      "callerSeconds": 0.03030303,
+      "helperSymbols": [
+        {
+          "symbol": "@plt",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "get_SF()",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "dynrec_push_dword(unsigned int)",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x274337",
+        "0x274338",
+        "0x274339",
+        "0x27433a",
+        "0x27433c",
+        "0x27433e",
+        "0x274340",
+        "0x274341",
+        "0x274344",
+        "0x27434a",
+        "0x274350",
+        "0x274355",
+        "0x274357",
+        "0x274358",
+        "0x27435b",
+        "0x274362",
+        "0x274365"
+      ]
+    },
+    {
+      "guestLinear": "0x267a25",
+      "csBase": "0x0",
+      "code32": true,
+      "directSeconds": 0.11111111,
+      "callerSeconds": 0.02020202,
+      "helperSymbols": [
+        {
+          "symbol": "handle_softirqs",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "FillFlagsNoCFOF()",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x267a25",
+        "0x267a27",
+        "0x267a29",
+        "0x267a2d",
+        "0x267a2f",
+        "0x267a32",
+        "0x267a35",
+        "0x267a37",
+        "0x267a3b",
+        "0x267a3d",
+        "0x267a3f",
+        "0x267a43",
+        "0x267a48",
+        "0x267a4c",
+        "0x267a4e",
+        "0x267a54",
+        "0x267a56",
+        "0x267a59",
+        "0x267a5f",
+        "0x267a63",
+        "0x267a65",
+        "0x267a67",
+        "0x267a69",
+        "0x267a6c",
+        "0x267a6e",
+        "0x267a75",
+        "0x267a79",
+        "0x267a7b",
+        "0x267a7d",
+        "0x267a80",
+        "0x267a83",
+        "0x267a8a"
+      ]
+    },
+    {
+      "guestLinear": "0x18fa77",
+      "csBase": "0x18f490",
+      "code32": false,
+      "directSeconds": 0.11111111,
+      "callerSeconds": 0.02020202,
+      "helperSymbols": [
+        {
+          "symbol": "dynrec_pop_dword()",
+          "seconds": 0.01010101
+        },
+        {
+          "symbol": "mem_writew(unsigned int, unsigned short)",
+          "seconds": 0.01010101
+        }
+      ],
+      "guestInstructionAddresses": [
+        "0x18fa77",
+        "0x18fa7b",
+        "0x18fa7e",
+        "0x18fa83",
+        "0x18fa85",
+        "0x18fa89",
+        "0x18fa8c",
+        "0x18fa90",
+        "0x18fa94",
+        "0x18fa98",
+        "0x18fa9c",
+        "0x18faa0",
+        "0x18faa4",
+        "0x18faa7",
+        "0x18faaa",
+        "0x18faad",
+        "0x18fab0",
+        "0x18fab1",
+        "0x18fab5",
+        "0x18fab9",
+        "0x18fabd",
+        "0x18fac1",
+        "0x18fac4",
+        "0x18fac6"
+      ]
+    }
+  ],
+  "observerComparison": {
+    "enabled": {
+      "intervalSeconds": 118.06199999997625,
+      "threadCpuPercent": [
+        [
+          3059,
+          "KairoDos-emulat",
+          82.52
+        ],
+        [
+          3076,
+          "dosbox:mixer",
+          24.33
+        ],
+        [
+          3066,
+          "KairoDos-emulat",
+          2.06
+        ],
+        [
+          3079,
+          "KairoDos-audio",
+          1.46
+        ],
+        [
+          3075,
+          "SDLAudioP2",
+          0.93
+        ],
+        [
+          3030,
+          "binder:3016_2",
+          0.43
+        ],
+        [
+          3016,
+          "loxifi.kairodos",
+          0.39
+        ],
+        [
+          3031,
+          "binder:3016_3",
+          0.25
+        ]
+      ],
+      "hardwareLineValues": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1992000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000",
+          "800000000"
+        ],
+        "5": [
+          "800000000"
+        ],
+        "7": [
+          "57777",
+          "58333",
+          "58888",
+          "59444",
+          "60000",
+          "60555",
+          "61111",
+          "61666",
+          "62222"
+        ],
+        "9": [
+          "55555",
+          "56111",
+          "56666",
+          "57222",
+          "57777",
+          "58333",
+          "58888",
+          "59444"
+        ],
+        "13": [
+          "0"
+        ],
+        "15": [
+          "0"
+        ],
+        "17": [
+          "0"
+        ]
+      },
+      "presentations": {
+        "count": 2159,
+        "rate": 18.287001744849608,
+        "medianIntervalMs": 33.327583000000004,
+        "p95IntervalMs": 149.929208,
+        "note": "Surface submissions, not necessarily unique game frames"
+      }
+    },
+    "disabledSameApk": {
+      "intervalSeconds": 118.5,
+      "threadCpuPercent": [
+        [
+          6259,
+          "KairoDos-emulat",
+          82.66
+        ],
+        [
+          6276,
+          "dosbox:mixer",
+          24.44
+        ],
+        [
+          6266,
+          "KairoDos-emulat",
+          2.14
+        ],
+        [
+          6278,
+          "KairoDos-audio",
+          1.44
+        ],
+        [
+          6275,
+          "SDLAudioP2",
+          0.93
+        ],
+        [
+          6233,
+          "binder:6217_4",
+          0.51
+        ],
+        [
+          6217,
+          "loxifi.kairodos",
+          0.39
+        ],
+        [
+          6269,
+          "binder:6217_3",
+          0.21
+        ]
+      ],
+      "hardwareLineValues": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1992000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000"
+        ],
+        "5": [
+          "800000000"
+        ],
+        "7": [
+          "60555",
+          "61111",
+          "61666",
+          "62222",
+          "62777",
+          "63333",
+          "63888",
+          "64444"
+        ],
+        "9": [
+          "57777",
+          "58333",
+          "58888",
+          "59444",
+          "60000",
+          "60555",
+          "61111",
+          "61666"
+        ],
+        "13": [
+          "0"
+        ],
+        "15": [
+          "0"
+        ],
+        "17": [
+          "0"
+        ]
+      },
+      "presentations": {
+        "count": 2243,
+        "rate": 18.928270042194093,
+        "medianIntervalMs": 33.313,
+        "p95IntervalMs": 133.314709,
+        "note": "Surface submissions, not necessarily unique game frames"
+      }
+    },
+    "presentationRateChangePercent": -3.387886457214506,
+    "interpretation": "One matched pair. Logging and run-to-run variation are not independently separated; do not treat this as an exact overhead estimate or use the instrumented run to claim small performance gains."
+  },
+  "localArtifactHashes": {
+    "ticket55-guest-profile-run3/perf.data": "c374fcf4fdbe76a2e824c53d93951687244ef9d19cffe5b3486d8df86a28ee02",
+    "ticket55-guest-profile-run3/translations.jsonl": "429b72b5aa772e88de6878f5972cf30e4c50519a565e4f491d1c960f8e16c35d",
+    "ticket55-guest-profile-run3/samples.jsonl": "6982a64f7cb960ff7e6e925eb2aeb357474117f7b300aed64f5b15df47766a75",
+    "ticket55-profile-disabled/perf.data": "a522475e5cd463778855785c603848d22ccde4a447577b3cd99d8c20c78de727",
+    "ticket55-profile-disabled/samples.jsonl": "925e10a2a805fb531f1779626f51108c6e9a0cb2c19b3414e90559801bd3a53f"
+  },
+  "decision": "Guest-address profile established. Continue #56 to inspect polling; no idle acceleration or runtime optimization is justified by a hot address alone."
+}
