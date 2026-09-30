@@ -1,0 +1,20 @@
+{
+  "ticket": 54,
+  "baselineApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "coreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "recordSha256": "f8c19018490e4c779c555f1ad8818cb7c0f5b33d658f764ee75a06e399ff4d65",
+  "captureSeconds": 120,
+  "sampleRateHz": 99,
+  "thread": "24345:KairoDos-emulat",
+  "onCpuSamples": 10221,
+  "sampledCpuSeconds": 103.24242321,
+  "matchedSelfSeconds": {},
+  "matchedCallchainSeconds": {},
+  "searchPattern": "sigsetjmp|siglongjmp|sigprocmask|sigmask|__cxa_throw|__cxa_rethrow|_Unwind_|__sigaction|__rt_sig",
+  "decision": "No sampled signal-mask/exception-bookkeeping hotspot in this baseline; the PC-98 signal-mask optimization is not applicable to the inspected Staging CPU path. No change justified.",
+  "limitations": [
+    "Sampling cannot prove that an operation never occurs or costs zero.",
+    "Unresolved generated-code samples and incomplete stacks limit guest instruction attribution.",
+    "This conclusion covers the measured rendered demo and inspected CPU path, not every exceptional workload."
+  ]
+}
