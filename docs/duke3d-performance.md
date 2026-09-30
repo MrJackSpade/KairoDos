@@ -151,3 +151,62 @@ unstripped symbols. The blocking profile is `.tmp/duke-offcpu.perf.data` with
 address offsets used by the read-only guest-clock helper change between builds.
 The performance worktree is `.tmp/staging-migration` on `perf/duke3d`.
 Unrelated controller/catalog work in the main checkout must be preserved.
+
+## General performance follow-up: current 320x200 app
+
+The user clarified that Duke is a benchmark for general DOSBox/configuration/
+integration efficiency, not a target for game-specific shortcuts. Do not trade
+other games' correctness for Duke throughput. The installed 320x200 choice
+supersedes the initial 1024x768-only comparison requirement above.
+
+Measured the ordinary installed app, including audio and the secondary keyboard,
+with 60 seconds of warmup and 120 seconds of capture. CPU sampling includes
+blocking stacks, hardware counters, clocks, thermals, and scene screenshots.
+Symbols matched the installed emulator Build ID
+`9982f89784e2630b949c1f7c06d336c7220185d7`.
+
+- Baseline: 19.53 surface submissions/s, median interval 33.34 ms,
+  p95 133.20 ms. These are not independently counted unique game frames.
+- `/proc` CPU accounting: emulation 82.61% of one core, mixer 24.30%,
+  presenter 2.18%, audio delivery 1.48%. The four-core device is not globally
+  CPU-saturated; the serial emulation path is the major consumer.
+- Call-chain attribution over the capture: approximately 82.24 sampled CPU
+  seconds in guest execution/helpers, 5.00 in VGA scanout/scaling, 5.95 in FM
+  audio on the emulation thread, and 10.02 elsewhere in emulation/events.
+  Sampling estimates differ from `/proc` totals and include sampling overhead.
+- Major emulation blocking stacks: 10.06 seconds of cycle-pacing sleep and
+  3.17 seconds waiting for the OPL port-write mutex. Neither is evidence by
+  itself that sleeping or synchronization should be removed.
+- CPU stayed at 1992 MHz, DDR at 920 MHz, with no active cooling state.
+  Hardware counters reported about 1.83 GHz effective CPU clock, consistent
+  with earlier runs. No fresh evidence of thermal throttling was found.
+
+### Discarded VGA reuse experiment
+
+The earlier indexed-row optimization covers VESA part drawing, while mode 13h
+still performs palette expansion in its scanline path. That conversion was a
+measured cost, so an isolated experiment extended the existing guarded history
+check to contiguous, enabled VGA rows. Palette, dimensions, previous-frame
+history and renderer-cache state remained required; scanline timing was not
+changed. The existing scalar-reference test passed (351 reused rows).
+
+The equivalent demo run measured 19.93 submissions/s, p95 133.12 ms, emulation
+82.36% and presenter 2.22% CPU. The roughly 2.1% throughput difference is too
+small to establish a reliable gain given scene alignment and run variation.
+The experiment was rejected, its source reverted, and the original APK restored
+on RGDS. It was not shipped or deployed to Retroid. Cross-game compatibility
+was not established for this discarded patch; cache unit checks alone would
+not have justified shipping it.
+
+The next evidence gap is within guest execution (including memory and lazy-flag
+helpers), not a demonstrated expensive Android presenter. OPL generation and
+resampling also merit investigation, but the dependency recipe already enables
+ARM NEON: do not assume a missing SIMD build flag without checking the binary.
+Any retained general optimization needs equivalent-workload comparisons and
+regression coverage appropriate to the changed subsystem. Do not lower audio
+accuracy, skip guest timing events, patch games, or change game-specific cycles
+to turn this benchmark into an apparent success.
+
+Compact results: `docs/benchmarks/rgds-current-320-profile-20260930.json`.
+Full ignored evidence: `.tmp/duke-current-320-profile/` and
+`.tmp/duke-vga-cache-profile/`, including the discarded patch and matched symbols.

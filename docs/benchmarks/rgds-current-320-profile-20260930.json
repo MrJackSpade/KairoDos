@@ -1,0 +1,236 @@
+{
+  "device": "RGDS RK3568 Cortex-A55",
+  "protocol": {
+    "warmupSeconds": 60,
+    "captureSeconds": 120,
+    "resolution": "320x200",
+    "output": "texturenb",
+    "cycles": "auto",
+    "workload": "Unmodified Duke3D title demo with normal app audio"
+  },
+  "baseline": {
+    "intervalSeconds": 118.60899999999674,
+    "threadCpuPercent": [
+      [
+        24345,
+        "KairoDos-emulat",
+        82.61
+      ],
+      [
+        24362,
+        "dosbox:mixer",
+        24.3
+      ],
+      [
+        24352,
+        "KairoDos-emulat",
+        2.18
+      ],
+      [
+        24365,
+        "KairoDos-audio",
+        1.48
+      ],
+      [
+        24361,
+        "SDLAudioP2",
+        0.93
+      ],
+      [
+        24304,
+        "loxifi.kairodos",
+        0.39
+      ],
+      [
+        24318,
+        "binder:24304_2",
+        0.32
+      ],
+      [
+        24393,
+        "binder:24304_5",
+        0.25
+      ]
+    ],
+    "hardwareLineValues": {
+      "1": [
+        "1992000"
+      ],
+      "2": [
+        "1992000000"
+      ],
+      "3": [
+        "920000000"
+      ],
+      "4": [
+        "198000000"
+      ],
+      "5": [
+        "800000000"
+      ],
+      "7": [
+        "55555",
+        "56111",
+        "56666",
+        "57222",
+        "57777",
+        "58333",
+        "58888",
+        "59444",
+        "60000",
+        "60555",
+        "61111"
+      ],
+      "9": [
+        "53125",
+        "53750",
+        "54375",
+        "55000",
+        "55555",
+        "56111",
+        "56666",
+        "57222",
+        "57777"
+      ],
+      "13": [
+        "0"
+      ],
+      "15": [
+        "0"
+      ],
+      "17": [
+        "0"
+      ]
+    },
+    "presentations": {
+      "count": 2316,
+      "rate": 19.52634285762517,
+      "medianIntervalMs": 33.339542,
+      "p95IntervalMs": 133.203875,
+      "note": "Surface submissions, not necessarily unique game frames"
+    }
+  },
+  "vgaReuseExperiment": {
+    "intervalSeconds": 117.68699999997625,
+    "threadCpuPercent": [
+      [
+        27628,
+        "KairoDos-emulat",
+        82.36
+      ],
+      [
+        27645,
+        "dosbox:mixer",
+        24.57
+      ],
+      [
+        27635,
+        "KairoDos-emulat",
+        2.22
+      ],
+      [
+        27647,
+        "KairoDos-audio",
+        1.45
+      ],
+      [
+        27644,
+        "SDLAudioP2",
+        0.93
+      ],
+      [
+        27595,
+        "binder:27578_1",
+        0.75
+      ],
+      [
+        27578,
+        "loxifi.kairodos",
+        0.38
+      ],
+      [
+        27638,
+        "binder:27578_4",
+        0.22
+      ]
+    ],
+    "hardwareLineValues": {
+      "1": [
+        "1992000"
+      ],
+      "2": [
+        "1992000000"
+      ],
+      "3": [
+        "920000000"
+      ],
+      "4": [
+        "198000000",
+        "800000000"
+      ],
+      "5": [
+        "800000000"
+      ],
+      "7": [
+        "58888",
+        "59444",
+        "60000",
+        "60555",
+        "61111",
+        "61666",
+        "62222",
+        "62777",
+        "63333"
+      ],
+      "9": [
+        "56666",
+        "57222",
+        "57777",
+        "58333",
+        "58888",
+        "59444",
+        "60000",
+        "60555"
+      ],
+      "13": [
+        "0"
+      ],
+      "15": [
+        "0"
+      ],
+      "17": [
+        "0"
+      ]
+    },
+    "presentations": {
+      "count": 2346,
+      "rate": 19.934232328128623,
+      "medianIntervalMs": 33.319709,
+      "p95IntervalMs": 133.116375,
+      "note": "Surface submissions, not necessarily unique game frames"
+    }
+  },
+  "baselineEmulationThreadSampledCpuSeconds": 103.24242321,
+  "baselineEmulationBreakdownSeconds": {
+    "guestExecutionIncludingHelpers": 82.24242342,
+    "vgaScanoutAndScaling": 4.99999995,
+    "fmAudio": 5.94949489,
+    "other": 10.02020192
+  },
+  "baselineEmulationWaitsSeconds": {
+    "cyclePacingSleepTopStack": 10.056,
+    "oplPortWriteMutexTopStack": 3.171
+  },
+  "decision": "Reject VGA extension: 2.1% submission difference is inconclusive; no repeatable end-to-end gain established. Source reverted and original APK restored. No game-specific performance workaround introduced.",
+  "limitations": [
+    "Display submissions are not unique guest frames.",
+    "Sampling estimates differ from /proc CPU accounting.",
+    "Demo scene alignment varies; no statistical significance claimed.",
+    "CPU categories use call-chain attribution, not instrumented exact timings.",
+    "Other-game compatibility was not established for this discarded experiment."
+  ],
+  "evidenceDirectories": [
+    ".tmp/duke-current-320-profile",
+    ".tmp/duke-vga-cache-profile"
+  ]
+}
