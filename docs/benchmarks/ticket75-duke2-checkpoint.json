@@ -1,0 +1,340 @@
+{
+    "ticket":  75,
+    "status":  "Single candidate sample; paired comparison pending",
+    "apkSha256":  "4f894466208c6e4109a3e37d5cb677ca80709eae5d3e91c597d51fb4dac731aa",
+    "portableProfileSha256":  "d1be365f691852776dd35cbd1eeb62affd62516cf663396cb7e6ac45f06a9032",
+    "launchConfigurationSha256":  "dece4a40ef606bd9b8322cb79775c1642f6bb8a83f092b03bb89412fa91a678d",
+    "scene":  "Duke II episode 1 Medium stationary opening room; start/end images visually verified",
+    "capturePath":  ".tmp/ticket75-duke2-b1",
+    "start":  {
+                  "launchHostMonotonic":  476848.828,
+                  "launchUtc":  1790858585.3472435,
+                  "warmupSeconds":  60,
+                  "captureSeconds":  120
+              },
+    "warmup":  {
+                   "actualWarmupSeconds":  60.0
+               },
+    "capture":  {
+                    "duration":  122.89000000001397,
+                    "layer":  "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#4387",
+                    "pid":  "14036",
+                    "observation":  "light",
+                    "framePeriod":  "1.0",
+                    "promptResponse":  "none",
+                    "recordExit":  null,
+                    "statExit":  null,
+                    "frameSamplerExit":  0,
+                    "frameSampler":  "device-local-v1"
+                },
+    "summary":  {
+                    "observation":  "light",
+                    "observationLimits":  "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+                    "intervalSeconds":  119.98499999998603,
+                    "clockTicksPerSecond":  100,
+                    "processCpuPercent":  41.01346001584009,
+                    "threadCpuPercent":  [
+                                             [
+                                                 14128,
+                                                 "dosbox:mixer",
+                                                 19.535775305248762
+                                             ],
+                                             [
+                                                 14119,
+                                                 "KairoDos-emulat",
+                                                 14.285118973206647
+                                             ],
+                                             [
+                                                 14129,
+                                                 "KairoDos-emulat",
+                                                 4.417218819019558
+                                             ],
+                                             [
+                                                 14120,
+                                                 "KairoDos-emulat",
+                                                 0.9834562653666187
+                                             ],
+                                             [
+                                                 14130,
+                                                 "KairoDos-audio",
+                                                 0.875109388673686
+                                             ],
+                                             [
+                                                 14036,
+                                                 "loxifi.kairodos",
+                                                 0.31670625494857213
+                                             ],
+                                             [
+                                                 14127,
+                                                 "SDLAudioP2",
+                                                 0.19169062799518838
+                                             ],
+                                             [
+                                                 14058,
+                                                 "binder:14036_3",
+                                                 0.1416843772138349
+                                             ],
+                                             [
+                                                 14095,
+                                                 "binder:14036_4",
+                                                 0.10001250156270698
+                                             ],
+                                             [
+                                                 14098,
+                                                 "binder:14036_5",
+                                                 0.08334375130225583
+                                             ],
+                                             [
+                                                 14096,
+                                                 "binder:14036_2",
+                                                 0.03333750052090233
+                                             ],
+                                             [
+                                                 14047,
+                                                 "Jit thread pool",
+                                                 0.008334375130225582
+                                             ],
+                                             [
+                                                 14062,
+                                                 "Profile Saver",
+                                                 0.008334375130225582
+                                             ],
+                                             [
+                                                 14044,
+                                                 "Signal Catcher",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14045,
+                                                 "perfetto_hprof_",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14046,
+                                                 "ADB-JDWP Connec",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14048,
+                                                 "HeapTaskDaemon",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14049,
+                                                 "ReferenceQueueD",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14050,
+                                                 "FinalizerDaemon",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14051,
+                                                 "FinalizerWatchd",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14053,
+                                                 "binder:14036_1",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14054,
+                                                 "binder:14036_2",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14063,
+                                                 "RenderThread",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14067,
+                                                 "mali-mem-purge",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14068,
+                                                 "mali-utility-wo",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14069,
+                                                 "mali-utility-wo",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14070,
+                                                 "mali-utility-wo",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14071,
+                                                 "mali-utility-wo",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14072,
+                                                 "mali-cmar-backe",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14077,
+                                                 "AsyncTask #2",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14079,
+                                                 "SurfaceSyncGrou",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14080,
+                                                 "hwuiTask0",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14081,
+                                                 "hwuiTask1",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14084,
+                                                 "pool-3-thread-1",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14090,
+                                                 "pool-6-thread-1",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14092,
+                                                 "Okio Watchdog",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14093,
+                                                 "InsetsAnimation",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14094,
+                                                 "InteractionJank",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14097,
+                                                 "queued-work-loo",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14113,
+                                                 "pool-5-thread-1",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14123,
+                                                 "SDLTimer",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14124,
+                                                 "dosbox:imgcap",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14125,
+                                                 "dosbox:imgcap",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14126,
+                                                 "dosbox:imgcap",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14131,
+                                                 "AudioTrack",
+                                                 0.0
+                                             ],
+                                             [
+                                                 14132,
+                                                 "AudioPortEventH",
+                                                 0.0
+                                             ]
+                                         ],
+                    "threadLimits":  "Only threads present at both endpoints; process CPU includes other threads.",
+                    "presentations":  {
+                                          "count":  1286,
+                                          "rate":  10.782258740672713,
+                                          "intervalSeconds":  119.2699999999968,
+                                          "source":  "device-local-v1",
+                                          "medianIntervalMs":  99.883875,
+                                          "p95IntervalMs":  99.94425,
+                                          "note":  "Surface submissions, not necessarily unique guest frames"
+                                      },
+                    "hardwareFirstLines":  {
+                                               "1":  [
+                                                         "1992000"
+                                                     ],
+                                               "2":  [
+                                                         "1104000000"
+                                                     ],
+                                               "3":  [
+                                                         "920000000"
+                                                     ],
+                                               "4":  [
+                                                         "198000000"
+                                                     ],
+                                               "5":  [
+                                                         "800000000"
+                                                     ]
+                                           },
+                    "maxSamplingGapSeconds":  62.03200000000652,
+                    "maxFrameSamplingGapSeconds":  1.1500000000014552,
+                    "disjointPresentationHistories":  0,
+                    "presentationHistoryComplete":  true,
+                    "thermalAndCoolingRawRanges":  {
+                                                       "soc-thermal":  [
+                                                                           38888,
+                                                                           40625
+                                                                       ],
+                                                       "gpu-thermal":  [
+                                                                           37222,
+                                                                           38333
+                                                                       ],
+                                                       "battery":  [
+                                                                       18800,
+                                                                       18800
+                                                                   ],
+                                                       "cpufreq-cpu0":  [
+                                                                            0,
+                                                                            0
+                                                                        ],
+                                                       "devfreq-fdf80200.rkvdec":  [
+                                                                                       0,
+                                                                                       0
+                                                                                   ],
+                                                       "devfreq-fde60000.gpu":  [
+                                                                                    0,
+                                                                                    0
+                                                                                ]
+                                                   },
+                    "audio":  {
+                                  "snapshotSpanSeconds":  125.92200000002049,
+                                  "trackUnderrunFieldStart":  {
+                                                                  "104":  0
+                                                              },
+                                  "trackUnderrunFieldEnd":  {
+                                                                "104":  0
+                                                            },
+                                  "trackUnderrunFieldDelta":  {
+                                                                  "104":  0
+                                                              },
+                                  "limits":  "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+                              }
+                },
+    "postCaptureInput":  "Six held Right inputs moved player and scrolled to adjacent area, visually verified. ADB disconnected afterward during exit; no interruption during capture."
+}

@@ -96,6 +96,16 @@ not performance samples. Cannon Fodder's intro does not establish gameplay
 coverage, and nonzero PCM does not establish perceptual audio correctness.
 The fixture uses private cache copies and leaves player drives untouched.
 
+The first final-artifact Duke II capture used 60 seconds warmup and 120 seconds
+capture in the verified opening room. It recorded 10.7823 surface submissions/s,
+41.0135% process CPU, complete presentation history, zero audio-underrun-field
+increase and no observed cooling intervention. These are one candidate sample,
+not a completed comparison or a benefit claim. Six subsequent held Right inputs
+moved the player and scrolled into the adjacent area. ADB then disconnected
+during exit, after all measurement artifacts had been retrieved. The paired
+baseline and remaining gameplay gates are pending device recovery.
+See [the capture checkpoint](benchmarks/ticket75-duke2-checkpoint.json).
+
 ## Remaining gates
 
 - Verify matching and build behavior on the supported Linux CI host.
