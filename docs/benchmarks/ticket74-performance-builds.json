@@ -20,7 +20,7 @@
   "changedNonSignatureEntries": [
     "lib/arm64-v8a/libdosbox_staging.so"
   ],
-  "status": "Builds prepared, not performance-tested or adopted",
+  "status": "Performance experiment in progress; worker remains disabled by default and is not adopted. See ticket74-performance.md.",
   "coreSourceSha256": "f922aa770269bc05076269d59488c9116ab99fe53f00ecf6cb8ba7bdacd433c6",
   "sharedWorkerHeaderSha256": "d544587b8d96d455690632e4f0ea538f84f9a7199c8978eae2107a418202a1fa"
 }
