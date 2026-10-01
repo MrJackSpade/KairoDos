@@ -1,0 +1,103 @@
+{
+  "ticket": 74,
+  "stage": "Standalone ordered worker and actual Nuked OPL engine; no app integration",
+  "device": "RG DS, rk3568_u, Android ARM64",
+  "endpoint": "paired wireless ADB",
+  "compiler": "NDK 28.2.13676358 clang, Android API 26, -O2, C++17",
+  "binarySha256": "535a37f2a06127894df5b2323aa1dc16aa571d98777b00639ca8eb80fa19db66",
+  "sourceSha256": "17ab6659a79d08946bca9a02790bca5fa9383c2beaf58177edd2d1655010377d",
+  "workerHeaderSha256": "aad3d3fd85d7471fc6d43b08cecba942c08ec33299470f5d52d64cb86c6ba516",
+  "nukedSha256": "08a1430dec2fa7bf72d1a11ee027d0ec40b61a9b23513f92bc0bfc7d83965a28",
+  "results": [
+    {
+      "capacity": 1,
+      "mode": 0,
+      "delayed": true,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0
+    },
+    {
+      "capacity": 4,
+      "mode": 0,
+      "delayed": true,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0
+    },
+    {
+      "capacity": 64,
+      "mode": 0,
+      "delayed": false,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0
+    },
+    {
+      "capacity": 1,
+      "mode": 1,
+      "delayed": true,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0
+    },
+    {
+      "capacity": 4,
+      "mode": 1,
+      "delayed": true,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0
+    },
+    {
+      "capacity": 64,
+      "mode": 1,
+      "delayed": false,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0
+    },
+    {
+      "capacity": 1,
+      "mode": 2,
+      "delayed": true,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0
+    },
+    {
+      "capacity": 4,
+      "mode": 2,
+      "delayed": true,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0
+    },
+    {
+      "capacity": 64,
+      "mode": 2,
+      "delayed": false,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0
+    },
+    {
+      "exceptionPropagation": true,
+      "cancellationTrials": 20
+    }
+  ],
+  "limitations": [
+    "Chip-level operation transcript only, not Opl::PortWrite, routing, timer/status, WakeUp, DC processing, or MixerChannel integration.",
+    "Mode 0 is OPL2 library mode; mode 1 uses two OPL3 banks; mode 2 also changes four-operator configuration. This does not test Staging dual-OPL2 routing.",
+    "Not a performance benchmark, race detector, or proof of app lifecycle correctness. No APK was replaced."
+  ]
+}
