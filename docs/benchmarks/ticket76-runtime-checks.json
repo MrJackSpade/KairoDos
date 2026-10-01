@@ -1,0 +1,56 @@
+{
+  "ticket": 76,
+  "fixtures": {
+    "doom": {
+      "appSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+      "testApkSha256": "f53f076deef6bbb50765a5befc5b3cc11d03f7d131a3d1e6f434ed43dfd7a824",
+      "command": "am instrument -w -e stagingArchive '/sdcard/Download/KairoDos-Installers/DOOM (1993) - Installed.zip' com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation",
+      "result": "Staging doom: frames=1098, PCM frames=3490816, peak=9705; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9295, executed=22045715; reset: translated=9170, executed=21474241; second launch: translated=8938, executed=21285977; JIT mappings released"
+    },
+    "cannon": {
+      "appSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+      "testApkSha256": "f53f076deef6bbb50765a5befc5b3cc11d03f7d131a3d1e6f434ed43dfd7a824",
+      "command": "am instrument -w -e stagingArchive '/sdcard/Download/KairoDos-Installers/Cannon Fodder (1993).zip' com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation",
+      "result": "Staging cannfod: frames=807, PCM frames=1872896, peak=8799; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=275, executed=556966; reset: translated=272, executed=574184; second launch: translated=273, executed=540692; JIT mappings released"
+    }
+  },
+  "quake": {
+    "appSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "launch": "ACTION_VIEW with the exact granted Quake archive URI from dos-library-v1.json; original single-player game; Escape at joystick calibration",
+    "observations": [
+      "Rendered attract demo",
+      "Entered Single Player / New Game and verified 3D start room",
+      "Movement inputs changed player view",
+      "Direct ACTION_VIEW switch from Quake to Duke reached the Duke launch prompt. Initial flyout Exit had only opened its confirmation dialog."
+    ],
+    "screenshots": {
+      "quake-direct-prompt": "66d781da176d40f1bda6c387f6d4aaa6f85c98405b0b13947594d84765a3b013",
+      "quake-rendered": "58078583cc716d1394877c678e431f503cc9e2106d167d78ef0038a3df82a490",
+      "quake-player-before": "68aa213bd9b6a7c665503070664f846b7c952d2858897d204dabbc5a4ae2159a",
+      "quake-player-after": "21616a2cbe435ab94c1bd1af5e654b1b99a4ca558244d5cd3616ebf4ade11d9d",
+      "quake-exit-menu": "a15b7ad98a7c1395543b161bd9efc82a56bfdd45e011860717401a6a0453fb7b"
+    }
+  },
+  "separateFrontendFinding": {
+    "summary": "Two library-search input-dispatch ANRs before game launch in fresh processes; main stack in SecondaryDisplayContent.setAppearance/TextView layout. Core loading is deferred to nativeRun in source. Direct launch succeeded. Frontend/host payloads unchanged. Root cause remains unproven and is not fixed in #76.",
+    "traceSha256": "f2784f7b339eb1e2085d983fbc57b3d4227fd0ec9f7df0f9a01305b76f80adea",
+    "firstReportSha256": "f43339a46efb1bfcce3e036389735a1a8558d2b893a35978161765ad824755b2",
+    "retryReportSha256": "d0c8530d947587c94ac21e48ecf8c395692c03b15c0993b7030061d36bf4e60f"
+  },
+  "limits": "Representative runtime checks, not every DOS game or every C++ exception path. Cannon Fodder endpoint is its opening cinematic; no Cannon gameplay/performance claim.",
+  "confirmedAppExit": {
+    "context": "Confirmed the outstanding Exit dialog after switching to Duke",
+    "activityState": "      topResumedActivity=ActivityRecord{b9498fa u0 com.android.launcher3/.secondarydisplay.SecondaryDisplayLauncher t484}\n        state=RESUMED delayedResume=false finishing=false\n      topResumedActivity=ActivityRecord{f9d703b u0 com.android.launcher3/.uioverrides.QuickstepLauncher t485}\n        state=RESUMED delayedResume=false finishing=false\n  mCurrentFocus=Window{8bdac66 u0 com.android.launcher3/com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher}\n  mCurrentFocus=null\n  mCurrentFocus=null\n  mFocusedApp=ActivityRecord{6314835 u0 com.loxifi.kairodos/com.mrjackspade.kairo.frontend.SecondaryDisplayActivity t689}\n  mCurrentFocus=Window{4769a27 u0 com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity}\n  mFocusedApp=ActivityRecord{8f39f3 u0 com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity t688}\n  mCurrentFocus=null\n  mFocusedApp=null\n  mCurrentFocus=Window{8bdac66 u0 com.android.launcher3/com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher}\n  mFocusedApp=ActivityRecord{b9498fa u0 com.android.launcher3/.secondarydisplay.SecondaryDisplayLauncher t484}\n",
+    "screenshotSha256": "a7b98143564da59f18d57d8cd4a2646dbfe58997447ab7325d46d44f63029530",
+    "result": "Launcher activities resumed and launcher wallpaper visible; do not infer native unload from a soname grep in APK-backed mappings."
+  },
+  "finalDeployment": {
+    "installedApkSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "hashReadBackFromDevice": true,
+    "package": "com.loxifi.kairodos",
+    "device": "RG DS",
+    "endpoint": "192.168.1.118:5555",
+    "finalGame": "Duke Nukem 3D, existing 320x200 copy, rendered demo visually verified",
+    "screenshotSha256": "ba510c0c8d08bd3993d479f719b9a41a0b18144d3fb09e08771d3ba249b28a62"
+  }
+}

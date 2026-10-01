@@ -1,0 +1,45 @@
+{
+  "baseline": {
+    "sha256": "c791f5dcd07aea30ac137e8e86b1abb0781a42a686044bfd506dafc7dc5cb7fb",
+    "needed": [
+      "libdl.so",
+      "liblog.so",
+      "libOpenSLES.so",
+      "libm.so",
+      "libc++_shared.so",
+      "libc.so"
+    ],
+    "pltBytes": 102752,
+    "gotBytes": 26040,
+    "pltCounts": {
+      "external": 500,
+      "internal-weak": 1964,
+      "internal-strong": 3956
+    }
+  },
+  "candidate": {
+    "sha256": "c115a28683e18f4f7898d6732277bb1ee2caca8d59033d1f0a6852ea590becc8",
+    "needed": [
+      "libdl.so",
+      "liblog.so",
+      "libOpenSLES.so",
+      "libm.so",
+      "libc++_shared.so",
+      "libc.so"
+    ],
+    "pltBytes": 39456,
+    "gotBytes": 26040,
+    "pltCounts": {
+      "external": 500,
+      "internal-weak": 1964
+    }
+  },
+  "checks": {
+    "dynamicSymbolContractIdentical": true,
+    "neededLibrariesIdentical": true,
+    "objectRelocationsIdentical": true,
+    "weakRelocationsIdentical": true,
+    "externalImportsIdentical": true
+  },
+  "limits": "Static ABI/binding checks; not runtime identity, lifecycle or game compatibility proof."
+}

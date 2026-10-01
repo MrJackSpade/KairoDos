@@ -1,0 +1,15 @@
+{
+  "baselineApkSha256": "4f894466208c6e4109a3e37d5cb677ca80709eae5d3e91c597d51fb4dac731aa",
+  "candidateApkSha256": "17fb992f3c47c06cfb247a019a4bdaa13e04ade75526399fb342be9681c551ff",
+  "candidateElfSha256": "c115a28683e18f4f7898d6732277bb1ee2caca8d59033d1f0a6852ea590becc8",
+  "candidatePackagedCoreSha256": "56c34ad6c88ca81d633c2633c089c674767c1884b64bb91f2012dcf17197a347",
+  "changedPayloads": [
+    "lib/arm64-v8a/libdosbox_staging.so"
+  ],
+  "exportsIdentical": true,
+  "objectRelocationsIdentical": true,
+  "weakRelocationsIdentical": true,
+  "externalImportsIdentical": true,
+  "certificateSha256": "b198fd48cc4fbd2736fa08dc48e57ce48e01e1b06bf65931c04cc290d352c123",
+  "linkFlag": "-Wl,-Bsymbolic-non-weak-functions"
+}

@@ -1,0 +1,11 @@
+{
+  "gradleApkSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+  "measuredCandidateApkSha256": "17fb992f3c47c06cfb247a019a4bdaa13e04ade75526399fb342be9681c551ff",
+  "debugElfSha256": "c115a28683e18f4f7898d6732277bb1ee2caca8d59033d1f0a6852ea590becc8",
+  "allNonSignaturePayloadsIdenticalToMeasuredCandidate": true,
+  "changedPayloadsFromBaseline": [
+    "lib/arm64-v8a/libdosbox_staging.so"
+  ],
+  "normalBuild": ":kairodos:assembleDebug, default PGO ON, O2, LTO off",
+  "isolatedSourceRevision": "fda400fe with previously audited PGO adoption/build helpers and ticket76 linker flag"
+}

@@ -38,6 +38,13 @@
 - The Retroid Pocket Classic is currently reachable at `192.168.1.247:5555`. On September 29, 2026, `adb -s adb-49b22840-zuwOf4._adb-tls-connect._tcp tcpip 5555` enabled the fixed TCP endpoint; `adb connect 192.168.1.247:5555` connected, and it survived screen off/on, disconnect/reconnect, and APK installation. Prefer this endpoint to the rotating Android wireless-debugging port. Verify the model with `adb -s 192.168.1.247:5555 shell getprop ro.product.model` before installing.
 - If its DHCP address changes, inspect `adb devices -l` and `adb mdns services` for `adb-49b22840-zuwOf4` and obtain the current Wi-Fi address from the device shell. If port 5555 stops listening after a device reboot, reconnect through its paired TLS wireless-debugging service and run `adb -s <TLS-serial> tcpip 5555` again. Exhaust these checks before asking the user to operate the device. The Retroid shell is unprivileged, so the fixed TCP setting is not known to persist across a reboot.
 - Wi-Fi was switched off via System UI at 02:33 on September 29 and re-enabled at 09:52. That historical event does not explain subsequent ADB unavailability; do not cite it as the cause of a later disconnect without fresh evidence.
+
+# Direct game launch for device tests
+
+- Use the existing external-launch interface to start a particular game; do not navigate/search the library just to launch a benchmark. Read the game's exact `uri` from the device's `files/dos-library-v1.json` (root shell on RGDS, or `run-as com.loxifi.kairodos` for a debuggable build). Its `games` entries identify the archive by `path`.
+- Command: `adb -s <serial> shell am start -W -n com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity -a android.intent.action.VIEW -d '<game-uri>'`. Preserve shell quoting around the URI; stored SAF document URIs use the existing library access grant. The shared dispatcher also accepts a `ROM` extra, but do not replace a granted content URI with an inaccessible filesystem path.
+- For a fresh process, use `adb -s <serial> shell am force-stop com.loxifi.kairodos` first, once the current test/session has finished. Verify the actual game prompt/rendered scene before starting a measurement. This incoming-frontend launch intentionally makes Library/Exit return out of the app.
+
 # Shared menu and settings behavior
 
 - All regular menus, controller mapping pickers, selectors, sliders, and confirmation buttons must work with D-pad key events and controller hat-axis events, plus confirm/back, in both KairoDos and Kairo98. Keep navigation behavior in `shared/`. Verify off-screen rows and returning from a subpage, not just the first visible items.

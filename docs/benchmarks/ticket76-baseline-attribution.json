@@ -1,0 +1,388 @@
+{
+  "elfSha256": "c791f5dcd07aea30ac137e8e86b1abb0781a42a686044bfd506dafc7dc5cb7fb",
+  "recordedBuildIds": {
+    "/data/app/~~2BC0q3ATCDm0OJ_3LSEh-w==/com.loxifi.kairodos-S6hTk0GaLynP-hpSQ2wVQQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so": "0x0a7982563ac3bb3f812e85d274e2155b990bdf43"
+  },
+  "counts": {
+    "allCpuNs": 144787877340,
+    "coreCpuNs": 77777777000,
+    "pltCpuNs": 3313131280,
+    "pltSamples": 328
+  },
+  "pltCpuNsByBinding": {
+    "internal-strong": 2505050480,
+    "external": 515151510,
+    "internal-weak": 292929290
+  },
+  "pltEntries": [
+    [
+      "_Z6get_ZFv",
+      282828280
+    ],
+    [
+      "_Z10mem_writedjj",
+      242424240
+    ],
+    [
+      "_Z6get_OFv",
+      181818180
+    ],
+    [
+      "_Z6get_CFv",
+      181818180
+    ],
+    [
+      "_Z6get_SFv",
+      171717170
+    ],
+    [
+      "_ZN10DmaChannel11ReadOrWriteE12DmaDirectionmPh",
+      101010100
+    ],
+    [
+      "memset",
+      90909090
+    ],
+    [
+      "_ZNSt6__ndk115recursive_mutex4lockEv",
+      80808080
+    ],
+    [
+      "_Z9mem_readdIL9MemOpMode0EEjj",
+      80808080
+    ],
+    [
+      "_Z10mem_writewjt",
+      70707070
+    ],
+    [
+      "pthread_mutex_lock",
+      60606060
+    ],
+    [
+      "clock_gettime",
+      60606060
+    ],
+    [
+      "SDL_GetTicks64",
+      60606060
+    ],
+    [
+      "SDL_WasInit",
+      60606060
+    ],
+    [
+      "SDL_WaitEventTimeout",
+      50505050
+    ],
+    [
+      "_Z12PIC_AddEventPFvjEdj",
+      50505050
+    ],
+    [
+      "_ZNSt6__ndk16chrono12steady_clock3nowEv",
+      50505050
+    ],
+    [
+      "SDL_GetWindowSize",
+      50505050
+    ],
+    [
+      "_Z41RENDER_CalcRestrictedViewportSizeInPixelsRKN6DosBox4RectE",
+      50505050
+    ],
+    [
+      "_Z16KairoStagingPollv",
+      40404040
+    ],
+    [
+      "SDL_JoystickUpdate",
+      40404040
+    ],
+    [
+      "_ZN12MixerChannel16GetFramesPerTickEv",
+      40404040
+    ],
+    [
+      "SDL_AtomicGet",
+      40404040
+    ],
+    [
+      "_Z15FillFlagsNoCFOFv",
+      40404040
+    ],
+    [
+      "speex_resampler_process_float",
+      40404040
+    ],
+    [
+      "_ZN7RWQueueI10AudioFrameE22NonblockingBulkEnqueueERNSt6__ndk16vectorIS0_NS2_9allocatorIS0_EEEE",
+      40404040
+    ],
+    [
+      "_ZN8Envelope7ProcessEbR10AudioFrame",
+      40404040
+    ],
+    [
+      "_Z15JOYSTICK_Enablehb",
+      40404040
+    ],
+    [
+      "_Z9mem_readwIL9MemOpMode0EEtj",
+      40404040
+    ],
+    [
+      "_Z26DOSBOX_IsShutdownRequestedv",
+      40404040
+    ],
+    [
+      "_Z12PIC_RunQueuev",
+      40404040
+    ],
+    [
+      "_Z16CPU_IO_Exceptionmm",
+      30303030
+    ],
+    [
+      "_Z10CPU_Push32j",
+      30303030
+    ],
+    [
+      "SDL_LockMutex",
+      30303030
+    ],
+    [
+      "_Z9CPU_Pop32v",
+      30303030
+    ]
+  ],
+  "hotFunctions": [
+    [
+      "OPL3_Generate4Ch",
+      17656565480
+    ],
+    [
+      "resampler_basic_interpolate_single",
+      8303030220
+    ],
+    [
+      "CPU_Core_Dynrec_Run()",
+      3848484810
+    ],
+    [
+      "mem_readd_checked_drc(unsigned int)",
+      3545454510
+    ],
+    [
+      "@plt",
+      3313131280
+    ],
+    [
+      "mem_readb_checked_drc(unsigned int)",
+      3313131280
+    ],
+    [
+      "VGA_DrawSingleLine(unsigned int)",
+      3090909060
+    ],
+    [
+      "mem_readw_checked_drc(unsigned int)",
+      2242424220
+    ],
+    [
+      "mem_writed_checked_drc(unsigned int, unsigned int)",
+      1838383820
+    ],
+    [
+      "get_CF()",
+      1828282810
+    ],
+    [
+      "speex_resampler_process_float",
+      1757575740
+    ],
+    [
+      "get_ZF()",
+      1525252510
+    ],
+    [
+      "OPL3_EnvelopeCalcSin3",
+      1242424230
+    ],
+    [
+      "void MixerChannel::AddSamples<float, true, true, true>(int, float const*)",
+      1212121200
+    ],
+    [
+      "get_OF()",
+      1131313120
+    ],
+    [
+      "Scale1x_32(void const*)",
+      1040404030
+    ],
+    [
+      "get_SF()",
+      939393930
+    ],
+    [
+      "FillFlagsNoCFOF()",
+      939393930
+    ],
+    [
+      "mem_writed(unsigned int, unsigned int)",
+      808080800
+    ],
+    [
+      "dynrec_pop_dword()",
+      696969690
+    ],
+    [
+      "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+      686868680
+    ],
+    [
+      "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+      656565650
+    ],
+    [
+      "dynrec_push_dword(unsigned int)",
+      595959590
+    ],
+    [
+      "dynrec_cmp_dword(unsigned int, unsigned int)",
+      515151510
+    ],
+    [
+      "OPL3_EnvelopeCalcSin1",
+      515151510
+    ]
+  ],
+  "gotLoads": [
+    {
+      "name": "lflags",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 303030300
+    },
+    {
+      "name": "paging",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 282828280
+    },
+    {
+      "name": "Segs",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 131313130
+    },
+    {
+      "name": "cpu_regs",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 131313130
+    },
+    {
+      "name": "cpu",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 40404040
+    },
+    {
+      "name": "system_start_time",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 30303030
+    },
+    {
+      "name": "CPU_CycleLeft",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 20202020
+    },
+    {
+      "name": "parity_lookup",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 10101010
+    },
+    {
+      "name": "vga",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 10101010
+    },
+    {
+      "name": "CPU_CycleMax",
+      "internal": true,
+      "symbolType": 1,
+      "cpuNs": 10101010
+    },
+    {
+      "name": "_ZN15CodePageHandler14writed_checkedEjj",
+      "internal": true,
+      "symbolType": 2,
+      "cpuNs": 10101010
+    }
+  ],
+  "recognizedGotLoadSites": 17081,
+  "threads": [
+    {
+      "tid": 21930,
+      "name": "KairoDos-emulat",
+      "cpuNs": 96727271760
+    },
+    {
+      "tid": 21939,
+      "name": "dosbox:mixer",
+      "cpuNs": 31747474430
+    },
+    {
+      "tid": 21940,
+      "name": "KairoDos-emulat",
+      "cpuNs": 7060605990
+    },
+    {
+      "tid": 21931,
+      "name": "KairoDos-emulat",
+      "cpuNs": 4020201980
+    },
+    {
+      "tid": 21941,
+      "name": "KairoDos-audio",
+      "cpuNs": 2050505030
+    },
+    {
+      "tid": 21938,
+      "name": "SDLAudioP2",
+      "cpuNs": 1121212110
+    },
+    {
+      "tid": 21812,
+      "name": "binder:21796_2",
+      "cpuNs": 575757570
+    },
+    {
+      "tid": 21863,
+      "name": "binder:21796_5",
+      "cpuNs": 505050500
+    },
+    {
+      "tid": 21796,
+      "name": "com.loxifi.kairodos",
+      "cpuNs": 434343430
+    },
+    {
+      "tid": 21816,
+      "name": "binder:21796_3",
+      "cpuNs": 272727270
+    },
+    {
+      "tid": 21853,
+      "name": "binder:21796_2",
+      "cpuNs": 272727270
+    }
+  ],
+  "limitations": "Sampled PLT instructions and conservatively recognized adrp/ldr GOT sequences; not all indirection or cache/predictor effects. Sampling skid applies. Ongoing verified demo, not a fresh-launch A/B performance comparison."
+}
