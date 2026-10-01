@@ -24,10 +24,14 @@ internal object VideoPresentationFixture {
     @JvmStatic private external fun nativeProfileSnapshot(): String
     @JvmStatic private external fun nativeProfileConfiguration(): String
     @JvmStatic private external fun nativeProfileFrameCopies(active: Boolean)
+    @JvmStatic private external fun nativeProfilePresenterDelay(milliseconds: Int)
 
     fun measure(instrumentation: Instrumentation, archivePath: String, game: String,
-                seconds: Int, observeCopies: Boolean = false): JSONObject {
+                seconds: Int, observeCopies: Boolean = false,
+                surfaceScenario: String = "normal", observeTiming: Boolean = true): JSONObject {
         check(game in setOf("doom", "duke"))
+        check(surfaceScenario in setOf("normal", "delayed", "unavailable"))
+        check(observeTiming || (surfaceScenario == "normal" && !observeCopies))
         check(seconds in 10..180)
         val context = instrumentation.targetContext
         val root = File(context.cacheDir, "video-presentation-fixture")
@@ -100,19 +104,26 @@ internal object VideoPresentationFixture {
                     while (System.nanoTime() < warmupDeadline) {
                         TimeUnit.NANOSECONDS.sleep(maxOf(1L, warmupDeadline - System.nanoTime()))
                     }
-                    nativeProfileReset(true)
+                    if (surfaceScenario == "unavailable") call("nativeSetSurface", null)
+                    nativeProfileReset(observeTiming)
                     nativeProfileFrameCopies(observeCopies)
+                    nativeProfilePresenterDelay(if (surfaceScenario == "delayed") 100 else 0)
+                    val cpuBefore = call("nativeCpuTelemetry") as LongArray
                     val start = System.nanoTime()
                     Log.i("VideoPresentation", "PROFILE_START $game mode=$mode run=$index ns=$start")
                     Thread.sleep(seconds * 1000L)
                     val elapsed = System.nanoTime() - start
                     Log.i("VideoPresentation", "PROFILE_END $game mode=$mode run=$index ns=${start + elapsed}")
                     call("nativePause", true)
-                    Thread.sleep(80) // drain a pending presenter frame before snapshot
+                    Thread.sleep(250) // allow the injected 100ms presenter stall to drain
                     nativeProfileResetEnabledOff()
                     val result = JSONObject().put("game", game).put("mode", mode)
                         .put("run", index).put("durationNs", elapsed)
                         .put("observeCopies", observeCopies).put("warmupNs", start - warmupStart)
+                        .put("surfaceScenario", surfaceScenario)
+                        .put("observeTiming", observeTiming)
+                        .put("cpuBefore", JSONArray(cpuBefore.toList()))
+                        .put("cpuAfter", JSONArray((call("nativeCpuTelemetry") as LongArray).toList()))
                         .put("startNs", start).put("endNs", start + elapsed)
                         .put("width", screen.width).put("height", screen.height)
                         .put("videoWidth", call("nativeVideoWidth")).put("videoHeight", call("nativeVideoHeight"))
@@ -130,6 +141,7 @@ internal object VideoPresentationFixture {
                     call("nativeStop")
                     check(core.get(8, TimeUnit.SECONDS)) { "Core failed: ${call("nativeLastError")}" }
                 } finally {
+                    nativeProfilePresenterDelay(0)
                     call("nativeStop")
                     check(core.get(10, TimeUnit.SECONDS)) { "Core did not exit" }
                     sound.join(2000)

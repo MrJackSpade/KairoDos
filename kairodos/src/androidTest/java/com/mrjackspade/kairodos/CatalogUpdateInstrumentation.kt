@@ -17,6 +17,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var presentationGame = "doom"
     private var presentationSeconds = 30
     private var presentationCopies = false
+    private var presentationSurface = "normal"
+    private var presentationTiming = true
     private var menuNavigation = false
     private var controllerMouse = false
     private var stateSlots = false
@@ -35,6 +37,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         presentationGame = arguments?.getString("presentationGame") ?: "doom"
         presentationSeconds = arguments?.getString("presentationSeconds")?.toInt() ?: 30
         presentationCopies = arguments?.getString("presentationCopies") == "true"
+        presentationSurface = arguments?.getString("presentationSurface") ?: "normal"
+        presentationTiming = arguments?.getString("presentationTiming") != "false"
         menuNavigation = arguments?.getString("menuNavigation") == "true"
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
@@ -73,7 +77,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             }
             if (presentationArchive != null) {
                 val metrics = VideoPresentationFixture.measure(this, presentationArchive!!,
-                    presentationGame, presentationSeconds, presentationCopies)
+                    presentationGame, presentationSeconds, presentationCopies, presentationSurface, presentationTiming)
                 result.putString("stream", "Video presentation profile: $metrics\n")
                 finish(Activity.RESULT_OK, result)
                 return

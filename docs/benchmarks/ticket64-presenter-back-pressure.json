@@ -1,0 +1,526 @@
+{
+  "ticket": 64,
+  "device": "Retroid Pocket Classic",
+  "scope": "Controlled native presenter back-pressure audit, not an RGDS performance comparison",
+  "build": {
+    "apk_sha256": "d1427a780ccc545c237327ad8875f865fc576f35a272ef6156e3e42a0f1728fe",
+    "test_apk_sha256": "7ad34f74dfdf8a6049aa40a5a0ee245e5e0e90e6f09fe9c973bf193649bd79dc",
+    "changed_entries_vs_ticket63": [
+      "lib/arm64-v8a/libkairodos_host.so"
+    ],
+    "core_sha256": "d59650e19f6e515b357aee8136669439532d16ca7b76e91a3778382f6170c5f4",
+    "scenarios": [
+      "normal",
+      "delayed 100ms",
+      "unavailable"
+    ],
+    "warmup_seconds": 60,
+    "capture_seconds": 120,
+    "copy_comparison": false
+  },
+  "reports": {
+    "normal": {
+      "schemaVersion": 1,
+      "game": "duke",
+      "configuration": "Optimized Android host (-O2), Staging CPU presenter",
+      "runs": [
+        {
+          "game": "duke",
+          "mode": 0,
+          "run": 0,
+          "durationNs": 120000303131,
+          "observeCopies": false,
+          "warmupNs": 60003170133,
+          "surfaceScenario": "normal",
+          "cpuBefore": [
+            1,
+            1,
+            51195,
+            172551189
+          ],
+          "cpuAfter": [
+            1,
+            1,
+            223535,
+            340794595
+          ],
+          "startNs": 150443863624536,
+          "endNs": 150563863927667,
+          "width": 1240,
+          "height": 1080,
+          "videoWidth": 1024,
+          "videoHeight": 768,
+          "metrics": {
+            "convert": {
+              "count": 6149,
+              "sumNs": 2983911560,
+              "p50Ns": 459636,
+              "p95Ns": 714218,
+              "maxNs": 992187
+            },
+            "frameMutex": {
+              "count": 6149,
+              "sumNs": 1975600,
+              "p50Ns": 260,
+              "p95Ns": 782,
+              "maxNs": 6927
+            },
+            "windowMutex": {
+              "count": 6032,
+              "sumNs": 982327,
+              "p50Ns": 105,
+              "p95Ns": 365,
+              "maxNs": 52917
+            },
+            "windowLock": {
+              "count": 6032,
+              "sumNs": 22342281042,
+              "p50Ns": 216875,
+              "p95Ns": 16184375,
+              "maxNs": 17776667
+            },
+            "windowCopy": {
+              "count": 6033,
+              "sumNs": 2853421656,
+              "p50Ns": 450573,
+              "p95Ns": 648333,
+              "maxNs": 1720365
+            },
+            "windowPost": {
+              "count": 6033,
+              "sumNs": 1865306934,
+              "p50Ns": 292344,
+              "p95Ns": 396979,
+              "maxNs": 1489531
+            },
+            "hardwarePublish": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "coreRun": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "ageAtPost": {
+              "count": 6032,
+              "sumNs": 37633398362,
+              "p50Ns": 1796667,
+              "p95Ns": 26180625,
+              "maxNs": 33750729
+            },
+            "produced": {
+              "count": 6149,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "replaced": {
+              "count": 117,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "presented": {
+              "count": 6033,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "noSurface": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "windowFailure": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "hardwareFrame": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "frameCopies": {
+              "callbacks": 0,
+              "changed": 0,
+              "duplicates": 0,
+              "firstOrResized": 0,
+              "callbackBytes": 0,
+              "windowCopies": 0,
+              "windowBytes": 0
+            }
+          }
+        }
+      ]
+    },
+    "delayed": {
+      "schemaVersion": 1,
+      "game": "duke",
+      "configuration": "Optimized Android host (-O2), Staging CPU presenter",
+      "runs": [
+        {
+          "game": "duke",
+          "mode": 0,
+          "run": 0,
+          "durationNs": 120000290475,
+          "observeCopies": false,
+          "warmupNs": 60003058467,
+          "surfaceScenario": "delayed",
+          "cpuBefore": [
+            1,
+            1,
+            51575,
+            174113293
+          ],
+          "cpuAfter": [
+            1,
+            1,
+            228576,
+            346042993
+          ],
+          "startNs": 150634932767901,
+          "endNs": 150754933058376,
+          "width": 1240,
+          "height": 1080,
+          "videoWidth": 1024,
+          "videoHeight": 768,
+          "metrics": {
+            "convert": {
+              "count": 6255,
+              "sumNs": 2931110195,
+              "p50Ns": 455417,
+              "p95Ns": 544844,
+              "maxNs": 933698
+            },
+            "frameMutex": {
+              "count": 6255,
+              "sumNs": 1443756,
+              "p50Ns": 157,
+              "p95Ns": 625,
+              "maxNs": 3646
+            },
+            "windowMutex": {
+              "count": 1183,
+              "sumNs": 79269,
+              "p50Ns": 52,
+              "p95Ns": 105,
+              "maxNs": 469
+            },
+            "windowLock": {
+              "count": 1183,
+              "sumNs": 118742750786,
+              "p50Ns": 100285105,
+              "p95Ns": 100661927,
+              "maxNs": 102942657
+            },
+            "windowCopy": {
+              "count": 1183,
+              "sumNs": 574179850,
+              "p50Ns": 469688,
+              "p95Ns": 591094,
+              "maxNs": 1285104
+            },
+            "windowPost": {
+              "count": 1183,
+              "sumNs": 375561142,
+              "p50Ns": 303906,
+              "p95Ns": 401250,
+              "maxNs": 869948
+            },
+            "hardwarePublish": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "coreRun": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "ageAtPost": {
+              "count": 1183,
+              "sumNs": 132716598791,
+              "p50Ns": 110231406,
+              "p95Ns": 127545052,
+              "maxNs": 197115989
+            },
+            "produced": {
+              "count": 6255,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "replaced": {
+              "count": 5072,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "presented": {
+              "count": 1183,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "noSurface": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "windowFailure": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "hardwareFrame": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "frameCopies": {
+              "callbacks": 0,
+              "changed": 0,
+              "duplicates": 0,
+              "firstOrResized": 0,
+              "callbackBytes": 0,
+              "windowCopies": 0,
+              "windowBytes": 0
+            }
+          }
+        }
+      ]
+    },
+    "unavailable": {
+      "schemaVersion": 1,
+      "game": "duke",
+      "configuration": "Optimized Android host (-O2), Staging CPU presenter",
+      "runs": [
+        {
+          "game": "duke",
+          "mode": 0,
+          "run": 0,
+          "durationNs": 120000669902,
+          "observeCopies": false,
+          "warmupNs": 60005702321,
+          "surfaceScenario": "unavailable",
+          "cpuBefore": [
+            1,
+            1,
+            51103,
+            170527062
+          ],
+          "cpuAfter": [
+            1,
+            1,
+            228790,
+            343093234
+          ],
+          "startNs": 150825797873245,
+          "endNs": 150945798543147,
+          "width": 1240,
+          "height": 1080,
+          "videoWidth": 1024,
+          "videoHeight": 768,
+          "metrics": {
+            "convert": {
+              "count": 6322,
+              "sumNs": 2901560471,
+              "p50Ns": 449010,
+              "p95Ns": 526250,
+              "maxNs": 764428
+            },
+            "frameMutex": {
+              "count": 6322,
+              "sumNs": 1559783,
+              "p50Ns": 208,
+              "p95Ns": 625,
+              "maxNs": 1615
+            },
+            "windowMutex": {
+              "count": 6322,
+              "sumNs": 2679332,
+              "p50Ns": 416,
+              "p95Ns": 625,
+              "maxNs": 56042
+            },
+            "windowLock": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "windowCopy": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "windowPost": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "hardwarePublish": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "coreRun": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "ageAtPost": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "produced": {
+              "count": 6322,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "replaced": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "presented": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "noSurface": {
+              "count": 6322,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "windowFailure": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "hardwareFrame": {
+              "count": 0,
+              "sumNs": 0,
+              "p50Ns": 0,
+              "p95Ns": 0,
+              "maxNs": 0
+            },
+            "frameCopies": {
+              "callbacks": 0,
+              "changed": 0,
+              "duplicates": 0,
+              "firstOrResized": 0,
+              "callbackBytes": 0,
+              "windowCopies": 0,
+              "windowBytes": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "recordingCostProbe": {
+    "framesPerThread": 20000,
+    "eventsPerFramePair": 9,
+    "trials": [
+      {
+        "trial": 0,
+        "enabled": false,
+        "wallNs": 868073
+      },
+      {
+        "trial": 1,
+        "enabled": true,
+        "wallNs": 42397031
+      },
+      {
+        "trial": 2,
+        "enabled": false,
+        "wallNs": 938542
+      },
+      {
+        "trial": 3,
+        "enabled": false,
+        "wallNs": 726563
+      },
+      {
+        "trial": 4,
+        "enabled": true,
+        "wallNs": 38384844
+      },
+      {
+        "trial": 5,
+        "enabled": false,
+        "wallNs": 703385
+      }
+    ],
+    "incrementalWallNsPerFramePair": [
+      2074.686175,
+      1883.4935
+    ]
+  },
+  "restoration": {
+    "expected": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+    "installed": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+    "match": true
+  },
+  "limitations": [
+    "One capture per scenario; no claimed FPS improvement or universal device bound.",
+    "Measured mutex times include timer overhead and can be near its floor.",
+    "Recording-cost probe is a dense concurrent microbenchmark, not a full-app overhead percentage.",
+    "Normal timing-stage counts include one in-flight boundary frame.",
+    "Guest execution telemetry includes coarse publication and the post-capture drain.",
+    "The optional timing-off fixture argument was added and compiled after these captures; all three captured timing-enabled behavior."
+  ]
+}

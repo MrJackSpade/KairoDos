@@ -18,9 +18,11 @@ enum Stage { Convert, FrameMutex, WindowMutex, WindowLock, WindowCopy, WindowPos
 #include <chrono>
 #include <mutex>
 #include <sstream>
+#include <thread>
 #include <vector>
 namespace video_profile {
 inline std::atomic<bool> enabled{false};
+inline std::atomic<int> presenter_delay_ms{0};
 inline std::mutex mutex;
 inline std::array<std::vector<uint64_t>, Count> samples;
 inline uint64_t now() {
@@ -33,8 +35,15 @@ inline void record(Stage stage, uint64_t ns = 0) {
     samples[stage].push_back(ns);
 }
 inline void elapsed(Stage stage, uint64_t start) { if (start) record(stage, now() - start); }
+// Test-only stall while the presenter owns the surface lock, after releasing
+// the frame lock. It models a slow display without modifying queue ownership.
+inline void delay_presenter() {
+    const int delay = presenter_delay_ms.load();
+    if (enabled && delay > 0) std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+}
 inline void reset(bool active) {
     enabled = false;
+    presenter_delay_ms = 0;
     // Full-frame comparison is opt-in independently of timing collection.
     frame_copy_profile::reset(false);
     std::lock_guard<std::mutex> lock(mutex);
@@ -76,8 +85,13 @@ Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileFrameCopies(
     frame_copy_profile::reset(active);
 }
 extern "C" JNIEXPORT void JNICALL
+Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfilePresenterDelay(JNIEnv*, jclass, jint milliseconds) {
+    video_profile::presenter_delay_ms = std::clamp(int(milliseconds), 0, 250);
+}
+extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileResetEnabledOff(JNIEnv*, jclass) {
     video_profile::enabled = false;
+    video_profile::presenter_delay_ms = 0;
     frame_copy_profile::stop();
 }
 extern "C" JNIEXPORT jstring JNICALL
@@ -93,5 +107,6 @@ namespace video_profile {
 inline uint64_t now() { return 0; }
 inline void record(Stage, uint64_t = 0) {}
 inline void elapsed(Stage, uint64_t) {}
+inline void delay_presenter() {}
 }
 #endif

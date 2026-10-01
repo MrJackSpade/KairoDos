@@ -148,6 +148,7 @@ void render_frames() {
         }
         ANativeWindow_Buffer buffer{};
         const auto start = video_profile::now();
+        video_profile::delay_presenter();
         const int locked = ANativeWindow_lock(surface, &buffer, nullptr);
         video_profile::elapsed(video_profile::WindowLock, start);
         if (locked != 0) { video_profile::record(video_profile::WindowFailure); continue; }
