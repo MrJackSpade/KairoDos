@@ -180,7 +180,13 @@ struct PagingBlock {
 	bool enabled = false;
 };
 
-extern PagingBlock paging; 
+// Kairo's core owns this object. Its C callback ABI never exports paging
+// state to the Android host; preserve ordinary upstream visibility elsewhere.
+#if defined(KAIRO_STAGING)
+extern PagingBlock paging __attribute__((visibility("hidden")));
+#else
+extern PagingBlock paging;
+#endif
 
 /* Some support functions */
 

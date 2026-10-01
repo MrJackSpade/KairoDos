@@ -62,6 +62,15 @@ Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in
 
 The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. See [adoption and corresponding test evidence](setcc-adoption.md); the change is core-specific and contains no game code.
 
+## Core-owned paging storage
+
+Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
+object hidden visibility. The Android host uses only the C callback bridge and
+does not import this object. Other data and weak-symbol binding remains unchanged;
+non-Kairo builds retain upstream visibility. Original GPL notices are preserved.
+See [the measured evaluation](paging-storage-evaluation.md) for ABI, runtime and
+performance evidence and the remaining final integration gate.
+
 ## Ordered OPL worker
 
 `src/hardware/audio/opl.cpp` and `opl.h` contain ordered catch-up synthesis

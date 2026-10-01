@@ -142,7 +142,8 @@ add_library(dosbox SHARED "${STAGING_SOURCE}/src/main.cpp"
     src/main/cpp/kairo_renderer.cpp)
 set_target_properties(dosbox PROPERTIES OUTPUT_NAME dosbox_staging)
 # Keep strong core function calls local instead of routing them through PLT
-# stubs. Retain weak/data binding for C++ object identity and shared dependencies;
+# stubs. Retain weak/data binding for C++ object identity and shared dependencies
+# except the explicitly core-owned paging object in paging.h;
 # do not replace this with broad -Bsymbolic. See docs/symbol-binding-evaluation.md.
 target_link_options(dosbox PRIVATE "-Wl,-Bsymbolic-non-weak-functions")
 add_library(libdosboxcommon STATIC)
