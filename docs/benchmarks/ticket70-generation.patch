@@ -1,0 +1,44 @@
+diff --git a/backend-dos/CMakeLists.txt b/backend-dos/CMakeLists.txt
+index f44da0db..4a3659d1 100644
+--- a/backend-dos/CMakeLists.txt
++++ b/backend-dos/CMakeLists.txt
+@@ -42,0 +43,4 @@ add_compile_options(-O2)
++# Isolated #70 training build; not a production default.
++add_compile_options(-fprofile-generate)
++add_link_options(-fprofile-generate)
++add_compile_definitions(KAIRO_PGO_GENERATE)
+diff --git a/backend-dos/src/main/cpp/staging_bridge.cpp b/backend-dos/src/main/cpp/staging_bridge.cpp
+index fe8c35c9..5d0d4ba2 100644
+--- a/backend-dos/src/main/cpp/staging_bridge.cpp
++++ b/backend-dos/src/main/cpp/staging_bridge.cpp
+@@ -18,0 +19,20 @@
++#ifdef KAIRO_PGO_GENERATE
++#include <profile/instr_prof_interface.h>
++// The profile runtime borrows the filename pointer. Keep it alive through
++// dump, then reset it before the guard's string is destroyed. Dump suppresses
++// another automatic write at process/DSO exit.
++struct KairoPgoSession {
++    const std::string filename;
++    explicit KairoPgoSession(const char* directory)
++        : filename(std::string(directory) + "/kairo-pgo-%p.profraw") {
++        __llvm_profile_set_filename(filename.c_str());
++        __android_log_print(ANDROID_LOG_INFO, "DOSBoxStaging", "KAIRO PGO start: %s", filename.c_str());
++    }
++    ~KairoPgoSession() {
++        const int result = __llvm_profile_dump();
++        __android_log_print(ANDROID_LOG_INFO, "DOSBoxStaging", "KAIRO PGO dump: result=%d path=%s", result, filename.c_str());
++        __llvm_profile_set_filename(nullptr);
++    }
++};
++#endif
++
+@@ -77,0 +98,5 @@ SDL_Scancode scancode(int code) {
++// Exclude the entry wrapper from training: the profile lifetime guard exists
++// only in generation, so its control-flow graph intentionally differs.
++#ifdef KAIRO_PGO_GENERATE
++__attribute__((no_profile_instrument_function))
++#endif
+@@ -86,0 +112,3 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
++#ifdef KAIRO_PGO_GENERATE
++    KairoPgoSession pgo_session(config_dir);
++#endif
