@@ -1,0 +1,90 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Extracted methods: DOSBox / DOSBox Staging authors, original GPL notices apply.
+#include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <initializer_list>
+#include <thread>
+using Bitu=uint32_t; using Bits=int32_t;
+constexpr int64_t MicrosInMillisecond=1000;
+constexpr int auto_cpu_cycles_min=200, CpuCyclesMax=2000000, CB_MAX=8;
+static bool real_clock=false;
+static int64_t virtual_us=0;
+static auto epoch=std::chrono::steady_clock::now();
+static int64_t GetTicksUs() { return real_clock ? std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-epoch).count() : virtual_us; }
+static int64_t GetTicks() { return GetTicksUs()/1000; }
+static void host_sleep(std::chrono::microseconds d) { if(real_clock) std::this_thread::sleep_for(d); else virtual_us+=d.count(); }
+static bool CPU_CycleAutoAdjust=false;
+static int CPU_CycleMax=10000, CPU_CyclePercUsed=100, CPU_CycleLimit=0, CPU_CycleLeft=0, CPU_Cycles=0;
+static int64_t CPU_IODelayRemoved=0;
+static uint32_t PIC_Ticks=0;
+static uint64_t callback_ticks=0;
+struct PICEntry { double index=0; PICEntry* next=nullptr; } event;
+struct { PICEntry* next_entry=&event; } pic_queue;
+struct TickerBlock { TickerBlock* next=nullptr; void(*handler)(); } ticker{nullptr,[]{++callback_ticks;}};
+static TickerBlock* firstticker=&ticker;
+static bool PIC_RunQueue() { return false; } // No guest CPU cost in this scheduler fixture.
+static bool WEBSERVER_IsEnabled() { return false; }
+namespace Webserver { struct Bridge { static Bridge& Instance(){static Bridge b;return b;} void ProcessRequests(){} }; }
+static Bits decode(){return 0;} static auto cpudecoder=&decode;
+static Bitu callback(){return 0;} static Bitu(*Callback_Handlers[CB_MAX])()={callback};
+enum class PresentationMode { DosRate,HostRate };
+static PresentationMode GFX_GetPresentationMode(){return PresentationMode::DosRate;}
+static void GFX_MaybePresentFrame(){}
+static bool GFX_PollAndHandleEvents(){return true;}
+static int ifloor(double x){return static_cast<int>(std::floor(x));}
+template<class T,class U> static T check_cast(U x){return static_cast<T>(x);}
+/* EXTRACTED */
+static void reset(bool automatic) {
+    virtual_us=0; epoch=std::chrono::steady_clock::now();
+    ticks={}; PIC_Ticks=0; callback_ticks=0; event.index=1000000;
+    CPU_CycleAutoAdjust=automatic;CPU_CycleMax=10000;CPU_CycleLimit=0;CPU_IODelayRemoved=0;
+    KairoResetHostTiming();
+}
+static void controlled(int delay,bool automatic) {
+    real_clock=false;reset(automatic);
+    virtual_us=delay*1000;normal_loop();
+    const auto due=ticks.remain;
+    assert(due==std::min(delay,20));assert(ticks.last==delay);
+    normal_loop(); // Actual TIMER_AddTick consumes backlog; idle branch sleeps 1 ms.
+    assert(PIC_Ticks==due);assert(callback_ticks==PIC_Ticks);
+    assert(event.index==1000000-PIC_Ticks);
+    const auto lost=delay-due;
+    for(int i=0;i<1000;++i) {
+        const auto before=PIC_Ticks;const auto host_before=GetTicks();
+        normal_loop();normal_loop();
+        assert(PIC_Ticks-before==1 && GetTicks()-host_before==1);
+        assert(GetTicks()-PIC_Ticks==lost+1); // bounded pending 1 ms, no growing debt or overshoot
+    }
+    std::printf("{\"mode\":\"controlled\",\"auto\":%s,\"delayMs\":%d,\"firstScheduledMs\":%lld,\"discardedMs\":%lld,\"recoveryHostMs\":1000,\"recoveryGuestMs\":1000}\n",automatic?"true":"false",delay,(long long)due,(long long)lost);
+}
+static void physical(int requested,bool automatic) {
+    real_clock=true;reset(automatic);
+    std::this_thread::sleep_for(std::chrono::milliseconds(requested));
+    normal_loop();const auto host_after=ticks.last, due=ticks.remain;
+    assert(due==std::min<int64_t>(host_after,20));
+    const auto loss=host_after-due;
+    normal_loop();const auto guest_start=PIC_Ticks;const auto host_start=GetTicks();
+    int64_t later_clipped=0;
+    while(GetTicks()-host_start<1000) {
+        const auto last=ticks.last;
+        normal_loop();
+        if(ticks.last>last) later_clipped+=std::max<int64_t>(0,ticks.last-last-20);
+    }
+    // Ledger includes pending milliseconds at the measurement endpoint.
+    const auto host_end=GetTicks();
+    const auto pending=ticks.remain+(host_end-ticks.last);
+    assert(host_end-PIC_Ticks==loss+later_clipped+pending);
+    assert(callback_ticks==PIC_Ticks);
+    std::printf("{\"mode\":\"realHost\",\"auto\":%s,\"requestedSleepMs\":%d,\"observedSleepMs\":%lld,\"firstScheduledMs\":%lld,\"discardedMs\":%lld,\"recoveryHostMs\":%lld,\"recoveryGuestMs\":%u,\"laterDiscardedMs\":%lld,\"pendingMs\":%lld}\n",automatic?"true":"false",requested,(long long)host_after,(long long)due,(long long)loss,(long long)(host_end-host_start),PIC_Ticks-guest_start,(long long)later_clipped,(long long)pending);
+}
+int main(){
+    for(bool automatic:{false,true}) {
+        for(int delay:{1,2,5,10,15,19,20,21,25,50,100,250,1000}) controlled(delay,automatic);
+        for(int delay:{5,10,50,250}) physical(delay,automatic);
+    }
+    std::puts("{\"passed\":true,\"controlledCases\":26,\"realHostCases\":8}");
+}

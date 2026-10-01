@@ -1,0 +1,362 @@
+{
+  "ticket": 68,
+  "device": "RGDS, existing Wi-Fi ADB 192.168.1.118:5555",
+  "provenance": {
+    "revision": "3cb174e5ae8c451c0bb56cd6bd2492201e19c872",
+    "methods": {
+      "increase_ticks": "ef883d3a7f1fd26b8cc4075fc4138c8e0fbfe96a086429c4a462846af0fe1ab1",
+      "normal_loop": "d5d7c2822944873d3ea8dfd188383f9099b57641bd93e79b6213b567301c3dd4",
+      "reset": "f5cbc2f38d4b382a4568aaffdee8fcf620f76c9024acf487c18c0c87f7dcd27e",
+      "tick": "f4b7e93f9f5a1d1b300f32170698c2b488bcbc29034190401d9a8950bc21b7d0",
+      "diff": "ecf0f7d715dedbf25215daf1b401e6b884a07101f7f5fa5c608e1e50742a8444",
+      "since": "01984d43b2c867177b6bd4f78caf9c9e991fdb7955979dfbbb0819a65485ca23"
+    },
+    "sourceFiles": {
+      "dosbox.cpp": "d6d64bae2e080b314027e60434b28ce2ee3154dd3f27b89267f95b7593366b56",
+      "hardware/pic.cpp": "2d22073226014d01b7202c58e23cbf62d077041b4cd6a7cab237c95dfaca7465",
+      "hardware/timer.h": "9b30613ba9271e0677ba537d2ad3cd21b481c1fbc2fac4577834aa8305e7e820"
+    },
+    "generatedSourceSha256": "17162c137048e4742b3aa9f12878eadfca6a036f980b8f99da62abdaa3cf4a18",
+    "binarySha256": "6860382332c0d8c330c1df72673e81fd237d7019d861a6324ed7fcf79cb0fd48",
+    "limits": "Actual scheduler, normal loop and TIMER_AddTick bodies; CPU execution, GUI, PIC_RunQueue and peripheral callbacks are test sinks. Controlled-clock cases plus real Android host sleeps. Not a game performance or audio test."
+  },
+  "results": [
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 1,
+      "firstScheduledMs": 1,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 2,
+      "firstScheduledMs": 2,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 5,
+      "firstScheduledMs": 5,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 10,
+      "firstScheduledMs": 10,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 15,
+      "firstScheduledMs": 15,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 19,
+      "firstScheduledMs": 19,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 20,
+      "firstScheduledMs": 20,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 21,
+      "firstScheduledMs": 20,
+      "discardedMs": 1,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 25,
+      "firstScheduledMs": 20,
+      "discardedMs": 5,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 50,
+      "firstScheduledMs": 20,
+      "discardedMs": 30,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 100,
+      "firstScheduledMs": 20,
+      "discardedMs": 80,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 250,
+      "firstScheduledMs": 20,
+      "discardedMs": 230,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": false,
+      "delayMs": 1000,
+      "firstScheduledMs": 20,
+      "discardedMs": 980,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "realHost",
+      "auto": false,
+      "requestedSleepMs": 5,
+      "observedSleepMs": 5,
+      "firstScheduledMs": 5,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 999,
+      "laterDiscardedMs": 0,
+      "pendingMs": 2
+    },
+    {
+      "mode": "realHost",
+      "auto": false,
+      "requestedSleepMs": 10,
+      "observedSleepMs": 10,
+      "firstScheduledMs": 10,
+      "discardedMs": 0,
+      "recoveryHostMs": 1001,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 2
+    },
+    {
+      "mode": "realHost",
+      "auto": false,
+      "requestedSleepMs": 50,
+      "observedSleepMs": 50,
+      "firstScheduledMs": 20,
+      "discardedMs": 30,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "mode": "realHost",
+      "auto": false,
+      "requestedSleepMs": 250,
+      "observedSleepMs": 250,
+      "firstScheduledMs": 20,
+      "discardedMs": 230,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 1,
+      "firstScheduledMs": 1,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 2,
+      "firstScheduledMs": 2,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 5,
+      "firstScheduledMs": 5,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 10,
+      "firstScheduledMs": 10,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 15,
+      "firstScheduledMs": 15,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 19,
+      "firstScheduledMs": 19,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 20,
+      "firstScheduledMs": 20,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 21,
+      "firstScheduledMs": 20,
+      "discardedMs": 1,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 25,
+      "firstScheduledMs": 20,
+      "discardedMs": 5,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 50,
+      "firstScheduledMs": 20,
+      "discardedMs": 30,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 100,
+      "firstScheduledMs": 20,
+      "discardedMs": 80,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 250,
+      "firstScheduledMs": 20,
+      "discardedMs": 230,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "controlled",
+      "auto": true,
+      "delayMs": 1000,
+      "firstScheduledMs": 20,
+      "discardedMs": 980,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000
+    },
+    {
+      "mode": "realHost",
+      "auto": true,
+      "requestedSleepMs": 5,
+      "observedSleepMs": 5,
+      "firstScheduledMs": 5,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "mode": "realHost",
+      "auto": true,
+      "requestedSleepMs": 10,
+      "observedSleepMs": 10,
+      "firstScheduledMs": 10,
+      "discardedMs": 0,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "mode": "realHost",
+      "auto": true,
+      "requestedSleepMs": 50,
+      "observedSleepMs": 50,
+      "firstScheduledMs": 20,
+      "discardedMs": 30,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "mode": "realHost",
+      "auto": true,
+      "requestedSleepMs": 250,
+      "observedSleepMs": 250,
+      "firstScheduledMs": 20,
+      "discardedMs": 230,
+      "recoveryHostMs": 1000,
+      "recoveryGuestMs": 1000,
+      "laterDiscardedMs": 0,
+      "pendingMs": 1
+    },
+    {
+      "passed": true,
+      "controlledCases": 26,
+      "realHostCases": 8
+    }
+  ],
+  "rawResultSha256": "51568f1135d5491947740a7b8cd6d1624eef8925108ab6757bd23026eb9d556f",
+  "runtimeChanges": "None. Standalone /data/local/tmp executable; installed APK and game configuration unchanged."
+}
