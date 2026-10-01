@@ -5,6 +5,8 @@ set -eu
 out=$1
 layer=$2
 duration=$3
+period=${4:-0.5}
+case "$period" in 0.5|1.0) ;; *) exit 2 ;; esac
 case "$duration" in ''|*[!0-9]*) exit 2 ;; esac
 [ "$duration" -ge 1 ] && [ "$duration" -le 300 ]
 read up rest < /proc/uptime
@@ -16,5 +18,5 @@ while :; do
     dumpsys SurfaceFlinger --latency "$layer"
     printf 'END\n'
     [ "${up%%.*}" -ge "$stop" ] && break
-    sleep 0.5
+    sleep "$period"
 done

@@ -4,6 +4,10 @@ parser=argparse.ArgumentParser(description='Capture a running DOS demo after ans
 parser.add_argument('--adb',required=True);parser.add_argument('--serial',required=True);parser.add_argument('--output',required=True,type=pathlib.Path)
 parser.add_argument('--observation', choices=('full', 'light'), default='full',
                     help='Light omits simpleperf and intermediate screenshots and samples CPU only at sparse checkpoints')
+parser.add_argument('--frame-period', choices=('0.5', '1.0'), default='0.5',
+                    help='Local frame-history polling interval; gaps still invalidate exact rates')
+parser.add_argument('--prompt-response', choices=('n', 'none'), default='n',
+                    help='Use none only when the caller verified that no launch prompt needs answering')
 args=parser.parse_args()
 ADB=args.adb
 SERIAL=args.serial
@@ -19,7 +23,8 @@ def screenshot(name):
 # Caller must verify the launch sound prompt before invoking this script.
 assert 'mWakefulness=Awake' in shell('dumpsys power'), 'Device is not awake'
 assert 'SurfaceView[com.loxifi.kairodos/' in shell('dumpsys SurfaceFlinger --list'), 'Game surface absent'
-shell('input -d 2 keyevent 42')
+if args.prompt_response == 'n':
+    shell('input -d 2 keyevent 42')
 print('Warm-up started: 60 seconds', flush=True)
 launch=time.monotonic()
 (OUT/'start.json').write_text(json.dumps({'launchHostMonotonic':launch,'launchUtc':time.time(),'warmupSeconds':60,'captureSeconds':120}))
@@ -42,7 +47,7 @@ sampler_source=pathlib.Path(__file__).with_name('collect_surface_history.sh').re
 remote_sampler='/data/local/tmp/kairo-frames-'+hashlib.sha256(str(OUT.resolve()).encode()).hexdigest()[:12]
 subprocess.run([ADB,'-s',SERIAL,'push',str(OUT/'surface-sampler.sh'),remote_sampler+'.sh'],check=True,stdout=subprocess.DEVNULL)
 frame_sampler=subprocess.Popen([ADB,'-s',SERIAL,'shell',
-    'sh '+shlex.quote(remote_sampler+'.sh')+' '+shlex.quote(remote_sampler+'.txt')+' '+shlex.quote(layer)+' 125'],
+    'sh '+shlex.quote(remote_sampler+'.sh')+' '+shlex.quote(remote_sampler+'.txt')+' '+shlex.quote(layer)+' 125 '+args.frame_period],
     stdout=(OUT/'surface-sampler.log').open('w'),stderr=subprocess.STDOUT)
 record=stat=None
 if args.observation == 'full':
@@ -74,7 +79,7 @@ if record is not None:
 capture_duration=time.monotonic()-start
 frame_sampler.wait()
 subprocess.run([ADB,'-s',SERIAL,'pull',remote_sampler+'.txt',str(OUT/'surface-history.txt')],check=True)
-(OUT/'capture.json').write_text(json.dumps({'duration':capture_duration,'layer':layer,'pid':pid,'observation':args.observation,'recordExit':record.returncode if record is not None else None,'statExit':stat.returncode if stat is not None else None,'frameSamplerExit':frame_sampler.returncode,'frameSampler':'device-local-v1'}))
+(OUT/'capture.json').write_text(json.dumps({'duration':capture_duration,'layer':layer,'pid':pid,'observation':args.observation,'framePeriod':args.frame_period,'promptResponse':args.prompt_response,'recordExit':record.returncode if record is not None else None,'statExit':stat.returncode if stat is not None else None,'frameSamplerExit':frame_sampler.returncode,'frameSampler':'device-local-v1'}))
 print('Completed real application capture:',OUT)
 
 if record is not None:

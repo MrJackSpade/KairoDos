@@ -15,7 +15,7 @@ android {
                         rootProject.file(".downloads/staging-deps/installed/arm64-kairo-android").absolutePath).get()
                 arguments += "-DANDROID_STL=c++_shared"
                 arguments += "-DKAIRO_OPL_WORKER=" +
-                    if (providers.gradleProperty("oplWorker").orNull == "true") "ON" else "OFF"
+                    if (providers.gradleProperty("oplWorker").orElse("true").get() == "true") "ON" else "OFF"
                 arguments += "-DKAIRO_OPL_VERIFY=" +
                     if (providers.gradleProperty("oplVerify").orNull == "true") "ON" else "OFF"
                 arguments += "-DKAIRO_OPL_STRESS=" +

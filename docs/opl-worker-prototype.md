@@ -1,10 +1,11 @@
 # Ordered OPL worker prototype (#74)
 
-Status: the opt-in integration has passed mode/DC, lifecycle, saturated-queue,
-independent catch-up, ordered OPL mixer-input and ordinary timer/status/routing
-checks. Repeated lighter benchmarks show a benefit, but another workload's
-performance and observer follow-up remain. It is **not accepted or enabled by default**. #74 remains
-open. The design and acceptance requirements are in `opl-worker-feasibility.md`.
+Current status: correctness and performance evaluation is complete, including
+the second workload and collector-frequency follow-up. The worker is enabled
+in the default build; final build/deployment status is in
+[the adoption record](opl-worker-adoption.md). The sections below preserve
+the experiment's chronological evidence and earlier decisions. The design
+and acceptance requirements are in `opl-worker-feasibility.md`.
 
 ## Shared worker
 
@@ -316,12 +317,9 @@ hash matched the built artifact. The normal installed APK remained unchanged
 and its SHA-256 was reverified as
 `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 
-## Next required work
+## Evaluation completed
 
-The measured benefit justifies continuing, but does not qualify the worker for
-adoption. Complete another OPL workload's performance comparison and the
-remaining frame-collector overhead follow-up. Catch-up arithmetic,
-command/frame counts, ordered OPL callback inputs, and ordinary timer/status
-and routing invariants now have the independent evidence above.
-The acceptance requirements remain those in the design; this checkpoint alone
-does not justify normal deployment. #74 remains open.
+The subsequent [Doom comparisons and collector follow-up](benchmarks/ticket74-doom-performance.md)
+complete the remaining evaluation. Ordinary OPL modes are adopted based on
+the repeated Duke benefit and the combined correctness/regression evidence.
+Build and deployment must finish before #74 closes; see the adoption record.
