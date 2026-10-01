@@ -1,0 +1,11 @@
+diff --git a/backend-dos/CMakeLists.txt b/backend-dos/CMakeLists.txt
+index f44da0db..7ac1c7c2 100644
+--- a/backend-dos/CMakeLists.txt
++++ b/backend-dos/CMakeLists.txt
+@@ -40,4 +40,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
+ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ # The emulation engine must be optimized even in a debuggable frontend APK.
+ add_compile_options(-O2)
++add_compile_options(-flto=thin)
++add_link_options(-flto=thin)
+ add_compile_definitions(NDEBUG SDL_MAIN_HANDLED KAIRO_STAGING)
