@@ -1,9 +1,9 @@
 # Ordered OPL worker prototype (#74)
 
 Status: the opt-in integration has passed mode/DC, lifecycle, saturated-queue,
-independent catch-up and ordered OPL mixer-input checks. Repeated lighter
-benchmarks show a benefit, but timer/status/routing and another workload's
-performance remain. It is **not accepted or enabled by default**. #74 remains
+independent catch-up, ordered OPL mixer-input and ordinary timer/status/routing
+checks. Repeated lighter benchmarks show a benefit, but another workload's
+performance and observer follow-up remain. It is **not accepted or enabled by default**. #74 remains
 open. The design and acceptance requirements are in `opl-worker-feasibility.md`.
 
 ## Shared worker
@@ -270,13 +270,58 @@ worker-only and verification compile checks passed; the verification APK built
 and ran on RGDS. The normal adopted APK was restored afterward and hash-verified
 as `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 
+## Ordinary timer/status and port-routing comparison
+
+`tools/test_opl_port_routing.py` extracts the actual Timer, OplChip and ordinary
+OPL port methods from the current source and pre-worker commit `9dcfd7f6`.
+It compiles both on Android ARM64 with deterministic PIC time and recording
+sinks. The current `QueueWrite` method is also extracted; its commands remain
+pending while guest reads and state checks run, then are delivered in order.
+The generated fixture uses real timer and port method bodies, not separately
+rewritten routing algorithms.
+
+On RGDS, the test passed with zero differences:
+
+- 4,611 cases across OPL2, dual OPL2 and OPL3.
+- 137,532 port writes and 237,360 status reads; 210,316 reads occurred while
+  chip writes were still pending.
+- 23,040 explicit expected timer-status checks: all 256 counter values, both
+  timer periods, just below/on/above overflow, masking, reset and stop.
+- Address/data mirrors, all register addresses with representative values and
+  a deterministic mixed transcript, bank selection, dual-chip waveform/pan
+  masking, cache/capture event arguments/order, GUS mirror calls, address
+  latches, and read-induced CPU cycle accounting matched the reference.
+- 37,098 deferred-write drains preserved chip-write address/value order.
+
+The source audit found that only `WriteReg` differs among the 20 extracted
+methods: its intended dispatch to the worker. Timer methods, status reads,
+port routing, address selection and cache handling are byte-identical to the
+pre-worker versions. The port-registration block is also byte-identical.
+The existing `newm = selected_reg & 1` behavior is preserved, including an
+attempt to clear register 0x105; this test does not silently fix that separate
+pre-existing issue.
+
+Scope limits matter: this is a native actual-method test with clock inputs and
+sinks. DSP synthesis/catch-up, capture-file serialization and GUS internals
+are replaced by sinks. It also calls some alias methods directly beyond the
+OPL2 registered-port range; unchanged registration is checked separately.
+ESFM/Gold stubs fail if reached, so these results do not claim support for
+their native/control features. The earlier real game, synthesis, lifecycle
+and bounded-worker tests supply the complementary evidence. No runtime app or
+game files were changed for this test.
+
+[Port-routing evidence](benchmarks/ticket74-port-routing.json) records method,
+registration, generated-source and binary hashes. The executed device binary
+hash matched the built artifact. The normal installed APK remained unchanged
+and its SHA-256 was reverified as
+`22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
+
 ## Next required work
 
 The measured benefit justifies continuing, but does not qualify the worker for
-adoption. Complete independent timer/status and routing evidence, plus another
-OPL workload's performance. The remaining frame collector's own overhead has
-not been isolated. Catch-up arithmetic, command/frame counts and the ordered
-OPL callback input stream now have the independent evidence above; guest
-timer/status and routing invariants still need their separate checks.
+adoption. Complete another OPL workload's performance comparison and the
+remaining frame-collector overhead follow-up. Catch-up arithmetic,
+command/frame counts, ordered OPL callback inputs, and ordinary timer/status
+and routing invariants now have the independent evidence above.
 The acceptance requirements remain those in the design; this checkpoint alone
 does not justify normal deployment. #74 remains open.

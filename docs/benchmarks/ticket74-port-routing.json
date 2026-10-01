@@ -1,0 +1,126 @@
+{
+  "ticket": 74,
+  "device": "RGDS ARM64",
+  "result": {
+    "cases": 4611,
+    "portWrites": 137532,
+    "statusReads": 237360,
+    "readsWithPendingWrites": 210316,
+    "drains": 37098,
+    "expectedTimerStatusChecks": 23040,
+    "mismatches": 0
+  },
+  "provenance": {
+    "referenceRevision": "9dcfd7f6",
+    "timerChipDeclarationsUnchanged": true,
+    "timerChipDeclarationsSha256": "bf343bfa881be002aad937ed0fb6c647447bb34c85aa45c7f536d3f5a70183c4",
+    "methods": {
+      "Timer::Timer": {
+        "unchanged": true,
+        "referenceSha256": "156216069606353882a2ea09b9d262ae9c46b464218bc795078e94d14bbf5bab",
+        "currentSha256": "156216069606353882a2ea09b9d262ae9c46b464218bc795078e94d14bbf5bab"
+      },
+      "Timer::Update": {
+        "unchanged": true,
+        "referenceSha256": "a9583497db34fa36ef22b6b115a49d4b4c717f1f68f9a64f12e10979b0365609",
+        "currentSha256": "a9583497db34fa36ef22b6b115a49d4b4c717f1f68f9a64f12e10979b0365609"
+      },
+      "Timer::Reset": {
+        "unchanged": true,
+        "referenceSha256": "388d9f0f9a723065044ad7bf5bce1d7cc7c48950f7565ac2db253d45c888c547",
+        "currentSha256": "388d9f0f9a723065044ad7bf5bce1d7cc7c48950f7565ac2db253d45c888c547"
+      },
+      "Timer::SetCounter": {
+        "unchanged": true,
+        "referenceSha256": "0a475a078289685dc6b7c14e9456e75c72bab23521b47aef77966d621fe52fb3",
+        "currentSha256": "0a475a078289685dc6b7c14e9456e75c72bab23521b47aef77966d621fe52fb3"
+      },
+      "Timer::GetCounter": {
+        "unchanged": true,
+        "referenceSha256": "25241d3c53932e27de4f6fa9305f29398992d5e03169245045dc9119e9770801",
+        "currentSha256": "25241d3c53932e27de4f6fa9305f29398992d5e03169245045dc9119e9770801"
+      },
+      "Timer::SetMask": {
+        "unchanged": true,
+        "referenceSha256": "038630ff280e32c61da985557146c6fb4a06a020cd09a211f777ebd4b9bb025c",
+        "currentSha256": "038630ff280e32c61da985557146c6fb4a06a020cd09a211f777ebd4b9bb025c"
+      },
+      "Timer::IsMasked": {
+        "unchanged": true,
+        "referenceSha256": "128eef2e99567ec1bfca9fa99c322d6bb35c07368a0c4b3f5c3c65bdd7e9d4e3",
+        "currentSha256": "128eef2e99567ec1bfca9fa99c322d6bb35c07368a0c4b3f5c3c65bdd7e9d4e3"
+      },
+      "Timer::Stop": {
+        "unchanged": true,
+        "referenceSha256": "fdcadef64287f6c33d171761719e84091dfe1e12267bc20bbeafc4eae036c6be",
+        "currentSha256": "fdcadef64287f6c33d171761719e84091dfe1e12267bc20bbeafc4eae036c6be"
+      },
+      "Timer::Start": {
+        "unchanged": true,
+        "referenceSha256": "61b84f1f5a97141ef4e75856ed92101a0f94bb4a0a89430b4ecd8978414e98d0",
+        "currentSha256": "61b84f1f5a97141ef4e75856ed92101a0f94bb4a0a89430b4ecd8978414e98d0"
+      },
+      "Timer::IsEnabled": {
+        "unchanged": true,
+        "referenceSha256": "5d35063010af2aa3ee6ac38946c61852d915330ba1d802b07eba65d03270ea9b",
+        "currentSha256": "5d35063010af2aa3ee6ac38946c61852d915330ba1d802b07eba65d03270ea9b"
+      },
+      "OplChip::OplChip": {
+        "unchanged": true,
+        "referenceSha256": "72e4c015778a464332f8af9460d2d86bb03c2516e63d6fa98e7e8fafe7619b86",
+        "currentSha256": "72e4c015778a464332f8af9460d2d86bb03c2516e63d6fa98e7e8fafe7619b86"
+      },
+      "OplChip::Write": {
+        "unchanged": true,
+        "referenceSha256": "3ad3cb6b871498d678ec5c834074ccafebafa12a80a3bbc2f0150a13caa1853f",
+        "currentSha256": "3ad3cb6b871498d678ec5c834074ccafebafa12a80a3bbc2f0150a13caa1853f"
+      },
+      "OplChip::Read": {
+        "unchanged": true,
+        "referenceSha256": "cab66cca270de82e4139081556d85c2ad81c39af028fb1d2be42543e36ab7dc8",
+        "currentSha256": "cab66cca270de82e4139081556d85c2ad81c39af028fb1d2be42543e36ab7dc8"
+      },
+      "OplChip::EsfmReadbackReg": {
+        "unchanged": true,
+        "referenceSha256": "e56b60eaa7a03204e1165ae25474ce1912d56939a2dd329cf93d30dda275925b",
+        "currentSha256": "e56b60eaa7a03204e1165ae25474ce1912d56939a2dd329cf93d30dda275925b"
+      },
+      "Opl::WriteReg": {
+        "unchanged": false,
+        "referenceSha256": "7af30d9360ba4c9b0d139cbf7bb68c9893896fc497f7851996732ea7256ef838",
+        "currentSha256": "db4f2e89a72d081cb02bfbf57a805ac146639903c6d81d6f355b9ed57883cd85"
+      },
+      "Opl::WriteAddr": {
+        "unchanged": true,
+        "referenceSha256": "f2db4ceec83ef9c03490e7eccd781e4dd0e105dbe55818af47b94100f54d635a",
+        "currentSha256": "f2db4ceec83ef9c03490e7eccd781e4dd0e105dbe55818af47b94100f54d635a"
+      },
+      "Opl::CacheWrite": {
+        "unchanged": true,
+        "referenceSha256": "5b0112df9c1a5ac51c5230553dfa09a27e17a325b7054c23ab9367b63b83ef87",
+        "currentSha256": "5b0112df9c1a5ac51c5230553dfa09a27e17a325b7054c23ab9367b63b83ef87"
+      },
+      "Opl::DualWrite": {
+        "unchanged": true,
+        "referenceSha256": "2d44bb920e24c404ad735dee02ab39a476142eb621380c0cab47313ac2e7b3ae",
+        "currentSha256": "2d44bb920e24c404ad735dee02ab39a476142eb621380c0cab47313ac2e7b3ae"
+      },
+      "Opl::PortWrite": {
+        "unchanged": true,
+        "referenceSha256": "f4cb2a5888b288672ccadbd3fe6fbf98895727b39e2e8580bdfd8489c50b587c",
+        "currentSha256": "f4cb2a5888b288672ccadbd3fe6fbf98895727b39e2e8580bdfd8489c50b587c"
+      },
+      "Opl::PortRead": {
+        "unchanged": true,
+        "referenceSha256": "299e81f2107cfd989c241a43230c596ec69d9b89d64dc768e351a8fd81d2cc53",
+        "currentSha256": "299e81f2107cfd989c241a43230c596ec69d9b89d64dc768e351a8fd81d2cc53"
+      }
+    },
+    "queueWriteSha256": "f7527329324c047fb810af5f6266cbae46446ca85d3b6d9897b208783002b543",
+    "portRegistrationUnchanged": true,
+    "portRegistrationSha256": "92c03323d4d8ace6765cdda8c9f07e8ec4ec1bdd31b508fded440419817d689c",
+    "sourceSha256": "34389dcd059ad8444e30e76c7cc58462302b104ed18fb4fd75c8b3c22d87385d",
+    "binarySha256": "d543bfca7be2597af62a9e83ccec58c359badf38e301bbb432fe0ca68781d48a",
+    "limits": "Actual Timer/OplChip/ordinary port methods with deterministic PIC time and recording sinks. DSP synthesis, catch-up rendering, capture file serialization and GUS internals are replaced by sinks; unsupported ESFM/Gold calls fail. Real worker ordering and synthesis are validated separately."
+  }
+}

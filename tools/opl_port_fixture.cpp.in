@@ -1,0 +1,169 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Extracted methods are DOSBox Staging code, copyright DOSBox Team.
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <initializer_list>
+#include <limits>
+#include <mutex>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+#define KAIRO_OPL_WORKER
+#define LOG_WARNING(...) ((void)0)
+#define assertm(condition, ...) do { if (!(condition)) throw std::runtime_error("invalid mode"); } while (false)
+using io_port_t = uint16_t;
+using io_val_t = uint32_t;
+enum class io_width_t { byte };
+enum class OplMode { None, Opl2, DualOpl2, Opl3, Opl3Gold, Esfm };
+enum class EsfmMode { Legacy, Native };
+namespace Port { namespace AdLib { constexpr io_port_t Command = 0x388; } }
+template<class T, class U> T check_cast(U x) { return static_cast<T>(x); }
+using Event = std::pair<io_port_t, uint8_t>;
+static double now_ms;
+static double PIC_FullIndex() { return now_ms; }
+static void require(bool ok) { if (!ok) throw std::runtime_error("port/timer differential mismatch"); }
+static void unsupported() { throw std::runtime_error("unsupported-mode stub reached"); }
+// @NAMESPACE_FIXTURE
+static int CPU_CycleMax=1000000, CPU_Cycles=10000, CPU_IODelayRemoved=0;
+struct ChipSink { std::vector<Event> writes; };
+static void OPL3_WriteRegBuffered(ChipSink* chip, io_port_t reg, uint8_t val) { chip->writes.emplace_back(reg,val); }
+struct EsfmStub { bool native_mode=false, emu_newmode=false; uint16_t addr_latch=0; };
+static void ESFM_write_reg_buffered_fast(EsfmStub*,io_port_t,uint8_t) { unsupported(); }
+static void ESFM_write_port(EsfmStub*,uint8_t,uint8_t) { unsupported(); }
+static uint8_t ESFM_readback_reg(EsfmStub*,io_port_t) { unsupported(); return 0; }
+struct Capture {
+    std::vector<Event> events;
+    void DoWrite(io_port_t reg,uint8_t val) { events.emplace_back(reg,val); }
+};
+static Capture capture;
+static Capture* opl_capture=&capture;
+static std::vector<Event> gus;
+static void GUS_MirrorAdLibCommandPortWrite(io_port_t port,uint8_t val) { gus.emplace_back(port,val); }
+struct Opl {
+    struct WorkerState {
+        struct Command { io_port_t address=0; uint8_t value=0; };
+        std::vector<Command> pending;
+        void Submit(Command c) { pending.push_back(c); }
+    } storage;
+    WorkerState* worker=nullptr;
+    std::mutex mutex;
+    OplChip chip[2];
+    struct { OplMode mode=OplMode::None; ChipSink chip; uint8_t newm=0; } opl;
+    struct { EsfmStub chip; EsfmMode mode=EsfmMode::Legacy; } esfm;
+    union { uint16_t normal=0; uint8_t dual[2]; } reg;
+    struct { bool active=false; uint8_t index=0; } ctrl;
+    uint8_t cache[512]={};
+    uint64_t render_calls=0;
+    void RenderUpToNow() { ++render_calls; }
+    void EsfmSetLegacyMode() { unsupported(); }
+    void AdlibGoldControlWrite(uint8_t) { unsupported(); }
+    uint8_t AdlibGoldControlRead() { unsupported(); return 0; }
+    void WriteReg(io_port_t,uint8_t);
+    io_port_t WriteAddr(io_port_t,uint8_t);
+    void CacheWrite(io_port_t,uint8_t);
+    void DualWrite(uint8_t,uint8_t,uint8_t);
+    void PortWrite(io_port_t,io_val_t,io_width_t);
+    uint8_t PortRead(io_port_t,io_width_t);
+    void QueueWrite(io_port_t,uint8_t);
+    void Drain() {
+        for (auto c : storage.pending) OPL3_WriteRegBuffered(&opl.chip,c.address,c.value);
+        storage.pending.clear();
+    }
+};
+// @END_NAMESPACE_FIXTURE
+static uint64_t writes=0, reads=0, pending_reads=0, drains=0, cases=0, expected_status_checks=0;
+struct Pair {
+    legacy::Opl old;
+    candidate::Opl current;
+    size_t delivered=0, captured=0, mirrored=0;
+    explicit Pair(OplMode mode) {
+        old.opl.mode=current.opl.mode=mode;
+        current.worker=&current.storage;
+        legacy::capture.events.clear(); candidate::capture.events.clear();
+        legacy::gus.clear(); candidate::gus.clear();
+        now_ms=0;
+        ++cases;
+    }
+    void check() {
+        require(old.opl.newm==current.opl.newm && old.render_calls==current.render_calls);
+        require(std::memcmp(old.cache,current.cache,sizeof(old.cache))==0);
+        require(std::memcmp(&old.reg,&current.reg,sizeof(old.reg))==0);
+        const auto& ref=old.opl.chip.writes;
+        const auto& done=current.opl.chip.writes;
+        const auto& pending=current.storage.pending;
+        require(ref.size()==done.size()+pending.size());
+        for (;delivered<done.size();++delivered) require(ref[delivered]==done[delivered]);
+        for (size_t i=0;i<pending.size();++i) require(ref[done.size()+i]==Event(pending[i].address,pending[i].value));
+        require(legacy::capture.events.size()==candidate::capture.events.size());
+        for (;captured<legacy::capture.events.size();++captured)
+            require(legacy::capture.events[captured]==candidate::capture.events[captured]);
+        require(legacy::gus.size()==candidate::gus.size());
+        for (;mirrored<legacy::gus.size();++mirrored) require(legacy::gus[mirrored]==candidate::gus[mirrored]);
+    }
+    void write(io_port_t p,uint8_t v) {
+        old.PortWrite(p,v,io_width_t::byte); current.PortWrite(p,v,io_width_t::byte);
+        ++writes; check();
+    }
+    void regwrite(io_port_t p,uint8_t r,uint8_t v) { write(p,r);write(p+1,v); }
+    uint8_t read(io_port_t p) {
+        legacy::CPU_CycleMax=candidate::CPU_CycleMax=1000000;
+        legacy::CPU_Cycles=candidate::CPU_Cycles=reads%2 ? 10000 : 3;
+        legacy::CPU_IODelayRemoved=candidate::CPU_IODelayRemoved=0;
+        auto a=old.PortRead(p,io_width_t::byte), b=current.PortRead(p,io_width_t::byte);
+        require(a==b && legacy::CPU_Cycles==candidate::CPU_Cycles && legacy::CPU_IODelayRemoved==candidate::CPU_IODelayRemoved);
+        ++reads; pending_reads+=!current.storage.pending.empty(); check(); return b;
+    }
+    void drain() { current.Drain();++drains;check(); }
+};
+int main() {
+    for (auto mode : {OplMode::Opl2,OplMode::DualOpl2,OplMode::Opl3}) {
+        // Every timer counter, both timers, mirrored/individual chip ports.
+        for (io_port_t base : {0x388,0x220,0x222}) for (int timer=0;timer<2;++timer)
+            for (unsigned counter=0;counter<256;++counter) {
+                Pair p(mode);
+                p.regwrite(base,2+timer,counter);
+                p.regwrite(base,4,1<<timer);
+                const double period=(256-counter)*((timer ? 320 : 80)*0.001);
+                io_port_t status=(mode==OplMode::DualOpl2) ? base : 0x388;
+                uint8_t idle=mode==OplMode::Opl3 ? 0 : 6;
+                now_ms=std::nextafter(period,-std::numeric_limits<double>::infinity());
+                require(p.read(status)==idle);++expected_status_checks;
+                now_ms=period;
+                require(p.read(status)==uint8_t(idle|(timer ? 0xa0 : 0xc0)));++expected_status_checks;
+                now_ms=std::nextafter(period,std::numeric_limits<double>::infinity());
+                require(p.read(status)==uint8_t(idle|(timer ? 0xa0 : 0xc0)));++expected_status_checks;
+                p.regwrite(base,4,(1<<timer)|(timer ? 0x20 : 0x40));
+                require(p.read(status)==idle);++expected_status_checks;
+                p.regwrite(base,4,0x80); p.regwrite(base,4,0);
+                now_ms+=100;
+                require(p.read(status)==idle);++expected_status_checks;
+                require(p.old.opl.chip.writes.empty());p.drain();
+            }
+        Pair p(mode);
+        // Enable and attempt to clear OPL3 mode: preserve existing latch semantics.
+        p.regwrite(0x38a,5,1);p.regwrite(0x38a,5,0);
+        for (io_port_t base : {0x388,0x38a,0x220,0x222,0x228})
+            for (unsigned reg=0;reg<256;++reg) for (unsigned val : {0,1,3,15,31,63,128,255}) {
+                p.regwrite(base,reg,val);
+                for (io_port_t read_port : {0x388,0x389,0x38a,0x38b,0x220,0x222}) p.read(read_port);
+                p.drain(); now_ms+=0.013;
+            }
+        uint64_t seed=74;
+        for (unsigned i=0;i<10000;++i) {
+            seed=seed*6364136223846793005ULL+1;
+            io_port_t ports[]={0x388,0x389,0x38a,0x38b,0x220,0x221,0x222,0x223,0x228,0x229};
+            p.write(ports[(seed>>32)%10],uint8_t(seed>>16));
+            p.read(ports[(seed>>40)%10]);
+            if (i%17==0) p.drain();
+            now_ms+=double(seed%1000)/10000;
+        }
+        p.drain();
+    }
+    require(pending_reads>0);
+    std::printf("{\"cases\":%llu,\"portWrites\":%llu,\"statusReads\":%llu,\"readsWithPendingWrites\":%llu,\"drains\":%llu,\"expectedTimerStatusChecks\":%llu,\"mismatches\":0}\n",
+        (unsigned long long)cases,(unsigned long long)writes,(unsigned long long)reads,
+        (unsigned long long)pending_reads,(unsigned long long)drains,(unsigned long long)expected_status_checks);
+}
