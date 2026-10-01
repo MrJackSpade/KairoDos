@@ -1,0 +1,89 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+@@ -710,18 +710,68 @@
+ 
+ // functions that enable access to the memory
+ 
++// Experimental #71: direct reads only. Keep all writes and slow paths intact.
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++static const uint8_t* dyn_arm64_direct_read(HostReg address, HostReg dest,
++                                           const unsigned width)
++{
++    // W-register move zero-extends the 32-bit guest address. No NZCV changes.
++    cache_addd(MOV_REG_LSL_IMM(temp3, address, 0));
++    const uint8_t* crossing = nullptr;
++    if (width > 1) {
++        cache_addd(UBFM(temp1, temp3, 0, 11));
++        cache_addd(ADD_IMM(temp1, temp1, width - 1, 0));
++        cache_addd(UBFM(temp1, temp1, 12, 12));
++        crossing = gen_create_branch_on_nonzero(temp1, true);
++    }
++    cache_addd(UBFM(temp1, temp3, 12, 31));
++    gen_mov_qword_to_reg_imm(temp2, (uint64_t)PAGING_GetReadBaseAddress());
++    cache_addd(LDR64_REG_LSL_IMM(temp2, temp2, temp1, 1));
++    const auto missing = cache.pos;
++    // A host pointer requires a 64-bit null test, not gen_create_branch_on_zero.
++    cache_addd(0xb4000000u | temp2); // cbz x11, slow
++    cache_addd(0x8b000000u | temp2 | (temp2 << 5) | (temp3 << 16));
++    cache_addd(MOVZ(FC_RETOP, 0, 0));
++    if (width == 1) cache_addd(LDRB_IMM(dest, temp2, 0));
++    else if (width == 2) cache_addd(LDRH_IMM(dest, temp2, 0));
++    else cache_addd(LDR_IMM(dest, temp2, 0));
++    const auto done = cache.pos;
++    cache_addd(B_FWD(0));
++    if (crossing) gen_fill_branch(crossing);
++    gen_fill_branch(missing);
++    return done;
++}
++
++static void dyn_arm64_finish_direct_read(const uint8_t* done)
++{
++    cache_addd(B_FWD(cache.pos - done), done);
++}
++#endif
++
+ // read a byte from a given address and store it in reg_dst
+ static void dyn_read_byte(HostReg reg_addr,HostReg reg_dst) {
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	const auto done = dyn_arm64_direct_read(reg_addr, reg_dst, 1);
++#endif
+ 	gen_mov_regs(FC_OP1,reg_addr);
+ 	gen_call_function_raw((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low(reg_dst,&core_dynrec.readdata);
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	dyn_arm64_finish_direct_read(done);
++#endif
+ }
+ static void dyn_read_byte_canuseword(HostReg reg_addr,HostReg reg_dst) {
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	const auto done = dyn_arm64_direct_read(reg_addr, reg_dst, 1);
++#endif
+ 	gen_mov_regs(FC_OP1,reg_addr);
+ 	gen_call_function_raw((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low_canuseword(reg_dst,&core_dynrec.readdata);
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	dyn_arm64_finish_direct_read(done);
++#endif
+ }
+ 
+ // write a byte from reg_val into the memory given by the address
+@@ -735,11 +785,17 @@
+ // read a 32bit (dword=true) or 16bit (dword=false) value
+ // from a given address and store it in reg_dst
+ static void dyn_read_word(HostReg reg_addr,HostReg reg_dst,bool dword) {
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	const auto done = dyn_arm64_direct_read(reg_addr, reg_dst, dword ? 4 : 2);
++#endif
+ 	gen_mov_regs(FC_OP1,reg_addr);
+ 	if (dword) gen_call_function_raw((void *)&mem_readd_checked_drc);
+ 	else gen_call_function_raw((void *)&mem_readw_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_word_to_reg(reg_dst,&core_dynrec.readdata,dword);
++#if C_TARGET_CPU_ARM && defined(USE_FULL_TLB)
++	dyn_arm64_finish_direct_read(done);
++#endif
+ }
+ 
+ // write a 32bit (dword=true) or 16bit (dword=false) value

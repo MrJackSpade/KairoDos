@@ -1,0 +1,25 @@
+{
+  "ticket": 71,
+  "status": "prototype only; not adopted or benchmarked",
+  "baseCommit": "f260dfaac3f68809668c2c7ed3bd2ba7ee1422da",
+  "prototypeApkSha256": "0ae026711620167ab086c0e0dbeab28afdedac8a321db64239eed808e16defcd",
+  "guestProfile": false,
+  "build": "assembleDebug successful",
+  "device": "Retroid Pocket Classic",
+  "generatedCodeChecks": 110592,
+  "coverage": [
+    "byte/word/dword",
+    "every page offset",
+    "pages 0, 1, 0xfffff",
+    "direct -> null -> remapped live TLB",
+    "page-crossing fallback selection",
+    "32-bit address boundary fallback selection"
+  ],
+  "limitations": [
+    "fallback is a sentinel in standalone harness, not real checked helper",
+    "full core faults, device handlers and register/flags integration not yet tested",
+    "no game-level performance result",
+    "RGDS absent from USB and mDNS; prior TLS and fixed endpoints timed out"
+  ],
+  "installedAppsChanged": false
+}
