@@ -1,0 +1,54 @@
+--- a/kairodos/src/main/java/com/mrjackspade/kairodos/MainActivity.kt
++++ b/kairodos/src/main/java/com/mrjackspade/kairodos/MainActivity.kt
+@@ -1197,6 +1197,7 @@
+                 AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT)
+             if (minimum <= 0) return@Thread
+             val track = AudioTrack.Builder()
++                .setPerformanceMode(if (intent.getBooleanExtra("kairo_audio_low_latency", false)) AudioTrack.PERFORMANCE_MODE_LOW_LATENCY else AudioTrack.PERFORMANCE_MODE_NONE)
+                 .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
+                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                 .setAudioFormat(AudioFormat.Builder().setSampleRate(rate)
+@@ -1210,13 +1211,41 @@
+             }
+             audio = track
+             track.setVolume(if (preferences.getBoolean("muted", false)) 0f else 1f)
++            val bufferPolicy = if (intent.getBooleanExtra("kairo_audio_policy", false))
++                com.mrjackspade.kairo.frontend.AudioTrackBufferPolicy(track) else null
++            val measuredBufferMs = intent.getIntExtra("kairo_audio_buffer_ms", 0)
++            if (measuredBufferMs > 0) {
++                val requestedFrames = rate * measuredBufferMs / 1000
++                val appliedFrames = track.setBufferSizeInFrames(requestedFrames)
++                android.util.Log.i("KairoAudioMeasure", "limit requestedFrames=$requestedFrames appliedFrames=$appliedFrames")
++            }
++            android.util.Log.i("KairoAudioMeasure", "config rate=$rate minimumBytes=$minimum capacity=${track.bufferCapacityInFrames} size=${track.bufferSizeInFrames} mode=${track.performanceMode}")
+             track.play()
++            var reads = 0L; var empty = 0L; var submitted = 0L; var readNs = 0L; var writeNs = 0L; var partial = 0L
++            var readMax = 0L; var writeMax = 0L
++            var report = System.nanoTime()
+             val buffer = ShortArray(4096)
+             try {
+                 while (generation == audioGeneration && nativeStatus() == 2) {
++                    val begin = System.nanoTime()
+                     val frames = nativeReadAudio(buffer, buffer.size / 2)
+-                    if (frames > 0) track.write(buffer, 0, frames * 2, AudioTrack.WRITE_BLOCKING)
+-                    else Thread.sleep(4)
++                    val afterRead = System.nanoTime()
++                    val readTime = afterRead - begin
++                    readNs += readTime; readMax = maxOf(readMax, readTime); reads++
++                    if (frames > 0) {
++                        val written = track.write(buffer, 0, frames * 2, AudioTrack.WRITE_BLOCKING)
++                        val writeTime = System.nanoTime() - afterRead
++                        writeNs += writeTime; writeMax = maxOf(writeMax, writeTime)
++                        if (written != frames * 2) partial++
++                        if (written > 0) submitted += written / 2
++                    } else { empty++; Thread.sleep(4) }
++                    bufferPolicy?.checkAfterWrite()
++                    val now = System.nanoTime()
++                    if (now - report >= 2_000_000_000L) {
++                        val played = track.playbackHeadPosition.toLong() and 0xffffffffL
++                        android.util.Log.i("KairoAudioMeasure", "windowNs=${now-report} reads=$reads empty=$empty submitted=$submitted pending=${submitted-played} readNs=$readNs writeNs=$writeNs readMax=$readMax writeMax=$writeMax partial=$partial underruns=${track.underrunCount}")
++                        reads=0; empty=0; readNs=0; writeNs=0; readMax=0; writeMax=0; partial=0; report=now
++                    }
+                 }
+             } finally {
+                 runCatching { track.stop() }

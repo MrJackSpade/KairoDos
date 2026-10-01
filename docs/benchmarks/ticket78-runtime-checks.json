@@ -1,0 +1,108 @@
+{
+  "normalIdentity": {
+    "baselineApkSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "normalApkSha256": "5400302d81f89dac4fe1b33ef45a2434ecfd3c5a530f36ba02264fb1e1336ad0",
+    "changedPayloads": [
+      "classes2.dex",
+      "classes4.dex"
+    ],
+    "coreSha256": "56c34ad6c88ca81d633c2633c089c674767c1884b64bb91f2012dcf17197a347",
+    "diagnosticsAbsent": true
+  },
+  "normalFallbackFixture": "Audio output policy: original=4096 reduced=2400; forced underrun restored original; resumed writes OK\n",
+  "games": [
+    {
+      "game": "normal-doom",
+      "pid": "21259",
+      "observations": [
+        {
+          "file": "audio-0.txt",
+          "serverFrames": 2510400,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.6
+        },
+        {
+          "file": "audio-1.txt",
+          "serverFrames": 3000000,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.62
+        },
+        {
+          "file": "audio-2.txt",
+          "serverFrames": 3488640,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.27
+        }
+      ],
+      "imageSha256": "75465c3a2578165fcf40b0aef968592733bda955b9b204ca3c72e0dbfd29eefd"
+    },
+    {
+      "game": "normal-cannon",
+      "pid": "21384",
+      "observations": [
+        {
+          "file": "audio-0.txt",
+          "serverFrames": 3596160,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.66
+        },
+        {
+          "file": "audio-1.txt",
+          "serverFrames": 4080960,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.42
+        },
+        {
+          "file": "audio-2.txt",
+          "serverFrames": 4565760,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.57
+        }
+      ],
+      "imageSha256": "9ae4ef6590fbb20f50754b1c83e211133496dcfd9dd30bc396ff2ce93f1c0f72"
+    },
+    {
+      "game": "normal-duke",
+      "pid": "21537",
+      "observations": [
+        {
+          "file": "audio-0.txt",
+          "serverFrames": 1814400,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.45
+        },
+        {
+          "file": "audio-1.txt",
+          "serverFrames": 2299200,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.53
+        },
+        {
+          "file": "audio-2.txt",
+          "serverFrames": 2784960,
+          "effectiveFrames": "2400r",
+          "readyFrames": 2400,
+          "underruns": 0,
+          "latencyMs": 149.51
+        }
+      ],
+      "imageSha256": "a7333e9a3e167df5f1140bde69d16e16684bf692225631d012c3b9654b18cea4"
+    }
+  ]
+}

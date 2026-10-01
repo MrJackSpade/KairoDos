@@ -1209,6 +1209,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 return@Thread
             }
             audio = track
+            val bufferPolicy = com.mrjackspade.kairo.frontend.AudioTrackBufferPolicy(track)
             track.setVolume(if (preferences.getBoolean("muted", false)) 0f else 1f)
             track.play()
             val buffer = ShortArray(4096)
@@ -1217,6 +1218,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     val frames = nativeReadAudio(buffer, buffer.size / 2)
                     if (frames > 0) track.write(buffer, 0, frames * 2, AudioTrack.WRITE_BLOCKING)
                     else Thread.sleep(4)
+                    bufferPolicy.checkAfterWrite()
                 }
             } finally {
                 runCatching { track.stop() }

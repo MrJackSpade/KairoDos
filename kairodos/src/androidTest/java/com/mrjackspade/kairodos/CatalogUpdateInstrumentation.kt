@@ -11,6 +11,7 @@ import java.util.zip.ZipOutputStream
 
 /** Device fixture for partial catalog layers and rejection before snapshot activation. */
 class CatalogUpdateInstrumentation : Instrumentation() {
+    private var audioOutputPolicy = false
     private var hardwareRender = false
     private var hardwareGame: String? = null
     private var presentationArchive: String? = null
@@ -33,6 +34,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var resolutionNoDouble = false
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
+        audioOutputPolicy = arguments?.getString("audioOutputPolicy") == "true"
         hardwareRender = arguments?.getString("hardwareRender") == "true"
         hardwareGame = arguments?.getString("hardwareGame")
         presentationArchive = arguments?.getString("presentationArchive")
@@ -59,6 +61,11 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     override fun onStart() {
         val result = Bundle()
         try {
+            if (audioOutputPolicy) {
+                result.putString("stream", AudioOutputPolicyFixture.verify())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (menuNavigation) {
                 ControllerMenuFixture.verify(this)
                 result.putString("stream", "Controller-only mapping, slider and dialog navigation: OK")

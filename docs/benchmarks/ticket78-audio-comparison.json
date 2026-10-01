@@ -1,0 +1,1882 @@
+{
+  "ticket": 78,
+  "protocol": "Fresh launch; 60-second warmup, 120-second rendered Duke3D demo, sound generation enabled. A1 diagnostic baseline, B1 limit50, A2 repeat baseline on same policy-probe APK, B2 adaptive policy. See document for observation/build differences and limits.",
+  "identity": {
+    "baselineApkSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "normalApkSha256": "5400302d81f89dac4fe1b33ef45a2434ecfd3c5a530f36ba02264fb1e1336ad0",
+    "changedPayloads": [
+      "classes2.dex",
+      "classes4.dex"
+    ],
+    "coreSha256": "56c34ad6c88ca81d633c2633c089c674767c1884b64bb91f2012dcf17197a347",
+    "diagnosticsAbsent": true
+  },
+  "initialDiagnostic": {
+    "baseline": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "diagnostic": "4262c90557b154b0b3766dd1858e0e99b12c1c7813eef91ee5e8b5142beb6be3",
+    "changedPayloads": [
+      "classes4.dex"
+    ],
+    "coreSha256": "56c34ad6c88ca81d633c2633c089c674767c1884b64bb91f2012dcf17197a347"
+  },
+  "policyProbe": {
+    "baselineApkSha256": "213bf68a69eea378dd616c6d54964f53a982491bb786117d57a5b54ee9ab5cc8",
+    "policyProbeApkSha256": "be89c50c587a1767967922265b823d1fa74228467dc5373e11172a0b5afced62",
+    "changedPayloads": [
+      "classes4.dex"
+    ],
+    "coreSha256": "56c34ad6c88ca81d633c2633c089c674767c1884b64bb91f2012dcf17197a347"
+  },
+  "adaptiveProbeApkSha256": "2d192985ee9c779a2bf60ed96fa19f67339f3312e7a417831d7201a887b57a88",
+  "fixture": "Audio output policy: original=4096 reduced=2400; forced underrun restored original; resumed writes OK\n",
+  "testApkSha256": "8f15839479850ffed7a066a3721739c00e4c8248bc49d7af573d33066c58aad7",
+  "runs": [
+    {
+      "name": "baseline",
+      "capture": {
+        "duration": 123.73399999999674,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#5917",
+        "pid": "11374",
+        "observation": "light",
+        "framePeriod": "0.5",
+        "promptResponse": "n",
+        "recordExit": null,
+        "statExit": null,
+        "frameSamplerExit": 0,
+        "frameSampler": "device-local-v1"
+      },
+      "frames": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 120.29700000002049,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 119.20496770490999,
+        "threadCpuPercent": [
+          [
+            11425,
+            "KairoDos-emulat",
+            84.89821026291811
+          ],
+          [
+            11442,
+            "dosbox:mixer",
+            23.26741315244373
+          ],
+          [
+            11443,
+            "KairoDos-emulat",
+            5.029219348777583
+          ],
+          [
+            11435,
+            "KairoDos-emulat",
+            3.1339102388250395
+          ],
+          [
+            11445,
+            "KairoDos-audio",
+            1.2635394066350292
+          ],
+          [
+            11448,
+            "binder:11374_5",
+            0.5985186663008033
+          ],
+          [
+            11374,
+            "loxifi.kairodos",
+            0.34913588867546863
+          ],
+          [
+            11441,
+            "SDLAudioP2",
+            0.29094657389622386
+          ],
+          [
+            11391,
+            "binder:11374_1",
+            0.2078189813544456
+          ],
+          [
+            11395,
+            "binder:11374_4",
+            0.11637862955848954
+          ],
+          [
+            11434,
+            "binder:11374_2",
+            0.11637862955848954
+          ],
+          [
+            11385,
+            "Jit thread pool",
+            0.016625518508355648
+          ],
+          [
+            11382,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            11383,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            11384,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            11386,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            11388,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            11389,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            11390,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            11392,
+            "binder:11374_2",
+            0.0
+          ],
+          [
+            11394,
+            "binder:11374_3",
+            0.0
+          ],
+          [
+            11401,
+            "Profile Saver",
+            0.0
+          ],
+          [
+            11402,
+            "RenderThread",
+            0.0
+          ],
+          [
+            11406,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            11407,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            11408,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            11409,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            11410,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            11411,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            11416,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            11418,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            11419,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            11420,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            11423,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            11424,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            11430,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            11431,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            11436,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            11437,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            11438,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            11439,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            11440,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            11444,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            11446,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            11447,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3831,
+          "rate": 31.943633786375308,
+          "intervalSeconds": 119.93000000000029,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.6964585,
+          "p95IntervalMs": 66.680541,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.31300000002375,
+        "maxFrameSamplingGapSeconds": 0.6900000000023283,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            72222,
+            72777
+          ],
+          "gpu-thermal": [
+            68750,
+            70000
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 127.13999999995576,
+          "trackUnderrunFieldStart": {
+            "123": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "123": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "123": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "audio": {
+        "pid": "11374",
+        "config": [
+          {
+            "rate": 48000,
+            "minimumBytes": 15392,
+            "capacity": 4096,
+            "size": 4096,
+            "mode": 0
+          }
+        ],
+        "windows": 62,
+        "observedSeconds": 126.439736269,
+        "readWallPercent": 0.4008288548797432,
+        "writeWallPercent": 91.3131185732369,
+        "readCallsPerSecond": 66.59298926475523,
+        "emptyReadsPerSecond": 18.81528758442431,
+        "maxReadMs": 5.902458,
+        "maxWriteMs": 62.523708,
+        "partialWrites": 0,
+        "underrunRange": [
+          0,
+          0
+        ],
+        "softwarePendingFramesRange": [
+          1248,
+          2624
+        ],
+        "softwarePendingFramesMedian": 1680.0,
+        "submittedFramesPerSecond": 48002.100364688624
+      },
+      "flinger": {
+        "samples": [
+          {
+            "file": "audio-start.txt",
+            "capacity": "4096",
+            "ready": 4096,
+            "underruns": 0,
+            "latency": 182.42,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-end.txt",
+            "capacity": "4096",
+            "ready": 3648,
+            "underruns": 0,
+            "latency": 175.46,
+            "latencyKind": "t"
+          }
+        ],
+        "latencyMean": 178.94,
+        "latencyRange": [
+          175.46,
+          182.42
+        ]
+      },
+      "rawSha256": {
+        "audio-log.txt": "ab552291329d14566b7bcf533ad957fbdcc9a139357aa101bb64fd403f3556bd",
+        "capture-start.png": "a518610496c48bb16595286ecf8a1914251a4a2f552daf04d43109e241b07c0d",
+        "capture-end.png": "8c14d51ec99d9c584ad7f1bd37f79d383f61c0b1f299b8f22a06285e9f26c4d1",
+        "samples.jsonl": "3f2e94bb4a4a2771d887450007df6a040d90160e932d09d7b3ebdcb59d3705a1",
+        "surface-history.txt": "83c758ebd9ddc810964226b765312e1379493fca932ffde9418b2afe4b2bf70a",
+        "audio-start.txt": "b10e49b679754485fd1b1d8147f7926a6b752d4407c70f4900c733f6f875f1ae",
+        "audio-end.txt": "9c847cf0c32965ca6695eba469bd656777c25de21bceced5dfa2ea0ab30a2160"
+      }
+    },
+    {
+      "name": "limit50",
+      "capture": {
+        "duration": 123.57800000003772,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#5989",
+        "pid": "13765",
+        "observation": "light",
+        "framePeriod": "0.5",
+        "promptResponse": "n",
+        "recordExit": null,
+        "statExit": null,
+        "frameSamplerExit": 0,
+        "frameSampler": "device-local-v1"
+      },
+      "frames": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 120.10899999999674,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 119.11680223797042,
+        "threadCpuPercent": [
+          [
+            13816,
+            "KairoDos-emulat",
+            84.45661857146655
+          ],
+          [
+            13833,
+            "dosbox:mixer",
+            24.844099942552855
+          ],
+          [
+            13834,
+            "KairoDos-emulat",
+            4.054650359257119
+          ],
+          [
+            13824,
+            "KairoDos-emulat",
+            3.088860951302651
+          ],
+          [
+            13836,
+            "KairoDos-audio",
+            0.9907667202291521
+          ],
+          [
+            13881,
+            "binder:13765_5",
+            0.5661524115595155
+          ],
+          [
+            13765,
+            "loxifi.kairodos",
+            0.35800814260381125
+          ],
+          [
+            13832,
+            "SDLAudioP2",
+            0.28307620577975773
+          ],
+          [
+            13784,
+            "binder:13765_2",
+            0.20814426895570423
+          ],
+          [
+            13788,
+            "binder:13765_4",
+            0.14986387364810705
+          ],
+          [
+            13826,
+            "binder:13765_2",
+            0.1082350198569662
+          ],
+          [
+            13776,
+            "Jit thread pool",
+            0.00832577075822817
+          ],
+          [
+            13791,
+            "Profile Saver",
+            0.00832577075822817
+          ],
+          [
+            13773,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            13774,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            13775,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            13777,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            13778,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            13779,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            13780,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            13783,
+            "binder:13765_1",
+            0.0
+          ],
+          [
+            13787,
+            "binder:13765_3",
+            0.0
+          ],
+          [
+            13792,
+            "RenderThread",
+            0.0
+          ],
+          [
+            13796,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            13797,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            13798,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            13799,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            13800,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            13801,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            13807,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            13809,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            13810,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            13811,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            13814,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            13815,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            13821,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            13822,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            13827,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            13828,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            13829,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            13830,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            13831,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            13835,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            13837,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            13838,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3770,
+          "rate": 31.582474658623752,
+          "intervalSeconds": 119.37000000000262,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.696458,
+          "p95IntervalMs": 66.663041,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.39000000001397,
+        "maxFrameSamplingGapSeconds": 0.7399999999979627,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            72777,
+            73333
+          ],
+          "gpu-thermal": [
+            68750,
+            70000
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.92200000002049,
+          "trackUnderrunFieldStart": {
+            "124": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "124": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "124": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "audio": {
+        "pid": "13765",
+        "config": [
+          {
+            "requestedFrames": 2400,
+            "appliedFrames": 2400
+          },
+          {
+            "rate": 48000,
+            "minimumBytes": 15392,
+            "capacity": 4096,
+            "size": 2400,
+            "mode": 0
+          }
+        ],
+        "windows": 62,
+        "observedSeconds": 125.299978769,
+        "readWallPercent": 0.29622210047159947,
+        "writeWallPercent": 99.56532677630848,
+        "readCallsPerSecond": 24.588990598953387,
+        "emptyReadsPerSecond": 0.0,
+        "maxReadMs": 6.152416,
+        "maxWriteMs": 64.60125,
+        "partialWrites": 0,
+        "underrunRange": [
+          0,
+          0
+        ],
+        "softwarePendingFramesRange": [
+          1472,
+          2400
+        ],
+        "softwarePendingFramesMedian": 1936.0,
+        "submittedFramesPerSecond": 48000.55811211669
+      },
+      "flinger": {
+        "samples": [
+          {
+            "file": "flinger-000.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.37,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-001.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.44,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-002.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.5,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-003.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 148.71,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-004.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.42,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-005.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.52,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-006.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 148.95,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-007.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.48,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-008.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.59,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-009.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.42,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-010.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 148.13,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-011.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.67,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-012.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.58,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-start.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.42,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-end.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.58,
+            "latencyKind": "t"
+          }
+        ],
+        "latencyMean": 149.31866666666667,
+        "latencyRange": [
+          148.13,
+          149.67
+        ]
+      },
+      "rawSha256": {
+        "audio-log.txt": "96974aa66a543ea06a437f24b16936af8778521060689c463ea8fae43e64ecff",
+        "capture-start.png": "ac7f276cbe26a1ab882ff5e164c4c506cea090016624c7dd8d06885614e4e61c",
+        "capture-end.png": "eb2b79e0098cb6e722662f655b5272754df2c13afe37eb91d9b88e30152cfb8b",
+        "samples.jsonl": "8f9e1fd9ce5195f19b97e66cebd4cb8e8fe02599cd0936aa583ceb4b0d25d06b",
+        "surface-history.txt": "fba9b8363d183a612a29f6f03adac4eb6ec954255463e5e4bfed525391b73cc1",
+        "audio-start.txt": "050c6b520f49de9a793650677cacd55c901426bb9f4975473933476d1f857a47",
+        "audio-end.txt": "452eecc95ac4f4fff9ff9fd0195fce3315284364d2c7486273147e0d07311067"
+      }
+    },
+    {
+      "name": "baseline2",
+      "capture": {
+        "duration": 123.57799999997951,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#6126",
+        "pid": "16362",
+        "observation": "light",
+        "framePeriod": "0.5",
+        "promptResponse": "n",
+        "recordExit": null,
+        "statExit": null,
+        "frameSamplerExit": 0,
+        "frameSampler": "device-local-v1"
+      },
+      "frames": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 120.14000000001397,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 118.86965207256817,
+        "threadCpuPercent": [
+          [
+            16404,
+            "KairoDos-emulat",
+            83.96037955717352
+          ],
+          [
+            16421,
+            "dosbox:mixer",
+            24.046945230561548
+          ],
+          [
+            16422,
+            "KairoDos-emulat",
+            4.885966372564773
+          ],
+          [
+            16414,
+            "KairoDos-emulat",
+            3.013151323455618
+          ],
+          [
+            16424,
+            "KairoDos-audio",
+            1.2485433660727698
+          ],
+          [
+            16378,
+            "binder:16362_4",
+            0.37456300982183094
+          ],
+          [
+            16362,
+            "loxifi.kairodos",
+            0.34959214250037557
+          ],
+          [
+            16375,
+            "binder:16362_1",
+            0.2996504078574648
+          ],
+          [
+            16420,
+            "SDLAudioP2",
+            0.2913267854169796
+          ],
+          [
+            16377,
+            "binder:16362_3",
+            0.1831196936906729
+          ],
+          [
+            16413,
+            "binder:16362_1",
+            0.09988346928582159
+          ],
+          [
+            16376,
+            "binder:16362_2",
+            0.049941734642910796
+          ],
+          [
+            16370,
+            "Jit thread pool",
+            0.008323622440485132
+          ],
+          [
+            16380,
+            "Profile Saver",
+            0.008323622440485132
+          ],
+          [
+            16367,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            16368,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            16369,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            16371,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            16372,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            16373,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            16374,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            16381,
+            "RenderThread",
+            0.0
+          ],
+          [
+            16385,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            16386,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            16387,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            16388,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            16389,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            16390,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            16395,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            16397,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            16398,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            16399,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            16402,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            16403,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            16409,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            16410,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            16415,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            16416,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            16417,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            16418,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            16419,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            16423,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            16425,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            16426,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3707,
+          "rate": 30.945821854912538,
+          "intervalSeconds": 119.79000000000087,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.703604,
+          "p95IntervalMs": 83.171375,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.46799999999348,
+        "maxFrameSamplingGapSeconds": 0.6900000000023283,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            72222,
+            73333
+          ],
+          "gpu-thermal": [
+            68750,
+            70000
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.85899999999674,
+          "trackUnderrunFieldStart": {
+            "126": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "126": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "126": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "audio": {
+        "pid": "16362",
+        "config": [
+          {
+            "rate": 48000,
+            "minimumBytes": 15392,
+            "capacity": 4096,
+            "size": 4096,
+            "mode": 0
+          }
+        ],
+        "windows": 61,
+        "observedSeconds": 124.399996935,
+        "readWallPercent": 0.37814564918823484,
+        "writeWallPercent": 91.0979354567136,
+        "readCallsPerSecond": 67.79742932314406,
+        "emptyReadsPerSecond": 19.389068001828726,
+        "maxReadMs": 5.725125,
+        "maxWriteMs": 64.748541,
+        "partialWrites": 0,
+        "underrunRange": [
+          0,
+          0
+        ],
+        "softwarePendingFramesRange": [
+          1248,
+          2624
+        ],
+        "softwarePendingFramesMedian": 1600,
+        "submittedFramesPerSecond": 47994.81058072023
+      },
+      "flinger": {
+        "samples": [
+          {
+            "file": "flinger-000.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 164.8,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-001.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 164.87,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-002.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 164.91,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-003.txt",
+            "capacity": "4096",
+            "ready": 4096,
+            "underruns": 0,
+            "latency": 184.83,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-004.txt",
+            "capacity": "4096",
+            "ready": 2176,
+            "underruns": 0,
+            "latency": 144.81,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-005.txt",
+            "capacity": "4096",
+            "ready": 2176,
+            "underruns": 0,
+            "latency": 140.0,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-006.txt",
+            "capacity": "4096",
+            "ready": 4096,
+            "underruns": 0,
+            "latency": 184.86,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-007.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 164.38,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-008.txt",
+            "capacity": "4096",
+            "ready": 4096,
+            "underruns": 0,
+            "latency": 184.74,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-009.txt",
+            "capacity": "4096",
+            "ready": 2176,
+            "underruns": 0,
+            "latency": 144.71,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-010.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 161.62,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-011.txt",
+            "capacity": "4096",
+            "ready": 4096,
+            "underruns": 0,
+            "latency": 184.78,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-012.txt",
+            "capacity": "4096",
+            "ready": 2176,
+            "underruns": 0,
+            "latency": 144.72,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-start.txt",
+            "capacity": "4096",
+            "ready": 2176,
+            "underruns": 0,
+            "latency": 144.81,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-end.txt",
+            "capacity": "4096",
+            "ready": 3136,
+            "underruns": 0,
+            "latency": 164.84,
+            "latencyKind": "t"
+          }
+        ],
+        "latencyMean": 162.912,
+        "latencyRange": [
+          140.0,
+          184.86
+        ]
+      },
+      "rawSha256": {
+        "audio-log.txt": "73bdbca59b22fa21f29a922352ea6066a0b797f3592c379d1d52efd9715bddc2",
+        "capture-start.png": "57be9b75acf88ae093b458f9fde140ed83bab453fb8f1cc40012c2667ee4c4a1",
+        "capture-end.png": "d94bc14d8f8f79ad7f868579fb26ae991122c3e350220ac57530c8c7c4c1ab31",
+        "samples.jsonl": "de8a6941f75706c265292e77338586861670e5a1167d55630287d91102603226",
+        "surface-history.txt": "19e3f873b86e6d80dd9868b897e5865feb11873a3aec330be72725bc43ceda24",
+        "audio-start.txt": "d8d54d7934c5a8c3d2b865c38d856da2e88cd077aafb3df7526188e3015fc6fd",
+        "audio-end.txt": "1bf8acf867ef47c79e81a6ce24a37c6ed79dcfe28d0efd6eaef0ddc890aa003b"
+      }
+    },
+    {
+      "name": "adaptive",
+      "capture": {
+        "duration": 123.51600000000326,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#6199",
+        "pid": "18796",
+        "observation": "light",
+        "framePeriod": "0.5",
+        "promptResponse": "n",
+        "recordExit": null,
+        "statExit": null,
+        "frameSamplerExit": 0,
+        "frameSampler": "device-local-v1"
+      },
+      "frames": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 120.10999999998603,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 118.78278244943517,
+        "threadCpuPercent": [
+          [
+            18846,
+            "KairoDos-emulat",
+            84.59745233536908
+          ],
+          [
+            18864,
+            "dosbox:mixer",
+            24.385979518777294
+          ],
+          [
+            18865,
+            "KairoDos-emulat",
+            3.996336691366712
+          ],
+          [
+            18854,
+            "KairoDos-emulat",
+            3.113812338689897
+          ],
+          [
+            18867,
+            "KairoDos-audio",
+            0.9824327699609834
+          ],
+          [
+            18796,
+            "loxifi.kairodos",
+            0.35800516193493465
+          ],
+          [
+            18814,
+            "binder:18796_2",
+            0.32470235617354537
+          ],
+          [
+            18816,
+            "binder:18796_3",
+            0.30805095329285076
+          ],
+          [
+            18852,
+            "binder:18796_5",
+            0.2997252518525034
+          ],
+          [
+            18863,
+            "SDLAudioP2",
+            0.2913995504121561
+          ],
+          [
+            18857,
+            "binder:18796_5",
+            0.10823411872451512
+          ],
+          [
+            18807,
+            "Jit thread pool",
+            0.02497710432104195
+          ],
+          [
+            18822,
+            "Profile Saver",
+            0.008325701440347317
+          ],
+          [
+            18804,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            18805,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            18806,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            18808,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            18809,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            18810,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            18811,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            18812,
+            "binder:18796_1",
+            0.0
+          ],
+          [
+            18817,
+            "binder:18796_4",
+            0.0
+          ],
+          [
+            18823,
+            "RenderThread",
+            0.0
+          ],
+          [
+            18827,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            18828,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            18829,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            18830,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            18831,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            18832,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            18837,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            18839,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            18840,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            18841,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            18844,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            18845,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            18851,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            18853,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            18858,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            18859,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            18860,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            18861,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            18862,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            18866,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            18868,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            18869,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3792,
+          "rate": 31.63954943679638,
+          "intervalSeconds": 119.84999999999854,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.695292,
+          "p95IntervalMs": 66.685208,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.65599999995902,
+        "maxFrameSamplingGapSeconds": 0.6999999999970896,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            71111,
+            72777
+          ],
+          "gpu-thermal": [
+            67500,
+            69375
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.79699999996228,
+          "trackUnderrunFieldStart": {
+            "128": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "128": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "128": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "audio": {
+        "pid": "18796",
+        "config": [
+          {
+            "rate": 48000,
+            "minimumBytes": 15392,
+            "capacity": 4096,
+            "size": 2400,
+            "mode": 0
+          }
+        ],
+        "windows": 62,
+        "observedSeconds": 125.239985268,
+        "readWallPercent": 0.2704449343995111,
+        "writeWallPercent": 99.55371924804689,
+        "readCallsPerSecond": 24.592784751684007,
+        "emptyReadsPerSecond": 0.0,
+        "maxReadMs": 5.312125,
+        "maxWriteMs": 65.149,
+        "partialWrites": 0,
+        "underrunRange": [
+          0,
+          0
+        ],
+        "softwarePendingFramesRange": [
+          1472,
+          2400
+        ],
+        "softwarePendingFramesMedian": 1904.0,
+        "submittedFramesPerSecond": 47999.96105466559
+      },
+      "flinger": {
+        "samples": [
+          {
+            "file": "flinger-000.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.59,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-001.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.45,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-002.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 148.9,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-003.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.39,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-004.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.45,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-005.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.39,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-006.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.47,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-007.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.46,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-008.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.46,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-009.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 148.39,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-010.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 144.61,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-011.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.51,
+            "latencyKind": "t"
+          },
+          {
+            "file": "flinger-012.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.67,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-start.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.24,
+            "latencyKind": "t"
+          },
+          {
+            "file": "audio-end.txt",
+            "capacity": "2400r",
+            "ready": 2400,
+            "underruns": 0,
+            "latency": 149.53,
+            "latencyKind": "t"
+          }
+        ],
+        "latencyMean": 149.034,
+        "latencyRange": [
+          144.61,
+          149.67
+        ]
+      },
+      "rawSha256": {
+        "audio-log.txt": "c9780dc42dba506af9f08745987bb35c8c79d7280c63a3694aa3fe718ebd8692",
+        "capture-start.png": "387f41f40b7f3e0f294d6d8683df1787a705ef9db46fbb3adc8fd356f15ec742",
+        "capture-end.png": "674c9030ecdb2d95cabdcb9279f1f977555c1dd6334c28b6a4e9b60174eb235e",
+        "samples.jsonl": "3a011bf3bd74a4e854c27a4b697c2521ba5a410d6072ff0d16fea5ed57cc7605",
+        "surface-history.txt": "5dad74c975936a730794ff3a5e2af92642ebd9de1524a812cfac28698e0963df",
+        "audio-start.txt": "4b63345b226849fdffa9bf62fd0e1fd050bb3e44152878af96e5cf069a611ece",
+        "audio-end.txt": "66fb8d0b17f05cd9767e0e4bccdc76f7d5ed7601494784c4f7043cb10fbc5ebe"
+      }
+    }
+  ]
+}
