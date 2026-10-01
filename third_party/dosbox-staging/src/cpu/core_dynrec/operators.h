@@ -1363,6 +1363,90 @@ static void dyn_branchflag_to_reg(BranchTypes btype) {
 }
 
 
+// The pending flag-optimization queue identifies a producer whose flags
+// are still live at this point in the same translated block. Only unconditional
+// CMP/TEST producers qualify; all other cases retain runtime flag dispatch.
+#ifdef KAIRO_KNOWN_FLAGS_VERIFY
+static uint64_t kairo_known_flags_checks = 0;
+#endif
+template <Bitu Type, BranchTypes Condition>
+static uint32_t DRC_CALL_CONV dynrec_known_condition() {
+#ifdef KAIRO_KNOWN_FLAGS_VERIFY
+    if (lflags.type != Type)
+        E_Exit("Known flag producer mismatch: expected %u, actual %u",
+               unsigned(Type), unsigned(lflags.type));
+    ++kairo_known_flags_checks;
+    if (kairo_known_flags_checks == 1 || (kairo_known_flags_checks & 0xfffff) == 0)
+        LOG_MSG("Kairo known flags verified %llu", (unsigned long long)kairo_known_flags_checks);
+#endif
+    constexpr bool byte = Type == t_CMPb || Type == t_TESTb;
+    constexpr bool word = Type == t_CMPw || Type == t_TESTw;
+    constexpr bool compare = Type == t_CMPb || Type == t_CMPw || Type == t_CMPd;
+    constexpr uint32_t sign = byte ? 0x80u : word ? 0x8000u : 0x80000000u;
+    const uint32_t result = byte ? lf_resb : word ? lf_resw : lf_resd;
+    const uint32_t left = byte ? lf_var1b : word ? lf_var1w : lf_var1d;
+    const uint32_t right = byte ? lf_var2b : word ? lf_var2w : lf_var2d;
+    const uint32_t cf = compare ? left < right : 0;
+    const uint32_t of = compare ? ((left ^ right) & (left ^ result) & sign) : 0;
+    const uint32_t zf = result == 0;
+    const uint32_t sf = result & sign;
+    if constexpr (Condition == BR_O) return of;
+    if constexpr (Condition == BR_NO) return !of;
+    if constexpr (Condition == BR_B) return cf;
+    if constexpr (Condition == BR_NB) return !cf;
+    if constexpr (Condition == BR_Z) return zf;
+    if constexpr (Condition == BR_NZ) return !zf;
+    if constexpr (Condition == BR_BE) return cf || zf;
+    if constexpr (Condition == BR_NBE) return !cf && !zf;
+    if constexpr (Condition == BR_S) return sf;
+    if constexpr (Condition == BR_NS) return !sf;
+    if constexpr (Condition == BR_L) return (sf != 0) != (of != 0);
+    if constexpr (Condition == BR_NL) return (sf != 0) == (of != 0);
+    if constexpr (Condition == BR_LE) return zf || ((sf != 0) != (of != 0));
+    if constexpr (Condition == BR_NLE) return !zf && ((sf != 0) == (of != 0));
+    return 0;
+}
+
+template <Bitu Type>
+static bool dyn_emit_known_condition(BranchTypes condition) {
+    switch (condition) {
+    case BR_O: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_O>); return true;
+    case BR_NO: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NO>); return true;
+    case BR_B: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_B>); return true;
+    case BR_NB: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NB>); return true;
+    case BR_Z: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_Z>); return true;
+    case BR_NZ: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NZ>); return true;
+    case BR_BE: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_BE>); return true;
+    case BR_NBE: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NBE>); return true;
+    case BR_S: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_S>); return true;
+    case BR_NS: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NS>); return true;
+    case BR_L: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_L>); return true;
+    case BR_NL: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NL>); return true;
+    case BR_LE: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_LE>); return true;
+    case BR_NLE: gen_call_function_raw((void*)&dynrec_known_condition<Type, BR_NLE>); return true;
+    default: return false;
+    }
+}
+
+static void dyn_branchflag_from_producer(BranchTypes condition) {
+#ifdef DRC_FLAGS_INVALIDATION
+    if (mf_functions_num == 1) {
+        bool emitted = false;
+        switch (mf_functions[0].ftype) {
+        case t_CMPb: emitted = dyn_emit_known_condition<t_CMPb>(condition); break;
+        case t_CMPw: emitted = dyn_emit_known_condition<t_CMPw>(condition); break;
+        case t_CMPd: emitted = dyn_emit_known_condition<t_CMPd>(condition); break;
+        case t_TESTb: emitted = dyn_emit_known_condition<t_TESTb>(condition); break;
+        case t_TESTw: emitted = dyn_emit_known_condition<t_TESTw>(condition); break;
+        case t_TESTd: emitted = dyn_emit_known_condition<t_TESTd>(condition); break;
+        default: break;
+        }
+        if (emitted) return;
+    }
+#endif
+    dyn_branchflag_to_reg(condition);
+}
+
 static void DRC_CALL_CONV dynrec_mul_byte(uint8_t op) DRC_FC;
 static void DRC_CALL_CONV dynrec_mul_byte(uint8_t op) {
 	FillFlagsNoCFOF();

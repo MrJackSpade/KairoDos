@@ -1095,7 +1095,7 @@ static void dyn_branched_exit(BranchTypes btype,int32_t eip_add) {
 	Bitu eip_base=decode.code-decode.code_start;
 	dyn_reduce_cycles();
 
-	dyn_branchflag_to_reg(btype);
+	dyn_branchflag_from_producer(btype);
 	const uint8_t* data=gen_create_branch_on_nonzero(FC_RETOP,true);
 
  	// Branch not taken

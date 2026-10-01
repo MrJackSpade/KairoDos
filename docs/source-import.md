@@ -69,6 +69,15 @@ Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in
 
 The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. See [adoption and corresponding test evidence](setcc-adoption.md); the change is core-specific and contains no game code.
 
+## Known-producer Jcc conditions
+
+`src/cpu/core_dynrec/operators.h` and `decoder_opcodes.h` specialize Jcc helpers
+for a single live CMP/TEST producer in the existing flag-elimination queue.
+Other conditions/producers retain original handling; no memory or invalidation
+semantics change. Original GPL notices remain intact. A verification-only macro
+checks producer identity and is absent from normal builds. See the
+[measured evaluation](arm64-known-flags-evaluation.md).
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
