@@ -1,9 +1,10 @@
 # Ordered OPL worker prototype (#74)
 
-Status: worker primitive and chip-level ordering test complete; an opt-in
-Staging integration passed its first OPL3 game comparison but is **not accepted
-or enabled by default**. #74 remains open. The design and acceptance requirements
-are in `opl-worker-feasibility.md`.
+Status: the opt-in integration has passed mode/DC, lifecycle, saturated-queue,
+independent catch-up and ordered OPL mixer-input checks. Repeated lighter
+benchmarks show a benefit, but timer/status/routing and another workload's
+performance remain. It is **not accepted or enabled by default**. #74 remains
+open. The design and acceptance requirements are in `opl-worker-feasibility.md`.
 
 ## Shared worker
 
@@ -18,8 +19,8 @@ on locks held by the caller.
 Destruction cancels pending work and joins any active operation; an owner that
 needs pending results must drain first. Processor exceptions wake the caller
 and propagate on submit/drain. Consumer exceptions are fatal to that stream,
-not a retry/fallback mechanism. No production OPL lifecycle is wired to this
-primitive yet, and it has no effect on either app's current runtime behavior.
+not a retry/fallback mechanism. The opt-in Staging integration drains and joins
+at teardown; normal builds leave that integration disabled.
 
 ## RGDS chip-level validation
 
@@ -223,13 +224,59 @@ After this batch, the normal adopted APK was restored over Wi-Fi. Its installed
 SHA-256 was verified again as
 `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 
+## Independent catch-up timeline and OPL callback stream
+
+The verification reference now maintains its own render timestamp and FIFO.
+Before the worker batches any catch-up commands, it executes the original
+synchronous loop with the observed time and WakeUp result. Commands consume
+those independently generated expected frames; missing or extra commands fail
+verification. It checks timeline equality at catch-up entry/exit, compares
+queued and directly generated frames in callback order immediately before
+`AddSamples_sfloat`, checks callback length against the request, and checks
+remaining FIFO counts after shutdown drain. This closes the earlier limitation
+where the reference generated as many frames as the candidate requested.
+
+OPL3/DC-on, dual-OPL2/DC-on and OPL2/DC-off each passed the Doom fixture's three
+core instances and lifecycle checks. Across nine instances, **60,518 catch-up
+calls** and **6,902,438 stereo frames handed to the OPL mixer channel** passed
+the independent checks. There were **17,485,882 sample comparison operations
+and zero differences**. That larger counter includes worker-output comparison
+and comparison again when queued output reaches the callback; it is not a
+count of unique sample values or independent test cases. Nonempty FIFO tails
+also matched. All three final screenshots show rendered Doom gameplay.
+
+`tools/test_opl_timing_boundaries.py` extracts the actual current
+`RenderUpToNow` method and its pre-worker version from commit `9dcfd7f6`, then
+compiles them for Android ARM64 with deterministic PIC time, WakeUp results,
+and counting sinks. On the RGDS it passed **20,600 cases**, accounting for
+905,987 reference frames and 16,822 worker blocks with zero count/timestamp
+differences. Cases include the representable values immediately below, on and
+above boundaries constructed by repeated addition; 63/64/65 and 127/128-frame
+batch transitions; repeated/backward times; large timestamps; and wake/no-wake
+and worker/no-worker paths. The independent game oracle checks actual synthesis
+and callback ordering; the extracted-method test checks boundary arithmetic.
+Neither test substitutes its own rewritten batching loop for the current code.
+
+The reference and boundary tests do not independently model PIC, channel sleep,
+or guest hardware timers. The callback comparison covers ordered OPL samples
+at the mixer input, not downstream filtering or the final combined PCM from
+all sound devices. Those mixer stages are unchanged by this prototype.
+
+[Timeline and boundary evidence](benchmarks/ticket74-timeline-integration.json)
+includes APK/source/log hashes, extracted-method provenance, fixture results,
+all timeline counters and the native boundary result. Add `--timeline` to
+`tools/check_opl_queue_log.py` to require these diagnostics. Worker-off,
+worker-only and verification compile checks passed; the verification APK built
+and ran on RGDS. The normal adopted APK was restored afterward and hash-verified
+as `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
+
 ## Next required work
 
 The measured benefit justifies continuing, but does not qualify the worker for
-adoption. Complete independent timer/status, sample-boundary and routing
-evidence, plus another OPL workload's performance. The remaining frame
-collector's own overhead has not been isolated. The sample comparator follows
-the worker's generated operation stream and does not independently establish
-those timing/routing invariants or compare the complete mixed callback stream.
+adoption. Complete independent timer/status and routing evidence, plus another
+OPL workload's performance. The remaining frame collector's own overhead has
+not been isolated. Catch-up arithmetic, command/frame counts and the ordered
+OPL callback input stream now have the independent evidence above; guest
+timer/status and routing invariants still need their separate checks.
 The acceptance requirements remain those in the design; this checkpoint alone
 does not justify normal deployment. #74 remains open.

@@ -11,6 +11,7 @@ p.add_argument('--mode', required=True, choices=('OPL2', 'DualOPL2', 'OPL3'))
 p.add_argument('--capacity', required=True, type=int)
 p.add_argument('--instances', type=int, default=3)
 p.add_argument('--require-pressure', action='store_true')
+p.add_argument('--timeline', action='store_true', help='Require independent catch-up and mixer-input verification')
 a = p.parse_args()
 assert a.capacity > 0 and a.instances > 0
 text = a.log.read_text()
@@ -34,7 +35,22 @@ for q in queues:
     if a.require_pressure:
         assert q['maxCommands'] == q['maxResults'] == a.capacity
         assert q['submitDrains'] > 0 and q['submitWaits'] > 0
+timeline = []
+if a.timeline:
+    fields = ('catchups', 'wakeups', 'callbacks', 'callbackFrames',
+              'pendingCatchup', 'referenceFifo', 'actualFifo')
+    timeline = [dict(zip(fields, map(int, row))) for row in re.findall(
+        r'KAIRO OPL timeline: catchups=(\d+) wakeups=(\d+) callbacks=(\d+) '
+        r'callback_frames=(\d+) pending_catchup=(\d+) reference_fifo=(\d+) actual_fifo=(\d+)', text)]
+    completed = [tuple(map(int, row)) for row in re.findall(
+        r'KAIRO OPL worker completed: commands=(\d+) frames=(\d+)', text)]
+    assert len(timeline) == len(completed) == a.instances
+    for t, (commands, generated), (compared, errors), q in zip(timeline, completed, samples, queues):
+        assert t['catchups'] > 0 and t['callbacks'] > 0 and t['callbackFrames'] > 0
+        assert t['pendingCatchup'] == 0 and t['referenceFifo'] == t['actualFifo']
+        assert commands == q['consumed']
+        assert compared == 2 * (generated + t['callbackFrames'])
 print(json.dumps({'mode': a.mode, 'instances': a.instances,
     'samplesCompared': sum(n for n, errors in samples), 'mismatches': 0,
-    'pressureRequired': a.require_pressure, 'queues': queues,
+    'pressureRequired': a.require_pressure, 'queues': queues, 'timeline': timeline,
     'limits': 'Queue/sample evidence only. Inspect fixture lifecycle result and rendered image separately; FIFO is the existing mixer queue, not a new bounded ring.'}, indent=2))

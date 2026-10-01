@@ -1,0 +1,345 @@
+{
+  "ticket": 74,
+  "device": "RGDS",
+  "workload": "Doom fixture, temporary copied drive",
+  "build": {
+    "apkSha256": "a8da8e1602f5c604db2bc7b37e5537d2c16708876ae227a23b551849c441bcf9",
+    "worker": true,
+    "verify": true,
+    "stress": false,
+    "guestProfile": false
+  },
+  "oplSourceSha256": "81282300c2aa654814abf1e9f55c374fcbe0e8dad8977a565a649366f6abaa4d",
+  "records": [
+    {
+      "case": "opl3-true",
+      "check": {
+        "mode": "OPL3",
+        "instances": 3,
+        "samplesCompared": 6052212,
+        "mismatches": 0,
+        "pressureRequired": false,
+        "queues": [
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 3656,
+            "submitWaits": 974,
+            "maxFifoFrames": 54649,
+            "issued": 12405,
+            "consumed": 12405
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 1675,
+            "submitWaits": 144,
+            "maxFifoFrames": 19037,
+            "issued": 8766,
+            "consumed": 8766
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 2488,
+            "submitWaits": 438,
+            "maxFifoFrames": 17975,
+            "issued": 12140,
+            "consumed": 12140
+          }
+        ],
+        "timeline": [
+          {
+            "catchups": 7228,
+            "wakeups": 1,
+            "callbacks": 1572,
+            "callbackFrames": 833638,
+            "pendingCatchup": 0,
+            "referenceFifo": 0,
+            "actualFifo": 0
+          },
+          {
+            "catchups": 5650,
+            "wakeups": 1,
+            "callbacks": 1398,
+            "callbackFrames": 741365,
+            "pendingCatchup": 0,
+            "referenceFifo": 163,
+            "actualFifo": 163
+          },
+          {
+            "catchups": 7642,
+            "wakeups": 1,
+            "callbacks": 1768,
+            "callbackFrames": 937578,
+            "pendingCatchup": 0,
+            "referenceFifo": 361,
+            "actualFifo": 361
+          }
+        ],
+        "limits": "Queue/sample evidence only. Inspect fixture lifecycle result and rendered image separately; FIFO is the existing mixer queue, not a new bounded ring."
+      },
+      "fixture": "Staging doom: frames=968, PCM frames=3530752, peak=8742; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9174, executed=14654415; reset: translated=8892, executed=12608905; second launch: translated=8801, executed=15239943; JIT mappings released",
+      "events": [
+        "10-01 07:47:12.939 15417 15439 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:47:12.940 15417 15439 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 07:47:43.565 15417 15439 I DOSBoxStaging: KAIRO OPL worker completed: commands=12405 frames=223524",
+        "10-01 07:47:43.565 15417 15439 I DOSBoxStaging: KAIRO OPL verify: samples=2114324 mismatches=0",
+        "10-01 07:47:43.565 15417 15439 I DOSBoxStaging: KAIRO OPL timeline: catchups=7228 wakeups=1 callbacks=1572 callback_frames=833638 pending_catchup=0 reference_fifo=0 actual_fifo=0",
+        "10-01 07:47:43.565 15417 15439 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=3656 submit_waits=974 fifo_frames=54649 issued=12405 consumed=12405",
+        "10-01 07:47:43.845 15417 15439 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:47:43.845 15417 15439 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 07:48:12.878 15417 15439 I DOSBoxStaging: KAIRO OPL worker completed: commands=8766 frames=117456",
+        "10-01 07:48:12.878 15417 15439 I DOSBoxStaging: KAIRO OPL verify: samples=1717642 mismatches=0",
+        "10-01 07:48:12.878 15417 15439 I DOSBoxStaging: KAIRO OPL timeline: catchups=5650 wakeups=1 callbacks=1398 callback_frames=741365 pending_catchup=0 reference_fifo=163 actual_fifo=163",
+        "10-01 07:48:12.878 15417 15439 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=1675 submit_waits=144 fifo_frames=19037 issued=8766 consumed=8766",
+        "10-01 07:48:14.520 15417 15439 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:48:14.521 15417 15439 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 07:48:46.083 15417 15439 I DOSBoxStaging: KAIRO OPL worker completed: commands=12140 frames=172545",
+        "10-01 07:48:46.083 15417 15439 I DOSBoxStaging: KAIRO OPL verify: samples=2220246 mismatches=0",
+        "10-01 07:48:46.083 15417 15439 I DOSBoxStaging: KAIRO OPL timeline: catchups=7642 wakeups=1 callbacks=1768 callback_frames=937578 pending_catchup=0 reference_fifo=361 actual_fifo=361",
+        "10-01 07:48:46.083 15417 15439 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=2488 submit_waits=438 fifo_frames=17975 issued=12140 consumed=12140"
+      ],
+      "rawSha256": {
+        "logcat.txt": "d9198ff67c961e20f16b205c712e0cef61660ab161f22b28fb1e266c11b853b1",
+        "instrumentation.txt": "c5b9a27adf3d5e14c389fc4e3b9872af5e2122052eeae5db5f605a05aa54cd0a",
+        "report/launch.conf": "398d4f15e2f5d78ccbf39c03f02692d3fe1ca6ed80f8082f92cee571bfbce993"
+      }
+    },
+    {
+      "case": "dualopl2-true",
+      "check": {
+        "mode": "DualOPL2",
+        "instances": 3,
+        "samplesCompared": 5718766,
+        "mismatches": 0,
+        "pressureRequired": false,
+        "queues": [
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 4973,
+            "submitWaits": 821,
+            "maxFifoFrames": 59161,
+            "issued": 12258,
+            "consumed": 12258
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 7859,
+            "submitWaits": 1848,
+            "maxFifoFrames": 144112,
+            "issued": 16597,
+            "consumed": 16597
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 5207,
+            "submitWaits": 617,
+            "maxFifoFrames": 19603,
+            "issued": 16689,
+            "consumed": 16689
+          }
+        ],
+        "timeline": [
+          {
+            "catchups": 5422,
+            "wakeups": 1,
+            "callbacks": 1040,
+            "callbackFrames": 551516,
+            "pendingCatchup": 0,
+            "referenceFifo": 0,
+            "actualFifo": 0
+          },
+          {
+            "catchups": 6852,
+            "wakeups": 1,
+            "callbacks": 1330,
+            "callbackFrames": 705305,
+            "pendingCatchup": 0,
+            "referenceFifo": 32903,
+            "actualFifo": 32903
+          },
+          {
+            "catchups": 7940,
+            "wakeups": 1,
+            "callbacks": 1754,
+            "callbackFrames": 930153,
+            "pendingCatchup": 0,
+            "referenceFifo": 18421,
+            "actualFifo": 18421
+          }
+        ],
+        "limits": "Queue/sample evidence only. Inspect fixture lifecycle result and rendered image separately; FIFO is the existing mixer queue, not a new bounded ring."
+      },
+      "fixture": "Staging doom: frames=975, PCM frames=3520512, peak=8675; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=8718, executed=6877444; reset: translated=9148, executed=13205698; second launch: translated=8819, executed=15271138; JIT mappings released",
+      "events": [
+        "10-01 07:48:58.700 15492 15515 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:48:58.701 15492 15515 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 07:49:29.770 15492 15515 I DOSBoxStaging: KAIRO OPL worker completed: commands=12258 frames=185279",
+        "10-01 07:49:29.770 15492 15515 I DOSBoxStaging: KAIRO OPL verify: samples=1473590 mismatches=0",
+        "10-01 07:49:29.770 15492 15515 I DOSBoxStaging: KAIRO OPL timeline: catchups=5422 wakeups=1 callbacks=1040 callback_frames=551516 pending_catchup=0 reference_fifo=0 actual_fifo=0",
+        "10-01 07:49:29.770 15492 15515 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=4973 submit_waits=821 fifo_frames=59161 issued=12258 consumed=12258",
+        "10-01 07:49:30.045 15492 15515 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:49:30.045 15492 15515 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 07:49:59.668 15492 15515 I DOSBoxStaging: KAIRO OPL worker completed: commands=16597 frames=302061",
+        "10-01 07:49:59.668 15492 15515 I DOSBoxStaging: KAIRO OPL verify: samples=2014732 mismatches=0",
+        "10-01 07:49:59.668 15492 15515 I DOSBoxStaging: KAIRO OPL timeline: catchups=6852 wakeups=1 callbacks=1330 callback_frames=705305 pending_catchup=0 reference_fifo=32903 actual_fifo=32903",
+        "10-01 07:49:59.668 15492 15515 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=7859 submit_waits=1848 fifo_frames=144112 issued=16597 consumed=16597",
+        "10-01 07:50:01.308 15492 15515 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 07:50:01.308 15492 15515 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 07:50:31.808 15492 15515 I DOSBoxStaging: KAIRO OPL worker completed: commands=16689 frames=185069",
+        "10-01 07:50:31.808 15492 15515 I DOSBoxStaging: KAIRO OPL verify: samples=2230444 mismatches=0",
+        "10-01 07:50:31.808 15492 15515 I DOSBoxStaging: KAIRO OPL timeline: catchups=7940 wakeups=1 callbacks=1754 callback_frames=930153 pending_catchup=0 reference_fifo=18421 actual_fifo=18421",
+        "10-01 07:50:31.808 15492 15515 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=5207 submit_waits=617 fifo_frames=19603 issued=16689 consumed=16689"
+      ],
+      "rawSha256": {
+        "logcat.txt": "480b482d8fa4ab1f38b24d78914bc11008791fefc1e9fa0e71c3fa38f804b1de",
+        "instrumentation.txt": "96c80ee94ee441cbbc39a595fb3bccee164b8e9fefcf2bfee75b5fc85e8b49e9",
+        "report/launch.conf": "291ffa2338cfa2a2f98917248c2cb458e3f880a473b7aca9fb079053d0f88587"
+      }
+    },
+    {
+      "case": "opl2-false",
+      "check": {
+        "mode": "OPL2",
+        "instances": 3,
+        "samplesCompared": 5714904,
+        "mismatches": 0,
+        "pressureRequired": false,
+        "queues": [
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 4127,
+            "submitWaits": 865,
+            "maxFifoFrames": 56235,
+            "issued": 11152,
+            "consumed": 11152
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 5902,
+            "submitWaits": 1560,
+            "maxFifoFrames": 147223,
+            "issued": 12435,
+            "consumed": 12435
+          },
+          {
+            "capacity": 64,
+            "maxCommands": 64,
+            "maxResults": 64,
+            "currentCommands": 0,
+            "currentResults": 0,
+            "submitDrains": 2580,
+            "submitWaits": 365,
+            "maxFifoFrames": 20362,
+            "issued": 11075,
+            "consumed": 11075
+          }
+        ],
+        "timeline": [
+          {
+            "catchups": 6324,
+            "wakeups": 1,
+            "callbacks": 1322,
+            "callbackFrames": 701062,
+            "pendingCatchup": 0,
+            "referenceFifo": 0,
+            "actualFifo": 0
+          },
+          {
+            "catchups": 6468,
+            "wakeups": 1,
+            "callbacks": 1226,
+            "callbackFrames": 650153,
+            "pendingCatchup": 0,
+            "referenceFifo": 18051,
+            "actualFifo": 18051
+          },
+          {
+            "catchups": 6992,
+            "wakeups": 1,
+            "callbacks": 1606,
+            "callbackFrames": 851668,
+            "pendingCatchup": 0,
+            "referenceFifo": 0,
+            "actualFifo": 0
+          }
+        ],
+        "limits": "Queue/sample evidence only. Inspect fixture lifecycle result and rendered image separately; FIFO is the existing mixer queue, not a new bounded ring."
+      },
+      "fixture": "Staging doom: frames=872, PCM frames=3422208, peak=8416; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=8897, executed=11077822; reset: translated=8895, executed=12586475; second launch: translated=8534, executed=13208221; JIT mappings released",
+      "events": [
+        "10-01 07:50:44.402 15569 15592 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 07:51:14.478 15569 15592 I DOSBoxStaging: KAIRO OPL worker completed: commands=11152 frames=213336",
+        "10-01 07:51:14.478 15569 15592 I DOSBoxStaging: KAIRO OPL verify: samples=1828796 mismatches=0",
+        "10-01 07:51:14.478 15569 15592 I DOSBoxStaging: KAIRO OPL timeline: catchups=6324 wakeups=1 callbacks=1322 callback_frames=701062 pending_catchup=0 reference_fifo=0 actual_fifo=0",
+        "10-01 07:51:14.478 15569 15592 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=4127 submit_waits=865 fifo_frames=56235 issued=11152 consumed=11152",
+        "10-01 07:51:14.772 15569 15592 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 07:51:44.198 15569 15592 I DOSBoxStaging: KAIRO OPL worker completed: commands=12435 frames=284953",
+        "10-01 07:51:44.198 15569 15592 I DOSBoxStaging: KAIRO OPL verify: samples=1870212 mismatches=0",
+        "10-01 07:51:44.198 15569 15592 I DOSBoxStaging: KAIRO OPL timeline: catchups=6468 wakeups=1 callbacks=1226 callback_frames=650153 pending_catchup=0 reference_fifo=18051 actual_fifo=18051",
+        "10-01 07:51:44.198 15569 15592 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=5902 submit_waits=1560 fifo_frames=147223 issued=12435 consumed=12435",
+        "10-01 07:51:45.848 15569 15592 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 07:52:15.750 15569 15592 I DOSBoxStaging: KAIRO OPL worker completed: commands=11075 frames=156280",
+        "10-01 07:52:15.750 15569 15592 I DOSBoxStaging: KAIRO OPL verify: samples=2015896 mismatches=0",
+        "10-01 07:52:15.750 15569 15592 I DOSBoxStaging: KAIRO OPL timeline: catchups=6992 wakeups=1 callbacks=1606 callback_frames=851668 pending_catchup=0 reference_fifo=0 actual_fifo=0",
+        "10-01 07:52:15.750 15569 15592 I DOSBoxStaging: KAIRO OPL queue: capacity=64 commands=64 results=64 current_commands=0 current_results=0 submit_drains=2580 submit_waits=365 fifo_frames=20362 issued=11075 consumed=11075"
+      ],
+      "rawSha256": {
+        "logcat.txt": "0fcfe0d2397ccdd90cc8ae0917f71981b3f1f7227eef14a83f3188c40e18be8e",
+        "instrumentation.txt": "bb7a2633026afbfa64ea9139a0f80b80e1aaf35616fb437eff51696e2fcab533",
+        "report/launch.conf": "94afcc3dd60f0eb0146a584f98b082cd229451ed8d09aa3078115ef2a86c93e1"
+      }
+    }
+  ],
+  "comparisonOperations": 17485882,
+  "callbackFrames": 6902438,
+  "catchupCalls": 60518,
+  "boundary": {
+    "result": {
+      "cases": 20600,
+      "referenceFrames": 905987,
+      "workerBlocks": 16822,
+      "wakeCases": 571,
+      "mismatches": 0
+    },
+    "provenance": {
+      "referenceRevision": "9dcfd7f6",
+      "currentMethodSha256": "abad32ff815a1d6417d54ab15dbf8d0075167f1c7189729525a3104fc2f32484",
+      "referenceMethodSha256": "d432a05a502a065e277c69aa502d278cb100c903c81991101c2fa38dec413644",
+      "generatedSourceSha256": "2cc5250f25f768b05a59f665fa71e9ffa736b1a5211ad36dca281298aa1fe76f",
+      "binarySha256": "f601421737791d7ed375e40a41ce83d50e9ee51160a05944f58f03921098f16c",
+      "limits": "Actual extracted catch-up methods with deterministic PIC time, WakeUp result and counting sinks. Does not model real mixer/thread scheduling, synthesis, or timer/status/routing."
+    }
+  },
+  "limits": "Comparison operations include worker results and again the OPL mixer-input stream. Not unique coverage cases or a comparison of final post-filter mixed PCM. Timer/status/routing validation remains separate."
+}

@@ -459,12 +459,17 @@ struct Opl::WorkerState {
 	KairoBiasState left_bias = KairoActualBias<Left>();
 	KairoBiasState right_bias = KairoActualBias<Right>();
 	uint64_t compared = 0, mismatches = 0;
+	double reference_rendered_ms = 0;
+	std::queue<AudioFrame> expected_catchup = {}, reference_fifo = {};
+	uint64_t catchups = 0, wakeups = 0, callback_frames = 0, callbacks = 0;
+	uint64_t current_callback_frames = 0;
 #endif
 	// Declared last: join before destroying processor state.
 	kairo::OrderedWorker<Command, Result, QueueCapacity, TrackQueue> queue;
 	explicit WorkerState(Opl& opl_owner) : owner(opl_owner),
 	        queue([this](const Command& command) { return Process(command); }) {
 #if defined(KAIRO_OPL_VERIFY)
+		reference_rendered_ms = owner.last_rendered_ms;
 		OPL3_Reset(&reference, OplSampleRateHz);
 		initialize_opl_tone_generators(reference);
 		if (owner.opl.mode == OplMode::DualOpl2)
@@ -489,6 +494,48 @@ struct Opl::WorkerState {
 		return result;
 	}
 #if defined(KAIRO_OPL_VERIFY)
+	void PrepareCatchup(const double now, const bool woke) {
+		if (!expected_catchup.empty() || reference_rendered_ms != owner.last_rendered_ms)
+			throw std::runtime_error("OPL reference timeline diverged");
+		++catchups;
+		if (woke) {
+			++wakeups;
+			reference_rendered_ms = now;
+			return;
+		}
+		// Original synchronous loop, independent of batched command lengths.
+		while (reference_rendered_ms < now) {
+			reference_rendered_ms += owner.ms_per_frame;
+			const auto frame = ReferenceFrame();
+			expected_catchup.push(frame);
+			reference_fifo.push(frame);
+		}
+	}
+	void FinishCatchup() {
+		if (!expected_catchup.empty() || reference_rendered_ms != owner.last_rendered_ms)
+			throw std::runtime_error("OPL catch-up sample count diverged");
+	}
+	void CompareQueuedMixerFrame(const AudioFrame& frame) {
+		if (reference_fifo.empty())
+			throw std::runtime_error("OPL mixer emitted extra queued frame");
+		Compare(frame, reference_fifo.front());
+		reference_fifo.pop();
+		++current_callback_frames;
+	}
+	void CompareDirectMixerFrame(const AudioFrame& frame) {
+		if (!reference_fifo.empty())
+			throw std::runtime_error("OPL mixer skipped reference FIFO frames");
+		Compare(frame, ReferenceFrame());
+		++current_callback_frames;
+	}
+	void FinishCallback(const int requested, const double now) {
+		if (requested < 0 || current_callback_frames != static_cast<uint64_t>(requested))
+			throw std::runtime_error("OPL mixer callback length diverged");
+		++callbacks;
+		callback_frames += current_callback_frames;
+		current_callback_frames = 0;
+		reference_rendered_ms = now;
+	}
 	AudioFrame ReferenceFrame() {
 		int16_t pcm[2] = {};
 		OPL3_GenerateStream(&reference, pcm, 1);
@@ -523,8 +570,12 @@ struct Opl::WorkerState {
 #if defined(KAIRO_OPL_VERIFY)
 		if (!command.frames)
 			OPL3_WriteRegBuffered(&reference, command.address, command.value);
-		for (uint32_t i = 0; i < command.frames; ++i)
-			command.expected[i] = ReferenceFrame();
+		for (uint32_t i = 0; i < command.frames; ++i) {
+			if (expected_catchup.empty())
+				throw std::runtime_error("OPL worker requested extra catch-up frame");
+			command.expected[i] = expected_catchup.front();
+			expected_catchup.pop();
+		}
 #endif
 		queue.submit(std::move(command), [this](Result r) { Consume(std::move(r)); });
 	}
@@ -559,7 +610,7 @@ void Opl::QueueFrames(uint32_t frames) {
 }
 void Opl::VerifyMixerFrame(const AudioFrame& frame) {
 #if defined(KAIRO_OPL_VERIFY)
-	if (worker) worker->Compare(frame, worker->ReferenceFrame());
+	if (worker) worker->CompareDirectMixerFrame(frame);
 #else
 	(void)frame;
 #endif
@@ -606,7 +657,11 @@ void Opl::RenderUpToNow()
 
 	// Wake up the channel and update the last rendered time datum.
 	assert(channel);
-	if (channel->WakeUp()) {
+	const auto woke = channel->WakeUp();
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->PrepareCatchup(now, woke);
+#endif
+	if (woke) {
 		last_rendered_ms = now;
 		return;
 	}
@@ -622,6 +677,9 @@ void Opl::RenderUpToNow()
 			}
 		}
 		QueueFrames(frames);
+#if defined(KAIRO_OPL_VERIFY)
+		worker->FinishCatchup();
+#endif
 		return;
 	}
 #endif
@@ -653,6 +711,9 @@ void Opl::AudioCallback(const int requested_frames)
 
 	// First, send any frames we've queued since the last callback
 	while (frames_remaining && fifo.size()) {
+#if defined(KAIRO_OPL_VERIFY)
+		if (worker) worker->CompareQueuedMixerFrame(fifo.front());
+#endif
 		channel->AddSamples_sfloat(1, &fifo.front()[0]);
 		fifo.pop();
 		--frames_remaining;
@@ -666,7 +727,11 @@ void Opl::AudioCallback(const int requested_frames)
 		channel->AddSamples_sfloat(1, &frame[0]);
 		--frames_remaining;
 	}
-	last_rendered_ms = PIC_AtomicIndex();
+	const auto now = PIC_AtomicIndex();
+	last_rendered_ms = now;
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->FinishCallback(requested_frames, now);
+#endif
 }
 
 void Opl::CacheWrite(const io_port_t port, const uint8_t val)
@@ -1166,9 +1231,17 @@ Opl::~Opl()
 		        static_cast<unsigned long long>(worker->consumed),
 		        static_cast<unsigned long long>(worker->generated));
 #if defined(KAIRO_OPL_VERIFY)
+		if (!worker->expected_catchup.empty() || worker->reference_fifo.size() != fifo.size())
+			throw std::runtime_error("OPL shutdown FIFO count diverged");
 		LOG_MSG("KAIRO OPL verify: samples=%llu mismatches=%llu",
 		        static_cast<unsigned long long>(worker->compared),
 		        static_cast<unsigned long long>(worker->mismatches));
+		LOG_MSG("KAIRO OPL timeline: catchups=%llu wakeups=%llu callbacks=%llu callback_frames=%llu pending_catchup=%zu reference_fifo=%zu actual_fifo=%zu",
+		        static_cast<unsigned long long>(worker->catchups),
+		        static_cast<unsigned long long>(worker->wakeups),
+		        static_cast<unsigned long long>(worker->callbacks),
+		        static_cast<unsigned long long>(worker->callback_frames),
+		        worker->expected_catchup.size(), worker->reference_fifo.size(), fifo.size());
 		const auto queue_stats = worker->queue.statistics();
 		LOG_MSG("KAIRO OPL queue: capacity=%zu commands=%zu results=%zu current_commands=%zu current_results=%zu submit_drains=%llu submit_waits=%llu fifo_frames=%zu issued=%llu consumed=%llu",
 		        WorkerState::QueueCapacity, queue_stats.maxCommands,

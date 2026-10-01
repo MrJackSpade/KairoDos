@@ -72,3 +72,6 @@ adopted or enabled in ordinary builds; see [status and validation limits](opl-wo
 Verification-only queue statistics and a delayed one-entry stress mode also
 live in `opl.cpp`; they are excluded from normal builds and do not change the
 imported Nuked synthesis engine.
+The verification build also maintains an independent synchronous catch-up
+timeline/FIFO and compares the ordered OPL mixer-input samples. This oracle is
+excluded from normal builds.
