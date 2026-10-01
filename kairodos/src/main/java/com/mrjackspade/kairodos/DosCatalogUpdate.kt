@@ -62,6 +62,27 @@ internal class DosCatalogUpdate(context: Context) {
                             contentId.matches(ids.optString(it))
                         }) { "Invalid controller profile IDs" }
                     }
+                    root.optJSONObject("presets")?.let { presets ->
+                        for (profile in presets.keys()) {
+                            val preset = presets.getJSONObject(profile)
+                            preset.optJSONArray("bindings")?.let {
+                                require(DosControllerBindings.valid(it)) { "Invalid controller bindings: $profile" }
+                            }
+                            if (preset.has("defaults")) {
+                                val defaults = preset.getJSONObject("defaults")
+                                require(defaults.has("withoutSticks") && defaults.keys().asSequence().all {
+                                    it in setOf("withoutSticks", "withSticks") &&
+                                        defaults.optJSONArray(it)?.let(DosControllerBindings::valid) == true
+                                }) { "Invalid controller defaults: $profile" }
+                            }
+                            require(preset.has("bindings") || preset.has("defaults"))
+                        }
+                        root.optJSONObject("assignments")?.let { assignments ->
+                            require(assignments.keys().asSequence().all {
+                                contentId.matches(it) && assignments.opt(it) is String && presets.has(assignments.optString(it))
+                            }) { "Invalid controller assignments" }
+                        }
+                    }
                 }
                 "hidden-index-v1.json" -> Unit
                 else -> {

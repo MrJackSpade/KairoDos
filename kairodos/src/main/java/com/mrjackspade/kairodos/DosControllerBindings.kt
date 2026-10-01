@@ -3,6 +3,8 @@ package com.mrjackspade.kairodos
 import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerBindingsCodec
 import com.mrjackspade.kairo.frontend.ControllerGuestSpec
+import com.mrjackspade.kairo.frontend.ControllerLayout
+import com.mrjackspade.kairo.frontend.ControllerDefaults
 
 /** DOS key codes and libretro joypad targets; the editor and codec live in Kairo. */
 internal object DosControllerBindings {
@@ -19,12 +21,25 @@ internal object DosControllerBindings {
         "a" to "2 button 1", "x" to "2 button 2")
     private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
-    private val keyCodes = keys.map { it.code }
+    // Libretro keypad codes let game-specific presets map physical controls to
+    // DOS games that use the numeric keypad without adding analog-stick input.
+    private val keypadCodes = 256..272
+    private val keyCodes = (keys.map { it.code } + keypadCodes).distinct()
     val spec = ControllerGuestSpec("DOS", keyCodes, { code ->
-        keys.firstOrNull { it.code == code }?.label ?: "Key $code"
+        keys.firstOrNull { it.code == code }?.label ?: when (code) {
+            in 256..265 -> "NumPad ${code - 256}"
+            266 -> "NumPad ."
+            267 -> "NumPad /"
+            268 -> "NumPad *"
+            269 -> "NumPad -"
+            270 -> "NumPad +"
+            271 -> "NumPad Enter"
+            272 -> "NumPad ="
+            else -> "Key $code"
+        }
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
-        "D-pad: arrows; A: Enter; left stick and Y/B: joystick 1; right stick and L/R: joystick 2.",
+        "D-pad: arrows; A: Enter; game-specific profiles can map the D-pad and buttons to DOS joystick controls.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
             "restart" to "Restart", "exit" to "Exit"))
     private val codec = ControllerBindingsCodec(::defaults, { it in keyCodes }, joystick,
@@ -39,6 +54,38 @@ internal object DosControllerBindings {
         }
     }
     fun toJson(bindings: List<ControllerBinding>) = codec.toJson(bindings)
+    fun valid(array: org.json.JSONArray) = codec.valid(array)
+
+    fun defaults(layout: ControllerLayout) = ControllerDefaults.resolve(layout, defaults(),
+        defaults() + listOf(
+            ControllerBinding("virtual:lsup", joystick = "joy1up"),
+            ControllerBinding("virtual:lsdown", joystick = "joy1down"),
+            ControllerBinding("virtual:lsleft", joystick = "joy1left"),
+            ControllerBinding("virtual:lsright", joystick = "joy1right"),
+            ControllerBinding("virtual:rsup", joystick = "joy2up"),
+            ControllerBinding("virtual:rsdown", joystick = "joy2down"),
+            ControllerBinding("virtual:rsleft", joystick = "joy2left"),
+            ControllerBinding("virtual:rsright", joystick = "joy2right")
+        )).bindings
+
+    fun builtInFor(contentId: String, layout: ControllerLayout): List<ControllerBinding>? =
+        builtInFor(contentId)?.let { withSticks ->
+            ControllerDefaults.resolve(layout, withoutSticks(withSticks), withSticks).bindings
+        }
+
+    fun doom(layout: ControllerLayout) = ControllerDefaults.resolve(layout, withoutSticks(doom()), doom()).bindings
+
+    /** The existing FPS layout uses D-pad strafe and right-stick turning. Restore keyboard
+     * turning to the D-pad on handhelds without sticks and strafe to the shoulders. */
+    private fun withoutSticks(bindings: List<ControllerBinding>) = bindings
+        .filterNot { it.input.startsWith("virtual:ls") || it.input.startsWith("virtual:rs") }
+        .map { binding -> when (binding.input) {
+            "virtual:left" -> ControllerBinding(binding.input, keys = listOf(276))
+            "virtual:right" -> ControllerBinding(binding.input, keys = listOf(275))
+            "virtual:l1" -> ControllerBinding(binding.input, keys = listOf(44))
+            "virtual:r1" -> ControllerBinding(binding.input, keys = listOf(46))
+            else -> binding
+        } }
 
     /** Match catalog identities, never a ZIP filename or a user-edited title. */
     fun builtInFor(contentId: String): List<ControllerBinding>? = when (contentId) {
@@ -90,14 +137,6 @@ internal object DosControllerBindings {
         ControllerBinding("virtual:down", keys = listOf(274)),
         ControllerBinding("virtual:left", keys = listOf(276)),
         ControllerBinding("virtual:right", keys = listOf(275)),
-        ControllerBinding("virtual:lsup", joystick = "joy1up"),
-        ControllerBinding("virtual:lsdown", joystick = "joy1down"),
-        ControllerBinding("virtual:lsleft", joystick = "joy1left"),
-        ControllerBinding("virtual:lsright", joystick = "joy1right"),
-        ControllerBinding("virtual:rsup", joystick = "joy2up"),
-        ControllerBinding("virtual:rsdown", joystick = "joy2down"),
-        ControllerBinding("virtual:rsleft", joystick = "joy2left"),
-        ControllerBinding("virtual:rsright", joystick = "joy2right"),
         ControllerBinding("virtual:a", keys = listOf(13)),
         ControllerBinding("virtual:b", joystick = "y"),
         ControllerBinding("virtual:x", keys = listOf(32)),

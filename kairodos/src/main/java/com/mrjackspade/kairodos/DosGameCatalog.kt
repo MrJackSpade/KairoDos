@@ -35,6 +35,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         .optJSONObject("hidden") ?: JSONObject()
     private var onlineHidden = online.read("hidden-index-v1.json")
         ?.optJSONObject("hidden") ?: JSONObject()
+    private val bundledControllerProfiles by lazy { readAssetCatalog("controller-profiles-v1.json") }
+    private var onlineControllerProfiles = online.read("controller-profiles-v1.json")
     val artworkStore = CatalogArtworkStore(context, { false },
         "art/catalog/dos/")
     // Dependency folder lookup is only needed when preparing a game launch.
@@ -59,6 +61,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             folderIndex = null
             onlineHidden = online.read("hidden-index-v1.json")
                 ?.optJSONObject("hidden") ?: JSONObject()
+            onlineControllerProfiles = online.read("controller-profiles-v1.json")
             doomContentIds = readDoomContentIds()
         }
         return true
@@ -78,11 +81,26 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         return combined
     }
 
+    private fun controllerProfileCatalog(): JSONObject =
+        onlineControllerProfiles ?: bundledControllerProfiles
+
+    fun controllerBindings(profileId: String, layout: com.mrjackspade.kairo.frontend.ControllerLayout =
+        com.mrjackspade.kairo.frontend.ControllerLayout.WITHOUT_STICKS): String? = runCatching {
+        controllerProfileCatalog().optJSONObject("presets")
+            ?.optJSONObject(profileId)?.let { preset ->
+                val defaults = preset.optJSONObject("defaults")
+                defaults?.optJSONArray(layout.key)
+                    ?: defaults?.optJSONArray("withoutSticks") ?: preset.optJSONArray("bindings")
+            }?.toString()
+    }.getOrNull()
+
+    fun controllerFallback(profileId: String): Boolean =
+        controllerProfileCatalog().optJSONObject("presets")?.optJSONObject(profileId)
+            ?.optJSONObject("defaults")?.optJSONArray("withSticks") == null
+
     private fun readDoomContentIds(): Set<String> = runCatching {
-        val games = online.read("controller-profiles-v1.json")
-            ?.optJSONObject("profiles")?.optJSONArray("doom-v1")
-            ?: readAssetCatalog("controller-profiles-v1.json")
-                .getJSONObject("profiles").getJSONArray("doom-v1")
+        val games = controllerProfileCatalog()
+            .getJSONObject("profiles").getJSONArray("doom-v1")
         (0 until games.length()).map(games::getString).toSet()
     }.getOrDefault(emptySet())
 
@@ -101,6 +119,11 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             Launch(source.optString("folder"), configs.keys().asSequence()
                 .associateWith { configs.optString(it) }, source.optBoolean("exception"))
         }
+        val controllerProfile = when {
+            contentId in doomContentIds -> "doom-v1"
+            else -> controllerProfileCatalog().optJSONObject("assignments")
+                ?.optString(contentId)?.takeIf { !it.isNullOrBlank() }
+        }
         return Game(title, description,
             artworkStore.availablePath(boxArtPath),
             artworkStore.availablePath(previewPath),
@@ -109,7 +132,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                     array.optString(index).takeIf { it.isNotBlank() }
                 }
             } ?: emptyList(), launch,
-            "doom-v1".takeIf { contentId in doomContentIds })
+            controllerProfile)
     }
 
     private fun selectVariant(found: JSONObject?, fileName: String): JSONObject? {

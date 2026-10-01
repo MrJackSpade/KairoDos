@@ -208,6 +208,115 @@ def write_folder_index(catalog: Path, shards: dict[str, dict] | None = None) -> 
         separators=(",", ":")), encoding="utf-8")
 
 
+def apply_controller_recommendations(catalog_profiles: dict, recommendations: dict,
+                                     current_ids: set[str], migrations: dict[str, set[str]]) -> dict:
+    """Add reviewed controller presets to the generated profile catalog."""
+    if recommendations.get("schemaVersion") != 1:
+        raise ValueError("unsupported controller recommendation schema")
+    presets = recommendations.get("profiles")
+    assignments = recommendations.get("assignments")
+    if not isinstance(presets, dict) or not isinstance(assignments, dict):
+        raise ValueError("controller recommendations need profiles and assignments")
+    virtual_controls = {"up", "down", "left", "right", "a", "b", "x", "y",
+                        "l1", "r1", "l2", "r2", "start", "select", "menu",
+                        "lsup", "lsdown", "lsleft", "lsright",
+                        "rsup", "rsdown", "rsleft", "rsright"}
+    joystick_controls = {"b", "y", "select", "start", "up", "down", "left", "right",
+                         "a", "x", "l1", "r1", "l2", "r2", "l3", "r3",
+                         *(f"joy{port}{direction}" for port in (1, 2)
+                           for direction in ("up", "down", "left", "right"))}
+    mouse_controls = {"moveUp", "moveDown", "moveLeft", "moveRight", "leftButton", "rightButton"}
+    actions = {"menu", "pause", "restart", "exit"}
+    cycle_inputs = {"virtual:l1", "virtual:r1", "virtual:l2", "virtual:r2"}
+    guest_key_codes = (set(map(ord, "0123456789qwertyuiopasdfghjkl'zxcvbnm"))
+                       | set(map(ord, "-=[]\\;',./")) | {8, 9, 13, 27, 32, 127, 301, 303,
+                           304, 305, 306, 307, 308} | set(range(256, 294)))
+    def validate_bindings(bindings, profile_id, sticks=False):
+        if not isinstance(bindings, list) or len(bindings) > 128:
+            raise ValueError(f"invalid controller preset bindings: {profile_id}")
+        seen_inputs = set()
+        for binding in bindings:
+            if not isinstance(binding, dict):
+                raise ValueError(f"invalid controller binding in {profile_id}")
+            source = binding.get("input")
+            if (not isinstance(source, str) or source in seen_inputs
+                    or source.startswith("axis:")
+                    or (not sticks and source.startswith(("virtual:ls", "virtual:rs")))):
+                raise ValueError(f"duplicate or analog controller input in {profile_id}: {source}")
+            if source.startswith("virtual:") and source[8:] not in virtual_controls:
+                raise ValueError(f"unknown virtual controller input in {profile_id}: {source}")
+            if source.startswith("hat:") and not re.fullmatch(r"hat:\d{1,3}:[+-]", source):
+                raise ValueError(f"invalid hat input in {profile_id}: {source}")
+            if source.startswith("button:") and not re.fullmatch(r"button:\d{1,4}", source):
+                raise ValueError(f"invalid button input in {profile_id}: {source}")
+            if not (source.startswith("virtual:") or source.startswith("hat:")
+                    or source.startswith("button:")):
+                raise ValueError(f"unsupported controller input in {profile_id}: {source}")
+            seen_inputs.add(source)
+            targets = [name for name in ("keys", "action", "joystick", "mouse", "cycleKeys")
+                       if name in binding]
+            if len(targets) != 1:
+                raise ValueError(f"controller binding needs one target in {profile_id}")
+            target = targets[0]
+            value = binding[target]
+            if target in ("keys", "cycleKeys"):
+                limit = 4 if target == "keys" else 16
+                minimum = 1 if target == "keys" else 2
+                if (not isinstance(value, list) or not minimum <= len(value) <= limit
+                        or any(type(key) is not int or key not in guest_key_codes for key in value)
+                        or len(set(value)) != len(value)):
+                    raise ValueError(f"invalid guest key mapping in {profile_id}")
+                if target == "cycleKeys" and source not in cycle_inputs:
+                    raise ValueError(f"invalid cycle-key input in {profile_id}: {source}")
+            elif target == "action" and value not in actions:
+                raise ValueError(f"unknown app action in {profile_id}: {value}")
+            elif target == "joystick" and (value not in joystick_controls or value in {"l3", "r3"}):
+                raise ValueError(f"unsupported joystick target in {profile_id}: {value}")
+            elif target == "mouse" and value not in mouse_controls:
+                raise ValueError(f"unsupported mouse target in {profile_id}: {value}")
+            if "mouseSpeed" in binding:
+                speed = binding["mouseSpeed"]
+                if (target != "mouse" or not str(value).startswith("move")
+                        or type(speed) not in (int, float) or not 0.1 <= speed <= 20):
+                    raise ValueError(f"invalid mouse speed in {profile_id}")
+    for profile_id, preset in presets.items():
+        if not isinstance(preset, dict):
+            raise ValueError(f"invalid controller preset: {profile_id}")
+        validate_bindings(preset.get("bindings"), profile_id)
+        variants = preset.get("defaults")
+        if variants is not None:
+            if (not isinstance(variants, dict) or "withoutSticks" not in variants
+                    or set(variants) - {"withoutSticks", "withSticks"}):
+                raise ValueError(f"invalid controller defaults: {profile_id}")
+            for kind, bindings in variants.items():
+                validate_bindings(bindings, profile_id, sticks=kind == "withSticks")
+    doom_ids = set(catalog_profiles.get("profiles", {}).get("doom-v1", []))
+    generated_assignments = {}
+    for content_id, profile_id in assignments.items():
+        if profile_id not in presets:
+            raise ValueError(f"controller assignment references missing profile: {profile_id}")
+        if content_id in doom_ids:
+            raise ValueError(f"controller recommendation duplicates Doom profile: {content_id}")
+        targets = ({content_id} if content_id in current_ids
+                   else migrations.get(content_id, set()))
+        if not targets:
+            raise ValueError(f"controller recommendation does not resolve to the current catalog: {content_id}")
+        for target in targets & current_ids:
+            if target in doom_ids:
+                raise ValueError(f"controller migration duplicates Doom profile: {target}")
+            if target in generated_assignments:
+                raise ValueError(f"multiple controller recommendations for {target}")
+            generated_assignments[target] = profile_id
+    used_presets = {profile_id for profile_id in generated_assignments.values()}
+    catalog_profiles["assignments"] = dict(sorted(generated_assignments.items()))
+    catalog_profiles["presets"] = {
+        profile_id: {**presets[profile_id], "defaults": presets[profile_id].get("defaults",
+            {"withoutSticks": presets[profile_id]["bindings"]})}
+        for profile_id in sorted(used_presets)
+    }
+    return catalog_profiles
+
+
 def image_index(metadata: zipfile.ZipFile) -> dict[tuple[str, str], list[str]]:
     result: dict[tuple[str, str], list[str]] = {}
     for name in metadata.namelist():
@@ -371,6 +480,10 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
         profiles["profiles"][profile] = sorted({target for content_id in ids
             for target in ({content_id} if content_id in refreshed else profile_migrations.get(content_id, set()))
             if target in refreshed})
+    recommendation_path = project / "catalog/controller-research/recommendations.json"
+    recommendations = json.loads(recommendation_path.read_text(encoding="utf-8"))
+    profiles = apply_controller_recommendations(profiles, recommendations,
+        set(refreshed), profile_migrations)
     added = sorted(refreshed.keys() - old.keys())
     removed = sorted(old.keys() - refreshed.keys())
     changed = sorted(key for key in old.keys() & refreshed.keys() if old[key] != refreshed[key])

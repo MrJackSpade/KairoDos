@@ -11,6 +11,11 @@ $metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, 
 $shardNames = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ })
 $names = $shardNames + @('folders.json', 'controller-profiles-v1.json',
     'hidden-index-v1.json')
+if ($Check) {
+    & (Join-Path $PSScriptRoot 'GenerateDosControllerProfiles.ps1') -Check
+} else {
+    & (Join-Path $PSScriptRoot 'GenerateDosControllerProfiles.ps1')
+}
 
 function Get-HiddenIndexBytes {
     $hidden = [ordered]@{}

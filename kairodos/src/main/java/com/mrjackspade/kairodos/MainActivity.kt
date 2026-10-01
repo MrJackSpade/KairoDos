@@ -127,7 +127,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val dosGameSettings by lazy { DosPerGameSettings(preferences, gameSettings) }
     private val controllerProfiles by lazy {
         ControllerProfileStore(preferences, DosControllerBindings::parse,
-            { DosControllerBindings.toJson(it).toString() })
+            { DosControllerBindings.toJson(it).toString() }, { DosControllerBindings.defaults(it) })
     }
     private val keys = InputRouter(::nativeKey, 341)
     private val inputModeDecider = InputModeDecider()
@@ -141,11 +141,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             DosLibrary.Game::contentId,
             { game: DosLibrary.Game ->
                 dosGameSettings.controllerBindings(game.contentId!!)?.let(DosControllerBindings::parse)
-                    ?: DosControllerBindings.builtInFor(game.contentId)
-                    ?: when (catalog.resolve(game.contentId, game.displayName).controllerProfile) {
-                        "doom-v1" -> DosControllerBindings.doom()
-                        else -> controllerProfiles.global()
-                    }
+                    ?: DosControllerBindings.builtInFor(game.contentId, controllerProfiles.configuration.layout)
+                    ?: catalog.resolve(game.contentId, game.displayName).controllerProfile?.let { profile ->
+                        if (profile == "doom-v1") DosControllerBindings.doom(controllerProfiles.configuration.layout)
+                        else catalog.controllerBindings(profile, controllerProfiles.configuration.layout)?.let(DosControllerBindings::parse)
+                    } ?: controllerProfiles.global()
             },
             { id, bindings -> dosGameSettings.setControllerBindings(id,
                 DosControllerBindings.toJson(bindings).toString()) },
@@ -194,7 +194,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     (currentFocus ?: appRoot).requestFocusFromTouch()
             }, ::releaseTouchInputs)
     }
-    private val controllerDevices by lazy { ControllerDeviceMonitor(this, inputDispatch::releaseDevice) }
+    private val controllerDevices by lazy { ControllerDeviceMonitor(this, inputDispatch::releaseDevice) {
+        controllerProfiles.configuration.devicesChanged()
+        if (currentGame == null) gamepad.bindings = controllerFlow.global()
+    } }
+    private var controllerSetupPending = false
+    private var pendingControllerExternalRequest = false
     private val guestLifecycle: GuestLifecycleCoordinator by lazy {
         GuestLifecycleCoordinator(::releaseGuestInputs, ::refreshControllerUi,
             { audio?.pause() }, { if (currentGame != null) audio?.play() },
@@ -368,29 +373,43 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { onScreenControls?.eightWayDpad ?: false },
             { onScreenControls?.eightWayDpad = it },
             DosLibrary.Game::id, DosControllerBindings.spec,
-            { DosControllerBindings.toJson(it) })
+            { DosControllerBindings.toJson(it) }, controllerProfiles.configuration,
+            { releaseGuestInputs(); controllerFlow.refresh(null) }, ::controllerMappingStatus)
         controllerFlow.initialize()
         controllerDevices.register(handler)
         backCoordinator.register()
         // Match Kairo98's startup order: attach the library first, then restore
         // its cached entries after Android gets a chance to draw the window.
+        controllerSetupPending = controllerProfiles.configuration.needsSetup
         appRoot.post {
             if (isFinishing || isDestroyed) return@post
-            libraryFlow.restore()
-            showLibrary()
-            val externallyRequested = savedInstanceState == null &&
-                ExternalGameIntent.hasRequest(intent)
-            if (externallyRequested)
-                dispatchExternalGame(intent)
-            else {
-                if (tree != null) refreshLibrary(false)
-                if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
-            }
-            catalogUpdates.check(true)
+            if (controllerSetupPending) {
+                controllerProfiles.configuration.show(this, required = true) {
+                    controllerSetupPending = false
+                    controllerFlow.initialize()
+                    continueStartup(savedInstanceState)
+                }
+            } else continueStartup(savedInstanceState)
         }
     }
 
+    private fun continueStartup(savedInstanceState: Bundle?) {
+        libraryFlow.restore()
+        showLibrary()
+        val externallyRequested = (savedInstanceState == null || pendingControllerExternalRequest ||
+            savedInstanceState.getBoolean("controller_setup_external_v1")) &&
+            ExternalGameIntent.hasRequest(intent)
+        if (externallyRequested)
+            dispatchExternalGame(intent)
+        else {
+            if (tree != null) refreshLibrary(false)
+            if (!preferences.getBoolean("onboarding_complete_v1", tree != null)) showFirstRun()
+        }
+        catalogUpdates.check(true)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("controller_setup_external_v1", controllerSetupPending && ExternalGameIntent.hasRequest(intent))
         artwork.saveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
@@ -398,6 +417,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (controllerSetupPending) {
+            pendingControllerExternalRequest = true
+            return
+        }
         dispatchExternalGame(intent)
     }
 
@@ -656,7 +679,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         inputModeDecider.reset()
         userPaused = false
+        controllerProfiles.configuration.endSession()
         currentGame = game
+        controllerProfiles.configuration.beginSession()
         sessionFromFrontend = fromFrontend
         gamepad.bindings = controllerFlow.load(game)
         showGame()
@@ -916,6 +941,20 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showOnScreenControls() {
         controllerEditorFlow.showOnScreenControls()
+    }
+
+    private fun controllerMappingStatus(game: DosLibrary.Game?): String? {
+        if (controllerProfiles.configuration.layout != com.mrjackspade.kairo.frontend.ControllerLayout.WITH_STICKS)
+            return null
+        if (game?.contentId != null) {
+            if (dosGameSettings.controllerBindings(game.contentId) != null ||
+                DosControllerBindings.builtInFor(game.contentId) != null) return null
+            val profile = catalog.resolve(game.contentId, game.displayName).controllerProfile
+            if (profile == "doom-v1") return null
+            if (profile != null && !catalog.controllerFallback(profile)) return null
+            if (profile != null) return "Using Without Sticks fallback"
+        }
+        return null
     }
 
     private fun refreshControllerUi() {
@@ -1290,6 +1329,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionGameTitle = null
         swappedKeyboard = null
         currentGame = null
+        controllerProfiles.configuration.endSession()
         gamepad.bindings = controllerFlow.global()
         if (!returnToFrontend || installerPromptOpen) showLibrary()
         if (returnToFrontend) {
