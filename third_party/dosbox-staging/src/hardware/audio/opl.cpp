@@ -23,6 +23,10 @@
 #include "utils/checks.h"
 #include "utils/math_utils.h"
 #include "utils/string_utils.h"
+#if defined(KAIRO_OPL_WORKER)
+#include "kairo/ordered_worker.h"
+#include <array>
+#endif
 
 CHECK_NARROWING();
 
@@ -305,6 +309,10 @@ void Opl::WriteReg(const io_port_t selected_reg, const uint8_t val)
 
 
 	} else { // OPL
+#if defined(KAIRO_OPL_WORKER)
+		if (worker) QueueWrite(selected_reg, val);
+		else
+#endif
 		OPL3_WriteRegBuffered(&opl.chip, selected_reg, val);
 		if (selected_reg == 0x105) {
 			opl.newm = selected_reg & 0x01;
@@ -343,9 +351,38 @@ void Opl::EsfmSetLegacyMode()
 	ESFM_write_port(&esfm.chip, 0, 0);
 }
 
+#if defined(KAIRO_OPL_VERIFY)
+// Verification builds expose the existing persistent DC state so the shadow
+// engine starts from the same state even after a previous game/session.
+struct KairoBiasState {
+	int sum = 0;
+	std::queue<int16_t> samples = {};
+	int16_t Process(const int16_t sample) {
+		if (sample < 5) { sum = 0; samples = {}; return sample; }
+		sum += sample;
+		samples.push(sample);
+		int16_t average = 0, front = 0;
+		if (samples.size() == 16000 / 200) {
+			average = static_cast<int16_t>(sum / (16000 / 200));
+			front = samples.front();
+			sum -= front;
+			samples.pop();
+		}
+		return static_cast<int16_t>(front - average);
+	}
+};
+template <LineIndex line> KairoBiasState& KairoActualBias() {
+	static KairoBiasState state;
+	return state;
+}
+#endif
+
 template <LineIndex line_index>
 int16_t remove_dc_bias(const int16_t back_sample)
 {
+#if defined(KAIRO_OPL_VERIFY)
+	return KairoActualBias<line_index>().Process(back_sample);
+#else
 	// Calculate the number of samples we need average across to maintain
 	// the lowest frequency given an assumed playback rate.
 	constexpr auto PcmPlaybackRateHz      = 16000;
@@ -378,7 +415,135 @@ int16_t remove_dc_bias(const int16_t back_sample)
 		samples.pop();
 	}
 	return static_cast<int16_t>(front_sample - average);
+#endif
 }
+
+#if defined(KAIRO_OPL_WORKER)
+struct Opl::WorkerState {
+	static constexpr uint32_t BlockFrames = 64;
+	struct Command {
+		uint64_t sequence = 0;
+		uint32_t frames = 0;
+		io_port_t address = 0;
+		uint8_t value = 0;
+#if defined(KAIRO_OPL_VERIFY)
+		std::array<AudioFrame, BlockFrames> expected = {};
+#endif
+	};
+	struct Result {
+		uint64_t sequence = 0;
+		uint32_t frames = 0;
+		std::array<AudioFrame, BlockFrames> pcm = {};
+#if defined(KAIRO_OPL_VERIFY)
+		std::array<AudioFrame, BlockFrames> expected = {};
+#endif
+	};
+	Opl& owner;
+	uint64_t issued = 0, consumed = 0, generated = 0;
+#if defined(KAIRO_OPL_VERIFY)
+	opl3_chip reference = {};
+	KairoBiasState left_bias = KairoActualBias<Left>();
+	KairoBiasState right_bias = KairoActualBias<Right>();
+	uint64_t compared = 0, mismatches = 0;
+#endif
+	// Declared last: join before destroying processor state.
+	kairo::OrderedWorker<Command, Result> queue;
+	explicit WorkerState(Opl& opl_owner) : owner(opl_owner),
+	        queue([this](const Command& command) { return Process(command); }) {
+#if defined(KAIRO_OPL_VERIFY)
+		OPL3_Reset(&reference, OplSampleRateHz);
+		initialize_opl_tone_generators(reference);
+		if (owner.opl.mode == OplMode::DualOpl2)
+			OPL3_WriteRegBuffered(&reference, 0x105, 1);
+#endif
+	}
+	Result Process(const Command& command) {
+		Result result;
+		result.sequence = command.sequence;
+		result.frames = command.frames;
+		if (!command.frames)
+			OPL3_WriteRegBuffered(&owner.opl.chip, command.address, command.value);
+		for (uint32_t i = 0; i < command.frames; ++i)
+			result.pcm[i] = owner.RenderFrame();
+#if defined(KAIRO_OPL_VERIFY)
+		result.expected = command.expected;
+#endif
+		return result;
+	}
+#if defined(KAIRO_OPL_VERIFY)
+	AudioFrame ReferenceFrame() {
+		int16_t pcm[2] = {};
+		OPL3_GenerateStream(&reference, pcm, 1);
+		if (owner.ctrl.wants_dc_bias_removed) {
+			pcm[0] = left_bias.Process(pcm[0]);
+			pcm[1] = right_bias.Process(pcm[1]);
+		}
+		return {pcm[0], pcm[1]};
+	}
+	void Compare(const AudioFrame& actual, const AudioFrame& expected) {
+		compared += 2;
+		mismatches += actual.left != expected.left;
+		mismatches += actual.right != expected.right;
+	}
+#endif
+	void Consume(Result result) {
+		if (result.sequence != consumed++)
+			throw std::runtime_error("OPL worker result sequence mismatch");
+		for (uint32_t i = 0; i < result.frames; ++i) {
+#if defined(KAIRO_OPL_VERIFY)
+			Compare(result.pcm[i], result.expected[i]);
+#endif
+			owner.fifo.emplace(result.pcm[i]);
+		}
+		generated += result.frames;
+	}
+	void Submit(Command command) {
+		command.sequence = issued++;
+#if defined(KAIRO_OPL_VERIFY)
+		if (!command.frames)
+			OPL3_WriteRegBuffered(&reference, command.address, command.value);
+		for (uint32_t i = 0; i < command.frames; ++i)
+			command.expected[i] = ReferenceFrame();
+#endif
+		queue.submit(std::move(command), [this](Result r) { Consume(std::move(r)); });
+	}
+	void Drain() {
+		queue.drain([this](Result r) { Consume(std::move(r)); });
+	}
+};
+
+void Opl::StartWorker() {
+	if (opl.mode == OplMode::Opl2 || opl.mode == OplMode::DualOpl2 ||
+	    opl.mode == OplMode::Opl3) {
+		worker = std::make_unique<WorkerState>(*this);
+		LOG_MSG("KAIRO OPL worker enabled: %s", to_string(opl.mode));
+	} else {
+		LOG_MSG("KAIRO OPL worker synchronous fallback: %s", to_string(opl.mode));
+	}
+}
+void Opl::DrainWorker() { if (worker) worker->Drain(); }
+void Opl::QueueWrite(const io_port_t address, const uint8_t value) {
+	WorkerState::Command command;
+	command.address = address;
+	command.value = value;
+	worker->Submit(std::move(command));
+}
+void Opl::QueueFrames(uint32_t frames) {
+	while (frames) {
+		WorkerState::Command command;
+		command.frames = std::min(frames, WorkerState::BlockFrames);
+		frames -= command.frames;
+		worker->Submit(std::move(command));
+	}
+}
+void Opl::VerifyMixerFrame(const AudioFrame& frame) {
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->Compare(frame, worker->ReferenceFrame());
+#else
+	(void)frame;
+#endif
+}
+#endif
 
 AudioFrame Opl::RenderFrame()
 {
@@ -425,6 +590,20 @@ void Opl::RenderUpToNow()
 		return;
 	}
 	// Keep rendering until we're current
+#if defined(KAIRO_OPL_WORKER)
+	if (worker) {
+		uint32_t frames = 0;
+		while (last_rendered_ms < now) {
+			last_rendered_ms += ms_per_frame;
+			if (++frames == WorkerState::BlockFrames) {
+				QueueFrames(frames);
+				frames = 0;
+			}
+		}
+		QueueFrames(frames);
+		return;
+	}
+#endif
 	while (last_rendered_ms < now) {
 		last_rendered_ms += ms_per_frame;
 		fifo.emplace(RenderFrame());
@@ -435,6 +614,13 @@ void Opl::AudioCallback(const int requested_frames)
 {
 	std::lock_guard lock(mutex);
 	assert(channel);
+#if defined(KAIRO_OPL_WORKER)
+	// Complete queued writes and catch-up audio before touching the chip here.
+	// Holding the existing OPL mutex prevents another producer from submitting
+	// work until this callback finishes. Mixer synthesis already runs off the
+	// emulation thread, so retain it here after this explicit ownership handoff.
+	DrainWorker();
+#endif
 #if 0
 	if (fifo.size()) {
 		LOG_MSG("%s: Queued %2lu cycle-accurate frames",
@@ -453,6 +639,9 @@ void Opl::AudioCallback(const int requested_frames)
 	// If the queue's run dry, render the remainder and sync-up our time datum
 	while (frames_remaining) {
 		const auto frame = RenderFrame();
+#if defined(KAIRO_OPL_WORKER)
+		VerifyMixerFrame(frame);
+#endif
 		channel->AddSamples_sfloat(1, &frame[0]);
 		--frames_remaining;
 	}
@@ -909,6 +1098,9 @@ Opl::Opl(Section* configuration, const OplMode _opl_mode)
 	}
 
 	Init();
+#if defined(KAIRO_OPL_WORKER)
+	StartWorker();
+#endif
 
 	using namespace std::placeholders;
 
@@ -946,6 +1138,20 @@ Opl::~Opl()
 	LOG_MSG("%s: Shutting down %s", channel->GetName().c_str(), to_string(opl.mode));
 
 	MIXER_LockMixerThread();
+#if defined(KAIRO_OPL_WORKER)
+	DrainWorker();
+	if (worker) {
+		LOG_MSG("KAIRO OPL worker completed: commands=%llu frames=%llu",
+		        static_cast<unsigned long long>(worker->consumed),
+		        static_cast<unsigned long long>(worker->generated));
+#if defined(KAIRO_OPL_VERIFY)
+		LOG_MSG("KAIRO OPL verify: samples=%llu mismatches=%llu",
+		        static_cast<unsigned long long>(worker->compared),
+		        static_cast<unsigned long long>(worker->mismatches));
+#endif
+		worker.reset();
+	}
+#endif
 
 	// Stop playback
 	if (channel) {

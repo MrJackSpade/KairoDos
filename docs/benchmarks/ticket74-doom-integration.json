@@ -1,0 +1,49 @@
+{
+  "ticket": 74,
+  "stage": "First actual OPL integration comparison, not performance acceptance",
+  "device": "RG DS rk3568_u Android 14 ARM64",
+  "build": "Isolated staging-migration checkpoint plus current OPL prototype",
+  "options": [
+    "guestProfile=false",
+    "oplWorker=true",
+    "oplVerify=true"
+  ],
+  "apkSha256": "cc9593ba561cac6dfd16aff65fc27c083eaad6efb55f97ec235e1d706c3d178f",
+  "testApkSha256": "aab519403b03d8ad154bb9c88f6f2a4e86b4ad03d0ff205ec4612f1025764b4d",
+  "fixture": "StagingCoreFixture; installed Doom archive copied into temporary fixture drive",
+  "image": "Inspected game.png: rendered Doom gameplay, native 320x200 image",
+  "mode": "OPL3",
+  "dcBiasEnabled": false,
+  "results": [
+    {
+      "samples": 1656670,
+      "mismatches": 0
+    },
+    {
+      "samples": 1661540,
+      "mismatches": 0
+    },
+    {
+      "samples": 1818372,
+      "mismatches": 0
+    }
+  ],
+  "totalComparedSampleValues": 5136582,
+  "fixtureResult": "Staging doom: frames=1032, PCM frames=3450880, peak=8542; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9175, executed=15020850; reset: translated=9190, executed=14729746; second launch: translated=8917, executed=15027282; JIT mappings released",
+  "oplEvents": [
+    "10-01 05:25:13.730 15536 15559 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+    "10-01 05:25:43.965 15536 15559 I DOSBoxStaging: KAIRO OPL worker completed: commands=12707 frames=242333",
+    "10-01 05:25:43.965 15536 15559 I DOSBoxStaging: KAIRO OPL verify: samples=1656670 mismatches=0",
+    "10-01 05:25:44.240 15536 15559 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+    "10-01 05:26:13.964 15536 15559 I DOSBoxStaging: KAIRO OPL worker completed: commands=13112 frames=267196",
+    "10-01 05:26:13.964 15536 15559 I DOSBoxStaging: KAIRO OPL verify: samples=1661540 mismatches=0",
+    "10-01 05:26:15.585 15536 15559 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+    "10-01 05:26:46.185 15536 15559 I DOSBoxStaging: KAIRO OPL worker completed: commands=13545 frames=249362",
+    "10-01 05:26:46.185 15536 15559 I DOSBoxStaging: KAIRO OPL verify: samples=1818372 mismatches=0"
+  ],
+  "limitations": [
+    "Comparator enabled; not a speed or overhead measurement.",
+    "Timer/status equivalence, other modes, DC-on cases, queue metrics and boundary fixtures remain outstanding.",
+    "Reference compares ordered generated samples including mixer remainder, not an independent full mixer/FIFO model."
+  ]
+}

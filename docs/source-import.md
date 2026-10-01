@@ -61,3 +61,11 @@ Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in
 ## Local dynrec SETcc implementation
 
 The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. See [adoption and corresponding test evidence](setcc-adoption.md); the change is core-specific and contains no game code.
+
+## Experimental OPL worker
+
+`src/hardware/audio/opl.cpp` and `opl.h` contain an off-by-default,
+Debug-only ordered-synthesis prototype and optional synchronous comparator.
+It uses first-party shared worker infrastructure; the imported Nuked engine
+is unchanged. Original GPL notices are preserved. This experiment is not
+adopted or enabled in ordinary builds; see [status and validation limits](opl-worker-prototype.md).

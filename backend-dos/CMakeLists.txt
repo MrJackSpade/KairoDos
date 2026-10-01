@@ -5,6 +5,20 @@ if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
     message(FATAL_ERROR "KairoDos currently supports Android ARM64")
 endif()
 option(KAIRO_GUEST_PROFILE "Record translated guest code metadata (Debug only)" OFF)
+option(KAIRO_OPL_WORKER "Experimental ordered OPL worker (Debug only)" OFF)
+option(KAIRO_OPL_VERIFY "Compare worker OPL samples with synchronous synthesis" OFF)
+if(KAIRO_OPL_VERIFY AND NOT KAIRO_OPL_WORKER)
+    message(FATAL_ERROR "OPL verification requires the worker prototype")
+endif()
+if(KAIRO_OPL_WORKER OR KAIRO_OPL_VERIFY)
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message(FATAL_ERROR "OPL worker experiments are restricted to Debug builds")
+    endif()
+    add_compile_definitions(KAIRO_OPL_WORKER)
+    if(KAIRO_OPL_VERIFY)
+        add_compile_definitions(KAIRO_OPL_VERIFY)
+    endif()
+endif()
 if(KAIRO_GUEST_PROFILE)
     if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
         message(FATAL_ERROR "Guest profiling is restricted to Debug measurement builds")
@@ -107,6 +121,7 @@ function(pkg_check_modules prefix)
 endfunction()
 
 include_directories("${STAGING_SOURCE}/include" "${STAGING_SOURCE}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../shared/frontend/src/main/cpp"
     "${STAGING_SOURCE}/src/libs" "${CMAKE_CURRENT_BINARY_DIR}/include"
     "${KAIRO_STAGING_DEPS}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp")
 add_library(dosbox SHARED "${STAGING_SOURCE}/src/main.cpp"

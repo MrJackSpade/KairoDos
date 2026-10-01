@@ -102,8 +102,13 @@ On `AudioCallback`, while holding the existing OPL mutex:
 
 1. Drain every previously issued operation and transfer all generated output.
 2. Consume the existing FIFO in the original order.
-3. Enqueue and wait for any additional requested frames, then feed their
-   completed samples to `AddSamples_sfloat` in the original order.
+3. After that drain, generate any additional requested frames on the existing
+   mixer thread and feed them to `AddSamples_sfloat` in the original order.
+   The prototype refines the original proposed worker round trip here: the
+   existing OPL mutex prevents new submission, and the worker is fully drained,
+   so this is an exclusive chip-ownership handoff. This work was already off
+   the emulation thread; moving it again would add a wait without advancing
+   the measured target.
 4. Assign `last_rendered_ms = PIC_AtomicIndex()` at the original end point.
 
 This retains mixer callback blocking. Releasing the mutex and moving the time

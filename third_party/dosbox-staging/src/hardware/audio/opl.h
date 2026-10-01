@@ -97,6 +97,15 @@ public:
 	Opl& operator=(Opl&) = delete;
 
 private:
+#if defined(KAIRO_OPL_WORKER)
+	struct WorkerState;
+	std::unique_ptr<WorkerState> worker = {};
+	void StartWorker();
+	void DrainWorker();
+	void QueueFrames(uint32_t frames);
+	void QueueWrite(io_port_t address, uint8_t value);
+	void VerifyMixerFrame(const AudioFrame& frame);
+#endif
 	IO_ReadHandleObject ReadHandler[3];
 	IO_WriteHandleObject WriteHandler[3];
 
