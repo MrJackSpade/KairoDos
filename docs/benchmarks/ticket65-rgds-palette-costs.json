@@ -1,0 +1,530 @@
+{
+  "ticket": 65,
+  "device": "RG DS / Mali-G52",
+  "fingerprint": "Anbernic/rk3568_u/rk3568_u:14/UQ1A.240205.004.B1/eng.builde.20260518.174052:userdebug/release-keys",
+  "gpuProbes": [
+    {
+      "renderer": "Mali-G52",
+      "runs": [
+        {
+          "width": 320,
+          "height": 200,
+          "paletteRows": 1,
+          "iterations": 120,
+          "uploadBytesPerIteration": 65024,
+          "uploadWallNs": 12608460,
+          "snapshotWallNs": 56841745,
+          "submitWallNs": 84467248,
+          "submitCpuNs": 79263349,
+          "completionWallNs": 116423130,
+          "verifiedPixels": 64000,
+          "meanSubmitCpuMs": 0.6605279083333333
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "paletteRows": 200,
+          "iterations": 120,
+          "uploadBytesPerIteration": 268800,
+          "uploadWallNs": 36950088,
+          "snapshotWallNs": 65436290,
+          "submitWallNs": 119867713,
+          "submitCpuNs": 114645423,
+          "completionWallNs": 160275207,
+          "verifiedPixels": 64000,
+          "meanSubmitCpuMs": 0.955378525
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "paletteRows": 1,
+          "iterations": 120,
+          "uploadBytesPerIteration": 308224,
+          "uploadWallNs": 38751707,
+          "snapshotWallNs": 72162999,
+          "submitWallNs": 130764373,
+          "submitCpuNs": 123423422,
+          "completionWallNs": 298667833,
+          "verifiedPixels": 307200,
+          "meanSubmitCpuMs": 1.0285285166666667
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "paletteRows": 480,
+          "iterations": 120,
+          "uploadBytesPerIteration": 798720,
+          "uploadWallNs": 86663795,
+          "snapshotWallNs": 61348004,
+          "submitWallNs": 167576210,
+          "submitCpuNs": 163488197,
+          "completionWallNs": 337656670,
+          "verifiedPixels": 307200,
+          "meanSubmitCpuMs": 1.3624016416666667
+        }
+      ],
+      "clockOnly": {
+        "iterations": 120,
+        "wallNs": 193666,
+        "cpuNs": 104124
+      }
+    },
+    {
+      "renderer": "Mali-G52",
+      "runs": [
+        {
+          "width": 320,
+          "height": 200,
+          "paletteRows": 1,
+          "iterations": 120,
+          "uploadBytesPerIteration": 65024,
+          "uploadWallNs": 12503749,
+          "snapshotWallNs": 55700174,
+          "submitWallNs": 82463212,
+          "submitCpuNs": 76302345,
+          "completionWallNs": 111713002,
+          "verifiedPixels": 64000,
+          "meanSubmitCpuMs": 0.635852875
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "paletteRows": 200,
+          "iterations": 120,
+          "uploadBytesPerIteration": 268800,
+          "uploadWallNs": 36252417,
+          "snapshotWallNs": 61313589,
+          "submitWallNs": 114705503,
+          "submitCpuNs": 112270372,
+          "completionWallNs": 154585377,
+          "verifiedPixels": 64000,
+          "meanSubmitCpuMs": 0.9355864333333334
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "paletteRows": 1,
+          "iterations": 120,
+          "uploadBytesPerIteration": 308224,
+          "uploadWallNs": 34256538,
+          "snapshotWallNs": 65972960,
+          "submitWallNs": 118218620,
+          "submitCpuNs": 109523470,
+          "completionWallNs": 262143290,
+          "verifiedPixels": 307200,
+          "meanSubmitCpuMs": 0.9126955833333333
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "paletteRows": 480,
+          "iterations": 120,
+          "uploadBytesPerIteration": 798720,
+          "uploadWallNs": 84403957,
+          "snapshotWallNs": 57433251,
+          "submitWallNs": 161541045,
+          "submitCpuNs": 160820039,
+          "completionWallNs": 331513002,
+          "verifiedPixels": 307200,
+          "meanSubmitCpuMs": 1.3401669916666668
+        }
+      ],
+      "clockOnly": {
+        "iterations": 120,
+        "wallNs": 216126,
+        "cpuNs": 111125
+      }
+    }
+  ],
+  "cpuSnapshotProbes": [
+    {
+      "iterations": 120,
+      "warmupIterations": 20,
+      "runs": [
+        {
+          "width": 320,
+          "height": 200,
+          "case": "static",
+          "captureCpuNs": 14136217,
+          "captureWallNs": 15806873,
+          "scalarCpuNs": 25365960,
+          "scalarWallNs": 26260500,
+          "conservativeDirtyFrames": 0,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.11780180833333334,
+          "meanScalarCpuMs": 0.211383,
+          "capturePlusOneGpuUploadCpuMs": 0.7783297166666666
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "indices",
+          "captureCpuNs": 8537955,
+          "captureWallNs": 9097087,
+          "scalarCpuNs": 25266506,
+          "scalarWallNs": 26340704,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.071149625,
+          "meanScalarCpuMs": 0.21055421666666668,
+          "capturePlusOneGpuUploadCpuMs": 0.7316775333333333
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "frame_palette",
+          "captureCpuNs": 12415369,
+          "captureWallNs": 13012991,
+          "scalarCpuNs": 25164414,
+          "scalarWallNs": 25863255,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.10346140833333334,
+          "meanScalarCpuMs": 0.20970345,
+          "capturePlusOneGpuUploadCpuMs": 0.7639893166666667
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "row_palettes",
+          "captureCpuNs": 26962251,
+          "captureWallNs": 28264835,
+          "scalarCpuNs": 27026416,
+          "scalarWallNs": 28135040,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 24000,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.224685425,
+          "meanScalarCpuMs": 0.22522013333333332,
+          "capturePlusOneGpuUploadCpuMs": 1.18006395
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "unused_palette",
+          "captureCpuNs": 14149334,
+          "captureWallNs": 15100749,
+          "scalarCpuNs": 25200582,
+          "scalarWallNs": 26312128,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.11791111666666666,
+          "meanScalarCpuMs": 0.21000485,
+          "capturePlusOneGpuUploadCpuMs": 0.778439025
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "static",
+          "captureCpuNs": 52547543,
+          "captureWallNs": 54620418,
+          "scalarCpuNs": 120974585,
+          "scalarWallNs": 124041461,
+          "conservativeDirtyFrames": 0,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.43789619166666666,
+          "meanScalarCpuMs": 1.0081215416666667,
+          "capturePlusOneGpuUploadCpuMs": 1.4664247083333333
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "indices",
+          "captureCpuNs": 27379919,
+          "captureWallNs": 28811121,
+          "scalarCpuNs": 120748832,
+          "scalarWallNs": 123021212,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.22816599166666668,
+          "meanScalarCpuMs": 1.0062402666666668,
+          "capturePlusOneGpuUploadCpuMs": 1.2566945083333334
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "frame_palette",
+          "captureCpuNs": 51994539,
+          "captureWallNs": 53326291,
+          "scalarCpuNs": 120920039,
+          "scalarWallNs": 122446624,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.433287825,
+          "meanScalarCpuMs": 1.0076669916666667,
+          "capturePlusOneGpuUploadCpuMs": 1.4618163416666667
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "row_palettes",
+          "captureCpuNs": 79031457,
+          "captureWallNs": 80938365,
+          "scalarCpuNs": 127888545,
+          "scalarWallNs": 129672086,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 57600,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.6585954749999999,
+          "meanScalarCpuMs": 1.065737875,
+          "capturePlusOneGpuUploadCpuMs": 2.0209971166666665
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "unused_palette",
+          "captureCpuNs": 53902625,
+          "captureWallNs": 55384000,
+          "scalarCpuNs": 119781370,
+          "scalarWallNs": 121312046,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.44918854166666666,
+          "meanScalarCpuMs": 0.9981780833333334,
+          "capturePlusOneGpuUploadCpuMs": 1.4777170583333334
+        }
+      ],
+      "clockOnly": {
+        "cpuNs": 82541,
+        "wallNs": 172668
+      }
+    },
+    {
+      "iterations": 120,
+      "warmupIterations": 20,
+      "runs": [
+        {
+          "width": 320,
+          "height": 200,
+          "case": "static",
+          "captureCpuNs": 14329584,
+          "captureWallNs": 15046498,
+          "scalarCpuNs": 25260377,
+          "scalarWallNs": 26059248,
+          "conservativeDirtyFrames": 0,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.1194132,
+          "meanScalarCpuMs": 0.21050314166666667,
+          "capturePlusOneGpuUploadCpuMs": 0.755266075
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "indices",
+          "captureCpuNs": 8426831,
+          "captureWallNs": 8724033,
+          "scalarCpuNs": 25137877,
+          "scalarWallNs": 25562842,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.07022359166666665,
+          "meanScalarCpuMs": 0.2094823083333333,
+          "capturePlusOneGpuUploadCpuMs": 0.7060764666666667
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "frame_palette",
+          "captureCpuNs": 12574908,
+          "captureWallNs": 12985583,
+          "scalarCpuNs": 25111041,
+          "scalarWallNs": 25483500,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.10479089999999999,
+          "meanScalarCpuMs": 0.20925867499999998,
+          "capturePlusOneGpuUploadCpuMs": 0.740643775
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "row_palettes",
+          "captureCpuNs": 26657751,
+          "captureWallNs": 27852715,
+          "scalarCpuNs": 26826919,
+          "scalarWallNs": 27288623,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 24000,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.222147925,
+          "meanScalarCpuMs": 0.22355765833333333,
+          "capturePlusOneGpuUploadCpuMs": 1.1577343583333333
+        },
+        {
+          "width": 320,
+          "height": 200,
+          "case": "unused_palette",
+          "captureCpuNs": 14004084,
+          "captureWallNs": 14680164,
+          "scalarCpuNs": 24916201,
+          "scalarWallNs": 25365383,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 7680000,
+          "meanCaptureCpuMs": 0.11670069999999999,
+          "meanScalarCpuMs": 0.20763500833333334,
+          "capturePlusOneGpuUploadCpuMs": 0.752553575
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "static",
+          "captureCpuNs": 54562666,
+          "captureWallNs": 56159247,
+          "scalarCpuNs": 120735417,
+          "scalarWallNs": 122419503,
+          "conservativeDirtyFrames": 0,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.45468888333333335,
+          "meanScalarCpuMs": 1.006128475,
+          "capturePlusOneGpuUploadCpuMs": 1.3673844666666666
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "indices",
+          "captureCpuNs": 27149206,
+          "captureWallNs": 28335127,
+          "scalarCpuNs": 120374039,
+          "scalarWallNs": 121992207,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.22624338333333333,
+          "meanScalarCpuMs": 1.0031169916666667,
+          "capturePlusOneGpuUploadCpuMs": 1.1389389666666667
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "frame_palette",
+          "captureCpuNs": 53902624,
+          "captureWallNs": 55320128,
+          "scalarCpuNs": 120676205,
+          "scalarWallNs": 122200451,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.4491885333333333,
+          "meanScalarCpuMs": 1.0056350416666666,
+          "capturePlusOneGpuUploadCpuMs": 1.3618841166666666
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "row_palettes",
+          "captureCpuNs": 79740207,
+          "captureWallNs": 81513261,
+          "scalarCpuNs": 128265960,
+          "scalarWallNs": 130617078,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 120,
+          "paletteVersions": 57600,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.6645017249999999,
+          "meanScalarCpuMs": 1.068883,
+          "capturePlusOneGpuUploadCpuMs": 2.0046687166666666
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "case": "unused_palette",
+          "captureCpuNs": 54727753,
+          "captureWallNs": 56157797,
+          "scalarCpuNs": 119543950,
+          "scalarWallNs": 121492000,
+          "conservativeDirtyFrames": 120,
+          "rgbChangedFrames": 0,
+          "paletteVersions": 120,
+          "verifiedPixels": 36864000,
+          "meanCaptureCpuMs": 0.45606460833333334,
+          "meanScalarCpuMs": 0.9961995833333334,
+          "capturePlusOneGpuUploadCpuMs": 1.3687601916666667
+        }
+      ],
+      "clockOnly": {
+        "cpuNs": 87792,
+        "wallNs": 177041
+      }
+    }
+  ],
+  "model": [
+    {
+      "assumedScanoutsPerSecond": 70,
+      "assumedChangedUploadsPerSecond": 20,
+      "captureCpuMsPerSecond": 7.3130829166666675,
+      "gpuCpuMsPerSecond": 13.210558166666665,
+      "totalCpuMsPerSecond": 20.52364108333333,
+      "paletteOnlyTotalCpuSavingMsPerSecondRange": [
+        -2.9221012172347294,
+        2.2134841709435236
+      ],
+      "paletteOnlyProducerCpuSavingIfGpuWorkerMsPerSecondRange": [
+        10.288456949431934,
+        15.424042337610187
+      ]
+    },
+    {
+      "assumedScanoutsPerSecond": 70,
+      "assumedChangedUploadsPerSecond": 20,
+      "captureCpuMsPerSecond": 7.375131833333333,
+      "gpuCpuMsPerSecond": 12.7170575,
+      "totalCpuMsPerSecond": 20.09218933333333,
+      "paletteOnlyTotalCpuSavingMsPerSecondRange": [
+        -2.4906494672347286,
+        2.6449359209435244
+      ],
+      "paletteOnlyProducerCpuSavingIfGpuWorkerMsPerSecondRange": [
+        10.226408032765269,
+        15.361993420943522
+      ]
+    }
+  ],
+  "measuredPaletteLoopCpuMsPerSecondRange": [
+    17.6015398660986,
+    22.737125254276854
+  ],
+  "preRepeatClockReadings": {
+    "scalingCurFreqKHz": 1992000,
+    "debugArmClkHz": 1104000000,
+    "gpuCurFreqHz": 800000000
+  },
+  "limitations": [
+    "Clock sources disagree; no actual CPU frequency or max-clock claim.",
+    "Cadence is an explicit model input, not a measured callback count.",
+    "Capture is a feasibility algorithm, not current Staging code.",
+    "GPU measurements have no display consumer and exclude queue-lifetime capture integration.",
+    "Moving GPU submission to a worker changes the critical-path estimate; total CPU is not equivalent to game FPS.",
+    "Unused-palette changes over-trigger the conservative capture detector."
+  ]
+}

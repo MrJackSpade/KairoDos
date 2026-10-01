@@ -1,9 +1,10 @@
 # Ticket #65: GPU palette expansion feasibility
 
-**In progress. No application renderer or game configuration changed.** Palette
-work is measurable, but same-device net benefit is not yet established. The CPU
-cost comes from RGDS; the new offscreen GPU probe ran on Retroid. Subtracting one
-device's measurements from the other's would not establish an improvement.
+**Feasibility audit complete: no production implementation recommended from the
+measured palette-only budget.** No application renderer or game configuration
+changed for this audit. Initial Retroid evidence is preserved below; the final
+RGDS measurements and qualified decision follow at the end. There is no measured
+end-to-end game improvement to adopt.
 
 ## Narrow CPU attribution
 
@@ -44,8 +45,9 @@ warmup and sampling limitations; the #72 captures' nominal warmup was around
 
 Let `P` be measured conversion-loop CPU seconds, `T` the recorded interval, `F`
 the number of indexed frames uploaded per second, and `C` added CPU seconds per
-upload (index/history capture + palette versions + upload + draw/snapshot
-submission). Palette-only net CPU saving is at most `P/T - F*C`.
+upload. The optimistic upload-only budget is `P/T - F*C`; it must also pay for
+index/history capture on scanouts that do not upload. The final model below
+includes that otherwise omitted cost explicitly.
 
 Across these captures, break-even added CPU work is:
 
@@ -125,15 +127,113 @@ RGDS indexed-palette probe or a valid direct subtraction from Staging CPU cost.
   lookup, channel order, alpha and color-space behavior. The current #52 mailbox
   correctness issue must not be hidden by this proposal.
 
-## Next evidence and current decision
+## Initial evidence gap
 
 The Retroid experiment establishes technical feasibility of both palette layouts,
 not a net RGDS gain. Next, run the same isolated probe on RGDS and measure actual
 indexed snapshot/capture cost and upload cadence for the target workload. The
 result must fit the explicit per-frame budget, including fallback/history work,
-before a separate implementation ticket is justified. Until then, **do not move
-palette expansion into production or claim a performance improvement**. #65
-remains open; no source in either application's runtime was changed by this work.
+before a separate implementation ticket is justified. This was the interim state;
+the RGDS returned on October 1 and the probes below resolve that measurement gap.
 
 Raw costs, ELF identities, break-even budgets and limitations:
 [measurement record](benchmarks/ticket65-palette-feasibility.json).
+
+## RGDS measurements
+
+The RGDS returned at a freshly discovered Wi-Fi ADB endpoint. After separately
+finishing #72's adopted-build installation and game smoke check, the game was
+stopped before either standalone probe ran. Both probes were repeated without
+changing clocks. The device reports Mali-G52. Before the repeat, scaling sysfs
+reported 1992 MHz, debug `armclk` 1104 MHz and GPU 800 MHz; those CPU sources
+disagree, so no actual-frequency or maximum-clock claim follows.
+
+GPU CPU submission costs (two repetitions):
+
+| Input | Upload/draw/shared snapshot CPU ms/frame |
+| --- | ---: |
+| 320x200, one palette | 0.636-0.661 |
+| 320x200, per-row palettes | 0.936-0.955 |
+| 640x480, one palette | 0.913-1.029 |
+| 640x480, per-row palettes | 1.340-1.362 |
+
+Each repetition passed every producer-FBO pixel comparison. GPU timing still
+excludes a window consumer, CPU capture and mailbox integration. The clock-only
+control is below one microsecond CPU per iteration, included in raw timings.
+
+`tools/palette_snapshot_cost_probe.cpp` measures a separate plausible immutable
+capture layout: copy index rows, retain palette versions, compare successive
+histories, and exchange owned buffers. It also measures scalar palette expansion
+and checks the captured output against that reference. Ordinary modes read one
+shared palette table; per-row effects supply distinct sampled tables. An earlier
+version unnecessarily materialized identical palettes per row; those initial
+timings are excluded from the final model and retained locally for traceability.
+These are synthetic feasibility costs, not instrumented Staging snapshot code.
+
+| 320x200 case | Capture/history CPU ms | Scalar conversion CPU ms |
+| --- | ---: | ---: |
+| Static | 0.118-0.119 | 0.211 |
+| Changing indices | 0.070-0.071 | 0.210-0.211 |
+| Frame-wide palette change | 0.104-0.105 | 0.209-0.210 |
+| Palette change per row | 0.222-0.225 | 0.224-0.225 |
+| Only unused palette entry changes | 0.117-0.118 | 0.208-0.210 |
+
+At 640x480, changing-index capture costs 0.226-0.228 ms and scalar conversion
+1.003-1.006 ms. Adding one GPU upload/submission raises that changing-frame
+candidate to 1.139-1.257 ms before consumer costs. At 320x200 the corresponding
+candidate is 0.706-0.732 ms versus approximately 0.210 ms scalar conversion.
+This does not mean static frames should be uploaded: their candidate upload
+count is zero after history is established.
+
+All five cases at both sizes passed exact captured-output checks. The conservative
+history test correctly suppresses static frames but flags **all 120 unused-palette
+changes as dirty despite zero RGB changes**. That is wasted work, not a color
+error. A production design needs used-color or equivalent exact change tracking;
+that additional work is not credited as free. Palette-generation counters and
+other capture improvements could lower these costs, but have not been measured.
+
+## Net estimate and critical-path distinction
+
+For `S` scanouts/s and `F` changed uploads/s, use:
+
+`CPU saving <= P/T - (S-F)*C_static - F*C_changed - F*C_gpu`.
+
+Using **assumed**, not measured, cadence of 70 scanouts and 20 changed uploads/s,
+the two RGDS repetitions estimate:
+
+- Capture/history: 7.31-7.38 ms CPU/s.
+- GPU submission: 12.72-13.21 ms CPU/s.
+- Combined: 20.09-20.52 ms CPU/s, against the measured palette-loop budget of
+  17.60-22.74 ms CPU/s. Estimated total CPU saving crosses zero: roughly
+  **-2.92 to +2.64 ms CPU/s**, before unmeasured integration/consumer work.
+
+Total CPU and the emulation thread's critical path are different. If GPU work
+runs on an independent worker, the model removes only capture from that thread's
+budget, leaving a hypothetical 10.23-15.42 ms CPU/s saving there. That is roughly
+1-1.5% of one CPU's wall-time budget, **not measured game FPS**. Uploading on the
+emulation thread would spend the GPU submission cost there too. The model does
+not prove either placement speeds up games; threading, dirty cadence, palette
+effects, queue ownership and existing copy savings need an integrated comparison
+before adoption. Other renderer savings are outside this palette-only estimate.
+
+## Final decision
+
+The lookup operation is technically feasible, including row-specific palettes,
+but this audit does not justify a general GPU palette rewrite. RGDS driver and
+snapshot cost is significant, modeled total CPU benefit is near zero, the small
+possible critical-path benefit remains unproven, and the capture design still
+needs more precise dirty handling plus the compatibility requirements above.
+Keep the current CPU path. Do not create or ship a renderer implementation from
+these measurements. This is a no-go for the proposed optimization **on current
+evidence**, not a claim that all GPU palette designs or resolutions must lose.
+
+Acceptance evidence: palette-only attribution, same-device upload/snapshot and
+capture costs, explicit net-cost model, measured timer controls, and a plan to
+preserve per-scanline palettes and unsupported modes are all documented. The
+ticket requests feasibility/no-go evidence rather than a renderer implementation;
+that audit is complete. No measured end-to-end improvement is being withheld.
+
+Final raw records and model:
+[RGDS costs](benchmarks/ticket65-rgds-palette-costs.json). Original game files,
+Kairo98, and runtime renderer code remain unchanged by #65. The RGDS retains the
+separately adopted #72 APK; the probes did not replace it.
