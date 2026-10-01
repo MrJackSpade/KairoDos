@@ -384,7 +384,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         appRoot.post {
             if (isFinishing || isDestroyed) return@post
             if (controllerSetupPending) {
-                controllerProfiles.configuration.show(this, required = true) {
+                controllerProfiles.configuration.show(this, required = true, product = "KAIRODOS") {
                     controllerSetupPending = false
                     controllerFlow.initialize()
                     continueStartup(savedInstanceState)
