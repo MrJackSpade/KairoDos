@@ -121,10 +121,65 @@ previous adopted SETcc APK was restored and its installed SHA256 verified as
 `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 The normal app therefore does not run the experimental worker or comparator.
 
+## Mode coverage and queue pressure
+
+The fixture now accepts `stagingOplMode` and `stagingOplDcBias`. These append
+settings only to the fixture's temporary configuration; original game files
+and normal per-game settings are not edited. The same reset, repeated-launch,
+pause/surface/exit checks passed in all seven additional runs:
+
+| Mode | DC removal | Compared sample values | Result |
+| --- | --- | ---: | --- |
+| OPL3 | on | 5,403,110 | Zero differences |
+| OPL2 | off | 5,338,602 | Zero differences |
+| OPL2 | on | 5,016,874 | Zero differences |
+| Dual OPL2 | off | 5,005,040 | Zero differences |
+| Dual OPL2 | on | 4,859,240 | Zero differences |
+| ESFM | off | Not compared | Synchronous fallback and gameplay smoke passed |
+| OPL3 Gold | off | Not compared | Synchronous fallback and gameplay smoke passed |
+
+The new worker runs total **25,622,866 sample values with zero differences**.
+Combined with the first OPL3-off run, the covered configurations total
+30,759,448 compared values. These are repeated samples within one game's
+workload, not that many independent coverage cases. All seven final screenshots
+were inspected and show Doom gameplay. Logs confirm the requested mode at each
+of three core starts and DC enablement at all three starts of each DC-on case.
+Fallback smoke does not exercise ESFM native readback or Gold surround features
+and is not an independent audio comparison. See
+[mode records](benchmarks/ticket74-mode-integration.json).
+
+The standalone worker test now enables compile-time `Track=true` statistics.
+Every tested capacity (1, 4, 64) actually reached its full command and result
+rings, and submit-side output draining occurred in every trial. All nine trials
+again compared 1,752,120 sample values with zero differences. Cancellation now
+explicitly waits until the output ring is full before destroying the worker;
+20 such trials passed, along with processor-exception propagation. See
+[pressure records](benchmarks/ticket74-worker-pressure.json).
+These establish standalone queue behavior, not production OPL FIFO high-water
+marks. The application uses default `Track=false`; counter updates are discarded
+at compile time. They therefore are not newly enabled benchmark instrumentation.
+
+The normal adopted APK was restored after this batch and its installed hash
+again matched `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
+
+## Performance builds prepared
+
+Built baseline and worker variants from the same isolated sources with
+`guestProfile=false` and `oplVerify=false`. Their only differing non-signature
+APK entry is `lib/arm64-v8a/libdosbox_staging.so`. Packaged and saved debug ELF
+Build IDs match for each variant, and both packaged cores exclude the
+verification log marker. APK/core hashes and Build IDs are recorded in
+[build identities](benchmarks/ticket74-performance-builds.json). These builds
+have not been performance-tested or adopted.
+
 ## Next required work
 
-Complete the remaining mode, boundary and lifecycle fixtures from the design.
-Only after those pass,
-measure comparator-free builds on RGDS and another OPL
-workload, including total CPU and underruns. Adopt or reject from that evidence;
-the current checkpoint alone does not justify deployment.
+Run controlled comparator-free A/B measurements on RGDS, including total CPU
+and underruns. The passing mode/lifecycle checks permit that isolated experiment
+to determine whether further prototype work is justified; they do not qualify
+the worker for adoption. If the candidate loses or cannot repeat a gain, reject
+it without expanding an unhelpful implementation. If promising, complete the
+remaining independent timer/status, sample-boundary, routing and application
+queue/lifetime stress evidence, plus another OPL workload and instrumentation
+overhead checks, before adoption. The acceptance requirements remain those in
+the design; this checkpoint alone does not justify normal deployment.

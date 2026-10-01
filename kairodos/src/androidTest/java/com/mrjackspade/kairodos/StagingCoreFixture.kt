@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal object StagingCoreFixture {
     init { System.loadLibrary("kairodos_host") }
 
-    fun verify(instrumentation: Instrumentation, archivePath: String): String {
+    fun verify(instrumentation: Instrumentation, archivePath: String,
+               oplMode: String? = null, oplDcBias: Boolean = false): String {
+        check(oplMode == null || oplMode in setOf("opl2", "dualopl2", "opl3", "opl3gold", "esfm"))
         val context = instrumentation.targetContext
         val root = File(context.cacheDir, "staging-core-fixture")
         check(!root.exists()) { "Inspect existing core fixture before retrying" }
@@ -41,6 +43,8 @@ internal object StagingCoreFixture {
             val drive = DosStagingStorage.prepare(archive, saves, contentId, cancelled, launch?.folder)
             val config = DosStagingLaunchConfig.write(File(root, "game.conf"), drive, launch,
                 "dosbox.conf", emptyMap(), null, false, false)
+            if (oplMode != null) config.appendText(
+                "\n[sblaster]\noplmode = $oplMode\nopl_remove_dc_bias = $oplDcBias\n")
             File(report, "launch.conf").writeText(config.readText())
             val resources = DosStagingResources.prepare(context, cancelled)
             val reader = ImageReader.newInstance(640, 480, PixelFormat.RGBA_8888, 3)

@@ -31,7 +31,7 @@ static void trial(int mode, bool delayed) {
     Synth reference, actual;
     uint64_t issued = 0, consumed = 0, compared = 0, nonzero = 0;
     std::vector<Result> expected;
-    kairo::OrderedWorker<Command, Result, Capacity> worker([&](const Command& c) {
+    kairo::OrderedWorker<Command, Result, Capacity, true> worker([&](const Command& c) {
         if (delayed && c.sequence % 127 == 0)
             std::this_thread::sleep_for(std::chrono::microseconds(50));
         return actual.process(c);
@@ -80,9 +80,15 @@ static void trial(int mode, bool delayed) {
     submit(0, 0, 64);
     worker.drain(consume);
     if (consumed != issued || !nonzero) throw std::runtime_error("incomplete/silent test");
-    std::printf("{\"capacity\":%zu,\"mode\":%d,\"delayed\":%s,\"operations\":%llu,\"comparedSamples\":%llu,\"nonzeroSamples\":%llu,\"mismatches\":0}\n",
+    const auto stats = worker.statistics();
+    if (!stats.maxCommands || !stats.maxResults || stats.maxCommands > Capacity ||
+        stats.maxResults > Capacity || (Capacity == 1 && !stats.submitDrains))
+        throw std::runtime_error("queue bounds/pressure not exercised");
+    std::printf("{\"capacity\":%zu,\"mode\":%d,\"delayed\":%s,\"operations\":%llu,\"comparedSamples\":%llu,\"nonzeroSamples\":%llu,\"mismatches\":0,\"maxCommands\":%zu,\"maxResults\":%zu,\"submitDrains\":%llu,\"submitWaits\":%llu}\n",
         Capacity, mode, delayed ? "true" : "false", (unsigned long long)issued,
-        (unsigned long long)compared, (unsigned long long)nonzero);
+        (unsigned long long)compared, (unsigned long long)nonzero,
+        stats.maxCommands, stats.maxResults, (unsigned long long)stats.submitDrains,
+        (unsigned long long)stats.submitWaits);
 }
 
 int main() {
@@ -107,6 +113,12 @@ int main() {
             kairo::OrderedWorker<int, int, 1> worker([](const int& c) { return c; });
             worker.submit(1, [](int) {});
             worker.submit(2, [](int) {});
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+            while (worker.statistics().currentResults != 1) {
+                if (std::chrono::steady_clock::now() > deadline)
+                    throw std::runtime_error("output never filled before cancellation");
+                std::this_thread::yield();
+            }
         }
         puts("{\"exceptionPropagation\":true,\"cancellationTrials\":20}");
         return 0;

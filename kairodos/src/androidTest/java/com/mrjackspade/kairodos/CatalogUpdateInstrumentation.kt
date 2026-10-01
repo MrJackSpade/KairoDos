@@ -26,6 +26,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var catalogOverrides = false
     private var stagingStorage = false
     private var stagingArchive: String? = null
+    private var stagingOplMode: String? = null
+    private var stagingOplDcBias = false
     private var resolutionSource: String? = null
     private var resolutionWidth = 320
     private var resolutionNoDouble = false
@@ -46,6 +48,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
         stagingStorage = arguments?.getString("stagingStorage") == "true"
         stagingArchive = arguments?.getString("stagingArchive")
+        stagingOplMode = arguments?.getString("stagingOplMode")
+        stagingOplDcBias = arguments?.getString("stagingOplDcBias") == "true"
         resolutionSource = arguments?.getString("resolutionSource")
         resolutionWidth = arguments?.getString("resolutionWidth")?.toInt() ?: 320
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
@@ -70,7 +74,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                 val message = if (stagingStorage) {
                     StagingStorageFixture.verify(targetContext.cacheDir)
                     "Staging storage migration, preserved saves, cancellation, path safety and launch configuration: OK"
-                } else StagingCoreFixture.verify(this, stagingArchive!!)
+                } else StagingCoreFixture.verify(this, stagingArchive!!, stagingOplMode, stagingOplDcBias)
                 result.putString("stream", "$message\n")
                 finish(Activity.RESULT_OK, result)
                 return

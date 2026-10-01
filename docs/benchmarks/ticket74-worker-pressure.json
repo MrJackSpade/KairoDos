@@ -1,0 +1,131 @@
+{
+  "ticket": 74,
+  "device": "RG DS rk3568_u Android ARM64",
+  "probeSha256": "5de6d284bff87cd04660543bd6c7394b77d754a9c063a561357c73ba71fd7dae",
+  "sourceSha256": "a14abdace8085341678096f4891bf8ed8a16ec2f56eebf36e65cf9d23ec9ac51",
+  "sharedHeaderSha256": "d544587b8d96d455690632e4f0ea538f84f9a7199c8978eae2107a418202a1fa",
+  "results": [
+    {
+      "capacity": 1,
+      "mode": 0,
+      "delayed": true,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0,
+      "maxCommands": 1,
+      "maxResults": 1,
+      "submitDrains": 9325,
+      "submitWaits": 9858
+    },
+    {
+      "capacity": 4,
+      "mode": 0,
+      "delayed": true,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0,
+      "maxCommands": 4,
+      "maxResults": 4,
+      "submitDrains": 9041,
+      "submitWaits": 2714
+    },
+    {
+      "capacity": 64,
+      "mode": 0,
+      "delayed": false,
+      "operations": 9455,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 194673,
+      "mismatches": 0,
+      "maxCommands": 64,
+      "maxResults": 64,
+      "submitDrains": 2976,
+      "submitWaits": 5
+    },
+    {
+      "capacity": 1,
+      "mode": 1,
+      "delayed": true,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0,
+      "maxCommands": 1,
+      "maxResults": 1,
+      "submitDrains": 9336,
+      "submitWaits": 9816
+    },
+    {
+      "capacity": 4,
+      "mode": 1,
+      "delayed": true,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0,
+      "maxCommands": 4,
+      "maxResults": 4,
+      "submitDrains": 9039,
+      "submitWaits": 2709
+    },
+    {
+      "capacity": 64,
+      "mode": 1,
+      "delayed": false,
+      "operations": 9466,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 193995,
+      "mismatches": 0,
+      "maxCommands": 64,
+      "maxResults": 64,
+      "submitDrains": 2981,
+      "submitWaits": 2
+    },
+    {
+      "capacity": 1,
+      "mode": 2,
+      "delayed": true,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0,
+      "maxCommands": 1,
+      "maxResults": 1,
+      "submitDrains": 9406,
+      "submitWaits": 9945
+    },
+    {
+      "capacity": 4,
+      "mode": 2,
+      "delayed": true,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0,
+      "maxCommands": 4,
+      "maxResults": 4,
+      "submitDrains": 9094,
+      "submitWaits": 2726
+    },
+    {
+      "capacity": 64,
+      "mode": 2,
+      "delayed": false,
+      "operations": 9536,
+      "comparedSamples": 194680,
+      "nonzeroSamples": 170938,
+      "mismatches": 0,
+      "maxCommands": 64,
+      "maxResults": 64,
+      "submitDrains": 2979,
+      "submitWaits": 1
+    },
+    {
+      "exceptionPropagation": true,
+      "cancellationTrials": 20
+    }
+  ],
+  "limits": "Chip-level standalone queue-pressure evidence, not app FIFO pressure or performance. Track=true only in the standalone test; application builds use default Track=false."
+}

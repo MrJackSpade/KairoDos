@@ -1,0 +1,210 @@
+{
+  "ticket": 74,
+  "device": "RG DS rk3568_u Android 14 ARM64 over Wi-Fi",
+  "verificationApkSha256": "cc9593ba561cac6dfd16aff65fc27c083eaad6efb55f97ec235e1d706c3d178f",
+  "testApkSha256": "7e97acb39576c45b6172c444e02a936e58f24647929f9fe54d83913198145539",
+  "runs": [
+    {
+      "case": "opl3-true",
+      "pid": "15667",
+      "instrumentation": "Staging doom: frames=1042, PCM frames=3524608, peak=9182; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9195, executed=15157647; reset: translated=9194, executed=14941489; second launch: translated=8803, executed=15285885; JIT mappings released",
+      "events": [
+        "10-01 05:34:02.962 15667 15690 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:34:02.962 15667 15690 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 05:34:32.813 15667 15690 I DOSBoxStaging: KAIRO OPL worker completed: commands=13038 frames=239244",
+        "10-01 05:34:32.813 15667 15690 I DOSBoxStaging: KAIRO OPL verify: samples=1737418 mismatches=0",
+        "10-01 05:34:33.091 15667 15690 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:34:33.091 15667 15690 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 05:35:04.890 15667 15690 I DOSBoxStaging: KAIRO OPL worker completed: commands=11156 frames=165250",
+        "10-01 05:35:04.890 15667 15690 I DOSBoxStaging: KAIRO OPL verify: samples=1760840 mismatches=0",
+        "10-01 05:35:06.527 15667 15690 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:35:06.528 15667 15690 I DOSBoxStaging: KAIRO OPL worker enabled: OPL3",
+        "10-01 05:35:36.423 15667 15690 I DOSBoxStaging: KAIRO OPL worker completed: commands=11574 frames=145144",
+        "10-01 05:35:36.423 15667 15690 I DOSBoxStaging: KAIRO OPL verify: samples=1904852 mismatches=0"
+      ],
+      "comparisons": [
+        {
+          "samples": 1737418,
+          "mismatches": 0
+        },
+        {
+          "samples": 1760840,
+          "mismatches": 0
+        },
+        {
+          "samples": 1904852,
+          "mismatches": 0
+        }
+      ],
+      "samplesCompared": 5403110,
+      "fallback": false
+    },
+    {
+      "case": "opl2-false",
+      "pid": "15748",
+      "instrumentation": "Staging doom: frames=1040, PCM frames=3453952, peak=9142; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9295, executed=15615151; reset: translated=8925, executed=14712635; second launch: translated=8923, executed=15048893; JIT mappings released",
+      "events": [
+        "10-01 05:36:39.517 15748 15770 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:37:09.377 15748 15770 I DOSBoxStaging: KAIRO OPL worker completed: commands=13177 frames=243476",
+        "10-01 05:37:09.377 15748 15770 I DOSBoxStaging: KAIRO OPL verify: samples=1773468 mismatches=0",
+        "10-01 05:37:09.646 15748 15770 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:37:39.462 15748 15770 I DOSBoxStaging: KAIRO OPL worker completed: commands=11116 frames=172927",
+        "10-01 05:37:39.462 15748 15770 I DOSBoxStaging: KAIRO OPL verify: samples=1684238 mismatches=0",
+        "10-01 05:37:41.119 15748 15770 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:38:11.810 15748 15770 I DOSBoxStaging: KAIRO OPL worker completed: commands=13571 frames=241733",
+        "10-01 05:38:11.810 15748 15770 I DOSBoxStaging: KAIRO OPL verify: samples=1880896 mismatches=0"
+      ],
+      "comparisons": [
+        {
+          "samples": 1773468,
+          "mismatches": 0
+        },
+        {
+          "samples": 1684238,
+          "mismatches": 0
+        },
+        {
+          "samples": 1880896,
+          "mismatches": 0
+        }
+      ],
+      "samplesCompared": 5338602,
+      "fallback": false
+    },
+    {
+      "case": "opl2-true",
+      "pid": "15822",
+      "instrumentation": "Staging doom: frames=946, PCM frames=3480576, peak=8514; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9301, executed=14307896; reset: translated=8920, executed=15089482; second launch: translated=8546, executed=14062360; JIT mappings released",
+      "events": [
+        "10-01 05:38:24.329 15822 15844 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:38:24.329 15822 15844 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:38:54.163 15822 15844 I DOSBoxStaging: KAIRO OPL worker completed: commands=12904 frames=229076",
+        "10-01 05:38:54.163 15822 15844 I DOSBoxStaging: KAIRO OPL verify: samples=1762928 mismatches=0",
+        "10-01 05:38:54.430 15822 15844 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:38:54.430 15822 15844 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:39:24.793 15822 15844 I DOSBoxStaging: KAIRO OPL worker completed: commands=10542 frames=150986",
+        "10-01 05:39:24.793 15822 15844 I DOSBoxStaging: KAIRO OPL verify: samples=1629094 mismatches=0",
+        "10-01 05:39:26.449 15822 15844 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:39:26.449 15822 15844 I DOSBoxStaging: KAIRO OPL worker enabled: OPL2",
+        "10-01 05:39:56.344 15822 15844 I DOSBoxStaging: KAIRO OPL worker completed: commands=11414 frames=187976",
+        "10-01 05:39:56.344 15822 15844 I DOSBoxStaging: KAIRO OPL verify: samples=1624852 mismatches=0"
+      ],
+      "comparisons": [
+        {
+          "samples": 1762928,
+          "mismatches": 0
+        },
+        {
+          "samples": 1629094,
+          "mismatches": 0
+        },
+        {
+          "samples": 1624852,
+          "mismatches": 0
+        }
+      ],
+      "samplesCompared": 5016874,
+      "fallback": false
+    },
+    {
+      "case": "dualopl2-false",
+      "pid": "15895",
+      "instrumentation": "Staging doom: frames=909, PCM frames=3525632, peak=8264; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9193, executed=14292980; reset: translated=8920, executed=13665623; second launch: translated=8671, executed=14441965; JIT mappings released",
+      "events": [
+        "10-01 05:40:09.225 15895 15917 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:40:39.298 15895 15917 I DOSBoxStaging: KAIRO OPL worker completed: commands=16109 frames=237157",
+        "10-01 05:40:39.298 15895 15917 I DOSBoxStaging: KAIRO OPL verify: samples=1650306 mismatches=0",
+        "10-01 05:40:39.565 15895 15917 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:41:09.045 15895 15917 I DOSBoxStaging: KAIRO OPL worker completed: commands=14791 frames=211001",
+        "10-01 05:41:09.045 15895 15917 I DOSBoxStaging: KAIRO OPL verify: samples=1581398 mismatches=0",
+        "10-01 05:41:10.711 15895 15917 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:41:42.464 15895 15917 I DOSBoxStaging: KAIRO OPL worker completed: commands=14544 frames=141206",
+        "10-01 05:41:42.464 15895 15917 I DOSBoxStaging: KAIRO OPL verify: samples=1773336 mismatches=0"
+      ],
+      "comparisons": [
+        {
+          "samples": 1650306,
+          "mismatches": 0
+        },
+        {
+          "samples": 1581398,
+          "mismatches": 0
+        },
+        {
+          "samples": 1773336,
+          "mismatches": 0
+        }
+      ],
+      "samplesCompared": 5005040,
+      "fallback": false
+    },
+    {
+      "case": "dualopl2-true",
+      "pid": "15969",
+      "instrumentation": "Staging doom: frames=930, PCM frames=3477504, peak=9175; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=8916, executed=11667376; reset: translated=8915, executed=13373087; second launch: translated=8913, executed=15404959; JIT mappings released",
+      "events": [
+        "10-01 05:41:56.292 15969 15991 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:41:56.293 15969 15991 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:42:27.323 15969 15991 I DOSBoxStaging: KAIRO OPL worker completed: commands=15556 frames=233719",
+        "10-01 05:42:27.323 15969 15991 I DOSBoxStaging: KAIRO OPL verify: samples=1509378 mismatches=0",
+        "10-01 05:42:27.596 15969 15991 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:42:27.597 15969 15991 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:42:57.072 15969 15991 I DOSBoxStaging: KAIRO OPL worker completed: commands=15236 frames=256570",
+        "10-01 05:42:57.072 15969 15991 I DOSBoxStaging: KAIRO OPL verify: samples=1400464 mismatches=0",
+        "10-01 05:42:58.721 15969 15991 I DOSBoxStaging: OPL: DC bias removal enabled",
+        "10-01 05:42:58.722 15969 15991 I DOSBoxStaging: KAIRO OPL worker enabled: DualOPL2",
+        "10-01 05:43:28.620 15969 15991 I DOSBoxStaging: KAIRO OPL worker completed: commands=15655 frames=153118",
+        "10-01 05:43:28.621 15969 15991 I DOSBoxStaging: KAIRO OPL verify: samples=1949398 mismatches=0"
+      ],
+      "comparisons": [
+        {
+          "samples": 1509378,
+          "mismatches": 0
+        },
+        {
+          "samples": 1400464,
+          "mismatches": 0
+        },
+        {
+          "samples": 1949398,
+          "mismatches": 0
+        }
+      ],
+      "samplesCompared": 4859240,
+      "fallback": false
+    },
+    {
+      "case": "esfm-false",
+      "pid": "16043",
+      "instrumentation": "Staging doom: frames=968, PCM frames=3427328, peak=9061; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9313, executed=14434258; reset: translated=8924, executed=14239645; second launch: translated=8548, executed=13781750; JIT mappings released",
+      "events": [
+        "10-01 05:43:41.208 16043 16065 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: ESFM",
+        "10-01 05:44:11.302 16043 16065 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: ESFM",
+        "10-01 05:44:42.364 16043 16065 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: ESFM"
+      ],
+      "comparisons": [],
+      "samplesCompared": 0,
+      "fallback": true
+    },
+    {
+      "case": "opl3gold-false",
+      "pid": "16116",
+      "instrumentation": "Staging doom: frames=968, PCM frames=3415040, peak=8467; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9178, executed=14877649; reset: translated=8899, executed=14732776; second launch: translated=8814, executed=15752620; JIT mappings released",
+      "events": [
+        "10-01 05:45:24.747 16116 16138 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: OPL3Gold",
+        "10-01 05:45:55.237 16116 16138 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: OPL3Gold",
+        "10-01 05:46:26.294 16116 16138 I DOSBoxStaging: KAIRO OPL worker synchronous fallback: OPL3Gold"
+      ],
+      "comparisons": [],
+      "samplesCompared": 0,
+      "fallback": true
+    }
+  ],
+  "workerSampleValuesCompared": 25622866,
+  "finalScreenshots": "All seven inspected: rendered Doom gameplay at 320x200.",
+  "limitations": [
+    "One game in each selected mode; not exhaustive register/routing coverage.",
+    "Fallback cases verify selection and gameplay/lifecycle only, not independent sample equivalence or ESFM native/Gold surround features.",
+    "Comparator enabled: no performance inference. Independent timer/status and sample-boundary fixtures remain required before adoption."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "worker": {
+    "apkSha256": "bfb84d16d9fed62c51cb6ac64cfb43b541a50e780a1df2c0e80291273049c439",
+    "debugElfSha256": "622a4a6a35873ac5391113fc1a1773d592b3ffd591aaddc296ded4ded6c155b4",
+    "packagedCoreSha256": "014bfebc891ec4268e1db5764b8279650343c710051d14bb4fe5f07508073687",
+    "buildId": "3d5aa11c271437c83bf915fa0741669a5458971f",
+    "oplWorker": true,
+    "oplVerify": false,
+    "guestProfile": false
+  },
+  "baseline": {
+    "apkSha256": "130ecdd98094c05ecc1e8c43b8396f783ea3ddb87f2bcaba08a56ad7daee3688",
+    "debugElfSha256": "7d7b1270e2d394a9fb29240593ca92f5b22a03525858f0ccbb12bbf2c217d73f",
+    "packagedCoreSha256": "78375c977720273431e6144420cfc6c6eb33241c0dd17a6375155ec2bbcf30af",
+    "buildId": "68708d18817afa6592683613289d452dabd63f8f",
+    "oplWorker": false,
+    "oplVerify": false,
+    "guestProfile": false
+  },
+  "changedNonSignatureEntries": [
+    "lib/arm64-v8a/libdosbox_staging.so"
+  ],
+  "status": "Builds prepared, not performance-tested or adopted",
+  "coreSourceSha256": "f922aa770269bc05076269d59488c9116ab99fe53f00ecf6cb8ba7bdacd433c6",
+  "sharedWorkerHeaderSha256": "d544587b8d96d455690632e4f0ea538f84f9a7199c8978eae2107a418202a1fa"
+}
