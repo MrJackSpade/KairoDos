@@ -1,0 +1,538 @@
+{
+  "ticket": 65,
+  "status": "partial feasibility; no runtime change",
+  "cpuCaptures": [
+    {
+      "capture": ".tmp\\duke-current-320-profile",
+      "threadId": 24345,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "recordSeconds": 119.937,
+      "auditedConversionLoopCpuSeconds": 2.46464644,
+      "emulationCpuSeconds": 103.24242321,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.54545452
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 252
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.04040404
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.03030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xb0",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.29292929
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc8",
+          "seconds": 0.05050505
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 1.2121212
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.53535353
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.37373737
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.3872419528421878,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.445624937355917,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 1.0274754412733351,
+        "70": 0.29356441179238146
+      }
+    },
+    {
+      "capture": ".tmp\\ticket72-a",
+      "threadId": 29512,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "recordSeconds": 119.939,
+      "auditedConversionLoopCpuSeconds": 2.11111109,
+      "emulationCpuSeconds": 103.39393836,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.18181816
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 216
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.03030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xb0",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.3030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc8",
+          "seconds": 0.06060606
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 0.91919191
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.44444444
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.38383838
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xdc",
+          "seconds": 0.02020202
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.041813208284486,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.084372195073292,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 0.88007699330493,
+        "70": 0.25145056951569433
+      }
+    },
+    {
+      "capture": ".tmp\\ticket72-b",
+      "threadId": 330,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "recordSeconds": 119.938,
+      "auditedConversionLoopCpuSeconds": 2.6262626,
+      "emulationCpuSeconds": 102.75757473,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.77777775
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 275
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.04040404
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x14",
+          "seconds": 0.03030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x24",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x28",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.04040404
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.3030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 1.4141414
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.51515151
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.39393939
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xdc",
+          "seconds": 0.02020202
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.5557849208689665,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.622818521133863,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 1.0948417515716453,
+        "70": 0.3128119290204701
+      }
+    },
+    {
+      "capture": ".tmp\\ticket72-a2",
+      "threadId": 4698,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "recordSeconds": 119.937,
+      "auditedConversionLoopCpuSeconds": 2.29292927,
+      "emulationCpuSeconds": 101.87878686,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.39393937
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 237
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.04040404
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.39393939
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc8",
+          "seconds": 0.02020202
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 0.95959595
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.54545454
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.37373737
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xdc",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x118",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x120",
+          "seconds": 0.03030303
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.2506444576640887,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.3024647530175413,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 0.9558890375780619,
+        "70": 0.27311115359373195
+      }
+    },
+    {
+      "capture": ".tmp\\ticket72-b2",
+      "threadId": 7944,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "recordSeconds": 119.949,
+      "auditedConversionLoopCpuSeconds": 2.69696967,
+      "emulationCpuSeconds": 102.7272717,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.77777775
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 275
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.02020202
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x4",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x14",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x28",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.33333333
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 1.4141414
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.52525252
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.42424242
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xdc",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x118",
+          "seconds": 0.01010101
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.6253687315634218,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.696152681005759,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 1.1242151539404248,
+        "70": 0.3212043296972642
+      }
+    },
+    {
+      "capture": ".tmp\\ticket72-a3",
+      "threadId": 11188,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "recordSeconds": 119.948,
+      "auditedConversionLoopCpuSeconds": 2.7272727,
+      "emulationCpuSeconds": 102.56565554,
+      "paletteFunctionSelfCpuSeconds": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.8282828
+      },
+      "paletteFunctionSamples": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 280
+      },
+      "relativePcCpuSeconds": [
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x0",
+          "seconds": 0.02020202
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x18",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x28",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0x34",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xac",
+          "seconds": 0.03030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xb0",
+          "seconds": 0.01010101
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc4",
+          "seconds": 0.3030303
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xc8",
+          "seconds": 0.06060606
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xcc",
+          "seconds": 1.30303029
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd0",
+          "seconds": 0.65656565
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xd4",
+          "seconds": 0.4040404
+        },
+        {
+          "function": "draw_linear_line_from_dac_palette(unsigned long, unsigned long)",
+          "offset": "0xdc",
+          "seconds": 0.01010101
+        }
+      ],
+      "loopShareOfEmulationCpuPercent": 2.6590506204451447,
+      "paletteOnlyIdealSerialSpeedupPercent": 2.731687575880204,
+      "breakEvenAddedCpuMsPerUploadedFrame": {
+        "20": 1.1368562627138428,
+        "70": 0.32481607506109794
+      }
+    }
+  ],
+  "gpuProbe": {
+    "renderer": "Adreno (TM) A12",
+    "runs": [
+      {
+        "width": 320,
+        "height": 200,
+        "paletteRows": 1,
+        "iterations": 120,
+        "uploadBytesPerIteration": 65024,
+        "uploadWallNs": 3284626,
+        "snapshotWallNs": 5556717,
+        "submitWallNs": 11166508,
+        "submitCpuNs": 10936406,
+        "completionWallNs": 32313281,
+        "verifiedPixels": 64000,
+        "meansMs": {
+          "uploadWallNs": 0.027371883333333336,
+          "snapshotWallNs": 0.046305975,
+          "submitWallNs": 0.09305423333333333,
+          "submitCpuNs": 0.09113671666666666,
+          "completionWallNs": 0.26927734166666667
+        }
+      },
+      {
+        "width": 320,
+        "height": 200,
+        "paletteRows": 200,
+        "iterations": 120,
+        "uploadBytesPerIteration": 268800,
+        "uploadWallNs": 4142870,
+        "snapshotWallNs": 6235004,
+        "submitWallNs": 13383810,
+        "submitCpuNs": 13266302,
+        "completionWallNs": 38556260,
+        "verifiedPixels": 64000,
+        "meansMs": {
+          "uploadWallNs": 0.03452391666666666,
+          "snapshotWallNs": 0.051958366666666665,
+          "submitWallNs": 0.11153175,
+          "submitCpuNs": 0.11055251666666666,
+          "completionWallNs": 0.32130216666666667
+        }
+      },
+      {
+        "width": 640,
+        "height": 480,
+        "paletteRows": 1,
+        "iterations": 120,
+        "uploadBytesPerIteration": 308224,
+        "uploadWallNs": 5184320,
+        "snapshotWallNs": 7258231,
+        "submitWallNs": 15604377,
+        "submitCpuNs": 15259214,
+        "completionWallNs": 61487238,
+        "verifiedPixels": 307200,
+        "meansMs": {
+          "uploadWallNs": 0.04320266666666667,
+          "snapshotWallNs": 0.06048525833333333,
+          "submitWallNs": 0.130036475,
+          "submitCpuNs": 0.12716011666666666,
+          "completionWallNs": 0.51239365
+        }
+      },
+      {
+        "width": 640,
+        "height": 480,
+        "paletteRows": 480,
+        "iterations": 120,
+        "uploadBytesPerIteration": 798720,
+        "uploadWallNs": 12669806,
+        "snapshotWallNs": 9600987,
+        "submitWallNs": 26435005,
+        "submitCpuNs": 26103079,
+        "completionWallNs": 82207512,
+        "verifiedPixels": 307200,
+        "meansMs": {
+          "uploadWallNs": 0.10558171666666666,
+          "snapshotWallNs": 0.080008225,
+          "submitWallNs": 0.22029170833333334,
+          "submitCpuNs": 0.21752565833333332,
+          "completionWallNs": 0.6850626
+        }
+      }
+    ],
+    "clockOnly": {
+      "iterations": 120,
+      "wallNs": 88802,
+      "cpuNs": 50258
+    }
+  },
+  "gpuDevice": "Retroid Pocket Classic, Adreno A12",
+  "sharedCommit": "20b9c7b0023cc28114a72da5501cb16bd9c2e909",
+  "limitations": [
+    "GPU measurements are not from RGDS and cannot be subtracted from RGDS CPU measurements as an observed net gain.",
+    "Palette loop sampling includes index loads, address/loop work and RGB stores; some work remains in an indexed snapshot path.",
+    "GPU probe has no display consumer/window and forces completion each iteration.",
+    "Correctness readback checks producer FBO pixels, not mailbox presentation ordering.",
+    "CPU index/palette history capture and unsupported-mode fallback costs are not measured.",
+    "Old captures retain their original warmup/sampling limitations; no new 60/120 game comparison was performed."
+  ]
+}
