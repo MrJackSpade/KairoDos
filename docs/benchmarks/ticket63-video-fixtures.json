@@ -1,0 +1,44 @@
+{
+    "ticket":  63,
+    "status":  "partial: core callback fixtures only",
+    "device":  "Retroid Pocket Classic",
+    "core_sha256":  "d59650e19f6e515b357aee8136669439532d16ca7b76e91a3778382f6170c5f4",
+    "production_commit":  "29a6f3a8",
+    "warmup_seconds":  2,
+    "stop_after_seconds":  8,
+    "cases":  {
+                  "static":  {
+                                 "core_result":  0,
+                                 "elapsed_seconds":  8.028461,
+                                 "callbacks_after_2s":  0,
+                                 "changed":  0,
+                                 "duplicate":  0,
+                                 "callback_bytes":  0,
+                                 "observer_ns":  0,
+                                 "last_width":  320,
+                                 "last_height":  200
+                             },
+                  "pixel":  {
+                                "core_result":  0,
+                                "elapsed_seconds":  8.026952,
+                                "callbacks_after_2s":  80,
+                                "changed":  80,
+                                "duplicate":  0,
+                                "callback_bytes":  20480000,
+                                "observer_ns":  6146930,
+                                "last_width":  320,
+                                "last_height":  200
+                            },
+                  "unused_palette":  {
+                                         "core_result":  0,
+                                         "elapsed_seconds":  8.134516,
+                                         "callbacks_after_2s":  0,
+                                         "changed":  0,
+                                         "duplicate":  0,
+                                         "callback_bytes":  0,
+                                         "observer_ns":  0,
+                                         "last_width":  320,
+                                         "last_height":  200
+                                     }
+              }
+}
