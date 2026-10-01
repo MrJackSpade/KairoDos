@@ -12,9 +12,12 @@ p.add_argument("--clock-ticks", type=int, required=True,
                help="Device getconf CLK_TCK result, not CPU frequency")
 a = p.parse_args()
 capture = json.loads((a.capture / "capture.json").read_text())
-assert capture["recordExit"] == 0 and capture["statExit"] == 0, capture
+if capture.get("observation", "full") == "full":
+    assert capture["recordExit"] == 0 and capture["statExit"] == 0, capture
+else:
+    assert capture["observation"] == "light" and capture["recordExit"] is None and capture["statExit"] is None
 rows = [json.loads(x) for x in (a.capture / "samples.jsonl").read_text().splitlines()]
-assert len(rows) > 2 and a.clock_ticks > 0
+assert len(rows) >= 2 and a.clock_ticks > 0
 first, last = rows[0], rows[-1]
 duration = last["elapsed"] - first["elapsed"]
 assert duration > 0
@@ -66,6 +69,9 @@ times = sorted({t for row in frame_rows for t in presentations(row["raw"]) if t 
 assert len(times) > 1
 intervals = sorted((b - b0) / 1e6 for b0, b in zip(times, times[1:]))
 result = {
+    "observation": capture.get("observation", "full"),
+    "observationLimits": ("Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active."
+        if capture.get("observation") == "light" else "Includes simpleperf, frequent hardware polling and intermediate screenshots."),
     "intervalSeconds": duration, "clockTicksPerSecond": a.clock_ticks,
     "processCpuPercent": (proc1 - proc0) * scale,
     "threadCpuPercent": thread_cpu,
@@ -94,7 +100,7 @@ for row in rows:
         if re.fullmatch(r"-?\d+", lines[i + 1]):
             thermal.setdefault(lines[i], []).append(int(lines[i + 1]))
 result["thermalAndCoolingRawRanges"] = {k: [min(v), max(v)] for k, v in thermal.items()}
-counter_text = (a.capture / "counters.txt").read_text()
+counter_text = (a.capture / "counters.txt").read_text() if capture.get("observation", "full") == "full" else ""
 task_clock = re.search(r"([\d.,]+)\(ms\)\s+task-clock", counter_text)
 counter_duration = re.search(r"Total test time:\s+([\d.]+) seconds", counter_text)
 if task_clock and counter_duration:

@@ -4,6 +4,11 @@ The worker remains disabled by default. APK and ELF identities are in
 `ticket74-performance-builds.json`. Both builds disable the sample comparator
 and guest profiling; the only different non-signature APK entry is the core.
 
+**Observer warning:** the follow-up in `ticket74-observer-overhead.md` found
+that removing the full observer bundle substantially changes submission
+rates. Retain the profiles below for attribution, but do not use their rates
+as normal gameplay performance or their 4.01% difference as an adoption claim.
+
 ## Initial pair: frame history incomplete
 
 RGDS, unchanged Duke 320x200 demo, 60 seconds warmup then 120 seconds capture.

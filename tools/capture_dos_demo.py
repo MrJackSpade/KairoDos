@@ -2,6 +2,8 @@
 import argparse, subprocess, time, json, pathlib, hashlib, shlex
 parser=argparse.ArgumentParser(description='Capture a running DOS demo after answering the verified N sound prompt')
 parser.add_argument('--adb',required=True);parser.add_argument('--serial',required=True);parser.add_argument('--output',required=True,type=pathlib.Path)
+parser.add_argument('--observation', choices=('full', 'light'), default='full',
+                    help='Light omits simpleperf and intermediate screenshots and samples CPU only at sparse checkpoints')
 args=parser.parse_args()
 ADB=args.adb
 SERIAL=args.serial
@@ -42,11 +44,13 @@ subprocess.run([ADB,'-s',SERIAL,'push',str(OUT/'surface-sampler.sh'),remote_samp
 frame_sampler=subprocess.Popen([ADB,'-s',SERIAL,'shell',
     'sh '+shlex.quote(remote_sampler+'.sh')+' '+shlex.quote(remote_sampler+'.txt')+' '+shlex.quote(layer)+' 125'],
     stdout=(OUT/'surface-sampler.log').open('w'),stderr=subprocess.STDOUT)
-record=subprocess.Popen([ADB,'-s',SERIAL,'shell',f'cd /data/local/tmp && ./kairo-simpleperf record --clockid monotonic --trace-offcpu -o kairo-demo.perf.data -e cpu-clock -f 99 --call-graph fp -p {pid} --duration 120'],stdout=(OUT/'record.log').open('w'),stderr=subprocess.STDOUT)
-stat=subprocess.Popen([ADB,'-s',SERIAL,'shell',f'cd /data/local/tmp && ./kairo-simpleperf stat -p {pid} -e cpu-cycles,instructions,task-clock,cache-references,cache-misses,stalled-cycles-backend,stalled-cycles-frontend --duration 120'],stdout=(OUT/'counters.txt').open('w'),stderr=subprocess.STDOUT)
+record=stat=None
+if args.observation == 'full':
+    record=subprocess.Popen([ADB,'-s',SERIAL,'shell',f'cd /data/local/tmp && ./kairo-simpleperf record --clockid monotonic --trace-offcpu -o kairo-demo.perf.data -e cpu-clock -f 99 --call-graph fp -p {pid} --duration 120'],stdout=(OUT/'record.log').open('w'),stderr=subprocess.STDOUT)
+    stat=subprocess.Popen([ADB,'-s',SERIAL,'shell',f'cd /data/local/tmp && ./kairo-simpleperf stat -p {pid} -e cpu-cycles,instructions,task-clock,cache-references,cache-misses,stalled-cycles-backend,stalled-cycles-frontend --duration 120'],stdout=(OUT/'counters.txt').open('w'),stderr=subprocess.STDOUT)
 start=time.monotonic(); next_shot=30
 with (OUT/'samples.jsonl').open('w') as output:
-    while time.monotonic()-start<120:
+    def sample():
         raw=shell(f'''cat /proc/uptime; cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq; cat /sys/kernel/debug/clk/armclk/clk_rate /sys/kernel/debug/clk/clk_scmi_ddr/clk_rate /sys/kernel/debug/clk/clk_scmi_gpu/clk_rate; cat /sys/class/devfreq/fde60000.gpu/cur_freq; for z in /sys/class/thermal/thermal_zone*; do cat "$z/type" "$z/temp"; done; for z in /sys/class/thermal/cooling_device*; do cat "$z/type" "$z/cur_state"; done; cat /proc/{pid}/stat; for t in /proc/{pid}/task/*; do cat "$t/stat"; done; echo FRAMES''')
         power=shell('dumpsys power')
         if 'mWakefulness=Awake' not in power:
@@ -54,17 +58,24 @@ with (OUT/'samples.jsonl').open('w') as output:
             raise RuntimeError('Device slept during capture; capture invalid')
         elapsed=time.monotonic()-start
         output.write(json.dumps({'elapsed':elapsed,'hostUtc':time.time(),'raw':raw})+'\n'); output.flush()
-        if elapsed>=next_shot and next_shot<120:
+        return elapsed
+    while time.monotonic()-start<120:
+        elapsed=sample()
+        if args.observation == 'full' and elapsed>=next_shot and next_shot<120:
             screenshot(f'capture-{next_shot}s'); next_shot+=30
-        time.sleep(.5)
+        time.sleep(min(60 if args.observation == 'light' else .5, max(0,120-(time.monotonic()-start))))
+    if args.observation == 'light':
+        sample()
 screenshot('capture-end')
-record.wait(); stat.wait()
+if record is not None:
+    record.wait(); stat.wait()
 (OUT/'audio-end.txt').write_text(shell('dumpsys media.audio_flinger'))
 (OUT/'audio-end-time.json').write_text(json.dumps({'hostMonotonic':time.monotonic(),'hostUtc':time.time()}))
 capture_duration=time.monotonic()-start
 frame_sampler.wait()
 subprocess.run([ADB,'-s',SERIAL,'pull',remote_sampler+'.txt',str(OUT/'surface-history.txt')],check=True)
-(OUT/'capture.json').write_text(json.dumps({'duration':capture_duration,'layer':layer,'pid':pid,'recordExit':record.returncode,'statExit':stat.returncode,'frameSamplerExit':frame_sampler.returncode,'frameSampler':'device-local-v1'}))
+(OUT/'capture.json').write_text(json.dumps({'duration':capture_duration,'layer':layer,'pid':pid,'observation':args.observation,'recordExit':record.returncode if record is not None else None,'statExit':stat.returncode if stat is not None else None,'frameSamplerExit':frame_sampler.returncode,'frameSampler':'device-local-v1'}))
 print('Completed real application capture:',OUT)
 
-subprocess.run([ADB,'-s',SERIAL,'pull','/data/local/tmp/kairo-demo.perf.data',str(OUT/'perf.data')],check=True)
+if record is not None:
+    subprocess.run([ADB,'-s',SERIAL,'pull','/data/local/tmp/kairo-demo.perf.data',str(OUT/'perf.data')],check=True)
