@@ -61,7 +61,14 @@ This is a development measurement build, not a new release-ready claim.
 After benchmarks, the RGDS was restored to the baseline. During final segment
 validation, both its paired Wi-Fi endpoint and fixed endpoint became unreachable.
 The segment fixture therefore ran standalone on Retroid without replacing its app.
-**Final RGDS installation of the adopted APK is pending; #72 stays open until
-that deployment is accounted for.** Check mDNS/fixed endpoint and use
-`tools/InstallRgDs.ps1` when reachable. Do not ask for USB or overwrite the Retroid
-app with an older frontend just to bypass RGDS connectivity.
+That deployment wait ended on October 1, 2026. Fresh mDNS advertised the RGDS at
+`192.168.1.118:39811`; the older TLS port refused connections. The established
+`tools/InstallRgDs.ps1` helper verified the model, disabled Wi-Fi power saving,
+and successfully installed the adopted APK with `adb install -r` over Wi-Fi.
+Device-side SHA256 of the installed `base.apk` matched
+`22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2` exactly.
+The existing Duke entry launched, its sound-change prompt was answered N without
+changing settings, and a top-screen capture verified the rendered 3D demo.
+Local evidence: `.tmp/ticket65/rgds-adopted-demo.png`. This is a deployment smoke
+check; the performance/correctness acceptance evidence remains the earlier tests.
+**Final RGDS deployment is complete; #72 can close.** No Kairo98 update was made.
