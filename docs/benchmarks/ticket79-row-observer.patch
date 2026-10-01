@@ -1,0 +1,41 @@
+--- a/kairodos/src/main/cpp/native_host.cpp
++++ b/kairodos/src/main/cpp/native_host.cpp
+@@ -20,2 +20,3 @@
+ #include "video_profile.h"
++#include "row_copy_measure.h"
+ #include "frame_copy_profile.h"
+@@ -101,2 +102,3 @@
+     if (!data || width <= 0 || height <= 0 || pitch < width * 4) return;
++    row_measure::frame(data, width, height, pitch);
+     frame_copy_profile::callback(data, width, height, pitch);
+@@ -110,2 +112,3 @@
+     video_profile::elapsed(video_profile::FrameMutex, arrival);
++    const auto rowConversion = row_measure::stamp();
+     const auto conversion = video_profile::now();
+@@ -120,2 +123,3 @@
+     }
++    row_measure::finish(row_measure::Convert, rowConversion);
+     pending_width = width; pending_height = height;
+@@ -151,5 +155,8 @@
+         video_profile::delay_presenter();
++        const auto rowLock = row_measure::stamp();
+         const int locked = ANativeWindow_lock(surface, &buffer, nullptr);
++        row_measure::finish(row_measure::WindowLock, rowLock);
+         video_profile::elapsed(video_profile::WindowLock, start);
+         if (locked != 0) { video_profile::record(video_profile::WindowFailure); continue; }
++        const auto rowCopy = row_measure::stamp();
+         const auto copy = video_profile::now();
+@@ -160,2 +167,3 @@
+         }
++        row_measure::finish(row_measure::WindowCopy, rowCopy);
+         video_profile::elapsed(video_profile::WindowCopy, copy);
+@@ -165,3 +173,5 @@
+         const auto post = video_profile::now();
++        const auto rowPost = row_measure::stamp();
+         const int posted = ANativeWindow_unlockAndPost(surface);
++        row_measure::finish(row_measure::WindowPost, rowPost);
+         video_profile::elapsed(video_profile::WindowPost, post);
+@@ -217,2 +227,3 @@
+     { std::lock_guard lock(frame_mutex); renderer_stopping = false; has_pending_frame = false; }
++    row_measure::reset();
+     std::thread renderer(render_frames);

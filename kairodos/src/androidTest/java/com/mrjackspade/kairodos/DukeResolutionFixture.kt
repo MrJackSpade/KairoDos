@@ -86,6 +86,7 @@ internal object DukeResolutionFixture {
                         .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT).build())
                     .setBufferSizeInBytes(maxOf(minimum, 16384)).setTransferMode(AudioTrack.MODE_STREAM).build()
+                val audioBufferPolicy = com.mrjackspade.kairo.frontend.AudioTrackBufferPolicy(track)
                 val pcm = ShortArray(4096)
                 try {
                     track.play()
@@ -93,6 +94,7 @@ internal object DukeResolutionFixture {
                         val frames = call("nativeReadAudio", pcm, pcm.size / 2) as Int
                         if (frames > 0) track.write(pcm, 0, frames * 2, AudioTrack.WRITE_BLOCKING)
                         else Thread.sleep(4)
+                        audioBufferPolicy.checkAfterWrite()
                     }
                 } finally { runCatching { track.stop() }; track.release() }
             }.apply { name = "KairoDos-fixture-audio"; start() }
