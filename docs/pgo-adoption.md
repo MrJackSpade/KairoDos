@@ -1,10 +1,8 @@
-# PGO implementation checkpoint (#75)
+# PGO adoption (#75)
 
-Status: opt-in integration built; default remains off. Linux profile matching
-and the final Duke 3D comparison passed. Remaining compatibility checks and
-the secondary comparison are still pending.
-The opt-in APK is undergoing regression checks on RGDS over Wi-Fi. This is not
-an adoption or release claim.
+Status: compiler and runtime gates passed; PGO is enabled by default for both
+distribution channels. Final deployment is pending at this checkpoint. This
+is an optimization adoption, not a release-readiness claim.
 
 ## Portable frozen data
 
@@ -150,8 +148,32 @@ window. This is a 3D/FPU gameplay smoke check, not a timed Quake benchmark or
 proof of every floating-point operation. Local evidence is under
 `.tmp/ticket75/quake-*` (screenshots and `quake-exit-log.txt`).
 
-## Remaining gates
+## Secondary comparison and decision
 
-- Complete the secondary held-out comparison for the portable implementation.
-- Enable the same default for all build channels only after those gates pass;
-  commit/push, update the existing app, and close #75 with the evidence.
+The final portable APK's Duke II opening-room sample was compared with the
+normal APK using the same configuration, verified scene, 60-second warmup
+and 120-second capture. Baseline delivery was 10.7762 submissions/s versus
+10.7823 PGO (+0.0563%, effectively unchanged). CPU was 44.3833% versus
+41.0135%. Both histories are complete, audio-underrun deltas are zero and
+observed cooling states are zero. This is one separated pair, not a repeated
+performance estimate: the PGO sample was cooler (38.888–40.625 C versus
+60–61.666 C), so the lower CPU observation is not an isolated causal gain.
+This compatibility result complements the repeated primary comparison and
+the earlier #70 secondary A-B-B-A. No further repeated secondary performance
+claim is needed to justify adoption based on the primary workload's benefit.
+Data: [secondary comparison](benchmarks/ticket75-duke2-comparison.json).
+
+Adopt the frozen profile. The final primary comparison repeats the improvement,
+Linux and Windows compiler matching is verified, the native fixtures pass,
+and real/protected-mode, 2D/3D/FPU and input/lifecycle checks found no regression
+in the covered workloads. These checks do not prove all-game safety.
+
+Both Gradle and CMake default to PGO ON; `-Ppgo=false` retains the comparator.
+CI builds that explicit comparator and then builds/checks the default without
+a PGO override. Diagnostic/alternative core builds must disable PGO explicitly.
+No guest configuration, game files, CPU timing policy, LTO setting, rendering
+or audio semantics changed. No Kairo98 changes were made.
+
+## Remaining deployment
+
+- Commit/push, install the default build, verify Duke 3D boot, and close #75.

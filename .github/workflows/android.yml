@@ -24,8 +24,9 @@ jobs:
         run: |
           python3 tools/GenerateStagingNotices.py
           git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
-      - run: ./gradlew --no-daemon :kairodos:assembleDebug
-      - name: Build opt-in PGO and verify profile matching
+      - name: Build non-PGO comparator
+        run: ./gradlew --no-daemon -Ppgo=false :kairodos:assembleDebug
+      - name: Build default PGO and verify profile matching
         run: |
-          ./gradlew --no-daemon -Ppgo=true :kairodos:assembleDebug
+          ./gradlew --no-daemon :kairodos:assembleDebug
           python3 tools/check_pgo_profile_matching.py --output .tmp/pgo-ci

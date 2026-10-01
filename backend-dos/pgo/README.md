@@ -1,10 +1,11 @@
 # DOSBox Staging ARM64 profile
 
-This opt-in build uses the frozen native-code profile measured in
-[#70](https://github.com/MrJackSpade/KairoDos/issues/70). Adoption remains gated
-by [#75](https://github.com/MrJackSpade/KairoDos/issues/75). PGO is **off by
-default**; use `-Ppgo=true` to exercise the implementation and `-Ppgo=false`
-for the unprofiled comparator. No generation runtime is included.
+Default builds use the frozen native-code profile measured in
+[#70](https://github.com/MrJackSpade/KairoDos/issues/70) and validated in
+[#75](https://github.com/MrJackSpade/KairoDos/issues/75). PGO is **on by
+default** for both distribution channels; use `-Ppgo=false` for the
+unprofiled comparator or diagnostic/alternative-core builds. No generation
+runtime is included.
 
 `arm64-v1.proftext` contains LLVM function names, CFG hashes, execution counts
 and value-profile records. It contains no guest binaries, game assets or
@@ -49,5 +50,7 @@ profile.
 See [the evaluation report](../../docs/pgo-evaluation.md) for the full-session
 training mix, non-atomic counter limitation, rejected attempts, observer
 overhead and held-out results. Do not retrain or select profiles using those
-held-out results. Cross-host CI verification and broader actual-game/native
-regression checks remain required before default adoption.
+held-out results. Cross-host CI verification, actual-game/native regression
+checks and final-binary comparisons are recorded in
+[the adoption report](../../docs/pgo-adoption.md). These checks establish no
+observed regression in the covered workloads, not universal compatibility.

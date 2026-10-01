@@ -40,7 +40,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # The emulation engine must be optimized even in a debuggable frontend APK.
 add_compile_options(-O2)
-option(KAIRO_PGO "Use the audited native ARM64 performance profile" OFF)
+option(KAIRO_PGO "Use the audited native ARM64 performance profile" ON)
 if(KAIRO_PGO)
     include(pgo/PrepareProfile.cmake)
 endif()
