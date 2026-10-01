@@ -1,0 +1,49 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
+@@ -738,12 +738,19 @@
+ }
+ 
+ // generate a call to a parameterless function
+-static void inline gen_call_function_raw(void * func) {
+-	cache_addd( MOVZ64(temp1, ((uint64_t)func) & 0xffff, 0) );            // movz dest_reg, #(func & 0xffff)
+-	cache_addd( MOVK64(temp1, (((uint64_t)func) >> 16) & 0xffff, 16) );   // movk dest_reg, #((func >> 16) & 0xffff), lsl #16
+-	cache_addd( MOVK64(temp1, (((uint64_t)func) >> 32) & 0xffff, 32) );   // movk dest_reg, #((func >> 32) & 0xffff), lsl #32
+-	cache_addd( MOVK64(temp1, (((uint64_t)func) >> 48) & 0xffff, 48) );   // movk dest_reg, #((func >> 48) & 0xffff), lsl #48
+-	cache_addd( BLR_REG(temp1) );      // blr temp1
++// Keep the five-word lazy-flags patch contract. The branch skips the
++// embedded address when the helper returns. No instruction changes NZCV.
++static void gen_write_literal_call(const uint8_t* pos, void* func) {
++    cache_addd(LDR64_PC(temp1, 12), pos);
++    cache_addd(BLR_REG(temp1), pos + 4);
++    cache_addd(0x14000003u, pos + 8); // b +12, past the 64-bit literal
++    cache_addd(uint32_t(uint64_t(func)), pos + 12);
++    cache_addd(uint32_t(uint64_t(func) >> 32), pos + 16);
++}
++
++static void inline gen_call_function_raw(void* func) {
++    gen_write_literal_call(cache.pos, func);
++    cache.pos += 20;
+ }
+ 
+ // generate a call to a function with paramcount parameters
+@@ -1104,18 +1111,12 @@
+ 			cache_addd(LSRV64(FC_RETOP, HOST_x0, HOST_x2),pos+16);				// lsrv FC_RETOP, x0, x2
+ 			break;
+ 		default:
+-			cache_addd(MOVZ64(temp1, ((uint64_t)fct_ptr) & 0xffff, 0),pos+0);                 // movz temp1, #(fct_ptr & 0xffff)
+-			cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 16) & 0xffff, 16),pos+4);    // movk temp1, #((fct_ptr >> 16) & 0xffff), lsl #16
+-			cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 32) & 0xffff, 32),pos+8);    // movk temp1, #((fct_ptr >> 32) & 0xffff), lsl #32
+-			cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 48) & 0xffff, 48),pos+12);   // movk temp1, #((fct_ptr >> 48) & 0xffff), lsl #48
++			gen_write_literal_call(pos, fct_ptr);
+ 			break;
+ 
+ 	}
+ #else
+-	cache_addd(MOVZ64(temp1, ((uint64_t)fct_ptr) & 0xffff, 0),pos+0);                 // movz temp1, #(fct_ptr & 0xffff)
+-	cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 16) & 0xffff, 16),pos+4);    // movk temp1, #((fct_ptr >> 16) & 0xffff), lsl #16
+-	cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 32) & 0xffff, 32),pos+8);    // movk temp1, #((fct_ptr >> 32) & 0xffff), lsl #32
+-	cache_addd(MOVK64(temp1, (((uint64_t)fct_ptr) >> 48) & 0xffff, 48),pos+12);   // movk temp1, #((fct_ptr >> 48) & 0xffff), lsl #48
++	gen_write_literal_call(pos, fct_ptr);
+ #endif
+ }
+ #endif
