@@ -1,0 +1,112 @@
+--- a/libspeexdsp/resample.c
++++ b/libspeexdsp/resample.c
+@@ -80,6 +80,9 @@
+ 
+ #include <math.h>
+ #include <limits.h>
++#if defined(__aarch64__) && defined(FLOATING_POINT)
++#include <arm_neon.h>
++#endif
+ 
+ #ifndef M_PI
+ #define M_PI 3.14159265358979323846
+@@ -435,7 +438,8 @@
+ }
+ #endif
+ 
+-static int resampler_basic_interpolate_single(SpeexResamplerState *st, spx_uint32_t channel_index, const spx_word16_t *in, spx_uint32_t *in_len, spx_word16_t *out, spx_uint32_t *out_len)
++#if defined(__aarch64__) && defined(FLOATING_POINT)
++static __attribute__((noinline)) int original_interpolate_single(SpeexResamplerState *st, spx_uint32_t channel_index, const spx_word16_t *in, spx_uint32_t *in_len, spx_word16_t *out, spx_uint32_t *out_len)
+ {
+    const int N = st->filt_len;
+    int out_sample = 0;
+@@ -470,6 +474,89 @@
+         accum[1] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset-1]);
+         accum[2] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset]);
+         accum[3] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset+1]);
++      }
++
++      cubic_coef(frac, interp);
++      sum = MULT16_32_Q15(interp[0],accum[0]) + MULT16_32_Q15(interp[1],accum[1]) + MULT16_32_Q15(interp[2],accum[2]) + MULT16_32_Q15(interp[3],accum[3]);
++      sum = SATURATE32PSHR(sum, 15, 32767);
++#else
++      cubic_coef(frac, interp);
++      sum = interpolate_product_single(iptr, st->sinc_table + st->oversample + 4 - offset - 2, N, st->oversample, interp);
++#endif
++
++      out[out_stride * out_sample++] = sum;
++      last_sample += int_advance;
++      samp_frac_num += frac_advance;
++      if (samp_frac_num >= den_rate)
++      {
++         samp_frac_num -= den_rate;
++         last_sample++;
++      }
++   }
++
++   st->last_sample[channel_index] = last_sample;
++   st->samp_frac_num[channel_index] = samp_frac_num;
++   return out_sample;
++}
++
++#endif
++
++static int resampler_basic_interpolate_single(SpeexResamplerState *st, spx_uint32_t channel_index, const spx_word16_t *in, spx_uint32_t *in_len, spx_word16_t *out, spx_uint32_t *out_len)
++{
++#if defined(__aarch64__) && defined(FLOATING_POINT)
++   // The original oversample==1 loop has a compiler-vectorized, non-fused
++   // reduction. Preserve that complete implementation and its rounding.
++   if (st->oversample <= 1)
++      return original_interpolate_single(st, channel_index, in, in_len, out, out_len);
++#endif
++
++   const int N = st->filt_len;
++   int out_sample = 0;
++   int last_sample = st->last_sample[channel_index];
++   spx_uint32_t samp_frac_num = st->samp_frac_num[channel_index];
++   const int out_stride = st->out_stride;
++   const int int_advance = st->int_advance;
++   const int frac_advance = st->frac_advance;
++   const spx_uint32_t den_rate = st->den_rate;
++   spx_word32_t sum;
++
++   while (!(last_sample >= (spx_int32_t)*in_len || out_sample >= (spx_int32_t)*out_len))
++   {
++      const spx_word16_t *iptr = & in[last_sample];
++
++      const int offset = samp_frac_num*st->oversample/st->den_rate;
++#ifdef FIXED_POINT
++      const spx_word16_t frac = PDIV32(SHL32((samp_frac_num*st->oversample) % st->den_rate,15),st->den_rate);
++#else
++      const spx_word16_t frac = ((float)((samp_frac_num*st->oversample) % st->den_rate))/st->den_rate;
++#endif
++      spx_word16_t interp[4];
++
++
++#ifndef OVERRIDE_INTERPOLATE_PRODUCT_SINGLE
++      int j;
++      spx_word32_t accum[4] = {0,0,0,0};
++
++#if defined(__aarch64__) && defined(FLOATING_POINT)
++      if (st->oversample > 1) {
++         float32x4_t sums = vdupq_n_f32(0.0f);
++         const float *coeff = st->sinc_table + st->oversample + 2 - offset;
++         for (j = 0; j < N; ++j) {
++            sums = vfmaq_n_f32(sums, vld1q_f32(coeff), iptr[j]);
++            coeff += st->oversample;
++         }
++         vst1q_f32(accum, sums);
++      } else
++#endif
++      {
++      for(j=0;j<N;j++) {
++        const spx_word16_t curr_in=iptr[j];
++        accum[0] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset-2]);
++        accum[1] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset-1]);
++        accum[2] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset]);
++        accum[3] += MULT16_16(curr_in,st->sinc_table[4+(j+1)*st->oversample-offset+1]);
++      }
++
+       }
+ 
+       cubic_coef(frac, interp);

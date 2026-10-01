@@ -50,8 +50,22 @@ if (-not $IsWindows) { & chmod +x $executable }
 $env:ANDROID_NDK_HOME = $ndk
 $env:VCPKG_ROOT = $toolRoot
 $env:VCPKG_DOWNLOADS = $downloads
+# Classic mode otherwise reports an already-installed port as satisfied even
+# when its overlay changed. Remove only this generated package before rebuilding;
+# vcpkg's binary cache still keys the replacement on the complete recipe ABI.
+$speexPort = Join-Path $sourceRoot 'ports/speexdsp'
+$speexStamp = Join-Path $buildRoot 'speex-overlay.sha256'
+$speexSignature = (Get-ChildItem -LiteralPath $speexPort -File | Sort-Object Name |
+    ForEach-Object { "$($_.Name):$(Get-Sha256 $_.FullName)" }) -join "`n"
+if (-not (Test-Path -LiteralPath $speexStamp) -or
+    (Get-Content -LiteralPath $speexStamp -Raw).TrimEnd() -ne $speexSignature) {
+    & $executable remove 'speexdsp:arm64-kairo-android' --classic --disable-metrics --x-install-root $prefix
+    if ($LASTEXITCODE -ne 0) { throw 'Could not refresh the generated SpeexDSP overlay package' }
+}
 & $executable install asio iir1 libmt32emu libpng opusfile fluidsynth sdl2 sdl2-image speexdsp zlib-ng `
     --classic --disable-metrics --triplet arm64-kairo-android `
-    --overlay-triplets (Join-Path $sourceRoot 'triplets') --x-install-root $prefix
+    --overlay-triplets (Join-Path $sourceRoot 'triplets') `
+    --overlay-ports (Join-Path $sourceRoot 'ports') --x-install-root $prefix
 if ($LASTEXITCODE -ne 0) { throw "Staging dependency build failed ($LASTEXITCODE)" }
+Set-Content -LiteralPath $speexStamp -Value $speexSignature
 Write-Host "Android dependency prefix: $prefix/arm64-kairo-android"
