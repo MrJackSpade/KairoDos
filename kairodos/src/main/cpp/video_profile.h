@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 #include <cstdint>
+#include "frame_copy_profile.h"
 
 // Debug-only observation of the existing host; disabled until instrumentation
 // enables it. Release builds contain neither storage nor JNI profiling entrypoints.
@@ -34,6 +35,8 @@ inline void record(Stage stage, uint64_t ns = 0) {
 inline void elapsed(Stage stage, uint64_t start) { if (start) record(stage, now() - start); }
 inline void reset(bool active) {
     enabled = false;
+    // Full-frame comparison is opt-in independently of timing collection.
+    frame_copy_profile::reset(false);
     std::lock_guard<std::mutex> lock(mutex);
     for (auto& list : samples) list.clear();
     enabled = active;
@@ -56,7 +59,7 @@ inline std::string snapshot() {
                << ",\"sumNs\":" << sum << ",\"p50Ns\":" << percentile(.50)
                << ",\"p95Ns\":" << percentile(.95) << ",\"maxNs\":" << percentile(1) << '}';
     }
-    result << '}';
+    result << ",\"frameCopies\":" << frame_copy_profile::snapshot() << '}';
     return result.str();
 }
 }
@@ -69,8 +72,13 @@ Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileSnapshot(JNI
     return env->NewStringUTF(video_profile::snapshot().c_str());
 }
 extern "C" JNIEXPORT void JNICALL
+Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileFrameCopies(JNIEnv*, jclass, jboolean active) {
+    frame_copy_profile::reset(active);
+}
+extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileResetEnabledOff(JNIEnv*, jclass) {
     video_profile::enabled = false;
+    frame_copy_profile::stop();
 }
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_mrjackspade_kairodos_VideoPresentationFixture_nativeProfileConfiguration(JNIEnv* env, jclass) {

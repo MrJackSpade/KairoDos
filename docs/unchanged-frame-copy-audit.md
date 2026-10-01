@@ -73,3 +73,40 @@ Machine-readable results: [fixture data](benchmarks/ticket63-video-fixtures.json
 - Determine whether any remaining duplicate copies cost enough to justify a
   separate implementation ticket. Do not optimize or close #63 from these short
   standalone fixtures alone.
+
+## Android observer preparation
+
+The debug host now has an independently enabled `frame_copy_profile` observer.
+The existing instrumentation entry accepts `-e presentationCopies true` to enable
+it; omitted/false keeps content comparison off while retaining the existing
+timing metrics. Reports include `metrics.frameCopies` with callback count,
+changed-content count, duplicates, first/resized images, callback byte count,
+window-copy count and bytes actually copied into the native window. The first
+image and size changes are classified separately, not asserted to be changed
+guest images. Padding outside the visible row is excluded from comparisons.
+
+This counts callbacks and window copies independently; frames can be replaced
+before presentation. `callbackBytes` denotes visible bytes converted into the
+pending buffer, not observer overhead, window stride allocation, or GPU traffic.
+No observation changes which frames are presented. The observer's extra compare
+and retained-image copy require an on/off overhead comparison before interpreting
+performance measurements. Ordinary timing captures keep it off by default.
+
+The presentation fixture now uses a 60-second monotonic warmup deadline after
+launch keys and records actual warmup duration. Use `presentationSeconds=120` for
+the requested capture interval. This harness change has not yet been exercised
+against the RGDS game; its older launch/audio behavior must also be verified
+against the real-app benchmark before treating fixture timing as equivalent.
+
+Validation so far: the actual native host compiled with and without
+`KAIRO_VIDEO_PROFILE` using NDK ARM64 API26 and `-O2`; `llvm-nm -C` found no
+`frame_copy_profile` or `video_profile` symbols in the release object. The ARM64
+`tools/test_frame_copy_profile.cpp` test ran on Retroid and passed disabled
+collection, changed pixels, duplicate pixels with different padding, resized
+images, invalid input, stopped collection and reset. Its expected accumulated
+counts were four callbacks (one changed, one duplicate, two first/resized),
+56 callback bytes, and two window copies totaling 24 bytes. This verifies counter
+semantics, not actual app measurements or instrumentation overhead.
+
+`:kairodos:compileDebugAndroidTestKotlin` also passed using the local SDK/Gradle
+cache (52 seconds). No updated APK was installed during this preparation.

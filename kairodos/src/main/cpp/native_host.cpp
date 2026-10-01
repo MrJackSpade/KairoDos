@@ -18,6 +18,7 @@
 #include <vector>
 #include "staging_bridge.h"
 #include "video_profile.h"
+#include "frame_copy_profile.h"
 
 namespace {
 std::mutex surface_mutex, frame_mutex, input_mutex, control_mutex, error_mutex;
@@ -98,6 +99,7 @@ std::string string(JNIEnv* env, jstring value) {
 }
 void video(const uint32_t* data, int width, int height, int pitch, double ratio) {
     if (!data || width <= 0 || height <= 0 || pitch < width * 4) return;
+    frame_copy_profile::callback(data, width, height, pitch);
     video_width = width; video_height = height;
     if (ratio > 0) aspect = ratio;
     sample_rate = core.audio_rate(); status = 2;
@@ -156,6 +158,9 @@ void render_frames() {
             std::memcpy(out, row, std::min(width, unsigned(buffer.width)) * 4);
         }
         video_profile::elapsed(video_profile::WindowCopy, copy);
+        frame_copy_profile::window_copy(
+            size_t(std::min(height, unsigned(buffer.height))) *
+            std::min(width, unsigned(buffer.width)) * 4);
         const auto post = video_profile::now();
         const int posted = ANativeWindow_unlockAndPost(surface);
         video_profile::elapsed(video_profile::WindowPost, post);

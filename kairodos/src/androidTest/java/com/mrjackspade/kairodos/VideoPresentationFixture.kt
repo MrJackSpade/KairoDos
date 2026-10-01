@@ -23,9 +23,10 @@ internal object VideoPresentationFixture {
     @JvmStatic private external fun nativeProfileReset(active: Boolean)
     @JvmStatic private external fun nativeProfileSnapshot(): String
     @JvmStatic private external fun nativeProfileConfiguration(): String
+    @JvmStatic private external fun nativeProfileFrameCopies(active: Boolean)
 
     fun measure(instrumentation: Instrumentation, archivePath: String, game: String,
-                seconds: Int): JSONObject {
+                seconds: Int, observeCopies: Boolean = false): JSONObject {
         check(game in setOf("doom", "duke"))
         check(seconds in 10..180)
         val context = instrumentation.targetContext
@@ -94,8 +95,13 @@ internal object VideoPresentationFixture {
                     }
                     key(if (game == "doom") '2'.code else '1'.code)
                     key('n'.code)
-                    Thread.sleep(12000) // original launcher and game startup excluded
+                    val warmupStart = System.nanoTime()
+                    val warmupDeadline = warmupStart + TimeUnit.SECONDS.toNanos(60)
+                    while (System.nanoTime() < warmupDeadline) {
+                        TimeUnit.NANOSECONDS.sleep(maxOf(1L, warmupDeadline - System.nanoTime()))
+                    }
                     nativeProfileReset(true)
+                    nativeProfileFrameCopies(observeCopies)
                     val start = System.nanoTime()
                     Log.i("VideoPresentation", "PROFILE_START $game mode=$mode run=$index ns=$start")
                     Thread.sleep(seconds * 1000L)
@@ -106,6 +112,7 @@ internal object VideoPresentationFixture {
                     nativeProfileResetEnabledOff()
                     val result = JSONObject().put("game", game).put("mode", mode)
                         .put("run", index).put("durationNs", elapsed)
+                        .put("observeCopies", observeCopies).put("warmupNs", start - warmupStart)
                         .put("startNs", start).put("endNs", start + elapsed)
                         .put("width", screen.width).put("height", screen.height)
                         .put("videoWidth", call("nativeVideoWidth")).put("videoHeight", call("nativeVideoHeight"))
