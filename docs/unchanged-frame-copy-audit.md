@@ -1,6 +1,7 @@
-# Ticket #63: unchanged-frame copies (in progress)
+# Ticket #63: unchanged-frame copy audit
 
-This is partial evidence, not a completion or optimization claim. Final #72 RGDS
+**Audit complete: no production optimization justified by the measured paths.**
+Earlier checkpoints and their limitations are preserved below. Final #72 RGDS
 deployment remains pending because the device is unreachable over Wi-Fi. These
 independent fixtures use the reachable Retroid without replacing its application.
 
@@ -184,3 +185,26 @@ Device-side SHA256 of the newly installed `base.apk` again matched
 The temporary game fixture directory was verified absent. Original game files
 were never edited. RGDS still did not advertise an ADB service, and both its
 known fixed and paired endpoints timed out; its #72 deployment remains pending.
+
+## Final acceptance review
+
+The earlier pending list was broader than the actual investigation ticket.
+Ticket #63 requires counts, tracing the real dirty-flag producers/consumers,
+an overhead measurement and an explicit decision. It requires broader regression
+coverage **before accepting a later implementation**; no such implementation is
+proposed here. It does not require an RGDS deployment to close a no-change audit.
+
+| Ticket requirement | Evidence and conclusion |
+| --- | --- |
+| Trace actual unchanged-frame gating | Source trace above follows scaler-cache comparison through `GFX_EndUpdate`, renderer dirty flag, callback conversion and presenter copy. Static and unused-palette fixtures exercise suppression in the actual core. |
+| Count changed guest images and host copies | At the core-to-host boundary, 5,930 images differ from the previous image, one establishes initial history, and none are duplicates. The host performs 5,875 window copies; 56 pending replacements explain the difference in this capture. These are delivered guest images, not all VGA scanouts or guest engine simulation ticks. Frames omitted before this boundary incur no host callback copy and are not claimed to have been counted. |
+| Count bytes | Exact visible callback and window bytes are recorded and verified against dimensions/counts. Allocation capacity, padding and GPU traffic are not mislabeled as copied visible bytes. |
+| Measure observation overhead | Same-build on/off capture shows -2.34% presentations with observation on in one pair. Its uncertainty is explicit; this is not proof of a stable overhead percentage or a speed improvement. |
+| Controlled demo capture | Both successful captures use 60-second warmup and 120-second measurement, the same Retroid/configuration, recorded binary identities and sampled 3D-scene/wakefulness verification. No numerical comparison to the separate RGDS 320x200 baseline is made. |
+| Decision | No redundant host copies were observed in these paths. Do not add another full-image comparison to production. No implementation ticket or runtime optimization is warranted from this evidence. |
+
+This closes the investigation with a **no-change decision**, not a universal
+claim about every DOS mode or a promise of improved FPS. The already separate
+presenter back-pressure question belongs to #64. #72's RGDS deployment remains
+pending independently. Reopen this audit if a measured workload shows duplicate
+images reaching the host or a new mode-specific reproduction identifies waste.
