@@ -1,8 +1,8 @@
 # PGO adoption (#75)
 
 Status: compiler and runtime gates passed; PGO is enabled by default for both
-distribution channels. Final deployment is pending at this checkpoint. This
-is an optimization adoption, not a release-readiness claim.
+distribution channels and deployed to RGDS. This is an optimization adoption,
+not a release-readiness claim.
 
 ## Portable frozen data
 
@@ -174,6 +174,25 @@ a PGO override. Diagnostic/alternative core builds must disable PGO explicitly.
 No guest configuration, game files, CPU timing policy, LTO setting, rendering
 or audio semantics changed. No Kairo98 changes were made.
 
-## Remaining deployment
+## Final build and deployment
 
-- Commit/push, install the default build, verify Duke 3D boot, and close #75.
+Commit `b236c0b4` enables the default. The isolated build used the same clean
+frontend/core source as the measured candidate plus the adopted build files,
+excluding unrelated catalog/controller workspace edits. Building
+`:kairodos:assembleDebug` without `-Ppgo` succeeded in 30 seconds. CMake cache
+confirmed PGO/OPL worker ON and guest profiling, OPL verification and stress
+OFF. Its APK is byte-for-byte identical to the tested portable candidate:
+
+`4f894466208c6e4109a3e37d5cb677ca80709eae5d3e91c597d51fb4dac731aa`
+
+`InstallRgDs.ps1` updated the existing package over Wi-Fi. Device-side
+`base.apk` SHA-256 matched. Duke 3D was launched with its existing sound
+selection, and the final screenshot shows the rendered 3D demo, not its
+title screen. Local evidence: `.tmp/ticket75/default-build.log`,
+`.tmp/ticket75/adopted.apk`, and `adopted-duke-rendered.png` in that directory.
+The adopted normal build remains installed. No generation/comparator build
+was deployed as the final app. Linux matching was already verified in runs
+36865823665 and 36869915589; the default-toggle commit's routine CI is a
+separate run, not the evidence for the byte-identical device artifact.
+
+The implementation and deployment requirements for #75 are complete.
