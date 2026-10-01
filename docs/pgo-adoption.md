@@ -2,7 +2,8 @@
 
 Status: opt-in integration built; default remains off. Linux CI, wider runtime
 regressions and measurements of the final implementation are still pending.
-The normal non-PGO app remains on RGDS. This is not an adoption or release claim.
+The opt-in APK is undergoing regression checks on RGDS over Wi-Fi. This is not
+an adoption or release claim.
 
 ## Portable frozen data
 
@@ -67,6 +68,33 @@ builds when those inputs change. Unchanged profiles are not regenerated.
 
 Evidence: [portability checkpoint](benchmarks/ticket75-portability.json).
 Implementation notes: [profile README](../backend-dos/pgo/README.md).
+
+## Final artifact and device checkpoint
+
+The final LF-canonicalized profile and transactional helper were rebuilt. The
+APK SHA-256 remains `4f894466208c6e4109a3e37d5cb677ca80709eae5d3e91c597d51fb4dac731aa`.
+The compiler database names the final profile hash, and
+`tools/check_pgo_profile_matching.py` verifies the expected static-function
+counts in actual optimized CPU/video IR. Both wrong-root controls lose the
+expected counts. Commit `4cc5c7c8` adds this check after an opt-in Linux CI build;
+that CI run is still pending at this checkpoint.
+
+The APK was installed over the existing package on RGDS over Wi-Fi and its
+installed SHA-256 was verified. Existing isolated native fixtures passed:
+
+| Fixture | Observed result |
+| --- | --- |
+| Doom | 926 frames, 3,495,936 PCM frames, peak 8,589; screenshot shows gameplay |
+| Cannon Fodder | 812 frames, 1,880,064 PCM frames, peak 8,833; screenshot shows intro only |
+| GLES | Shared contexts, fenced frames, orientation and display lifecycle passed |
+| Input | Shared input routing and lifecycle passed |
+
+Both game fixtures verified actual ARM64 dynarec execution on default launch,
+reset and second launch; pause/resume, surface recreation, exit while paused,
+and release of executable JIT mappings passed. These are correctness checks,
+not performance samples. Cannon Fodder's intro does not establish gameplay
+coverage, and nonzero PCM does not establish perceptual audio correctness.
+The fixture uses private cache copies and leaves player drives untouched.
 
 ## Remaining gates
 
