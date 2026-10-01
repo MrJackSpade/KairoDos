@@ -62,5 +62,8 @@ if ($LASTEXITCODE -ne 0 -or $powerSave -ne 'Power save: off') {
 }
 
 Write-Host "Installing $apkPath on RGDS ($serial) with Wi-Fi power saving off."
-& $adb -s $serial install -r $apkPath
+# These APKs have v4 signatures, so adb otherwise attempts incremental install
+# before falling back to streaming on the RGDS. Use the normal complete update
+# directly; it also avoids leaving an incremental transfer across Wi-Fi recovery.
+& $adb -s $serial install --no-incremental -r $apkPath
 if ($LASTEXITCODE -ne 0) { throw 'RGDS APK installation failed.' }
