@@ -1,0 +1,204 @@
+{
+  "patterns": {
+    "text": "VGA_TEXT_|draw_text_line",
+    "hardwareCursor": "HWMouse",
+    "reelMagicMix": "RMR_DrawLine_(?!Passthrough)|MixPixel",
+    "egaMemoryHandlers": "VGA_(?:Unchained|Chained)EGA_Handler",
+    "vgaMemoryHandlers": "VGA_(?:Unchained|Chained)VGA_Handler",
+    "palette": "draw_.*dac_palette|draw_cached_vesa_palette_line"
+  },
+  "captures": [
+    {
+      "capture": "duke-current-320-profile",
+      "threadId": 24345,
+      "samples": 10221,
+      "recordSeconds": 119.937,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "emulationCpuSeconds": 103.24242321,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.41414141,
+        "palette": 2.54545452
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.43434343,
+        "palette": 2.64646462
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.54545452,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.41414141,
+        "VGA_DrawSingleLine(unsigned int)": 0.22222222,
+        "VGA_VerticalTimer(unsigned int)": 0.04040404,
+        "RMR_DrawLine_Passthrough(void const*)": 0.03030303,
+        "VGA_VertInterrupt(unsigned int)": 0.01010101
+      }
+    },
+    {
+      "capture": "ticket72-a",
+      "threadId": 29512,
+      "samples": 10236,
+      "recordSeconds": 119.939,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "emulationCpuSeconds": 103.39393836,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.47474747,
+        "palette": 2.18181816
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.48484848,
+        "palette": 2.23232321
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.18181816,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.47474747,
+        "VGA_DrawSingleLine(unsigned int)": 0.32323232,
+        "RMR_DrawLine_Passthrough(void const*)": 0.06060606,
+        "VGA_VertInterrupt(unsigned int)": 0.02020202,
+        "VGA_DisplayStartLatch(unsigned int)": 0.01010101,
+        "VGA_VerticalTimer(unsigned int)": 0.01010101
+      }
+    },
+    {
+      "capture": "ticket72-b",
+      "threadId": 330,
+      "samples": 10173,
+      "recordSeconds": 119.938,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "emulationCpuSeconds": 102.75757473,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.45454545,
+        "palette": 2.77777775
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.49494949,
+        "palette": 2.83838381
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.77777775,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.45454545,
+        "VGA_DrawSingleLine(unsigned int)": 0.29292929,
+        "RMR_DrawLine_Passthrough(void const*)": 0.04040404,
+        "VGA_VerticalTimer(unsigned int)": 0.03030303
+      }
+    },
+    {
+      "capture": "ticket72-a2",
+      "threadId": 4698,
+      "samples": 10086,
+      "recordSeconds": 119.937,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "emulationCpuSeconds": 101.87878686,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.23232323,
+        "palette": 2.39393937
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.24242424,
+        "palette": 2.50505048
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.39393937,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.23232323,
+        "VGA_DrawSingleLine(unsigned int)": 0.2020202,
+        "RMR_DrawLine_Passthrough(void const*)": 0.05050505,
+        "VGA_DisplayStartLatch(unsigned int)": 0.01010101,
+        "VGA_VerticalTimer(unsigned int)": 0.01010101
+      }
+    },
+    {
+      "capture": "ticket72-b2",
+      "threadId": 7944,
+      "samples": 10170,
+      "recordSeconds": 119.949,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "emulationCpuSeconds": 102.7272717,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.37373737,
+        "palette": 2.77777775
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.37373737,
+        "palette": 2.88888886
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.77777775,
+        "VGA_DrawSingleLine(unsigned int)": 0.38383838,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.37373737,
+        "RMR_DrawLine_Passthrough(void const*)": 0.05050505,
+        "VGA_DisplayStartLatch(unsigned int)": 0.01010101,
+        "VGA_VerticalTimer(unsigned int)": 0.01010101
+      }
+    },
+    {
+      "capture": "ticket72-a3",
+      "threadId": 11188,
+      "samples": 10154,
+      "recordSeconds": 119.948,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "emulationCpuSeconds": 102.56565554,
+      "selfCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.3030303,
+        "palette": 2.8282828
+      },
+      "inclusiveCpuSeconds": {
+        "text": 0.0,
+        "hardwareCursor": 0.0,
+        "reelMagicMix": 0.0,
+        "egaMemoryHandlers": 0.0,
+        "vgaMemoryHandlers": 0.3030303,
+        "palette": 2.94949492
+      },
+      "videoSelfSymbols": {
+        "draw_linear_line_from_dac_palette(unsigned long, unsigned long)": 2.8282828,
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.3030303,
+        "VGA_DrawSingleLine(unsigned int)": 0.2020202,
+        "VGA_DisplayStartLatch(unsigned int)": 0.01010101,
+        "RMR_DrawLine_Passthrough(void const*)": 0.01010101
+      }
+    }
+  ],
+  "limitations": "Sampled symbol attribution, not exact call counts. Families may overlap. Inlined or unresolved code can be missed; zero samples alone does not prove inactivity."
+}
