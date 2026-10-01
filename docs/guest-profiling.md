@@ -39,6 +39,31 @@ Repeat the same benchmark with the **same APK** after removing the enable marker
 
 Remove the marker and restore the saved normal APK after measurement. Never ship a measurement build as a performance fix. Publish aggregate measurements and relevant addresses rather than raw guest opcode dumps.
 
+## Generated ARM64 instruction attribution
+
+The additional `kairo-host-code.enable` marker records `hostCodeHex` with each
+translation when guest profiling is enabled. Bytes are captured after translation
+and lazy-flags rewriting, and must be interpreted within that translation's
+lifetime. This avoids attributing old samples using a later, reused cache image.
+The marker has no effect in ordinary builds. Build diagnostics with
+`-PguestProfile=true -Ppgo=false`; the normal PGO profile intentionally rejects
+diagnostic configurations.
+
+`tools/analyze_host_instructions.py` joins direct PC samples with those lifetimes
+and aggregates instruction families. It requires the local Capstone package and
+the same `--metadata`, `--perf`, `--simpleperf-dir`, `--tid` and `--output` arguments
+as the guest analyzer (without `--symbols`). Use an on-CPU `cpu-clock` recording;
+do not pass combined off-CPU samples to this analyzer. Run
+`tools/test_host_instruction_profile.py` for address-reuse, invalidation, truncated
+code and call-proximity checks.
+
+Instruction-family samples and proximity to calls are not individual instruction
+latencies. Sampling skid, code layout and logging overhead remain relevant.
+Retain raw code metadata only in ignored local storage. Remove both enable
+markers, restart the same APK, and compare the same observation protocol before
+using the results to choose experiments. Normal-build A/B tests must have both
+diagnostics disabled and matching PGO settings.
+
 ## Inspecting polling candidates
 
 For #56, rerun the analyzer with `--limit 0` to retain every attributed block form. Take a read-only guest RAM snapshot from the same game/configuration. On rooted RGDS, the snapshot used the installed core's ELF `MemBase` symbol and `/proc/<KairoDos-pid>/mem`: resolve the core's runtime load bias from `/proc/<pid>/maps` and the APK's uncompressed library offset, read the pointer, then read only the first 4 MiB of guest RAM. Do not reuse a previous process's host address. This snapshot did not stop or modify the emulator.

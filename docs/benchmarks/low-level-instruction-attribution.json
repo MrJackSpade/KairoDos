@@ -1,0 +1,2241 @@
+{
+  "status": "Attribution only; full optimization investigation remains active",
+  "baseline": {
+    "apkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+    "coreSha256": "3a6c0d8d9ce623812e5267d5a525bd305baf78d82ce07bbbe1ad9b1a4ee2f8cc",
+    "symbolSource": "exact packaged ELF",
+    "rejectedUnstrippedSections": [
+      ".text",
+      ".rodata",
+      ".note.gnu.build-id"
+    ]
+  },
+  "baselineMainThread": {
+    "tid": 11816,
+    "name": "KairoDos-emulat",
+    "seconds": 97.68686771,
+    "hot": [
+      {
+        "dso": "unknown",
+        "symbol": "unknown",
+        "seconds": 44.1414137
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "unknown",
+        "seconds": 12.94949482
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "seconds": 4.76767672
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "seconds": 3.82828279
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "finish_task_switch",
+        "seconds": 2.91919189
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "seconds": 2.71717169
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "seconds": 2.59595957
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "seconds": 1.95959594
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "get_ZF()",
+        "seconds": 1.52525251
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "get_CF()",
+        "seconds": 1.43434342
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "get_OF()",
+        "seconds": 1.19191918
+      },
+      {
+        "dso": "/apex/com.android.runtime/lib64/bionic/libc.so",
+        "symbol": "__memcmp_aarch64",
+        "seconds": 1.07070706
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "get_SF()",
+        "seconds": 0.98989898
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "FillFlagsNoCFOF()",
+        "seconds": 0.7070707
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+        "seconds": 0.6060606
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_writed(unsigned int, unsigned int)",
+        "seconds": 0.59595959
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "handle_softirqs",
+        "seconds": 0.57575757
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "@plt",
+        "seconds": 0.56565656
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libkairodos_host.so",
+        "symbol": "unknown",
+        "seconds": 0.55555555
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "PIC_RunQueue()",
+        "seconds": 0.49494949
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.49494949
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "_raw_spin_unlock_irqrestore",
+        "seconds": 0.45454545
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "DmaChannel::ReadOrWrite(DmaDirection, unsigned long, unsigned char*)",
+        "seconds": 0.3030303
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "seconds": 0.28282828
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "perf_iterate_ctx",
+        "seconds": 0.27272727
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "CPU_Core_Normal_Run()",
+        "seconds": 0.27272727
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "change_protection",
+        "seconds": 0.26262626
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "write_byte_to_port(unsigned short, unsigned char)",
+        "seconds": 0.24242424
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        "seconds": 0.22222222
+      },
+      {
+        "dso": "/apex/com.android.runtime/lib64/bionic/libc.so",
+        "symbol": "pthread_mutex_lock",
+        "seconds": 0.21212121
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "PIC_AddEvent(void (*)(unsigned int), double, unsigned int)",
+        "seconds": 0.21212121
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "CPU_SetSegGeneral(SegNames, unsigned long)",
+        "seconds": 0.2020202
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libc++_shared.so",
+        "symbol": "@plt",
+        "seconds": 0.19191919
+      },
+      {
+        "dso": "[vdso]",
+        "symbol": "__kernel_clock_gettime",
+        "seconds": 0.19191919
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "read_byte_from_port(unsigned short)",
+        "seconds": 0.17171717
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "perf_event_mmap",
+        "seconds": 0.17171717
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "kmem_cache_free",
+        "seconds": 0.15151515
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "RENDER_CalcRestrictedViewportSizeInPixels(DosBox::Rect const&)",
+        "seconds": 0.15151515
+      },
+      {
+        "dso": "/data/app/~~vKLO6hZv03e9KNfrMRWAUg==/com.loxifi.kairodos-Kk_u-M0IiZDIFWERwyxHMQ==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        "symbol": "RWQueue<AudioFrame>::NonblockingBulkEnqueue(std::__ndk1::vector<AudioFrame, std::__ndk1::allocator<AudioFrame>>&, unsigned long)",
+        "seconds": 0.14141414
+      },
+      {
+        "dso": "[kernel.kallsyms]",
+        "symbol": "mt_find",
+        "seconds": 0.13131313
+      }
+    ],
+    "coreInstructions": [
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd108",
+        "seconds": 1.99999998
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x377944",
+        "seconds": 1.50505049
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x375cac",
+        "seconds": 1.23232322
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fb8",
+        "seconds": 1.06060605
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a5260",
+        "seconds": 0.89898989
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a5258",
+        "seconds": 0.8080808
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a522c",
+        "seconds": 0.73737373
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x375cb0",
+        "seconds": 0.66666666
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0dc",
+        "seconds": 0.62626262
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0fc",
+        "seconds": 0.52525252
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fac",
+        "seconds": 0.49494949
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0f8",
+        "seconds": 0.48484848
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x375cb4",
+        "seconds": 0.46464646
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x646180",
+        "seconds": 0.44444444
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415b10",
+        "seconds": 0.38383838
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415ad4",
+        "seconds": 0.33333333
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0f4",
+        "seconds": 0.32323232
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a523c",
+        "seconds": 0.29292929
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x377938",
+        "seconds": 0.29292929
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fa4",
+        "seconds": 0.28282828
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f6a8",
+        "seconds": 0.27272727
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x375ca4",
+        "seconds": 0.25252525
+      },
+      {
+        "symbol": "get_CF()",
+        "vaddr": "0x36f3c4",
+        "seconds": 0.22222222
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x377918",
+        "seconds": 0.22222222
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a5238",
+        "seconds": 0.21212121
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fa8",
+        "seconds": 0.21212121
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372f94",
+        "seconds": 0.21212121
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f68c",
+        "seconds": 0.19191919
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0e8",
+        "seconds": 0.18181818
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f680",
+        "seconds": 0.18181818
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x5aa784",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f690",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd100",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "get_CF()",
+        "vaddr": "0x36f3c8",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "get_OF()",
+        "vaddr": "0x36f850",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "get_SF()",
+        "vaddr": "0x36f7ac",
+        "seconds": 0.17171717
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x377930",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "get_OF()",
+        "vaddr": "0x36f848",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "get_CF()",
+        "vaddr": "0x36f400",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x5aa794",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "get_SF()",
+        "vaddr": "0x36f7b0",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f6b4",
+        "seconds": 0.16161616
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0e0",
+        "seconds": 0.15151515
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd110",
+        "seconds": 0.15151515
+      },
+      {
+        "symbol": "get_CF()",
+        "vaddr": "0x36f3d8",
+        "seconds": 0.15151515
+      },
+      {
+        "symbol": "FillFlagsNoCFOF()",
+        "vaddr": "0x3714c0",
+        "seconds": 0.15151515
+      },
+      {
+        "symbol": "get_SF()",
+        "vaddr": "0x36f7a4",
+        "seconds": 0.14141414
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x370aac",
+        "seconds": 0.14141414
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fc0",
+        "seconds": 0.13131313
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f6a0",
+        "seconds": 0.13131313
+      },
+      {
+        "symbol": "get_SF()",
+        "vaddr": "0x36f7e0",
+        "seconds": 0.13131313
+      },
+      {
+        "symbol": "get_ZF()",
+        "vaddr": "0x36f6c0",
+        "seconds": 0.12121212
+      },
+      {
+        "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+        "vaddr": "0x370a10",
+        "seconds": 0.12121212
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x37794c",
+        "seconds": 0.12121212
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a526c",
+        "seconds": 0.12121212
+      },
+      {
+        "symbol": "mem_readb_checked_drc(unsigned int)",
+        "vaddr": "0x372fb0",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "mem_readw_checked_drc(unsigned int)",
+        "vaddr": "0x377934",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415b28",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x36f76c",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415b20",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "CPU_Core_Dynrec_Run()",
+        "vaddr": "0x3a5218",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x3708b8",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "get_OF()",
+        "vaddr": "0x36f854",
+        "seconds": 0.11111111
+      },
+      {
+        "symbol": "get_OF()",
+        "vaddr": "0x36f9d0",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x370ae0",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x370ad8",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x5aa738",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x5aa820",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "write_byte_to_port(unsigned short, unsigned char)",
+        "vaddr": "0x378194",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "DmaChannel::ReadOrWrite(DmaDirection, unsigned long, unsigned char*)",
+        "vaddr": "0x397fa8",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415b1c",
+        "seconds": 0.1010101
+      },
+      {
+        "symbol": "mem_readd_checked_drc(unsigned int)",
+        "vaddr": "0x3fd0f0",
+        "seconds": 0.09090909
+      },
+      {
+        "symbol": "get_SF()",
+        "vaddr": "0x36f7bc",
+        "seconds": 0.09090909
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x36f79c",
+        "seconds": 0.09090909
+      },
+      {
+        "symbol": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+        "vaddr": "0x370a14",
+        "seconds": 0.09090909
+      },
+      {
+        "symbol": "mem_writed(unsigned int, unsigned int)",
+        "vaddr": "0x370a74",
+        "seconds": 0.09090909
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x36f770",
+        "seconds": 0.08080808
+      },
+      {
+        "symbol": "unknown",
+        "vaddr": "0x5aa89c",
+        "seconds": 0.08080808
+      },
+      {
+        "symbol": "mem_writew_checked_drc(unsigned int, unsigned short)",
+        "vaddr": "0x390f14",
+        "seconds": 0.08080808
+      },
+      {
+        "symbol": "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "vaddr": "0x415b08",
+        "seconds": 0.08080808
+      }
+    ]
+  },
+  "diagnostic": {
+    "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+    "diagnosticApkSha256": "49e02161103b0fbb793ffff22075b6dee8a7e71643c29030762122eb7a2508d9",
+    "diagnosticElfSha256": "9d934725523835005dd1831ea178708e9fd8db17c37b1ffe9e4d3d0e99017565",
+    "diagnosticPackagedCoreSha256": "a1a34f43cda9f3b4744e4f494a25023425bfec6973ce9a91a1607a5f7624e138",
+    "changedPayloads": [
+      "lib/arm64-v8a/libdosbox_staging.so"
+    ],
+    "pgo": false,
+    "guestProfile": true
+  },
+  "attribution": {
+    "sampleCount": 19842,
+    "totalSampledSeconds": 99.70853025,
+    "directJitSeconds": 35.944719125,
+    "missingCodeSeconds": 0.0,
+    "undecodedSeconds": 0.0,
+    "familiesSeconds": {
+      "address/immediate/register move": 13.829144,
+      "load": 9.49748625,
+      "arithmetic/other": 4.698491875,
+      "indirect branch/return": 2.974874,
+      "store": 1.804019875,
+      "direct/conditional branch": 1.17587925,
+      "nop": 1.030150625,
+      "call": 0.93467325
+    },
+    "mnemonicsSeconds": {
+      "ldr": 8.804019,
+      "movk": 7.160803125,
+      "mov": 6.668340875,
+      "br": 2.92462275,
+      "add": 2.452261,
+      "str": 1.562813875,
+      "nop": 1.030150625,
+      "blr": 0.93467325,
+      "cbz": 0.884422,
+      "uxtb": 0.698492375,
+      "sub": 0.61306525,
+      "cmp": 0.396984875,
+      "ldrh": 0.33165825,
+      "ldrb": 0.296482375,
+      "cbnz": 0.281407,
+      "and": 0.175879375,
+      "sxth": 0.145728625,
+      "strb": 0.145728625,
+      "strh": 0.095477375,
+      "lsl": 0.07035175,
+      "ldp": 0.065326625,
+      "ret": 0.05025125,
+      "lsr": 0.03015075,
+      "orr": 0.03015075,
+      "uxth": 0.0201005,
+      "eor": 0.0201005,
+      "ror": 0.0201005,
+      "b": 0.01005025,
+      "asr": 0.01005025,
+      "neg": 0.01005025,
+      "sxtb": 0.005025125
+    },
+    "loadBaseRegisterSeconds": {
+      "x20": 3.633165375,
+      "x12": 3.130652875,
+      "x10": 1.090452125,
+      "x21": 0.989949625,
+      "x22": 0.587939625,
+      "sp": 0.065326625
+    },
+    "fixedCallSequenceSeconds": [
+      {
+        "target": "_Z21mem_readd_checked_drcj",
+        "part": "target setup",
+        "seconds": 1.130653125
+      },
+      {
+        "target": "_Z22mem_writed_checked_drcjj",
+        "part": "target setup",
+        "seconds": 0.638190875
+      },
+      {
+        "target": "_Z21mem_readb_checked_drcj",
+        "part": "target setup",
+        "seconds": 0.51256275
+      },
+      {
+        "target": "_Z21mem_readw_checked_drcj",
+        "part": "target setup",
+        "seconds": 0.4623115
+      },
+      {
+        "target": "_ZL16dynrec_cmp_dwordjj",
+        "part": "target setup",
+        "seconds": 0.407035125
+      },
+      {
+        "target": "_ZL17dynrec_push_dwordj",
+        "part": "target setup",
+        "seconds": 0.276381875
+      },
+      {
+        "target": "_ZL16dynrec_pop_dwordv",
+        "part": "target setup",
+        "seconds": 0.25125625
+      },
+      {
+        "target": "_Z21mem_readd_checked_drcj",
+        "part": "indirect call",
+        "seconds": 0.246231125
+      },
+      {
+        "target": "_ZL16dynrec_add_dwordjj",
+        "part": "target setup",
+        "seconds": 0.195979875
+      },
+      {
+        "target": "_ZL26dynrec_get_zf_or_sf_neq_ofv",
+        "part": "target setup",
+        "seconds": 0.175879375
+      },
+      {
+        "target": "_ZL15dynrec_cmp_wordtt",
+        "part": "target setup",
+        "seconds": 0.165829125
+      },
+      {
+        "target": "_ZL19dynrec_get_sf_eq_ofv",
+        "part": "target setup",
+        "seconds": 0.165829125
+      },
+      {
+        "target": "_ZL14dynrec_get_nzfv",
+        "part": "target setup",
+        "seconds": 0.155778875
+      },
+      {
+        "target": "_ZL13dynrec_get_zfv",
+        "part": "target setup",
+        "seconds": 0.1407035
+      },
+      {
+        "target": "_ZL18dynrec_dimul_dwordjj",
+        "part": "target setup",
+        "seconds": 0.120603
+      },
+      {
+        "target": "_ZL20dynrec_get_sf_neq_ofv",
+        "part": "target setup",
+        "seconds": 0.11055275
+      },
+      {
+        "target": "_ZL17dynrec_test_dwordjj",
+        "part": "target setup",
+        "seconds": 0.1005025
+      },
+      {
+        "target": "_ZL17dynrec_push_dwordj",
+        "part": "indirect call",
+        "seconds": 0.1005025
+      },
+      {
+        "target": "_Z22mem_writed_checked_drcjj",
+        "part": "indirect call",
+        "seconds": 0.1005025
+      },
+      {
+        "target": "_ZL23dynrec_adc_dword_simplejj",
+        "part": "target setup",
+        "seconds": 0.085427125
+      },
+      {
+        "target": "_Z22mem_writew_checked_drcjt",
+        "part": "target setup",
+        "seconds": 0.075376875
+      },
+      {
+        "target": "_ZL17dynrec_imul_dwordj",
+        "part": "target setup",
+        "seconds": 0.075376875
+      },
+      {
+        "target": "_ZL16dynrec_test_bytehh",
+        "part": "target setup",
+        "seconds": 0.07035175
+      },
+      {
+        "target": "_ZL16dynrec_sub_dwordjj",
+        "part": "target setup",
+        "seconds": 0.07035175
+      },
+      {
+        "target": "_ZL15dynrec_cmp_bytehh",
+        "part": "target setup",
+        "seconds": 0.065326625
+      },
+      {
+        "target": "_ZL16dynrec_push_wordt",
+        "part": "target setup",
+        "seconds": 0.0603015
+      },
+      {
+        "target": "_Z22mem_writeb_checked_drcjh",
+        "part": "target setup",
+        "seconds": 0.0603015
+      },
+      {
+        "target": "_ZL27dynrec_get_nzf_and_sf_eq_ofv",
+        "part": "target setup",
+        "seconds": 0.0603015
+      },
+      {
+        "target": "_ZL16dynrec_cmp_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.055276375
+      },
+      {
+        "target": "_ZL14dynrec_get_nzfv",
+        "part": "indirect call",
+        "seconds": 0.040201
+      },
+      {
+        "target": "_ZL23dynrec_sbb_dword_simplejj",
+        "part": "target setup",
+        "seconds": 0.040201
+      },
+      {
+        "target": "_ZL22dynrec_adc_byte_simplehh",
+        "part": "target setup",
+        "seconds": 0.040201
+      },
+      {
+        "target": "_ZL16dynrec_pop_dwordv",
+        "part": "indirect call",
+        "seconds": 0.040201
+      },
+      {
+        "target": "_ZL16dynrec_dec_dwordj",
+        "part": "target setup",
+        "seconds": 0.040201
+      },
+      {
+        "target": "_ZL13dynrec_get_cfv",
+        "part": "target setup",
+        "seconds": 0.035175875
+      },
+      {
+        "target": "_ZL15dynrec_adc_bytehh",
+        "part": "target setup",
+        "seconds": 0.035175875
+      },
+      {
+        "target": "_Z21mem_readw_checked_drcj",
+        "part": "indirect call",
+        "seconds": 0.035175875
+      },
+      {
+        "target": "_ZL15dynrec_pop_wordv",
+        "part": "target setup",
+        "seconds": 0.03015075
+      },
+      {
+        "target": "_ZL19dynrec_get_sf_eq_ofv",
+        "part": "indirect call",
+        "seconds": 0.03015075
+      },
+      {
+        "target": "_ZL14dynrec_get_ncfv",
+        "part": "target setup",
+        "seconds": 0.025125625
+      },
+      {
+        "target": "_Z22mem_writew_checked_drcjt",
+        "part": "indirect call",
+        "seconds": 0.025125625
+      },
+      {
+        "target": "_ZL17dynrec_dshr_dwordjjh",
+        "part": "target setup",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL17dynrec_imul_dwordj",
+        "part": "indirect call",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_Z17CPU_SetSegGeneral8SegNamesm",
+        "part": "target setup",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL17dynrec_test_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL16dynrec_test_wordtt",
+        "part": "target setup",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_Z21mem_readb_checked_drcj",
+        "part": "indirect call",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_Z10CPU_PopSeg8SegNamesb",
+        "part": "target setup",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL13dynrec_get_zfv",
+        "part": "indirect call",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL10dynrec_cldv",
+        "part": "target setup",
+        "seconds": 0.0201005
+      },
+      {
+        "target": "_ZL20dynrec_get_sf_neq_ofv",
+        "part": "indirect call",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL15dynrec_add_bytehh",
+        "part": "target setup",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL16dynrec_push_wordt",
+        "part": "indirect call",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL16dynrec_sar_dwordjh",
+        "part": "target setup",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL15dynrec_cmp_wordtt",
+        "part": "indirect call",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL16dynrec_xor_dwordjj",
+        "part": "target setup",
+        "seconds": 0.015075375
+      },
+      {
+        "target": "_ZL16dynrec_add_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL13dynrec_get_cfv",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL11dynrec_cwdet",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_Z22mem_writeb_checked_drcjh",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL16dynrec_sub_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL16dynrec_neg_dwordj",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL11dynrec_cwdet",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL15dynrec_and_bytehh",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL14dynrec_get_nsfv",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL22dynrec_get_ncf_and_nzfv",
+        "part": "indirect call",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL15dynrec_dec_byteh",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_Z8CPU_IRETbm",
+        "part": "target setup",
+        "seconds": 0.01005025
+      },
+      {
+        "target": "_ZL11FPU_FST_F32j",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_io_writeBm",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL18dynrec_dimul_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL14FPU_FLD_F32_EAj",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_test_bytehh",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL14dynrec_get_ncfv",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL13dynrec_get_sfv",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL15dynrec_shl_wordth",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_Z17CPU_SetSegGeneral8SegNamesm",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_shr_dwordjh",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_io_writeBm",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL19dynrec_get_cf_or_zfv",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_rol_dwordjh",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL23dynrec_adc_dword_simplejj",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL17dynrec_idiv_dwordj",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL17dynrec_popa_dwordv",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL26dynrec_get_zf_or_sf_neq_ofv",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL15dynrec_io_readBm",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL14dynrec_get_nsfv",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL15dynrec_cmp_bytehh",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_shl_dwordjh",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL19dynrec_get_cf_or_zfv",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_xor_dwordjj",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_Z8CPU_LLDTm",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL11FPU_FLD_I32jm",
+        "part": "target setup",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL16dynrec_dec_dwordj",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      },
+      {
+        "target": "_ZL27dynrec_get_nzf_and_sf_eq_ofv",
+        "part": "indirect call",
+        "seconds": 0.005025125
+      }
+    ],
+    "withinEightInstructionsAfterCall": [
+      {
+        "distance": 2,
+        "mnemonic": "cbz",
+        "seconds": 0.884422
+      },
+      {
+        "distance": 4,
+        "mnemonic": "ldr",
+        "seconds": 0.75376875
+      },
+      {
+        "distance": 1,
+        "mnemonic": "uxtb",
+        "seconds": 0.688442125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "movk",
+        "seconds": 0.527638125
+      },
+      {
+        "distance": 6,
+        "mnemonic": "movk",
+        "seconds": 0.497487375
+      },
+      {
+        "distance": 7,
+        "mnemonic": "ldr",
+        "seconds": 0.477386875
+      },
+      {
+        "distance": 6,
+        "mnemonic": "ldr",
+        "seconds": 0.361809
+      },
+      {
+        "distance": 1,
+        "mnemonic": "ldr",
+        "seconds": 0.316582875
+      },
+      {
+        "distance": 8,
+        "mnemonic": "movk",
+        "seconds": 0.31155775
+      },
+      {
+        "distance": 5,
+        "mnemonic": "movk",
+        "seconds": 0.286432125
+      },
+      {
+        "distance": 1,
+        "mnemonic": "cbnz",
+        "seconds": 0.281407
+      },
+      {
+        "distance": 7,
+        "mnemonic": "mov",
+        "seconds": 0.276381875
+      },
+      {
+        "distance": 4,
+        "mnemonic": "mov",
+        "seconds": 0.266331625
+      },
+      {
+        "distance": 5,
+        "mnemonic": "str",
+        "seconds": 0.266331625
+      },
+      {
+        "distance": 1,
+        "mnemonic": "str",
+        "seconds": 0.2613065
+      },
+      {
+        "distance": 2,
+        "mnemonic": "sub",
+        "seconds": 0.2613065
+      },
+      {
+        "distance": 8,
+        "mnemonic": "add",
+        "seconds": 0.241206
+      },
+      {
+        "distance": 5,
+        "mnemonic": "mov",
+        "seconds": 0.21105525
+      },
+      {
+        "distance": 6,
+        "mnemonic": "mov",
+        "seconds": 0.19095475
+      },
+      {
+        "distance": 3,
+        "mnemonic": "add",
+        "seconds": 0.155778875
+      },
+      {
+        "distance": 2,
+        "mnemonic": "ldr",
+        "seconds": 0.15075375
+      },
+      {
+        "distance": 8,
+        "mnemonic": "blr",
+        "seconds": 0.145728625
+      },
+      {
+        "distance": 5,
+        "mnemonic": "ldr",
+        "seconds": 0.145728625
+      },
+      {
+        "distance": 4,
+        "mnemonic": "add",
+        "seconds": 0.135678375
+      },
+      {
+        "distance": 5,
+        "mnemonic": "sxth",
+        "seconds": 0.125628125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "mov",
+        "seconds": 0.125628125
+      },
+      {
+        "distance": 3,
+        "mnemonic": "mov",
+        "seconds": 0.115577875
+      },
+      {
+        "distance": 7,
+        "mnemonic": "add",
+        "seconds": 0.11055275
+      },
+      {
+        "distance": 4,
+        "mnemonic": "movk",
+        "seconds": 0.11055275
+      },
+      {
+        "distance": 3,
+        "mnemonic": "str",
+        "seconds": 0.11055275
+      },
+      {
+        "distance": 4,
+        "mnemonic": "ldrh",
+        "seconds": 0.11055275
+      },
+      {
+        "distance": 3,
+        "mnemonic": "movk",
+        "seconds": 0.1005025
+      },
+      {
+        "distance": 5,
+        "mnemonic": "strb",
+        "seconds": 0.1005025
+      },
+      {
+        "distance": 6,
+        "mnemonic": "add",
+        "seconds": 0.1005025
+      },
+      {
+        "distance": 6,
+        "mnemonic": "blr",
+        "seconds": 0.1005025
+      },
+      {
+        "distance": 5,
+        "mnemonic": "sub",
+        "seconds": 0.080402
+      },
+      {
+        "distance": 4,
+        "mnemonic": "str",
+        "seconds": 0.080402
+      },
+      {
+        "distance": 4,
+        "mnemonic": "ldrb",
+        "seconds": 0.07035175
+      },
+      {
+        "distance": 8,
+        "mnemonic": "ldr",
+        "seconds": 0.07035175
+      },
+      {
+        "distance": 5,
+        "mnemonic": "strh",
+        "seconds": 0.07035175
+      },
+      {
+        "distance": 3,
+        "mnemonic": "ldr",
+        "seconds": 0.07035175
+      },
+      {
+        "distance": 6,
+        "mnemonic": "str",
+        "seconds": 0.065326625
+      },
+      {
+        "distance": 7,
+        "mnemonic": "str",
+        "seconds": 0.0603015
+      },
+      {
+        "distance": 3,
+        "mnemonic": "sub",
+        "seconds": 0.0603015
+      },
+      {
+        "distance": 2,
+        "mnemonic": "mov",
+        "seconds": 0.055276375
+      },
+      {
+        "distance": 8,
+        "mnemonic": "nop",
+        "seconds": 0.055276375
+      },
+      {
+        "distance": 6,
+        "mnemonic": "ldrh",
+        "seconds": 0.040201
+      },
+      {
+        "distance": 7,
+        "mnemonic": "ldrh",
+        "seconds": 0.040201
+      },
+      {
+        "distance": 7,
+        "mnemonic": "nop",
+        "seconds": 0.03015075
+      },
+      {
+        "distance": 6,
+        "mnemonic": "nop",
+        "seconds": 0.03015075
+      },
+      {
+        "distance": 6,
+        "mnemonic": "ret",
+        "seconds": 0.03015075
+      },
+      {
+        "distance": 7,
+        "mnemonic": "sub",
+        "seconds": 0.03015075
+      },
+      {
+        "distance": 1,
+        "mnemonic": "strb",
+        "seconds": 0.025125625
+      },
+      {
+        "distance": 4,
+        "mnemonic": "ldp",
+        "seconds": 0.025125625
+      },
+      {
+        "distance": 6,
+        "mnemonic": "sub",
+        "seconds": 0.025125625
+      },
+      {
+        "distance": 5,
+        "mnemonic": "add",
+        "seconds": 0.025125625
+      },
+      {
+        "distance": 8,
+        "mnemonic": "str",
+        "seconds": 0.0201005
+      },
+      {
+        "distance": 2,
+        "mnemonic": "ldrb",
+        "seconds": 0.0201005
+      },
+      {
+        "distance": 5,
+        "mnemonic": "nop",
+        "seconds": 0.015075375
+      },
+      {
+        "distance": 7,
+        "mnemonic": "blr",
+        "seconds": 0.015075375
+      },
+      {
+        "distance": 5,
+        "mnemonic": "ldrh",
+        "seconds": 0.015075375
+      },
+      {
+        "distance": 2,
+        "mnemonic": "movk",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 7,
+        "mnemonic": "ldrb",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 6,
+        "mnemonic": "ldp",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 8,
+        "mnemonic": "sub",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 5,
+        "mnemonic": "uxtb",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 6,
+        "mnemonic": "ldrb",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 5,
+        "mnemonic": "ldp",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 3,
+        "mnemonic": "uxth",
+        "seconds": 0.01005025
+      },
+      {
+        "distance": 6,
+        "mnemonic": "uxth",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "eor",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "strb",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "sxth",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "ldp",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 2,
+        "mnemonic": "add",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "ldp",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 1,
+        "mnemonic": "ldrb",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 5,
+        "mnemonic": "uxth",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 6,
+        "mnemonic": "and",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "strh",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "strh",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 5,
+        "mnemonic": "orr",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 5,
+        "mnemonic": "ldrb",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 1,
+        "mnemonic": "mov",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 7,
+        "mnemonic": "sxtb",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 2,
+        "mnemonic": "ldrh",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "ldrh",
+        "seconds": 0.005025125
+      },
+      {
+        "distance": 8,
+        "mnemonic": "lsr",
+        "seconds": 0.005025125
+      }
+    ],
+    "limitations": [
+      "Sampling skid prevents exact instruction-latency claims.",
+      "Instruction families and post-call proximity do not prove causality.",
+      "Only direct JIT samples are classified; helpers remain separate.",
+      "Adjacent store/load candidates still need control-flow and alias-safety checks.",
+      "Diagnostic logging and build options can change performance."
+    ],
+    "adjacentCpuRegisterStoreLoadSampledSeconds": 0.19095475
+  },
+  "diagnosticEnabled": {
+    "summary": {
+      "observation": "light",
+      "observationLimits": "Light frame/thermal observation plus external 199 Hz cpu-clock sampling with frame-pointer call chains; no off-CPU tracing.",
+      "intervalSeconds": 119.79700000002049,
+      "clockTicksPerSecond": 100,
+      "processCpuPercent": 114.518727514025,
+      "threadCpuPercent": [
+        [
+          15956,
+          "KairoDos-emulat",
+          80.77831665232304
+        ],
+        [
+          15973,
+          "dosbox:mixer",
+          23.81528752806424
+        ],
+        [
+          15974,
+          "KairoDos-emulat",
+          4.941693030709439
+        ],
+        [
+          15962,
+          "KairoDos-emulat",
+          2.07851615649772
+        ],
+        [
+          15976,
+          "KairoDos-audio",
+          1.3105503476712532
+        ],
+        [
+          15972,
+          "SDLAudioP2",
+          0.38398290441323346
+        ],
+        [
+          15905,
+          "loxifi.kairodos",
+          0.3505930866381697
+        ],
+        [
+          15924,
+          "binder:15905_2",
+          0.2253812699816805
+        ],
+        [
+          15979,
+          "binder:15905_5",
+          0.21703381553791457
+        ],
+        [
+          15926,
+          "binder:15905_3",
+          0.20868636109414862
+        ],
+        [
+          15966,
+          "binder:15905_1",
+          0.09182199888142539
+        ],
+        [
+          15917,
+          "Jit thread pool",
+          0.008347454443765945
+        ],
+        [
+          15932,
+          "Profile Saver",
+          0.008347454443765945
+        ],
+        [
+          15914,
+          "Signal Catcher",
+          0.0
+        ],
+        [
+          15915,
+          "perfetto_hprof_",
+          0.0
+        ],
+        [
+          15916,
+          "ADB-JDWP Connec",
+          0.0
+        ],
+        [
+          15919,
+          "HeapTaskDaemon",
+          0.0
+        ],
+        [
+          15920,
+          "ReferenceQueueD",
+          0.0
+        ],
+        [
+          15921,
+          "FinalizerDaemon",
+          0.0
+        ],
+        [
+          15922,
+          "FinalizerWatchd",
+          0.0
+        ],
+        [
+          15923,
+          "binder:15905_1",
+          0.0
+        ],
+        [
+          15929,
+          "binder:15905_4",
+          0.0
+        ],
+        [
+          15933,
+          "RenderThread",
+          0.0
+        ],
+        [
+          15937,
+          "mali-mem-purge",
+          0.0
+        ],
+        [
+          15938,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          15939,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          15940,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          15941,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          15942,
+          "mali-cmar-backe",
+          0.0
+        ],
+        [
+          15946,
+          "queued-work-loo",
+          0.0
+        ],
+        [
+          15948,
+          "AsyncTask #2",
+          0.0
+        ],
+        [
+          15950,
+          "SurfaceSyncGrou",
+          0.0
+        ],
+        [
+          15951,
+          "hwuiTask0",
+          0.0
+        ],
+        [
+          15952,
+          "hwuiTask1",
+          0.0
+        ],
+        [
+          15955,
+          "pool-3-thread-1",
+          0.0
+        ],
+        [
+          15961,
+          "OkHttp Connecti",
+          0.0
+        ],
+        [
+          15963,
+          "InsetsAnimation",
+          0.0
+        ],
+        [
+          15967,
+          "SDLTimer",
+          0.0
+        ],
+        [
+          15968,
+          "InteractionJank",
+          0.0
+        ],
+        [
+          15969,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          15970,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          15971,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          15975,
+          "Okio Watchdog",
+          0.0
+        ],
+        [
+          15977,
+          "AudioTrack",
+          0.0
+        ],
+        [
+          15978,
+          "AudioPortEventH",
+          0.0
+        ]
+      ],
+      "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+      "presentations": {
+        "count": 2516,
+        "rate": 21.064969859343194,
+        "intervalSeconds": 119.44000000000233,
+        "source": "device-local-v1",
+        "medianIntervalMs": 33.247084,
+        "p95IntervalMs": 116.744834,
+        "note": "Surface submissions, not necessarily unique guest frames"
+      },
+      "hardwareFirstLines": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1104000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000"
+        ],
+        "5": [
+          "800000000"
+        ]
+      },
+      "maxSamplingGapSeconds": 62.07799999997951,
+      "maxFrameSamplingGapSeconds": 0.6700000000128057,
+      "disjointPresentationHistories": 0,
+      "presentationHistoryComplete": true,
+      "thermalAndCoolingRawRanges": {
+        "soc-thermal": [
+          72777,
+          73333
+        ],
+        "gpu-thermal": [
+          69375,
+          70555
+        ],
+        "battery": [
+          18800,
+          18800
+        ],
+        "cpufreq-cpu0": [
+          0,
+          0
+        ],
+        "devfreq-fdf80200.rkvdec": [
+          0,
+          0
+        ],
+        "devfreq-fde60000.gpu": [
+          0,
+          0
+        ]
+      },
+      "audio": {
+        "snapshotSpanSeconds": 126.51600000000326,
+        "trackUnderrunFieldStart": {
+          "150": 1664
+        },
+        "trackUnderrunFieldEnd": {
+          "150": 1664
+        },
+        "trackUnderrunFieldDelta": {
+          "150": 0
+        },
+        "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+      }
+    },
+    "record": "simpleperf I cmd_record.cpp:826] Recorded for 119.943 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 28,134. Samples lost: 0.\n",
+    "perfSha256": "7cd207d66b6ad398074832a5317df66809e74e36da04c79a58cf08da79125dd2"
+  },
+  "diagnosticDisabled": {
+    "summary": {
+      "observation": "light",
+      "observationLimits": "Light frame/thermal observation plus external 199 Hz cpu-clock sampling with frame-pointer call chains; no off-CPU tracing.",
+      "intervalSeconds": 120.14100000000326,
+      "clockTicksPerSecond": 100,
+      "processCpuPercent": 119.81754771476523,
+      "threadCpuPercent": [
+        [
+          17534,
+          "KairoDos-emulat",
+          85.05838972540367
+        ],
+        [
+          17552,
+          "dosbox:mixer",
+          24.72927643352327
+        ],
+        [
+          17553,
+          "KairoDos-emulat",
+          4.195070791819498
+        ],
+        [
+          17541,
+          "KairoDos-emulat",
+          3.021449796489043
+        ],
+        [
+          17555,
+          "KairoDos-audio",
+          1.0404441447965025
+        ],
+        [
+          17595,
+          "binder:17493_5",
+          0.5160602958190652
+        ],
+        [
+          17507,
+          "binder:17493_2",
+          0.39120699844348494
+        ],
+        [
+          17551,
+          "SDLAudioP2",
+          0.3828834452851129
+        ],
+        [
+          17493,
+          "loxifi.kairodos",
+          0.35791278580999686
+        ],
+        [
+          17544,
+          "binder:17493_3",
+          0.1331768505339523
+        ],
+        [
+          17506,
+          "binder:17493_1",
+          0.03329421263348808
+        ],
+        [
+          17510,
+          "Profile Saver",
+          0.00832355315837202
+        ],
+        [
+          17498,
+          "Signal Catcher",
+          0.0
+        ],
+        [
+          17499,
+          "perfetto_hprof_",
+          0.0
+        ],
+        [
+          17500,
+          "ADB-JDWP Connec",
+          0.0
+        ],
+        [
+          17501,
+          "Jit thread pool",
+          0.0
+        ],
+        [
+          17502,
+          "HeapTaskDaemon",
+          0.0
+        ],
+        [
+          17503,
+          "ReferenceQueueD",
+          0.0
+        ],
+        [
+          17504,
+          "FinalizerDaemon",
+          0.0
+        ],
+        [
+          17505,
+          "FinalizerWatchd",
+          0.0
+        ],
+        [
+          17508,
+          "binder:17493_3",
+          0.0
+        ],
+        [
+          17511,
+          "RenderThread",
+          0.0
+        ],
+        [
+          17515,
+          "mali-mem-purge",
+          0.0
+        ],
+        [
+          17516,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          17517,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          17518,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          17519,
+          "mali-utility-wo",
+          0.0
+        ],
+        [
+          17520,
+          "mali-cmar-backe",
+          0.0
+        ],
+        [
+          17524,
+          "queued-work-loo",
+          0.0
+        ],
+        [
+          17526,
+          "AsyncTask #2",
+          0.0
+        ],
+        [
+          17528,
+          "SurfaceSyncGrou",
+          0.0
+        ],
+        [
+          17529,
+          "hwuiTask0",
+          0.0
+        ],
+        [
+          17530,
+          "hwuiTask1",
+          0.0
+        ],
+        [
+          17533,
+          "pool-3-thread-1",
+          0.0
+        ],
+        [
+          17539,
+          "OkHttp Connecti",
+          0.0
+        ],
+        [
+          17540,
+          "InsetsAnimation",
+          0.0
+        ],
+        [
+          17545,
+          "binder:17493_4",
+          0.0
+        ],
+        [
+          17546,
+          "InteractionJank",
+          0.0
+        ],
+        [
+          17547,
+          "SDLTimer",
+          0.0
+        ],
+        [
+          17548,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          17549,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          17550,
+          "dosbox:imgcap",
+          0.0
+        ],
+        [
+          17554,
+          "Okio Watchdog",
+          0.0
+        ],
+        [
+          17556,
+          "AudioTrack",
+          0.0
+        ],
+        [
+          17557,
+          "AudioPortEventH",
+          0.0
+        ]
+      ],
+      "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+      "presentations": {
+        "count": 3623,
+        "rate": 30.21180787191505,
+        "intervalSeconds": 119.91999999999825,
+        "source": "device-local-v1",
+        "medianIntervalMs": 16.7127915,
+        "p95IntervalMs": 83.234375,
+        "note": "Surface submissions, not necessarily unique guest frames"
+      },
+      "hardwareFirstLines": {
+        "1": [
+          "1992000"
+        ],
+        "2": [
+          "1104000000"
+        ],
+        "3": [
+          "920000000"
+        ],
+        "4": [
+          "198000000"
+        ],
+        "5": [
+          "800000000"
+        ]
+      },
+      "maxSamplingGapSeconds": 62.20400000002701,
+      "maxFrameSamplingGapSeconds": 0.6900000000023283,
+      "disjointPresentationHistories": 0,
+      "presentationHistoryComplete": true,
+      "thermalAndCoolingRawRanges": {
+        "soc-thermal": [
+          73333,
+          74444
+        ],
+        "gpu-thermal": [
+          70555,
+          71111
+        ],
+        "battery": [
+          18800,
+          18800
+        ],
+        "cpufreq-cpu0": [
+          0,
+          0
+        ],
+        "devfreq-fdf80200.rkvdec": [
+          0,
+          0
+        ],
+        "devfreq-fde60000.gpu": [
+          0,
+          0
+        ]
+      },
+      "audio": {
+        "snapshotSpanSeconds": 127.45300000003772,
+        "trackUnderrunFieldStart": {
+          "151": 0
+        },
+        "trackUnderrunFieldEnd": {
+          "151": 0
+        },
+        "trackUnderrunFieldDelta": {
+          "151": 0
+        },
+        "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+      }
+    },
+    "record": "simpleperf I cmd_record.cpp:826] Recorded for 119.934 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 29,470. Samples lost: 0.\n",
+    "perfSha256": "bf4bd04f6c30bbd045918ce0bbf93774d45a7d0d22a2b6cbb22fc5716d61e1bd"
+  },
+  "sourceManifestSha256": "1f996fb2b5fe104f55d44e41613395b75c19b2af93c9ae2b667f776e3cf6adc4",
+  "limitations": [
+    "Diagnostic build disables PGO as required by the existing guard.",
+    "Logging substantially perturbed throughput; instruction location samples are not instruction latencies.",
+    "No optimization is adopted by this evidence; normal-build A/B gates are separate.",
+    "Raw guest and generated code remain in ignored local storage."
+  ]
+}

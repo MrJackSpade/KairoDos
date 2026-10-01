@@ -14,6 +14,7 @@ namespace kairo_guest_profile {
 inline FILE* output = nullptr;
 inline uint64_t last_flush = 0;
 inline uint64_t serial = 0;
+inline bool record_host_code = false;
 inline uint64_t now() {
     timespec t{}; clock_gettime(CLOCK_MONOTONIC, &t);
     return uint64_t(t.tv_sec) * 1000000000ull + t.tv_nsec;
@@ -23,10 +24,15 @@ inline void close() {
 }
 inline void open(const std::string& directory) {
     close(); serial = 0;
+    record_host_code = false;
     const auto marker = directory + "/kairo-guest-profile.enable";
     FILE* enabled = std::fopen(marker.c_str(), "rb");
     if (!enabled) return;
     std::fclose(enabled);
+    if (FILE* code_marker = std::fopen((directory + "/kairo-host-code.enable").c_str(), "rb")) {
+        record_host_code = true;
+        std::fclose(code_marker);
+    }
     output = std::fopen((directory + "/kairo-guest-profile.jsonl").c_str(), "wb");
     if (output) {
         std::setvbuf(output, nullptr, _IOFBF, 65536);
@@ -68,7 +74,18 @@ struct Translation {
                 static_cast<unsigned long long>(i.host), i.guest, i.opcode);
             first = false;
         }
-        std::fputs("]}\n", output);
+        std::fputs("]", output);
+        // Capture the completed translation, after lazy-flags rewriting. Pair
+        // these bytes with this block's lifetime, never a later cache snapshot.
+        // Opt-in diagnostic data only; raw bytes must stay in local storage.
+        if (record_host_code) {
+            std::fputs(",\"hostCodeHex\":\"", output);
+            const auto* bytes = static_cast<const unsigned char*>(host);
+            for (size_t i = 0; i < size; ++i)
+                std::fprintf(output, "%02x", static_cast<unsigned>(bytes[i]));
+            std::fputs("\"", output);
+        }
+        std::fputs("}\n", output);
     }
 };
 } // namespace kairo_guest_profile
