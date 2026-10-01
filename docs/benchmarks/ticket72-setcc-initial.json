@@ -1,0 +1,14 @@
+{
+  "cases": 10240,
+  "result": "PASS",
+  "normalVsDynamic": "byte-identical full snapshots",
+  "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+  "snapshotSha256": "7fe4e75bf64b8912971a28bbb375c052d07ca953da668647df194e9d80992891",
+  "coverage": "16-bit real mode; materialized flags; every condition, all 64 arithmetic flag combinations, eight byte registers and two direct memory destinations",
+  "remaining": [
+    "lazy flags",
+    "16/32-bit prefixes/address forms",
+    "protected-mode fault and SMC checks",
+    "normal-build A/B/A benchmark"
+  ]
+}

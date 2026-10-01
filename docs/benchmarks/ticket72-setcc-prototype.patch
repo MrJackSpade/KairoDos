@@ -1,0 +1,52 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
+@@ -202,11 +202,10 @@
+ 					goto finish_block;
+ 
+ 				// conditional byte set instructions
+-/*				case 0x90:case 0x91:case 0x92:case 0x93:case 0x94:case 0x95:case 0x96:case 0x97:	
++				case 0x90:case 0x91:case 0x92:case 0x93:case 0x94:case 0x95:case 0x96:case 0x97:	
+ 				case 0x98:case 0x99:case 0x9a:case 0x9b:case 0x9c:case 0x9d:case 0x9e:case 0x9f:	
+ 					dyn_set_byte_on_condition((BranchTypes)(dual_code&0xf));
+-					AcquireFlags(FMASK_TEST);
+-					break; */
++					break;
+ 
+ 				// push/pop segment registers
+ 				case 0xa0:dyn_push_seg(DRC_SEG_FS);break;
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_opcodes.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_opcodes.h
+@@ -1109,19 +1109,28 @@
+ 	dyn_closeblock();
+ }
+ 
+-/*
++// SETcc reads condition flags without modifying them. Keep their producer
++// alive even when a later instruction in this block overwrites the flags.
+ static void dyn_set_byte_on_condition(BranchTypes btype) {
+ 	dyn_get_modrm();
++	AcquireFlags(FMASK_TEST);
++	if (decode.modrm.mod<3) {
++		dyn_fill_ea(FC_ADDR);
++		gen_protect_addr_reg();
++	}
+ 	dyn_branchflag_to_reg(btype);
+-	gen_and_imm(FC_RETOP,1);
+-	if (decode.modrm.mod<3) {
+-		dyn_fill_ea(FC_ADDR);
++	// Some lazy flag helpers return a bit mask rather than the integer 1.
++	// Zero is already normalized; replace every nonzero result with 1.
++	const auto zero = gen_create_branch_on_zero(FC_RETOP, true);
++	gen_mov_dword_to_reg_imm(FC_RETOP, 1);
++	gen_fill_branch(zero);
++	if (decode.modrm.mod<3) {
++		gen_restore_addr_reg();
+ 		dyn_write_byte(FC_ADDR,FC_RETOP);
+ 	} else {
+ 		MOV_REG_BYTE_FROM_HOST_REG_LOW(FC_RETOP,decode.modrm.rm&3,(decode.modrm.rm>>2)&1);
+ 	}
+ }
+-*/
+ 
+ static void dyn_loop(LoopTypes type) {
+ 	dyn_reduce_cycles();
