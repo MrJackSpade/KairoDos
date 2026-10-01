@@ -1,0 +1,322 @@
+{
+  "device": "RG DS",
+  "workload": "Duke3D 320x200 rendered attract demo, sound enabled",
+  "baselineApkSha256": "5400302d81f89dac4fe1b33ef45a2434ecfd3c5a530f36ba02264fb1e1336ad0",
+  "threadId": 29682,
+  "measurement": "Userspace PMU event counts, not CPU time or instruction latency",
+  "captures": {
+    "main-data-branches": {
+      "counters": {
+        "cpu-cycles:u": 185543181108,
+        "instructions:u": 113753479722,
+        "L1-dcache-loads:u": 30808747846,
+        "L1-dcache-load-misses:u": 333710649,
+        "branch-instructions:u": 13257711076,
+        "branch-misses:u": 773667807
+      },
+      "rawSha256": "8b6b4845d29bf3fb6de0fe99d826c0c8ab331b3276963de7780301f9b893d44b",
+      "durationSeconds": 120.001699
+    },
+    "main-instruction-cache": {
+      "counters": {
+        "cpu-cycles:u": 186836428672,
+        "instructions:u": 107744630313,
+        "L1-icache-loads:u": 76781164184,
+        "L1-icache-load-misses:u": 590277676,
+        "iTLB-load-misses:u": 279545597,
+        "dTLB-load-misses:u": 1081829788
+      },
+      "rawSha256": "18784afab5948829782804791bad305de1b07082b9219ef8b25f70408b0d03f0",
+      "durationSeconds": 120.001854
+    }
+  },
+  "branchSampleAttribution": {
+    "samples": 8779,
+    "event": "branch-misses:u",
+    "functions": [
+      [
+        "unknown",
+        465400000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        50900000
+      ],
+      [
+        "CPU_Core_Dynrec_Run()",
+        30200000
+      ],
+      [
+        "mem_writed_checked_drc(unsigned int, unsigned int)",
+        29600000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        27100000
+      ],
+      [
+        "mem_readw_checked_drc(unsigned int)",
+        24400000
+      ],
+      [
+        "dynrec_pop_dword()",
+        16200000
+      ],
+      [
+        "get_ZF()",
+        16100000
+      ],
+      [
+        "dynrec_push_dword(unsigned int)",
+        15700000
+      ],
+      [
+        "get_OF()",
+        14400000
+      ],
+      [
+        "FillFlagsNoCFOF()",
+        14100000
+      ],
+      [
+        "get_SF()",
+        10000000
+      ],
+      [
+        "get_CF()",
+        7900000
+      ],
+      [
+        "mem_writed(unsigned int, unsigned int)",
+        7300000
+      ],
+      [
+        "dynrec_cmp_dword(unsigned int, unsigned int)",
+        6700000
+      ],
+      [
+        "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+        6600000
+      ],
+      [
+        "VGA_DrawSingleLine(unsigned int)",
+        6500000
+      ],
+      [
+        "@plt",
+        5300000
+      ],
+      [
+        "Scale1x_32(void const*)",
+        5100000
+      ],
+      [
+        "dynrec_get_zf_or_sf_neq_of()",
+        5000000
+      ],
+      [
+        "dynrec_dimul_dword(unsigned int, unsigned int)",
+        4500000
+      ],
+      [
+        "dynrec_get_sf_eq_of()",
+        4500000
+      ],
+      [
+        "dynrec_cmp_word(unsigned short, unsigned short)",
+        3900000
+      ],
+      [
+        "PIC_RunQueue()",
+        3800000
+      ],
+      [
+        "__memcmp_aarch64",
+        3800000
+      ],
+      [
+        "dynrec_get_sf_neq_of()",
+        3100000
+      ],
+      [
+        "dynrec_imul_dword(unsigned int)",
+        3100000
+      ],
+      [
+        "dynrec_add_dword(unsigned int, unsigned int)",
+        3000000
+      ],
+      [
+        "dynrec_get_nzf()",
+        3000000
+      ],
+      [
+        "mem_writeb_checked_drc(unsigned int, unsigned char)",
+        2900000
+      ]
+    ],
+    "modules": [
+      [
+        "unknown",
+        463900000
+      ],
+      [
+        "/data/app/~~qd8pCE2nfpR1EpqTHeqcXQ==/com.loxifi.kairodos-CktqRvUcMw9FTHshO_H9rw==/base.apk!/lib/arm64-v8a/libdosbox_staging.so",
+        399800000
+      ],
+      [
+        "/apex/com.android.runtime/lib64/bionic/libc.so",
+        7500000
+      ],
+      [
+        "[vdso]",
+        2500000
+      ],
+      [
+        "/data/app/~~qd8pCE2nfpR1EpqTHeqcXQ==/com.loxifi.kairodos-CktqRvUcMw9FTHshO_H9rw==/base.apk!/lib/arm64-v8a/libkairodos_host.so",
+        2000000
+      ],
+      [
+        "/data/app/~~qd8pCE2nfpR1EpqTHeqcXQ==/com.loxifi.kairodos-CktqRvUcMw9FTHshO_H9rw==/base.apk!/lib/arm64-v8a/libc++_shared.so",
+        1700000
+      ],
+      [
+        "/apex/com.android.runtime/lib64/bionic/libm.so",
+        500000
+      ]
+    ],
+    "coreSites": [
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0x2c",
+        13400000
+      ],
+      [
+        "mem_readw_checked_drc(unsigned int)",
+        "0x2c",
+        12500000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0x0",
+        10800000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        "0x24",
+        9700000
+      ],
+      [
+        "CPU_Core_Dynrec_Run()",
+        "0xdc",
+        8200000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0x20",
+        7000000
+      ],
+      [
+        "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "0x0",
+        5200000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        "0x18",
+        5000000
+      ],
+      [
+        "mem_readw_checked_drc(unsigned int)",
+        "0x0",
+        4200000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0x1c",
+        4000000
+      ],
+      [
+        "dynrec_push_dword(unsigned int)",
+        "0x0",
+        3700000
+      ],
+      [
+        "dynrec_pop_dword()",
+        "0x0",
+        3700000
+      ],
+      [
+        "mem_writed_checked_drc(unsigned int, unsigned int)",
+        "0x3c",
+        3600000
+      ],
+      [
+        "CPU_Core_Dynrec_Run()",
+        "0x110",
+        3500000
+      ],
+      [
+        "CPU_Core_Dynrec_Run()",
+        "0x108",
+        3500000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        "0x0",
+        3400000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0x18",
+        3400000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        "0x14",
+        3000000
+      ],
+      [
+        "mem_readd_checked_drc(unsigned int)",
+        "0xc",
+        3000000
+      ],
+      [
+        "get_ZF()",
+        "0xc",
+        2900000
+      ],
+      [
+        "dynrec_cmp_dword(unsigned int, unsigned int)",
+        "0x0",
+        2900000
+      ],
+      [
+        "get_ZF()",
+        "0x28",
+        2700000
+      ],
+      [
+        "get_OF()",
+        "0x8",
+        2700000
+      ],
+      [
+        "Scale1x_32(void const*)",
+        "0x60",
+        2500000
+      ],
+      [
+        "mem_readb_checked_drc(unsigned int)",
+        "0x10",
+        2400000
+      ]
+    ]
+  },
+  "limits": [
+    "Ongoing demo, not fresh-launch performance runs",
+    "Separate windows have different scene phases",
+    "Sample skid prevents assigning branch misses to exact sampled instructions",
+    "TLB misses do not imply page faults or DRAM accesses"
+  ]
+}

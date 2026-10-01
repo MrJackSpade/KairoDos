@@ -1,0 +1,91 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
+@@ -746,6 +746,24 @@
+ 	cache_addd( BLR_REG(temp1) );      // blr temp1
+ }
+ 
++// Experimental compact calls. Patchable arithmetic calls retain five words.
++static void inline gen_call_memory_function(void * func) {
++    const auto target = reinterpret_cast<uintptr_t>(func);
++    const auto source = reinterpret_cast<uintptr_t>(cache.pos);
++    const int64_t pages = static_cast<int64_t>(target >> 12) -
++                          static_cast<int64_t>(source >> 12);
++    if (pages >= -(int64_t{1} << 20) && pages < (int64_t{1} << 20)) {
++        const auto imm = static_cast<uint32_t>(pages) & 0x1fffffu;
++        cache_addd(0x90000000u | ((imm & 3u) << 29) |
++                   ((imm >> 2) << 5) | temp1); // adrp xTemp, target page
++        cache_addd(0x91000000u | ((target & 0xfffu) << 10) |
++                   (temp1 << 5) | temp1); // add xTemp, xTemp, page offset
++        cache_addd(BLR_REG(temp1));
++    } else {
++        gen_call_function_raw(func);
++    }
++}
++
+ // generate a call to a function with paramcount parameters
+ // note: the parameters are loaded in the architecture specific way
+ // using the gen_load_param_ functions below
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+@@ -708,18 +708,28 @@
+ }
+ 
+ 
++// Only checked-memory calls are non-patchable; arithmetic raw calls must
++// retain the five-word layout used by deferred flags invalidation.
++static void dyn_call_memory_function(void* function) {
++#if C_TARGET_CPU_ARM
++    gen_call_memory_function(function);
++#else
++    gen_call_function_raw(function);
++#endif
++}
++
+ // functions that enable access to the memory
+ 
+ // read a byte from a given address and store it in reg_dst
+ static void dyn_read_byte(HostReg reg_addr,HostReg reg_dst) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
+-	gen_call_function_raw((void *)&mem_readb_checked_drc);
++	dyn_call_memory_function((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low(reg_dst,&core_dynrec.readdata);
+ }
+ static void dyn_read_byte_canuseword(HostReg reg_addr,HostReg reg_dst) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
+-	gen_call_function_raw((void *)&mem_readb_checked_drc);
++	dyn_call_memory_function((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low_canuseword(reg_dst,&core_dynrec.readdata);
+ }
+@@ -728,7 +738,7 @@
+ static void dyn_write_byte(HostReg reg_addr,HostReg reg_val) {
+ 	gen_mov_regs(FC_OP2,reg_val);
+ 	gen_mov_regs(FC_OP1,reg_addr);
+-	gen_call_function_raw((void *)&mem_writeb_checked_drc);
++	dyn_call_memory_function((void *)&mem_writeb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ }
+ 
+@@ -736,8 +746,8 @@
+ // from a given address and store it in reg_dst
+ static void dyn_read_word(HostReg reg_addr,HostReg reg_dst,bool dword) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
+-	if (dword) gen_call_function_raw((void *)&mem_readd_checked_drc);
+-	else gen_call_function_raw((void *)&mem_readw_checked_drc);
++	if (dword) dyn_call_memory_function((void *)&mem_readd_checked_drc);
++	else dyn_call_memory_function((void *)&mem_readw_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_word_to_reg(reg_dst,&core_dynrec.readdata,dword);
+ }
+@@ -748,8 +758,8 @@
+ //	if (!dword) gen_extend_word(false,reg_val);
+ 	gen_mov_regs(FC_OP2,reg_val);
+ 	gen_mov_regs(FC_OP1,reg_addr);
+-	if (dword) gen_call_function_raw((void *)&mem_writed_checked_drc);
+-	else gen_call_function_raw((void *)&mem_writew_checked_drc);
++	if (dword) dyn_call_memory_function((void *)&mem_writed_checked_drc);
++	else dyn_call_memory_function((void *)&mem_writew_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ }
+ 
