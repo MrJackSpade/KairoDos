@@ -687,6 +687,7 @@
       "x22": 0.587939625,
       "sp": 0.065326625
     },
+    "adjacentCpuRegisterStoreLoadSampledSeconds": 0.19095475,
     "fixedCallSequenceSeconds": [
       {
         "target": "_Z21mem_readd_checked_drcj",
@@ -1164,6 +1165,12 @@
         "seconds": 0.005025125
       }
     ],
+    "twoLoadBlockLinkSequenceSeconds": {
+      "load target code": 3.130652875,
+      "branch": 2.92462275,
+      "link address setup": 1.060301375,
+      "load target block": 0.487437125
+    },
     "withinEightInstructionsAfterCall": [
       {
         "distance": 2,
@@ -1612,8 +1619,7 @@
       "Only direct JIT samples are classified; helpers remain separate.",
       "Adjacent store/load candidates still need control-flow and alias-safety checks.",
       "Diagnostic logging and build options can change performance."
-    ],
-    "adjacentCpuRegisterStoreLoadSampledSeconds": 0.19095475
+    ]
   },
   "diagnosticEnabled": {
     "summary": {

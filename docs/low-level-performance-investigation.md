@@ -17,9 +17,9 @@ configuration fixed. Report surface submissions separately from unique FPS.
 | Target | Evidence to establish | Status |
 | --- | --- | --- |
 | Checked-read return dependency | Time in cached lookup, helper, scratch store and generated reload; preserve exception and page-crossing paths | Register-return candidate rejected after normal-PGO A/B/A; [evidence](arm64-read-return-evaluation.md) |
-| Generated ARM64 register/instruction sequences | Time-valid sampled generated instructions, redundant moves/materialization or spills | Pending attribution |
-| Flag calculation | Current cost of lazy flags, repeated computation and flag helper calls; preserve partial flags | Pending current profile |
-| Dispatcher and block linkage | Current dispatcher cost, link misses and exit causes; preserve invalidation and cycle accounting | Exact two-load link sequence measured; cached code-entry experiment next |
+| Generated ARM64 register/instruction sequences | Time-valid sampled generated instructions, redundant moves/materialization or spills | Exact helper setup measured; fixed-size literal-call experiment next; adjacent register forwarding low priority at 0.191 sampled seconds |
+| Flag calculation | Current cost of lazy flags, repeated computation and flag helper calls; preserve partial flags | Logging-disabled diagnostic: CF/OF/ZF/SF total about 7.03 sampled main-thread seconds; candidate pending |
+| Dispatcher and block linkage | Current dispatcher cost, link misses and exit causes; preserve invalidation and cycle accounting | Cached code-entry candidate rejected after normal-PGO A/B/A; [evidence](arm64-link-entry-evaluation.md) |
 | Remaining interpreter fallbacks | Recheck previously observed LAR, bit-test group and BSR fallbacks after SETcc adoption; test individual generic translations only if material | Pending current attribution |
 | Data layout and memory access | Identify a specific dependent load/cache or TLB cost before restructuring anything | Pending attribution; aggregate misses alone are insufficient |
 | Code layout and branch behavior | Hot code footprint and branches, reproducible across normal builds | Pending attribution; earlier compact-call gain failed final-build reproduction |
@@ -106,5 +106,6 @@ dword slow path. That prototype and its timing are excluded. Explicit dword
 truncation fixes the result; the expanded 1,049,600-case probe covers both same
 and distinct destination registers with nonzero upper scratch bits. Slow result
 conversion is also kept out of line so the cached word/dword paths do not acquire
-the stack saves observed in the first compiled prototype. These are experimental
-changes until the remaining compatibility and performance gates pass.
+the stack saves observed in the first compiled prototype. The corrected candidate
+subsequently failed the normal-PGO performance gate and remains rejected; see
+the checked-read evaluation above. No read-return change is adopted.

@@ -47,6 +47,33 @@ def call_sequence(code, offset):
     return None
 
 
+def block_link_sequence(code, offset):
+    """Recognize the baseline x10 -> x12 -> x10 -> branch dependency."""
+    for distance in range(7):
+        branch = offset + distance*4
+        if branch < 8 or branch+4 > len(code):
+            continue
+        first, second, jump = struct.unpack_from('<3I',code,branch-8)
+        if jump != 0xd61f0140 or first != 0xf940014c or (second & 0xffc003ff) != 0xf940018a:
+            continue
+        if offset >= branch-8:
+            return {branch-8:'load target block',branch-4:'load target code',branch:'branch'}[offset]
+        start = branch-8
+        for _ in range(4):
+            if start < 4:
+                break
+            word = struct.unpack_from('<I',code,start-4)[0]
+            opcode = word & 0xff80001f
+            if opcode not in (0xd280000a,0xf280000a):
+                break
+            start -= 4
+            if opcode == 0xd280000a:
+                if offset >= start:
+                    return 'link address setup'
+                break
+    return None
+
+
 def summarize(events, samples, targets=None):
     from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
     disassembler = Cs(CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN)
@@ -55,6 +82,7 @@ def summarize(events, samples, targets=None):
     event = next(pending, None)
     counts, mnemonics, helper_context = Counter(), Counter(), Counter()
     calls = Counter()
+    links = Counter()
     load_bases = Counter()
     adjacent_register_forwarding = 0
     total = mapped = missing = undecoded = 0
@@ -99,6 +127,9 @@ def summarize(events, samples, targets=None):
             slot, target = sequence
             name = (targets or {}).get(target, 'unresolved call target')
             calls[(name, 'target setup' if slot < 4 else 'indirect call')] += period
+        link = block_link_sequence(block['_code'],offset)
+        if link:
+            links[link] += period
         # A proximity label, not a claim of dependency or causality. Decode only
         # within the same live block; never cross a reused translation boundary.
         for distance in range(1, 9):
@@ -120,6 +151,7 @@ def summarize(events, samples, targets=None):
         'fixedCallSequenceSeconds': [
             {'target': k[0], 'part': k[1], 'seconds': v/1e9}
             for k,v in calls.most_common()],
+        'twoLoadBlockLinkSequenceSeconds': {k:v/1e9 for k,v in links.most_common()},
         'withinEightInstructionsAfterCall': [
             {'distance': k[0], 'mnemonic': k[1], 'seconds': v/1e9}
             for k,v in helper_context.most_common()],

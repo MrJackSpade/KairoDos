@@ -3,6 +3,7 @@ import unittest
 import struct
 from analyze_host_instructions import summarize
 from analyze_host_instructions import call_sequence
+from analyze_host_instructions import block_link_sequence
 
 
 def block(time, code, size=4):
@@ -11,6 +12,16 @@ def block(time, code, size=4):
 
 
 class AttributionTest(unittest.TestCase):
+    def test_block_link_pointer_chase(self):
+        code=struct.pack('<7I',0xd280000a,0xf2a0000a,0xf2c0000a,0xf2e0000a,
+                         0xf940014c,0xf940098a,0xd61f0140)
+        self.assertEqual([block_link_sequence(code,i*4) for i in range(7)],
+                         ['link address setup']*4+['load target block','load target code','branch'])
+        self.assertIsNone(block_link_sequence(code[:-4],0))
+        # Different base register cannot be classified as the link pattern.
+        altered=code[:20]+struct.pack('<I',0xf94009aa)+code[24:]
+        self.assertIsNone(block_link_sequence(altered,20))
+
     def test_exact_call_sequence_and_target(self):
         target = 0x123456789abcdef0
         words = [op | (((target >> (16*i)) & 65535) << 5)

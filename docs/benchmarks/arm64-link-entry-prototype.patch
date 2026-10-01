@@ -1,0 +1,158 @@
+--- a/third_party/dosbox-staging/src/cpu/dyn_cache.h
++++ b/third_party/dosbox-staging/src/cpu/dyn_cache.h
+@@ -44,12 +44,23 @@
+ 
+ 	void Clear();
+ 
++
++    // Keep the bookkeeping target and generated-code destination together.
++    // Clear() redirects every incoming edge before a target can be reused.
++    void SetLinkTarget(Bitu index, CacheBlock* toblock) {
++        assert(toblock);
++        link[index].to = toblock;
++#if C_DYNREC && C_TARGET_CPU_ARM
++        link_entry[index] = toblock->cache.start;
++#endif
++    }
++
+ 	// link this cache block to another block, index specifies the code
+ 	// path (always zero for unconditional links, 0/1 for conditional ones
+ 	void LinkTo(Bitu index, CacheBlock *toblock)
+ 	{
+ 		assert(toblock);
+-		link[index].to=toblock;
++		SetLinkTarget(index,toblock);
+ 		link[index].next = toblock->link[index].from; // set target block
+ 		toblock->link[index].from = this; // remember who links me
+ 	}
+@@ -99,6 +110,11 @@
+ 	} link[2] = {};                // maximum two links (conditional jumps)
+ 
+ 	CacheBlock* crossblock = {};
++#if C_DYNREC && C_TARGET_CPU_ARM
++    // Keep both exits adjacent and aligned while leaving the existing Link
++    // bookkeeping layout unchanged. These are data pointers, not patched code.
++    alignas(16) const uint8_t* link_entry[2] = {};
++#endif
+ };
+ 
+ static_assert(std::is_standard_layout_v<CacheBlock::Page>, "standard-layout is required for offsetof");
+@@ -656,7 +672,7 @@
+ 			// clear the next-link and let the block point to the
+ 			// standard linkcode
+ 			fromlink->link[ind].next=nullptr;
+-			fromlink->link[ind].to=&link_blocks[ind];
++			fromlink->SetLinkTarget(ind, &link_blocks[ind]);
+ 
+ 			fromlink=nextlink;
+ 		}
+@@ -723,8 +739,8 @@
+ {
+ 	CacheBlock *block = cache.block.active;
+ 	// links point to the default linking code
+-	block->link[0].to=&link_blocks[0];
+-	block->link[1].to=&link_blocks[1];
++	block->SetLinkTarget(0, &link_blocks[0]);
++	block->SetLinkTarget(1, &link_blocks[1]);
+ 	block->link[0].from=nullptr;
+ 	block->link[1].from=nullptr;
+ 	block->link[0].next=nullptr;
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/risc_armv8le.h
+@@ -775,6 +775,15 @@
+ 	gen_mov_word_to_reg(param, (void *)mem, 1);
+ }
+ 
++// Jump through a cached code entry. Link invalidation updates the data slot.
++static void gen_jmp_code_ptr(void* ptr) {
++    if (!gen_mov_memval_to_reg(temp1, ptr, 8)) {
++        gen_mov_qword_to_reg_imm(temp1, (uint64_t)ptr);
++        cache_addd(LDR64_IMM(temp1, temp1, 0));
++    }
++    cache_addd(BR(temp1));
++}
++
+ // jump to an address pointed at by ptr, offset is in imm
+ static void gen_jmp_ptr(void * ptr,Bits imm=0) {
+ 	if (!gen_mov_memval_to_reg(temp3, ptr, 8)) {
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+@@ -622,6 +622,14 @@
+ 	cache_block_closing(decode.block->cache.start,decode.block->cache.size);
+ }
+ 
++
++static void dyn_link_jump(Bitu index) {
++#if C_TARGET_CPU_ARM
++    gen_jmp_code_ptr(&decode.block->link_entry[index]);
++#else
++    gen_jmp_ptr(&decode.block->link[index].to, offsetof(CacheBlock, cache.start));
++#endif
++}
+ 
+ // add a check that can branch to the exception handling
+ static void dyn_check_exception(HostReg reg) {
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_opcodes.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_opcodes.h
+@@ -1086,7 +1086,7 @@
+ static void dyn_exit_link(Bits eip_change) {
+ 	gen_add_direct_word(&reg_eip,(decode.code-decode.code_start)+eip_change,decode.big_op);
+ 	dyn_reduce_cycles();
+-	gen_jmp_ptr(&decode.block->link[0].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(0);
+ 	dyn_closeblock();
+ }
+ 
+@@ -1100,12 +1100,12 @@
+ 
+  	// Branch not taken
+ 	gen_add_direct_word(&reg_eip,eip_base,decode.big_op);
+-	gen_jmp_ptr(&decode.block->link[0].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(0);
+ 	gen_fill_branch(data);
+ 
+  	// Branch taken
+ 	gen_add_direct_word(&reg_eip,eip_base+eip_add,decode.big_op);
+-	gen_jmp_ptr(&decode.block->link[1].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(1);
+ 	dyn_closeblock();
+ }
+ 
+@@ -1166,7 +1166,7 @@
+ 		break;
+ 	}
+ 	gen_add_direct_word(&reg_eip,eip_base+eip_add,true);
+-	gen_jmp_ptr(&decode.block->link[0].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(0);
+ 	if (branch1) {
+ 		gen_fill_branch(branch1);
+ 		MOV_REG_WORD_TO_HOST_REG(FC_OP1,DRC_REG_ECX,decode.big_addr);
+@@ -1176,7 +1176,7 @@
+ 	// Branch taken
+ 	gen_fill_branch(branch2);
+ 	gen_add_direct_word(&reg_eip,eip_base,decode.big_op);
+-	gen_jmp_ptr(&decode.block->link[1].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(1);
+ 	dyn_closeblock();
+ }
+ 
+@@ -1205,7 +1205,7 @@
+ 	gen_mov_word_from_reg(FC_OP1,decode.big_op?(void*)(&reg_eip):(void*)(&reg_ip),decode.big_op);
+ 
+ 	dyn_reduce_cycles();
+-	gen_jmp_ptr(&decode.block->link[0].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(0);
+ 	dyn_closeblock();
+ }
+ 
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
+@@ -974,7 +974,7 @@
+ 	// link to next block because the maximum number of opcodes has been reached
+ 	dyn_set_eip_end();
+ 	dyn_reduce_cycles();
+-	gen_jmp_ptr(&decode.block->link[0].to, offsetof(CacheBlock, cache.start));
++	dyn_link_jump(0);
+ 	dyn_closeblock();
+     goto finish_block;
+ core_close_block:
