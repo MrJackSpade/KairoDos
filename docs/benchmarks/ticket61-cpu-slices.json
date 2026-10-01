@@ -1,0 +1,1115 @@
+{
+  "ticket": 61,
+  "decision": "No flag/interrupt exit optimization justified; retain current semantics. Carry opcode fallback counts into #62.",
+  "probeBaseCommit": "bee054e3",
+  "diagnosticCoreBuildId": "0b00c733dbcd16d6e9ddfb88bbf27536124f41e9",
+  "diagnosticApkSha256": "52a25885009ca86b83507626fa23e2031d1d274def4019af4a18559640db674f",
+  "referenceApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "protocol": {
+    "warmupSeconds": 60,
+    "captureSeconds": 120,
+    "resolution": "320x200",
+    "core": "dynamic",
+    "cycles": "auto",
+    "output": "texturenb",
+    "device": "RG DS",
+    "transport": "Wi-Fi"
+  },
+  "sliceCounters": {
+    "intervalSeconds": 119.074114891,
+    "firstMonotonicNs": 3802680755269,
+    "lastMonotonicNs": 3921754870160,
+    "cores": {
+      "dynrec": {
+        "calls": 4400181,
+        "reasons": {
+          "cycles": {
+            "IF=0,IRQ=False,TF=False": 277140,
+            "IF=1,IRQ=False,TF=False": 1759053,
+            "IF=0,IRQ=True,TF=False": 44193,
+            "IF=1,IRQ=True,TF=False": 9
+          },
+          "iretOrNormalFlagPendingIrq": {
+            "IF=1,IRQ=True,TF=False": 3852
+          },
+          "callback": {
+            "IF=0,IRQ=False,TF=False": 6909,
+            "IF=1,IRQ=False,TF=False": 2444,
+            "IF=0,IRQ=True,TF=False": 45,
+            "IF=1,IRQ=True,TF=False": 1
+          },
+          "opcodeFallback": {
+            "IF=0,IRQ=False,TF=False": 302729,
+            "IF=1,IRQ=False,TF=False": 2003526,
+            "IF=0,IRQ=True,TF=False": 278,
+            "IF=1,IRQ=True,TF=False": 2
+          }
+        },
+        "budgetSum": 4833050128,
+        "remainingSum": -1254788,
+        "cycleLeftDelta": 2592401279,
+        "entryHistogram": {
+          "<=0": 0,
+          "1": 254122,
+          "2-4": 6544,
+          "5-16": 25536,
+          "17-64": 103286,
+          "65-256": 409919,
+          "257-1024": 1784912,
+          "1025-4096": 1663963,
+          "4097-16384": 141443,
+          ">16384": 10456
+        },
+        "remainingHistogram": {
+          "<=0": 4387048,
+          "1": 10,
+          "2-4": 34,
+          "5-16": 130,
+          "17-64": 518,
+          "65-256": 2099,
+          "257-1024": 7402,
+          "1025-4096": 2188,
+          "4097-16384": 706,
+          ">16384": 46
+        },
+        "cycleRegisterDeltaHistogram": {
+          "<=0": 0,
+          "1": 25515,
+          "2-4": 117369,
+          "5-16": 114464,
+          "17-64": 131987,
+          "65-256": 415841,
+          "257-1024": 1765997,
+          "1025-4096": 1677828,
+          "4097-16384": 140764,
+          ">16384": 10416
+        }
+      },
+      "normal": {
+        "calls": 2306535,
+        "reasons": {
+          "cycles": {
+            "IF=0,IRQ=False,TF=False": 302729,
+            "IF=1,IRQ=False,TF=False": 2003526,
+            "IF=0,IRQ=True,TF=False": 278,
+            "IF=1,IRQ=True,TF=False": 2
+          }
+        },
+        "budgetSum": 2306535,
+        "remainingSum": -2306805,
+        "cycleLeftDelta": 0,
+        "entryHistogram": {
+          "<=0": 0,
+          "1": 2306535,
+          "2-4": 0,
+          "5-16": 0,
+          "17-64": 0,
+          "65-256": 0,
+          "257-1024": 0,
+          "1025-4096": 0,
+          "4097-16384": 0,
+          ">16384": 0
+        },
+        "remainingHistogram": {
+          "<=0": 2306535,
+          "1": 0,
+          "2-4": 0,
+          "5-16": 0,
+          "17-64": 0,
+          "65-256": 0,
+          "257-1024": 0,
+          "1025-4096": 0,
+          "4097-16384": 0,
+          ">16384": 0
+        },
+        "cycleRegisterDeltaHistogram": {
+          "<=0": 0,
+          "1": 0,
+          "2-4": 2306516,
+          "5-16": 19,
+          "17-64": 0,
+          "65-256": 0,
+          "257-1024": 0,
+          "1025-4096": 0,
+          "4097-16384": 0,
+          ">16384": 0
+        }
+      }
+    },
+    "blockReturns": {
+      "normal": {
+        "IF=0,IRQ=False,TF=False": 886461,
+        "IF=1,IRQ=False,TF=False": 14078586,
+        "IF=0,IRQ=True,TF=False": 37964,
+        "IF=1,IRQ=True,TF=False": 92
+      },
+      "cycles": {
+        "IF=0,IRQ=False,TF=False": 277140,
+        "IF=1,IRQ=False,TF=False": 1759053,
+        "IF=0,IRQ=True,TF=False": 44193,
+        "IF=1,IRQ=True,TF=False": 9
+      },
+      "link1": {
+        "IF=0,IRQ=False,TF=False": 3128,
+        "IF=1,IRQ=False,TF=False": 85981,
+        "IF=0,IRQ=True,TF=False": 118,
+        "IF=1,IRQ=True,TF=False": 10
+      },
+      "link2": {
+        "IF=0,IRQ=False,TF=False": 1278,
+        "IF=1,IRQ=False,TF=False": 34944,
+        "IF=0,IRQ=True,TF=False": 39,
+        "IF=1,IRQ=True,TF=False": 3
+      },
+      "opcode": {
+        "IF=0,IRQ=False,TF=False": 302729,
+        "IF=1,IRQ=False,TF=False": 2003526,
+        "IF=0,IRQ=True,TF=False": 278,
+        "IF=1,IRQ=True,TF=False": 2
+      },
+      "iret": {
+        "IF=0,IRQ=False,TF=False": 92296,
+        "IF=1,IRQ=False,TF=False": 58171,
+        "IF=0,IRQ=True,TF=False": 3832,
+        "IF=1,IRQ=True,TF=False": 3852
+      },
+      "callback": {
+        "IF=0,IRQ=False,TF=False": 6909,
+        "IF=1,IRQ=False,TF=False": 2444,
+        "IF=0,IRQ=True,TF=False": 45,
+        "IF=1,IRQ=True,TF=False": 1
+      },
+      "selfModifying": {}
+    },
+    "flagHelpers": {
+      "cli": {
+        "calls": 52207,
+        "transitions": {
+          "0->0": 31089,
+          "1->0": 20771,
+          "2->2": 343,
+          "3->2": 4
+        }
+      },
+      "sti": {
+        "calls": 46045,
+        "transitions": {
+          "0->1": 35046,
+          "1->1": 7333,
+          "2->3": 3661,
+          "3->3": 5
+        }
+      },
+      "popf": {
+        "calls": 13012,
+        "transitions": {
+          "0->0": 1309,
+          "0->1": 11511,
+          "2->2": 181,
+          "2->3": 11
+        }
+      }
+    },
+    "stateEncoding": "IF bit 0, pending IRQ bit 1, TF bit 2; helper call counts include unsuccessful calls; budgets are scheduler cycles, not retired instructions",
+    "rawDeltas": {
+      "slices": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        277140,
+        1759053,
+        44193,
+        9,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3852,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6909,
+        2444,
+        45,
+        1,
+        0,
+        0,
+        0,
+        0,
+        302729,
+        2003526,
+        278,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        302729,
+        2003526,
+        278,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "blocks": [
+        886461,
+        14078586,
+        37964,
+        92,
+        0,
+        0,
+        0,
+        0,
+        277140,
+        1759053,
+        44193,
+        9,
+        0,
+        0,
+        0,
+        0,
+        3128,
+        85981,
+        118,
+        10,
+        0,
+        0,
+        0,
+        0,
+        1278,
+        34944,
+        39,
+        3,
+        0,
+        0,
+        0,
+        0,
+        302729,
+        2003526,
+        278,
+        2,
+        0,
+        0,
+        0,
+        0,
+        92296,
+        58171,
+        3832,
+        3852,
+        0,
+        0,
+        0,
+        0,
+        6909,
+        2444,
+        45,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "flags": [
+        31089,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        20771,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        343,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        35046,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        7333,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3661,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1309,
+        11511,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        181,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "entry": [
+        0,
+        254122,
+        6544,
+        25536,
+        103286,
+        409919,
+        1784912,
+        1663963,
+        141443,
+        10456,
+        0,
+        2306535,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "remaining": [
+        4387048,
+        10,
+        34,
+        130,
+        518,
+        2099,
+        7402,
+        2188,
+        706,
+        46,
+        2306535,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "consumed": [
+        0,
+        25515,
+        117369,
+        114464,
+        131987,
+        415841,
+        1765997,
+        1677828,
+        140764,
+        10416,
+        0,
+        0,
+        2306516,
+        19,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "budgetSum": [
+        4833050128,
+        2306535
+      ],
+      "remainingSum": [
+        -1254788,
+        -2306805
+      ],
+      "cycleLeftDelta": [
+        2592401279,
+        0
+      ]
+    }
+  },
+  "runs": {
+    "ticket61-enabled": {
+      "capture": {
+        "duration": 123.51500000001397,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#500",
+        "pid": "12397",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 119.375,
+        "threadCpuPercent": [
+          [
+            12455,
+            "KairoDos-emulat",
+            81.73
+          ],
+          [
+            12472,
+            "dosbox:mixer",
+            24.28
+          ],
+          [
+            12462,
+            "KairoDos-emulat",
+            1.92
+          ],
+          [
+            12476,
+            "KairoDos-audio",
+            1.47
+          ],
+          [
+            12471,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            12415,
+            "binder:12397_1",
+            0.39
+          ],
+          [
+            12397,
+            "loxifi.kairodos",
+            0.38
+          ],
+          [
+            12423,
+            "binder:12397_3",
+            0.23
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000",
+            "800000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "51875",
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111"
+          ],
+          "9": [
+            "49444",
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125",
+            "53750"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2054,
+          "rate": 17.206282722513087,
+          "medianIntervalMs": 33.419167,
+          "p95IntervalMs": 149.872917,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    258,425,974,414  cpu-cycles                # 1.836601 GHz      \n    150,907,023,928  instructions              # 1.072 G/sec       \n  139922.856514(ms)  task-clock                # 1.166006 cpus used\n     42,486,564,892  cache-references          # 301.970 M/sec     \n        427,603,474  cache-misses              # 3.039 M/sec       \n     84,080,427,966  stalled-cycles-backend    # 597.634 M/sec     \n     67,191,985,295  stalled-cycles-frontend   # 477.601 M/sec     \n\nTotal test time: 120.001786 seconds.\n"
+    },
+    "ticket61-disabled": {
+      "capture": {
+        "duration": 123.51499999995576,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#571",
+        "pid": "15726",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 119.48399999999674,
+        "threadCpuPercent": [
+          [
+            15782,
+            "KairoDos-emulat",
+            82.03
+          ],
+          [
+            15800,
+            "dosbox:mixer",
+            24.25
+          ],
+          [
+            15790,
+            "KairoDos-emulat",
+            2.03
+          ],
+          [
+            15802,
+            "KairoDos-audio",
+            1.46
+          ],
+          [
+            15799,
+            "SDLAudioP2",
+            0.92
+          ],
+          [
+            15788,
+            "binder:15726_5",
+            0.54
+          ],
+          [
+            15726,
+            "loxifi.kairodos",
+            0.39
+          ],
+          [
+            15793,
+            "binder:15726_5",
+            0.19
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111",
+            "56666"
+          ],
+          "9": [
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125",
+            "53750"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2169,
+          "rate": 18.15305815004569,
+          "medianIntervalMs": 33.355583,
+          "p95IntervalMs": 149.84725,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    258,935,904,169  cpu-cycles                # 1.835895 GHz      \n    151,544,484,397  instructions              # 1.074 G/sec       \n  140259.454321(ms)  task-clock                # 1.168811 cpus used\n     42,582,261,878  cache-references          # 301.925 M/sec     \n        423,009,496  cache-misses              # 2.999 M/sec       \n     83,047,685,546  stalled-cycles-backend    # 588.857 M/sec     \n     68,237,483,315  stalled-cycles-frontend   # 483.851 M/sec     \n\nTotal test time: 120.001830 seconds.\n"
+    },
+    "ticket61-normal": {
+      "capture": {
+        "duration": 123.59299999999348,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#643",
+        "pid": "19048",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 119.85999999998603,
+        "threadCpuPercent": [
+          [
+            19109,
+            "KairoDos-emulat",
+            81.55
+          ],
+          [
+            19126,
+            "dosbox:mixer",
+            24.36
+          ],
+          [
+            19116,
+            "KairoDos-emulat",
+            2.02
+          ],
+          [
+            19128,
+            "KairoDos-audio",
+            1.44
+          ],
+          [
+            19125,
+            "SDLAudioP2",
+            0.92
+          ],
+          [
+            19069,
+            "binder:19048_2",
+            0.62
+          ],
+          [
+            19048,
+            "loxifi.kairodos",
+            0.39
+          ],
+          [
+            19119,
+            "binder:19048_4",
+            0.21
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111",
+            "56666"
+          ],
+          "9": [
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125",
+            "53750"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2153,
+          "rate": 17.962623060239036,
+          "medianIntervalMs": 33.339104500000005,
+          "p95IntervalMs": 149.891583,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    258,543,802,037  cpu-cycles                # 1.835930 GHz      \n    150,792,165,607  instructions              # 1.071 G/sec       \n  140040.090569(ms)  task-clock                # 1.166983 cpus used\n     42,328,824,115  cache-references          # 300.594 M/sec     \n        432,047,747  cache-misses              # 3.068 M/sec       \n     84,008,146,515  stalled-cycles-backend    # 596.597 M/sec     \n     67,339,444,748  stalled-cycles-frontend   # 478.229 M/sec     \n\nTotal test time: 120.001799 seconds.\n"
+    }
+  },
+  "counterOnVsSameApkOffRateChangePercent": -5.215514761793571,
+  "limitations": [
+    "Core counters are diagnostic, affected by observer overhead and compiler layout.",
+    "Normal-core calls are nested within dynrec fallback calls; do not add the two call counts as separate scheduler slices.",
+    "Cycle-register differences are not retired instruction counts; the normal interpreter post-decrements its loop budget, and fallback carries residual cycles in CPU_CycleLeft.",
+    "PIC_IRQCheck describes pending IRQs, not all queued timer/video/audio events.",
+    "Block-return counters count returns to C++, not transitions linked entirely inside generated code.",
+    "Helper counts include unsuccessful calls; no claim about all other games or explicit interpreter configurations."
+  ]
+}

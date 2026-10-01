@@ -1,0 +1,449 @@
+--- a/backend-dos/src/main/cpp/staging_bridge.cpp
++++ b/backend-dos/src/main/cpp/staging_bridge.cpp
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_slice_profile.h"
+ #include "dosbox.h"
+ #include "SDL.h"
+ #include "gui/common.h"
+@@ -80,6 +81,7 @@
+     if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::open(config_dir);
++    kairo_slice_profile::open(config_dir);
+ #endif
+     callbacks = *cb;
+     kairo_staging_cpu_counters = {};
+@@ -106,6 +108,7 @@
+     std::filesystem::current_path(original_directory, error);
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::close();
++    kairo_slice_profile::close();
+ #endif
+     loguru::shutdown();
+     return result;
+@@ -114,6 +117,7 @@
+ bool KairoStagingPoll() {
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::flush();
++    kairo_slice_profile::flush();
+ #endif
+     if (callbacks.telemetry)
+         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
+@@ -8,6 +8,7 @@
+ #ifdef KAIRO_STAGING
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_slice_profile.h"
+ #endif
+ 
+ #include <cassert>
+@@ -203,6 +204,9 @@
+ 
+ Bits CPU_Core_Dynrec_Run() noexcept
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::Slice slice(0);
++#endif
+ 	for (;;) {
+ 		// Determine the linear address of CS:EIP
+ 		PhysPt ip_point=SegPhys(cs)+reg_eip;
+@@ -221,7 +225,11 @@
+ 
+ 		// page doesn't contain code or is special
+ 		if (!chandler) {
+-			return CPU_Core_Normal_Run();
++			
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=7;
++#endif
++return CPU_Core_Normal_Run();
+ 		}
+ 
+ 		// find correct Dynamic Block to run
+@@ -245,7 +253,11 @@
+ 					continue;
+ 				}
+ 				CPU_CycleLeft+=old_cycles;
+-				return nc_retcode;
++				
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=8;
++#endif
++return nc_retcode;
+ 			}
+ 		}
+ 
+@@ -254,6 +266,9 @@
+ 		// now we're ready to run the dynamic code block
+ //		BlockReturn ret=((BlockReturn (*)(void))(block->cache.start))();
+ 		BlockReturn ret=core_dynrec.runcode(block->cache.start);
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::block(static_cast<unsigned>(ret));
++#endif
+ #ifdef KAIRO_STAGING
+ 		// Count only after generated host code has returned successfully.
+ 		// Plain counters stay on this thread; polling publishes snapshots.
+@@ -268,11 +283,19 @@
+ #endif
+ #endif
+ 			if (!GETFLAG(TF)) {
+-				if (GETFLAG(IF) && PIC_IRQCheck) return CBRET_NONE;
++				if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=2;
++#endif
++return CBRET_NONE;}
+ 				break;
+ 			}
+ 			// trapflag is set, switch to the trap-aware decoder
+-			cpudecoder=CPU_Core_Dynrec_Trap_Run;
++			
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=3;
++#endif
++cpudecoder=CPU_Core_Dynrec_Trap_Run;
+ 			return CBRET_NONE;
+ 
+ 		case BR_Normal:
+@@ -288,6 +311,10 @@
+ 			break;
+ 
+ 		case BR_Cycles:
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=1;
++#endif
++
+ 			// cycles went negative, return from the core to handle
+ 			// external events, schedule the pic...
+ #if C_DEBUGGER
+@@ -298,17 +325,28 @@
+ 			return CBRET_NONE;
+ 
+ 		case BR_Callback:
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=4;
++#endif
++
+ 			// the callback code is executed in dosbox.conf, return the callback number
+ 			FillFlags();
+ 			return core_dynrec.callback;
+ 
+ 		case BR_SMCBlock:
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=6;
++#endif
++
+ //			LOG_MSG("selfmodification of running block at %x:%x",SegValue(cs),reg_eip);
+ 			cpu.exception.which=0;
+ 			// let the normal core handle the block-modifying
+ 			// instruction
+ 			[[fallthrough]];
+ 		case BR_Opcode:
++#ifdef KAIRO_GUEST_PROFILE
++    if(slice.reason!=6)slice.reason=5;
++#endif
+ 			// some instruction has been encountered that could not be translated
+ 			// (thus it is not part of the code block), the normal core will
+ 			// handle this instruction
+--- a/third_party/dosbox-staging/src/cpu/cpu.cpp
++++ b/third_party/dosbox-staging/src/cpu/cpu.cpp
+@@ -1,3 +1,4 @@
++#include "kairo_slice_profile.h"
+ // SPDX-FileCopyrightText:  2021-2026 The DOSBox Staging Team
+ // SPDX-FileCopyrightText:  2002-2021 The DOSBox Team
+ // SPDX-License-Identifier: GPL-2.0-or-later
+@@ -373,6 +374,9 @@
+ 
+ bool CPU_CLI()
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::Flag flag_profile(0);
++#endif
+ 	if (cpu.pmode && ((!GETFLAG(VM) && (GETFLAG_IOPL < cpu.cpl)) ||
+ 	                  (GETFLAG(VM) && (GETFLAG_IOPL < 3)))) {
+ 		return CPU_PrepareException(EXCEPTION_GP, 0);
+@@ -384,6 +388,9 @@
+ 
+ bool CPU_STI()
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::Flag flag_profile(1);
++#endif
+ 	if (cpu.pmode && ((!GETFLAG(VM) && (GETFLAG_IOPL < cpu.cpl)) ||
+ 	                  (GETFLAG(VM) && (GETFLAG_IOPL < 3)))) {
+ 		return CPU_PrepareException(EXCEPTION_GP, 0);
+@@ -395,6 +402,9 @@
+ 
+ bool CPU_POPF(Bitu use32)
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::Flag flag_profile(2);
++#endif
+ 	if (cpu.pmode && GETFLAG(VM) && (GETFLAG(IOPL) != FLAG_IOPL)) {
+ 		/* Not enough privileges to execute POPF */
+ 		return CPU_PrepareException(EXCEPTION_GP, 0);
+--- a/third_party/dosbox-staging/src/cpu/core_normal.cpp
++++ b/third_party/dosbox-staging/src/cpu/core_normal.cpp
+@@ -1,3 +1,7 @@
++#include "kairo_slice_profile.h"
++#ifdef KAIRO_GUEST_PROFILE
++#define KAIRO_SLICE_NORMAL_ACTIVE
++#endif
+ // SPDX-FileCopyrightText:  2024-2025 The DOSBox Staging Team
+ // SPDX-FileCopyrightText:  2002-2021 The DOSBox Team
+ // SPDX-License-Identifier: GPL-2.0-or-later
+@@ -132,6 +136,9 @@
+ 
+ Bits CPU_Core_Normal_Run() noexcept
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_slice_profile::Slice slice(1);
++#endif
+ 	while (CPU_Cycles-->0) {
+ 		LOADIP;
+ 		core.opcode_index=cpu.code.big*0x200;
+@@ -176,6 +183,9 @@
+ 		SAVEIP;
+ 	}
+ 	FillFlags();
++#ifdef KAIRO_GUEST_PROFILE
++    slice.reason=1;
++#endif
+ 	return CBRET_NONE;
+ decode_end:
+ 	SAVEIP;
+--- a/third_party/dosbox-staging/src/cpu/core_normal/prefix_none.h
++++ b/third_party/dosbox-staging/src/cpu/core_normal/prefix_none.h
+@@ -558,6 +558,9 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+@@ -573,11 +576,18 @@
+ #if CPU_TRAP_CHECK
+ 		if (GETFLAG(TF)) {	
+ 			cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 			goto decode_end;
+ 		}
+ #endif
+ #if	CPU_PIC_CHECK
+-		if (GETFLAG(IF) && PIC_IRQCheck) goto decode_end;
++		if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=2;
++#endif
++goto decode_end;}
+ #endif
+ 		break;
+ 	CASE_B(0x9e)												/* SAHF */
+@@ -774,11 +784,18 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+ #if CPU_PIC_CHECK
+-			if (GETFLAG(IF) && PIC_IRQCheck) return CBRET_NONE;
++			if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=2;
++#endif
++return CBRET_NONE;}
+ #endif
+ 			continue;
+ 		}
+@@ -913,6 +930,9 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+@@ -1067,7 +1087,11 @@
+ 	CASE_B(0xfb)												/* STI */
+ 		if (CPU_STI()) RUNEXCEPTION();
+ #if CPU_PIC_CHECK
+-		if (GETFLAG(IF) && PIC_IRQCheck) goto decode_end;
++		if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=2;
++#endif
++goto decode_end;}
+ #endif
+ 		break;
+ 	CASE_B(0xfc)												/* CLD */
+@@ -1126,6 +1150,9 @@
+ #if CPU_TRAP_CHECK
+ 					if (GETFLAG(TF)) {	
+ 						cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 						return CBRET_NONE;
+ 					}
+ #endif
+@@ -1147,6 +1174,9 @@
+ #if CPU_TRAP_CHECK
+ 					if (GETFLAG(TF)) {	
+ 						cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 						return CBRET_NONE;
+ 					}
+ #endif
+--- a/third_party/dosbox-staging/src/cpu/core_normal/prefix_66.h
++++ b/third_party/dosbox-staging/src/cpu/core_normal/prefix_66.h
+@@ -379,6 +379,9 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+@@ -392,11 +395,18 @@
+ #if CPU_TRAP_CHECK
+ 		if (GETFLAG(TF)) {	
+ 			cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 			goto decode_end;
+ 		}
+ #endif
+ #if CPU_PIC_CHECK
+-		if (GETFLAG(IF) && PIC_IRQCheck) goto decode_end;
++		if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=2;
++#endif
++goto decode_end;}
+ #endif
+ 		break;
+ 	CASE_D(0xa1)												/* MOV EAX,Od */
+@@ -504,11 +514,18 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+ #if CPU_PIC_CHECK
+-			if (GETFLAG(IF) && PIC_IRQCheck) return CBRET_NONE;
++			if (GETFLAG(IF) && PIC_IRQCheck) {
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=2;
++#endif
++return CBRET_NONE;}
+ #endif
+ 			continue;
+ 		}
+@@ -578,6 +595,9 @@
+ #if CPU_TRAP_CHECK
+ 			if (GETFLAG(TF)) {	
+ 				cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 				return CBRET_NONE;
+ 			}
+ #endif
+@@ -668,6 +688,9 @@
+ #if CPU_TRAP_CHECK
+ 					if (GETFLAG(TF)) {	
+ 						cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 						return CBRET_NONE;
+ 					}
+ #endif
+@@ -688,6 +711,9 @@
+ #if CPU_TRAP_CHECK
+ 					if (GETFLAG(TF)) {	
+ 						cpudecoder=CPU_TRAP_DECODER;
++#ifdef KAIRO_SLICE_NORMAL_ACTIVE
++    slice.reason=3;
++#endif
+ 						return CBRET_NONE;
+ 					}
+ #endif
+--- /dev/null
++++ b/backend-dos/src/main/cpp/kairo_slice_profile.h
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#pragma once
++#ifdef KAIRO_GUEST_PROFILE
++#include "cpu/cpu.h"
++#include "hardware/pic.h"
++#include <cstdio>
++#include <cstdint>
++#include <ctime>
++#include <cstring>
++#include <string>
++namespace kairo_slice_profile {
++inline FILE* output=nullptr;
++inline uint64_t last_flush=0;
++inline uint64_t slices[160]={},blocks[128]={},flags[192]={};
++inline uint64_t entry[20]={},remaining[20]={},consumed[20]={};
++inline int64_t budget_sum[2]={},remaining_sum[2]={},cycle_left_delta[2]={};
++inline unsigned state(){return (!!GETFLAG(IF)) | ((!!PIC_IRQCheck)<<1) | ((!!GETFLAG(TF))<<2);}
++inline unsigned bucket(int64_t n){if(n<=0)return 0;if(n<=1)return 1;if(n<=4)return 2;if(n<=16)return 3;if(n<=64)return 4;if(n<=256)return 5;if(n<=1024)return 6;if(n<=4096)return 7;if(n<=16384)return 8;return 9;}
++inline uint64_t now(){timespec t{};clock_gettime(CLOCK_MONOTONIC,&t);return uint64_t(t.tv_sec)*1000000000ull+t.tv_nsec;}
++inline void close(){if(output){std::fclose(output);output=nullptr;}}
++inline void open(const std::string& dir){
++ close();last_flush=0;
++ std::memset(slices,0,sizeof slices);std::memset(blocks,0,sizeof blocks);std::memset(flags,0,sizeof flags);
++ std::memset(entry,0,sizeof entry);std::memset(remaining,0,sizeof remaining);std::memset(consumed,0,sizeof consumed);
++ std::memset(budget_sum,0,sizeof budget_sum);std::memset(remaining_sum,0,sizeof remaining_sum);std::memset(cycle_left_delta,0,sizeof cycle_left_delta);
++ FILE* marker=std::fopen((dir+"/kairo-slice-profile.enable").c_str(),"rb");if(!marker)return;std::fclose(marker);
++ output=std::fopen((dir+"/kairo-slice-profile.jsonl").c_str(),"wb");
++}
++struct Slice {
++ unsigned kind,reason=0;int before=0,left=0;bool enabled;
++ explicit Slice(unsigned k):kind(k),enabled(output!=nullptr){if(enabled){before=CPU_Cycles;left=CPU_CycleLeft;}}
++ ~Slice(){if(enabled){++slices[(kind*10+reason)*8+state()];++entry[kind*10+bucket(before)];++remaining[kind*10+bucket(CPU_Cycles)];++consumed[kind*10+bucket(int64_t(before)-CPU_Cycles)];budget_sum[kind]+=before;remaining_sum[kind]+=CPU_Cycles;cycle_left_delta[kind]+=int64_t(CPU_CycleLeft)-left;}}
++};
++struct Flag {
++ unsigned op,before=0;bool enabled;
++ explicit Flag(unsigned o):op(o),enabled(output!=nullptr){if(enabled)before=state();}
++ ~Flag(){if(enabled)++flags[op*64+before*8+state()];}
++};
++inline void block(unsigned result){if(output&&result<16)++blocks[result*8+state()];}
++template<typename T,size_t N> inline void array(const char* name,const T(&values)[N]){
++ std::fprintf(output,",\"%s\":[",name);for(size_t i=0;i<N;++i)std::fprintf(output,"%s%lld",i?",":"",static_cast<long long>(values[i]));std::fputs("]",output);
++}
++inline void flush(){
++ if(!output)return;const auto t=now();if(t-last_flush<1000000000ull)return;last_flush=t;
++ std::fprintf(output,"{\"time\":%llu",static_cast<unsigned long long>(t));
++ array("slices",slices);array("blocks",blocks);array("flags",flags);array("entry",entry);array("remaining",remaining);array("consumed",consumed);array("budgetSum",budget_sum);array("remainingSum",remaining_sum);array("cycleLeftDelta",cycle_left_delta);
++ std::fputs("}\n",output);std::fflush(output);
++}
++}
++#endif
