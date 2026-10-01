@@ -1,0 +1,294 @@
+{
+  "ticket": 63,
+  "device": "Retroid Pocket Classic",
+  "fingerprint": "qti/parrot/parrot:14/UKQ1.240506.001/eng.RPClas.20260324.193754:user/release-keys",
+  "scope": "Android host validation; not the RGDS 320x200 benchmark",
+  "observer_on": {
+    "schemaVersion": 1,
+    "game": "duke",
+    "configuration": "Optimized Android host (-O2), Staging CPU presenter",
+    "runs": [
+      {
+        "game": "duke",
+        "mode": 0,
+        "run": 0,
+        "durationNs": 120000274434,
+        "observeCopies": true,
+        "warmupNs": 60000215133,
+        "startNs": 149409332272691,
+        "endNs": 149529332547125,
+        "width": 1240,
+        "height": 1080,
+        "videoWidth": 1024,
+        "videoHeight": 768,
+        "metrics": {
+          "convert": {
+            "count": 5931,
+            "sumNs": 2994164169,
+            "p50Ns": 483854,
+            "p95Ns": 682864,
+            "maxNs": 966406
+          },
+          "frameMutex": {
+            "count": 5931,
+            "sumNs": 718626,
+            "p50Ns": 52,
+            "p95Ns": 364,
+            "maxNs": 24531
+          },
+          "windowMutex": {
+            "count": 5875,
+            "sumNs": 1423565,
+            "p50Ns": 157,
+            "p95Ns": 521,
+            "maxNs": 51510
+          },
+          "windowLock": {
+            "count": 5875,
+            "sumNs": 15705649531,
+            "p50Ns": 211666,
+            "p95Ns": 15865937,
+            "maxNs": 17721198
+          },
+          "windowCopy": {
+            "count": 5875,
+            "sumNs": 2872094372,
+            "p50Ns": 467813,
+            "p95Ns": 658125,
+            "maxNs": 1630208
+          },
+          "windowPost": {
+            "count": 5875,
+            "sumNs": 1834811044,
+            "p50Ns": 295989,
+            "p95Ns": 394271,
+            "maxNs": 1502343
+          },
+          "hardwarePublish": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "coreRun": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "ageAtPost": {
+            "count": 5875,
+            "sumNs": 28206542431,
+            "p50Ns": 1808229,
+            "p95Ns": 22799114,
+            "maxNs": 33263490
+          },
+          "produced": {
+            "count": 5931,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "replaced": {
+            "count": 56,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "presented": {
+            "count": 5875,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "noSurface": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "windowFailure": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "hardwareFrame": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "frameCopies": {
+            "callbacks": 5931,
+            "changed": 5930,
+            "duplicates": 0,
+            "firstOrResized": 1,
+            "callbackBytes": 18657312768,
+            "windowCopies": 5875,
+            "windowBytes": 18481152000
+          }
+        }
+      }
+    ]
+  },
+  "observer_off": {
+    "schemaVersion": 1,
+    "game": "duke",
+    "configuration": "Optimized Android host (-O2), Staging CPU presenter",
+    "runs": [
+      {
+        "game": "duke",
+        "mode": 0,
+        "run": 0,
+        "durationNs": 120000489485,
+        "observeCopies": false,
+        "warmupNs": 60000356019,
+        "startNs": 149616766278185,
+        "endNs": 149736766767670,
+        "width": 1240,
+        "height": 1080,
+        "videoWidth": 1024,
+        "videoHeight": 768,
+        "metrics": {
+          "convert": {
+            "count": 6138,
+            "sumNs": 2992423873,
+            "p50Ns": 462032,
+            "p95Ns": 716666,
+            "maxNs": 1080417
+          },
+          "frameMutex": {
+            "count": 6138,
+            "sumNs": 1975285,
+            "p50Ns": 260,
+            "p95Ns": 781,
+            "maxNs": 4010
+          },
+          "windowMutex": {
+            "count": 6015,
+            "sumNs": 1335686,
+            "p50Ns": 157,
+            "p95Ns": 521,
+            "maxNs": 1302
+          },
+          "windowLock": {
+            "count": 6015,
+            "sumNs": 22395659565,
+            "p50Ns": 216302,
+            "p95Ns": 16134688,
+            "maxNs": 18633281
+          },
+          "windowCopy": {
+            "count": 6016,
+            "sumNs": 2962690850,
+            "p50Ns": 471302,
+            "p95Ns": 664062,
+            "maxNs": 1520885
+          },
+          "windowPost": {
+            "count": 6016,
+            "sumNs": 1829650505,
+            "p50Ns": 291927,
+            "p95Ns": 385782,
+            "maxNs": 1378490
+          },
+          "hardwarePublish": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "coreRun": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "ageAtPost": {
+            "count": 6015,
+            "sumNs": 37776068113,
+            "p50Ns": 1816770,
+            "p95Ns": 26143698,
+            "maxNs": 32940990
+          },
+          "produced": {
+            "count": 6138,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "replaced": {
+            "count": 123,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "presented": {
+            "count": 6016,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "noSurface": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "windowFailure": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "hardwareFrame": {
+            "count": 0,
+            "sumNs": 0,
+            "p50Ns": 0,
+            "p95Ns": 0,
+            "maxNs": 0
+          },
+          "frameCopies": {
+            "callbacks": 0,
+            "changed": 0,
+            "duplicates": 0,
+            "firstOrResized": 0,
+            "callbackBytes": 0,
+            "windowCopies": 0,
+            "windowBytes": 0
+          }
+        }
+      }
+    ]
+  },
+  "derived": {
+    "on_presentations_per_second": 48.95822136832897,
+    "off_presentations_per_second": 50.133128838211924,
+    "observed_on_vs_off_presentation_percent": -2.343574991448427,
+    "observed_on_vs_off_callback_percent": -3.372260852535569
+  },
+  "limitations": [
+    "One sequential on/off pair does not establish stable overhead.",
+    "Timing-stage counters straddle in-flight frames at reset; off windowCopy/presented exceeds produced-minus-replaced by one.",
+    "Counts are host callbacks/window copies, not all guest VGA update decisions.",
+    "Game archive is copied into private test cache; original 1024x768 configuration retained.",
+    "Fixture consumes audio but does not exercise real-app audio output.",
+    "Fresh power checks were Awake during both successful runs; screenshots show 3D demo mid/end, not continuous scene coverage."
+  ]
+}

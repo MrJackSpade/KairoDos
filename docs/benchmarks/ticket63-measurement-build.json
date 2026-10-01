@@ -1,0 +1,20 @@
+{
+    "ticket":  63,
+    "observer_commit":  "614ed7b2",
+    "baseline_apk_sha256":  "22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2",
+    "measurement_apk_sha256":  "3fce48360a1f604fcbd009e2b4e983cbd4c1bc74cfdeedb16721d2d7612bf354",
+    "test_apk_sha256":  "6c5148e06e691a8f9b0331e97eeca30677fe3bc33770d01a17fd7863d26c4ad9",
+    "changed_entries":  [
+                            "lib/arm64-v8a/libkairodos_host.so"
+                        ],
+    "added_entries":  [
+
+                      ],
+    "removed_entries":  [
+
+                        ],
+    "core_sha256":  "d59650e19f6e515b357aee8136669439532d16ca7b76e91a3778382f6170c5f4",
+    "host_sha256":  "3e3e0b41d0b828b5b62cd6ea75c7d73f62ccbb90587d8eff3fbf40b84349176d",
+    "deployment":  "Temporarily installed on Retroid for on/off host validation; original APK restored and device SHA256 verified. Not installed on RGDS.",
+    "build":  "assembleDebug and assembleDebugAndroidTest successful; guestProfile=false"
+}
