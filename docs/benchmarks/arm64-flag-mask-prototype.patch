@@ -1,0 +1,206 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/operators.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/operators.h
+@@ -1305,39 +1305,187 @@
+ 
+ 
+ 
++// Only result-derived ZF/SF cases use masks. All other types retain
++// the original fallback, including exact mask-valued returns and diagnostics.
++static constexpr uint32_t dynrec_zero_masks[t_LASTFLAG] = {
++    0x00000000u, // t_UNKNOWN
++    0x000000ffu, // t_ADDb
++    0x0000ffffu, // t_ADDw
++    0xffffffffu, // t_ADDd
++    0x000000ffu, // t_ORb
++    0x0000ffffu, // t_ORw
++    0xffffffffu, // t_ORd
++    0x000000ffu, // t_ADCb
++    0x0000ffffu, // t_ADCw
++    0xffffffffu, // t_ADCd
++    0x000000ffu, // t_SBBb
++    0x0000ffffu, // t_SBBw
++    0xffffffffu, // t_SBBd
++    0x000000ffu, // t_ANDb
++    0x0000ffffu, // t_ANDw
++    0xffffffffu, // t_ANDd
++    0x000000ffu, // t_SUBb
++    0x0000ffffu, // t_SUBw
++    0xffffffffu, // t_SUBd
++    0x000000ffu, // t_XORb
++    0x0000ffffu, // t_XORw
++    0xffffffffu, // t_XORd
++    0x000000ffu, // t_CMPb
++    0x0000ffffu, // t_CMPw
++    0xffffffffu, // t_CMPd
++    0x000000ffu, // t_INCb
++    0x0000ffffu, // t_INCw
++    0xffffffffu, // t_INCd
++    0x000000ffu, // t_DECb
++    0x0000ffffu, // t_DECw
++    0xffffffffu, // t_DECd
++    0x000000ffu, // t_TESTb
++    0x0000ffffu, // t_TESTw
++    0xffffffffu, // t_TESTd
++    0x000000ffu, // t_SHLb
++    0x0000ffffu, // t_SHLw
++    0xffffffffu, // t_SHLd
++    0x000000ffu, // t_SHRb
++    0x0000ffffu, // t_SHRw
++    0xffffffffu, // t_SHRd
++    0x000000ffu, // t_SARb
++    0x0000ffffu, // t_SARw
++    0xffffffffu, // t_SARd
++    0x00000000u, // t_ROLb
++    0x00000000u, // t_ROLw
++    0x00000000u, // t_ROLd
++    0x00000000u, // t_RORb
++    0x00000000u, // t_RORw
++    0x00000000u, // t_RORd
++    0x00000000u, // t_RCLb
++    0x00000000u, // t_RCLw
++    0x00000000u, // t_RCLd
++    0x00000000u, // t_RCRb
++    0x00000000u, // t_RCRw
++    0x00000000u, // t_RCRd
++    0x000000ffu, // t_NEGb
++    0x0000ffffu, // t_NEGw
++    0xffffffffu, // t_NEGd
++    0x0000ffffu, // t_DSHLw
++    0xffffffffu, // t_DSHLd
++    0x0000ffffu, // t_DSHRw
++    0xffffffffu, // t_DSHRd
++    0x00000000u, // t_MUL
++    0x00000000u, // t_DIV
++    0x00000000u, // t_NOTDONE
++};
++static constexpr uint32_t dynrec_sign_masks[t_LASTFLAG] = {
++    0x00000000u, // t_UNKNOWN
++    0x00000080u, // t_ADDb
++    0x00008000u, // t_ADDw
++    0x80000000u, // t_ADDd
++    0x00000080u, // t_ORb
++    0x00008000u, // t_ORw
++    0x80000000u, // t_ORd
++    0x00000080u, // t_ADCb
++    0x00008000u, // t_ADCw
++    0x80000000u, // t_ADCd
++    0x00000080u, // t_SBBb
++    0x00008000u, // t_SBBw
++    0x80000000u, // t_SBBd
++    0x00000080u, // t_ANDb
++    0x00008000u, // t_ANDw
++    0x80000000u, // t_ANDd
++    0x00000080u, // t_SUBb
++    0x00008000u, // t_SUBw
++    0x80000000u, // t_SUBd
++    0x00000080u, // t_XORb
++    0x00008000u, // t_XORw
++    0x80000000u, // t_XORd
++    0x00000080u, // t_CMPb
++    0x00008000u, // t_CMPw
++    0x80000000u, // t_CMPd
++    0x00000080u, // t_INCb
++    0x00008000u, // t_INCw
++    0x80000000u, // t_INCd
++    0x00000080u, // t_DECb
++    0x00008000u, // t_DECw
++    0x80000000u, // t_DECd
++    0x00000080u, // t_TESTb
++    0x00008000u, // t_TESTw
++    0x80000000u, // t_TESTd
++    0x00000080u, // t_SHLb
++    0x00008000u, // t_SHLw
++    0x80000000u, // t_SHLd
++    0x00000080u, // t_SHRb
++    0x00008000u, // t_SHRw
++    0x80000000u, // t_SHRd
++    0x00000080u, // t_SARb
++    0x00008000u, // t_SARw
++    0x80000000u, // t_SARd
++    0x00000000u, // t_ROLb
++    0x00000000u, // t_ROLw
++    0x00000000u, // t_ROLd
++    0x00000000u, // t_RORb
++    0x00000000u, // t_RORw
++    0x00000000u, // t_RORd
++    0x00000000u, // t_RCLb
++    0x00000000u, // t_RCLw
++    0x00000000u, // t_RCLd
++    0x00000000u, // t_RCRb
++    0x00000000u, // t_RCRw
++    0x00000000u, // t_RCRd
++    0x00000080u, // t_NEGb
++    0x00008000u, // t_NEGw
++    0x80000000u, // t_NEGd
++    0x00008000u, // t_DSHLw
++    0x80000000u, // t_DSHLd
++    0x00008000u, // t_DSHRw
++    0x80000000u, // t_DSHRd
++    0x00000000u, // t_MUL
++    0x00000000u, // t_DIV
++    0x00000000u, // t_NOTDONE
++};
++
++static uint32_t dynrec_result_zf() {
++    const auto type = lflags.type;
++    const auto mask = type < t_LASTFLAG ? dynrec_zero_masks[type] : 0;
++    return mask ? ((lf_resd & mask) == 0) : get_ZF();
++}
++static uint32_t dynrec_result_sf() {
++    const auto type = lflags.type;
++    const auto mask = type < t_LASTFLAG ? dynrec_sign_masks[type] : 0;
++    return mask ? (lf_resd & mask) : get_SF();
++}
++
+ static uint32_t DRC_CALL_CONV dynrec_get_of(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_of(void)		{ return TFLG_O; }
++static uint32_t DRC_CALL_CONV dynrec_get_of(void)		{ return (get_OF()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_nof(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_nof(void)	{ return TFLG_NO; }
++static uint32_t DRC_CALL_CONV dynrec_get_nof(void)	{ return (!get_OF()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_cf(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_cf(void)		{ return TFLG_B; }
++static uint32_t DRC_CALL_CONV dynrec_get_cf(void)		{ return (get_CF()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_ncf(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_ncf(void)	{ return TFLG_NB; }
++static uint32_t DRC_CALL_CONV dynrec_get_ncf(void)	{ return (!get_CF()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_zf(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_zf(void)		{ return TFLG_Z; }
++static uint32_t DRC_CALL_CONV dynrec_get_zf(void)		{ return (dynrec_result_zf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_nzf(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_nzf(void)	{ return TFLG_NZ; }
++static uint32_t DRC_CALL_CONV dynrec_get_nzf(void)	{ return (!dynrec_result_zf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_sf(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_sf(void)		{ return TFLG_S; }
++static uint32_t DRC_CALL_CONV dynrec_get_sf(void)		{ return (dynrec_result_sf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_nsf(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_nsf(void)	{ return TFLG_NS; }
++static uint32_t DRC_CALL_CONV dynrec_get_nsf(void)	{ return (!dynrec_result_sf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_pf(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_pf(void)		{ return TFLG_P; }
++static uint32_t DRC_CALL_CONV dynrec_get_pf(void)		{ return (get_PF()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_npf(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_npf(void)	{ return TFLG_NP; }
++static uint32_t DRC_CALL_CONV dynrec_get_npf(void)	{ return (!get_PF()); }
+ 
+ static uint32_t DRC_CALL_CONV dynrec_get_cf_or_zf(void)			DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_cf_or_zf(void)			{ return TFLG_BE; }
++static uint32_t DRC_CALL_CONV dynrec_get_cf_or_zf(void)			{ return (get_CF() || dynrec_result_zf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_ncf_and_nzf(void)		DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_ncf_and_nzf(void)		{ return TFLG_NBE; }
++static uint32_t DRC_CALL_CONV dynrec_get_ncf_and_nzf(void)		{ return (!get_CF() && !dynrec_result_zf()); }
+ static uint32_t DRC_CALL_CONV dynrec_get_sf_neq_of(void)			DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_sf_neq_of(void)			{ return TFLG_L; }
++static uint32_t DRC_CALL_CONV dynrec_get_sf_neq_of(void)			{ return ((dynrec_result_sf() != 0) != (get_OF() != 0)); }
+ static uint32_t DRC_CALL_CONV dynrec_get_sf_eq_of(void)			DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_sf_eq_of(void)			{ return TFLG_NL; }
++static uint32_t DRC_CALL_CONV dynrec_get_sf_eq_of(void)			{ return ((dynrec_result_sf() != 0) == (get_OF() != 0)); }
+ static uint32_t DRC_CALL_CONV dynrec_get_zf_or_sf_neq_of(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_zf_or_sf_neq_of(void)	{ return TFLG_LE; }
++static uint32_t DRC_CALL_CONV dynrec_get_zf_or_sf_neq_of(void)	{ return (dynrec_result_zf() || ((dynrec_result_sf() != 0) != (get_OF() != 0))); }
+ static uint32_t DRC_CALL_CONV dynrec_get_nzf_and_sf_eq_of(void)	DRC_FC;
+-static uint32_t DRC_CALL_CONV dynrec_get_nzf_and_sf_eq_of(void)	{ return TFLG_NLE; }
++static uint32_t DRC_CALL_CONV dynrec_get_nzf_and_sf_eq_of(void)	{ return (!dynrec_result_zf() && ((dynrec_result_sf() != 0) == (get_OF() != 0))); }
+ 
+ 
+ static void dyn_branchflag_to_reg(BranchTypes btype) {
