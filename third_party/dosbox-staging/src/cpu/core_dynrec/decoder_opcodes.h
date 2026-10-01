@@ -1109,19 +1109,28 @@ static void dyn_branched_exit(BranchTypes btype,int32_t eip_add) {
 	dyn_closeblock();
 }
 
-/*
+// SETcc reads condition flags without modifying them. Keep their producer
+// alive even when a later instruction in this block overwrites the flags.
 static void dyn_set_byte_on_condition(BranchTypes btype) {
 	dyn_get_modrm();
-	dyn_branchflag_to_reg(btype);
-	gen_and_imm(FC_RETOP,1);
+	AcquireFlags(FMASK_TEST);
 	if (decode.modrm.mod<3) {
 		dyn_fill_ea(FC_ADDR);
+		gen_protect_addr_reg();
+	}
+	dyn_branchflag_to_reg(btype);
+	// Some lazy flag helpers return a bit mask rather than the integer 1.
+	// Zero is already normalized; replace every nonzero result with 1.
+	const auto zero = gen_create_branch_on_zero(FC_RETOP, true);
+	gen_mov_dword_to_reg_imm(FC_RETOP, 1);
+	gen_fill_branch(zero);
+	if (decode.modrm.mod<3) {
+		gen_restore_addr_reg();
 		dyn_write_byte(FC_ADDR,FC_RETOP);
 	} else {
 		MOV_REG_BYTE_FROM_HOST_REG_LOW(FC_RETOP,decode.modrm.rm&3,(decode.modrm.rm>>2)&1);
 	}
 }
-*/
 
 static void dyn_loop(LoopTypes type) {
 	dyn_reduce_cycles();

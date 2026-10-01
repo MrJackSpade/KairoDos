@@ -74,3 +74,5 @@ and an adoption decision; the installed app remains the original baseline.
 
 All guest code is synthetic first-party test code. It runs in `/data/local/tmp`
 and does not modify game files. No Kairo98 code or APK was touched.
+
+Subsequent segment comparisons and the current decision are recorded in [SETcc adoption](setcc-adoption.md). This document preserves the earlier checkpoint and its limitations.

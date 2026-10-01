@@ -1,4 +1,6 @@
-# Ticket #72: SETcc experiment (in progress)
+# Ticket #72: SETcc experiment
+
+Current decision: [adopt the validated implementation](setcc-adoption.md). The checkpoints below preserve the evidence and decisions at each stage.
 
 Not adopted. No measured performance benefit yet. The installed RGDS app remains
 the normal baseline; the prototype was exercised only by a standalone runner in
@@ -86,3 +88,4 @@ Five sound-enabled actual-app runs are recorded in [the performance report](setc
 ## Protected-mode checkpoint
 
 [Protected-mode and paging validation](setcc-protected-mode.md) adds 81,920 passing snapshot comparisons and 96 genuine user-mode paging cases. A separate baseline supervisor write-protection limitation is tracked in #73. Segment-limit behavior and final adoption remain unresolved.
+

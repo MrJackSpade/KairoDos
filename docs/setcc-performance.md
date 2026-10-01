@@ -1,5 +1,7 @@
 # Ticket #72: SETcc performance checkpoint
 
+Historical measurement checkpoint. See the subsequent [adoption decision](setcc-adoption.md); the numerical uncertainty below remains applicable.
+
 **Candidate remains under investigation; not adopted.** Both prototype runs were
 higher than all three baseline runs, but baseline variance makes the size and
 confidence of the improvement uncertain. Remaining correctness gates still apply.
@@ -78,3 +80,4 @@ performance results are encouraging evidence, not permission to skip those gates
 
 Complete APK/ELF identities, per-run samples, counters, summaries and host costs:
 [performance evidence](benchmarks/ticket72-setcc-performance.json).
+

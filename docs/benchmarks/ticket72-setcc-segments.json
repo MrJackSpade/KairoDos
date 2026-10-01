@@ -1,0 +1,18 @@
+{
+  "decision": "Matches original interpreter including pre-existing segment-protection limitations; not a passed architectural segment-fault test.",
+  "device": "Retroid Pocket Classic",
+  "cases": 3072,
+  "uniqueConditionAndDestinationCases": 48,
+  "repetitions": 64,
+  "validWrites": 1024,
+  "outOfLimitWritesWithoutFault": 1024,
+  "readOnlySegmentWritesWithoutFault": 1024,
+  "sha256": "41952b1db88699840a2e14fa96c9c4927cceb1e511a38d33a2c99aaae6b97fd0",
+  "baselineCore": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "prototypeCore": "a97cd112e9297ac093e9480132b2345068b870f9",
+  "prototypeTelemetry": {
+    "translated": 75,
+    "executed": 12701
+  },
+  "scope": "FS override into one-byte protected-mode data segment; in-limit, above-limit, read-only descriptor; all 16 conditions; fixed flags 0x846"
+}
