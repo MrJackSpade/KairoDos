@@ -1,0 +1,392 @@
+{
+  "ticket": 71,
+  "decision": "reject prototype; no demonstrated benefit; reference restored",
+  "protocol": {
+    "warmupSeconds": 60,
+    "captureSeconds": 120,
+    "resolution": "320x200",
+    "cycles": "auto",
+    "core": "dynamic",
+    "output": "texturenb",
+    "transport": "Wi-Fi"
+  },
+  "referenceApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "prototypeApkSha256": "0ae026711620167ab086c0e0dbeab28afdedac8a321db64239eed808e16defcd",
+  "apkEntryDifference": [
+    "lib/arm64-v8a/libdosbox_staging.so"
+  ],
+  "prototypeCoreBuildId": "af740396e4bb7414048ad1eb161ef9643839bad2",
+  "guestProfile": false,
+  "generatedCodeProbe": {
+    "checksPerDevice": 221184,
+    "devices": [
+      "RG DS",
+      "Retroid Pocket Classic"
+    ],
+    "coverage": [
+      "widths 1/2/4, all page offsets, guest pages 0/1/0xfffff",
+      "x19 address to w0/w1 destinations",
+      "all 16 NZCV combinations",
+      "upper address bits ignored, original x19 preserved",
+      "live TLB direct/null/different backing allocation"
+    ],
+    "limits": "Sentinel fallback, not full core handler/fault validation. No claim of general correctness."
+  },
+  "prototypeRateChangePercentVsFirstReference": -17.251738086597335,
+  "runs": {
+    "ticket71-reference-a": {
+      "summary": {
+        "intervalSeconds": 118.29700000002049,
+        "threadCpuPercent": [
+          [
+            2305,
+            "KairoDos-emulat",
+            82.41
+          ],
+          [
+            2322,
+            "dosbox:mixer",
+            24.38
+          ],
+          [
+            2315,
+            "KairoDos-emulat",
+            2.17
+          ],
+          [
+            2324,
+            "KairoDos-audio",
+            1.46
+          ],
+          [
+            2321,
+            "SDLAudioP2",
+            0.92
+          ],
+          [
+            2267,
+            "binder:2239_3",
+            0.41
+          ],
+          [
+            2239,
+            "loxifi.kairodos",
+            0.4
+          ],
+          [
+            2297,
+            "binder:2239_4",
+            0.29
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "56111",
+            "56666",
+            "57222",
+            "57777",
+            "58333",
+            "58888",
+            "59444",
+            "60000",
+            "60555",
+            "61111",
+            "61666",
+            "62222"
+          ],
+          "9": [
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111",
+            "56666",
+            "57222",
+            "57777",
+            "58333",
+            "58888",
+            "59444"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2291,
+          "rate": 19.3665097170647,
+          "medianIntervalMs": 33.3128545,
+          "p95IntervalMs": 133.242084,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "capture": {
+        "duration": 123.48499999998603,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#245",
+        "pid": "2239",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    259,156,169,794  cpu-cycles                # 1.829257 GHz      \n    152,765,920,128  instructions              # 1.078 G/sec       \n  140889.279059(ms)  task-clock                # 1.174060 cpus used\n     42,776,288,806  cache-references          # 301.945 M/sec     \n        423,735,213  cache-misses              # 2.991 M/sec       \n     82,407,008,422  stalled-cycles-backend    # 581.708 M/sec     \n     68,127,603,185  stalled-cycles-frontend   # 480.919 M/sec     \n\nTotal test time: 120.001766 seconds.\n"
+    },
+    "ticket71-prototype-b": {
+      "summary": {
+        "intervalSeconds": 117.56299999996554,
+        "threadCpuPercent": [
+          [
+            5662,
+            "KairoDos-emulat",
+            80.71
+          ],
+          [
+            5679,
+            "dosbox:mixer",
+            25.3
+          ],
+          [
+            5669,
+            "KairoDos-emulat",
+            1.81
+          ],
+          [
+            5681,
+            "KairoDos-audio",
+            1.47
+          ],
+          [
+            5678,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            5609,
+            "loxifi.kairodos",
+            0.86
+          ],
+          [
+            5632,
+            "binder:5609_3",
+            0.31
+          ],
+          [
+            5672,
+            "binder:5609_1",
+            0.18
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "60555",
+            "61111",
+            "61666",
+            "62222",
+            "62777",
+            "63333",
+            "63888",
+            "64444"
+          ],
+          "9": [
+            "57777",
+            "58333",
+            "58888",
+            "59444",
+            "60000",
+            "60555",
+            "61111",
+            "61666",
+            "62222"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 1884,
+          "rate": 16.025450184161276,
+          "medianIntervalMs": 33.441625,
+          "p95IntervalMs": 166.455917,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "capture": {
+        "duration": 123.92200000002049,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#318",
+        "pid": "5609",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    257,289,727,862  cpu-cycles                # 1.822738 GHz      \n    141,984,889,837  instructions              # 1.006 G/sec       \n  140364.679039(ms)  task-clock                # 1.169670 cpus used\n     39,747,238,222  cache-references          # 281.598 M/sec     \n        465,928,394  cache-misses              # 3.301 M/sec       \n     82,987,505,615  stalled-cycles-backend    # 587.957 M/sec     \n     73,807,667,534  stalled-cycles-frontend   # 522.926 M/sec     \n\nTotal test time: 120.003646 seconds.\n"
+    },
+    "ticket71-reference-a2": {
+      "summary": {
+        "intervalSeconds": 119.81200000003446,
+        "threadCpuPercent": [
+          [
+            9037,
+            "KairoDos-emulat",
+            82.93
+          ],
+          [
+            9054,
+            "dosbox:mixer",
+            24.39
+          ],
+          [
+            9044,
+            "KairoDos-emulat",
+            2.17
+          ],
+          [
+            9056,
+            "KairoDos-audio",
+            1.47
+          ],
+          [
+            9053,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            9000,
+            "binder:8984_1",
+            0.43
+          ],
+          [
+            8984,
+            "loxifi.kairodos",
+            0.38
+          ],
+          [
+            9004,
+            "binder:8984_3",
+            0.34
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000",
+            "800000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "57777",
+            "58333",
+            "58888",
+            "59444",
+            "60000",
+            "60555",
+            "61111"
+          ],
+          "9": [
+            "56111",
+            "56666",
+            "57222",
+            "57777",
+            "58333"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2288,
+          "rate": 19.096584649278388,
+          "medianIntervalMs": 33.325834,
+          "p95IntervalMs": 133.282334,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "capture": {
+        "duration": 123.57799999997951,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#428",
+        "pid": "8984",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    260,031,866,569  cpu-cycles                # 1.827881 GHz      \n    153,150,478,262  instructions              # 1.077 G/sec       \n  141458.240491(ms)  task-clock                # 1.178805 cpus used\n     42,913,071,608  cache-references          # 301.665 M/sec     \n        427,895,160  cache-misses              # 3.008 M/sec       \n     82,901,859,294  stalled-cycles-backend    # 582.803 M/sec     \n     68,335,358,909  stalled-cycles-frontend   # 480.406 M/sec     \n\nTotal test time: 120.001392 seconds.\n"
+    }
+  },
+  "helperCosts": {
+    "ticket71-reference-a": {
+      "readHelperSelfSeconds": 9.27272718,
+      "unknownDsoSeconds": {
+        "unknown": 40.58585818,
+        "/data/app/~~PT9duvBWDKCycDaptvgbqA==/com.loxifi.kairodos-yice7wqitHnmuVcs2GJv-w==/base.apk!/lib/arm64-v8a/libkairodos_host.so": 0.64646464
+      },
+      "totalThreadSampleSeconds": 102.86868584
+    },
+    "ticket71-prototype-b": {
+      "readHelperSelfSeconds": 0.0,
+      "unknownDsoSeconds": {
+        "unknown": 49.35353486,
+        "/data/app/~~lMdg58zl05lm1T50r0TeXA==/com.loxifi.kairodos-YEJYN_cCTCuL0bmVtpjxTg==/base.apk!/lib/arm64-v8a/libkairodos_host.so": 0.59595959
+      },
+      "totalThreadSampleSeconds": 100.95959495
+    }
+  },
+  "limitations": [
+    "Display submissions are not unique game FPS.",
+    "Single candidate capture bracketed by two reference captures; rejection evidence, not a precise causal slowdown estimate.",
+    "Clock reports disagree: scaling_cur_freq is 1992 MHz, debug armclk is 1104 MHz in all three captures. Neither is treated as proof of actual hardware clock.",
+    "Per-game validation, full helper/fault integration, and audio timing gates were not completed because the candidate failed the performance gate; it is not adopted."
+  ]
+}

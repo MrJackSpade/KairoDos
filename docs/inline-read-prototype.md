@@ -1,6 +1,8 @@
 # Ticket #71: guarded ARM64 reads — preparation
 
-Status: **not adopted; ticket remains open**. No installed app was changed.
+Status: **rejected after A/B/A measurement; not adopted**. The exact original APK
+was restored after testing. See [results](inline-read-results.md). The preparation
+notes below describe the initial probe; the results document its expanded checks.
 
 The [experimental patch](benchmarks/ticket71-inline-read-prototype.patch)
 applies to `f260dfaa` and only changes the three dynrec read generators in
@@ -49,7 +51,7 @@ checked helper, device handlers, faults, all destination-register combinations,
 or full-core ABI/flags behavior. It is preliminary evidence, not the ticket's
 correctness gate.
 
-## Remaining work
+## Adoption gates (not completed; candidate rejected)
 
 1. Full-core generated-code checks, including handler/fault returns and register
    preservation; representative games beyond Duke.
