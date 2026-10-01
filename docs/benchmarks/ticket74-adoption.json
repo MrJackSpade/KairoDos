@@ -1,0 +1,33 @@
+{
+  "commit": "fda400fe93777ef28c8d0970b40ca1af1dd8b9d2",
+  "sharedCommit": "9be507e9d50f07f9ebbe4574864d8e66300b62c9",
+  "apkSha256": "c4e58b4f12d9a8414d91bf97ee474ad7dc036e0d4de38761c089e0b5e7e62a39",
+  "coreSha256": "5d7fdc1d2e4f3c9d6b8176c48376b1365a23d57b2482aab8aff9ac56b7a8be06",
+  "buildFlags": {
+    "KAIRO_GUEST_PROFILE": "OFF",
+    "KAIRO_OPL_STRESS": "OFF",
+    "KAIRO_OPL_VERIFY": "OFF",
+    "KAIRO_OPL_WORKER": "ON"
+  },
+  "cleanWorktree": true,
+  "buildLogSha256": "705b6fa06ccda6f534197c735a552358c6a7882c1508669ecf1643983e10721f",
+  "diagnosticMarkersAbsent": [
+    "KAIRO OPL verify:",
+    "KAIRO OPL queue:"
+  ],
+  "deployment": {
+    "device": "RGDS 192.168.1.118:5555",
+    "transport": "Wi-Fi",
+    "package": "com.loxifi.kairodos",
+    "install": "adb install -r through InstallRgDs.ps1; successful; installed hash matched",
+    "smoke": "Duke 3D at existing 320x200; rendered demo inspected; normal menu exit and shutdown completed",
+    "completedCommands": 127693,
+    "generatedFrames": 1159483,
+    "sha256": {
+      "adoption-install-identity.txt": "6c87bfa106bb5f8b75f8f114aafbc434edb90fb12d4864f1ec3090e68e13cb75",
+      "adoption-logcat.txt": "88d53c73ff26443dde7637dc270ec7b9907e5982611a55609a7e47574fb7a490",
+      "adoption-duke-game.png": "d6cdc4d1b8263dd0f14f9d883bb0b2ec3f8aeee39087482c602823ceef1effe9",
+      "doom-restored.txt": "895a4552ff95b0b7b651a73a82651feb6ef288d9ca639cb6fdc5feebe4d5124b"
+    }
+  }
+}
