@@ -1,0 +1,138 @@
+[
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4650c2cd8f2799e13db9905ad31c81f4b2849ab143d29632d3bcd6941ad1c392",
+    "coverage": {
+      "code": "protected32",
+      "flags": "materialized",
+      "prefix": "none",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4650c2cd8f2799e13db9905ad31c81f4b2849ab143d29632d3bcd6941ad1c392",
+    "coverage": {
+      "code": "protected32",
+      "flags": "materialized",
+      "prefix": "66",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4650c2cd8f2799e13db9905ad31c81f4b2849ab143d29632d3bcd6941ad1c392",
+    "coverage": {
+      "code": "protected32",
+      "flags": "materialized",
+      "prefix": "67",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4650c2cd8f2799e13db9905ad31c81f4b2849ab143d29632d3bcd6941ad1c392",
+    "coverage": {
+      "code": "protected32",
+      "flags": "materialized",
+      "prefix": "66-67",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4141873e09b3172ffbe12669e4527534376447d002dea6478a2ae319ae1380eb",
+    "coverage": {
+      "code": "protected32",
+      "flags": "lazy CMP32",
+      "prefix": "none",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4141873e09b3172ffbe12669e4527534376447d002dea6478a2ae319ae1380eb",
+    "coverage": {
+      "code": "protected32",
+      "flags": "lazy CMP32",
+      "prefix": "66",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4141873e09b3172ffbe12669e4527534376447d002dea6478a2ae319ae1380eb",
+    "coverage": {
+      "code": "protected32",
+      "flags": "lazy CMP32",
+      "prefix": "67",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  },
+  {
+    "cases": 10240,
+    "result": "PASS",
+    "normalVsDynamic": "byte-identical full snapshots",
+    "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+    "snapshotSha256": "4141873e09b3172ffbe12669e4527534376447d002dea6478a2ae319ae1380eb",
+    "coverage": {
+      "code": "protected32",
+      "flags": "lazy CMP32",
+      "prefix": "66-67",
+      "laterFlagOverwrite": false,
+      "destinations": "eight byte registers and two direct memory destinations"
+    },
+    "limitations": [
+      "This snapshot suite does not exercise paging faults or whole-game performance."
+    ]
+  }
+]

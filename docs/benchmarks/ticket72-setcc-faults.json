@@ -1,0 +1,22 @@
+{
+  "result": "PASS",
+  "cases": 96,
+  "faults": 64,
+  "successfulWrites": 32,
+  "sha256": "18d147f9203daf7fca03a90cd0d42d0b1ca22321bcd9cb2aa10b4dab6f6fc035",
+  "coverage": [
+    "all 16 conditions",
+    "absent page: user write error 6",
+    "read-only page: user write error 7",
+    "writable page: no exception",
+    "register-indirect and scaled SIB+displacement addresses",
+    "saved fault EIP and CR2",
+    "flags preserved",
+    "alias reads target unchanged before repair",
+    "handler repairs PTE and retries instruction"
+  ],
+  "limitations": [
+    "Does not validate abandoning a page fault without repairing its mapping.",
+    "Does not certify segment-limit faults or every possible guest/CPU mode."
+  ]
+}

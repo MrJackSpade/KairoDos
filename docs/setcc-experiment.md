@@ -82,3 +82,7 @@ in 16-bit real-mode code; they are not a substitute for those remaining checks.
 ## Performance checkpoint
 
 Five sound-enabled actual-app runs are recorded in [the performance report](setcc-performance.md). Both prototype runs exceeded the baseline runs, but the size of the gain remains uncertain. The original APK was restored. #72 remains open for the remaining correctness gates; no production adoption.
+
+## Protected-mode checkpoint
+
+[Protected-mode and paging validation](setcc-protected-mode.md) adds 81,920 passing snapshot comparisons and 96 genuine user-mode paging cases. A separate baseline supervisor write-protection limitation is tracked in #73. Segment-limit behavior and final adoption remain unresolved.
