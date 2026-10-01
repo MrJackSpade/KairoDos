@@ -1,0 +1,310 @@
+--- a/backend-dos/src/main/cpp/staging_bridge.cpp
++++ b/backend-dos/src/main/cpp/staging_bridge.cpp
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_dispatch_profile.h"
+ #include "dosbox.h"
+ #include "SDL.h"
+ #include "gui/common.h"
+@@ -80,6 +81,7 @@
+     if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::open(config_dir);
++    kairo_dispatch_profile::open(config_dir);
+ #endif
+     callbacks = *cb;
+     kairo_staging_cpu_counters = {};
+@@ -106,6 +108,7 @@
+     std::filesystem::current_path(original_directory, error);
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::close();
++    kairo_dispatch_profile::close();
+ #endif
+     loguru::shutdown();
+     return result;
+@@ -114,6 +117,7 @@
+ bool KairoStagingPoll() {
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::flush();
++    kairo_dispatch_profile::flush();
+ #endif
+     if (callbacks.telemetry)
+         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec.cpp
+@@ -8,6 +8,7 @@
+ #ifdef KAIRO_STAGING
+ #include "staging_bridge.h"
+ #include "kairo_guest_profile.h"
++#include "kairo_dispatch_profile.h"
+ #endif
+ 
+ #include <cassert>
+@@ -159,33 +160,39 @@
+ 
+ CacheBlock *LinkBlocks(BlockReturn ret)
+ {
++    KAIRO_DISPATCH_COUNT(9);
+ 	// the last instruction was a control flow modifying instruction
+ 	const auto temp_ip = SegPhys(cs) + reg_eip;
+ 
+ 	const auto read_handler = get_tlb_readhandler(temp_ip);
+ 	if (!read_handler) {
++    KAIRO_DISPATCH_COUNT(10);
+ 		return nullptr;
+ 	}
+ 
+ 	const auto cp_handler = reinterpret_cast<CodePageHandler*>(read_handler);
+ 	if (!cp_handler) {
++    KAIRO_DISPATCH_COUNT(10);
+ 		return nullptr;
+ 	}
+ 
+ 	const bool cp_has_code = cp_handler->flags &
+ 	                         (cpu.code.big ? PFLAG_HASCODE32 : PFLAG_HASCODE16);
+ 	if (!cp_has_code) {
++    KAIRO_DISPATCH_COUNT(11);
+ 		return nullptr;
+ 	}
+ 
+ 	// see if the target is an already translated block
+ 	const auto cache_block = cp_handler->FindCacheBlock(temp_ip & 4095);
+ 	if (!cache_block) {
++    KAIRO_DISPATCH_COUNT(12);
+ 		return nullptr;
+ 	}
+ 
+ 	// found it, link the current block to
+ 	cache.block.running->LinkTo(ret == BR_Link2, cache_block);
++	KAIRO_DISPATCH_COUNT(13);
+ 	return cache_block;
+ }
+ 
+@@ -203,7 +210,9 @@
+ 
+ Bits CPU_Core_Dynrec_Run() noexcept
+ {
++    KAIRO_DISPATCH_COUNT(0);
+ 	for (;;) {
++    KAIRO_DISPATCH_COUNT(1);
+ 		// Determine the linear address of CS:EIP
+ 		PhysPt ip_point=SegPhys(cs)+reg_eip;
+ #if C_HEAVY_DEBUGGER
+@@ -214,6 +223,7 @@
+ 		CodePageHandler *chandler = nullptr;
+ 		// see if the current page is present and contains code
+ 		if (MakeCodePage(ip_point, chandler)) {
++    KAIRO_DISPATCH_COUNT(2);
+ 			// page not present, throw the exception
+ 			CPU_Exception(cpu.exception.which,cpu.exception.error);
+ 			continue;
+@@ -221,17 +231,20 @@
+ 
+ 		// page doesn't contain code or is special
+ 		if (!chandler) {
+-			return CPU_Core_Normal_Run();
++			KAIRO_DISPATCH_COUNT(3);
++			return KAIRO_DISPATCH_NORMAL(4);
+ 		}
+ 
+ 		// find correct Dynamic Block to run
+ 		CacheBlock *block = chandler->FindCacheBlock(ip_point & 4095);
++    KAIRO_DISPATCH_COUNT(block ? 4 : 5);
+ 		if (!block) {
+ 			// no block found, thus translate the instruction stream
+ 			// unless the instruction is known to be modified
+ 			if (!chandler->invalidation_map || (chandler->invalidation_map[ip_point&4095]<4)) {
+ 				// translate up to 32 instructions
+ 				block=CreateCacheBlock(chandler,ip_point,32);
++    KAIRO_DISPATCH_COUNT(6);
+ #ifdef KAIRO_STAGING
+ 				++kairo_staging_cpu_counters.translated_blocks;
+ #endif
+@@ -239,7 +252,8 @@
+ 				// let the normal core handle this instruction to avoid zero-sized blocks
+ 				Bitu old_cycles=CPU_Cycles;
+ 				CPU_Cycles=1;
+-				Bits nc_retcode=CPU_Core_Normal_Run();
++				KAIRO_DISPATCH_COUNT(7);
++				Bits nc_retcode=KAIRO_DISPATCH_NORMAL(3);
+ 				if (!nc_retcode) {
+ 					CPU_Cycles=old_cycles-1;
+ 					continue;
+@@ -253,7 +267,11 @@
+ 		cache.block.running=nullptr;
+ 		// now we're ready to run the dynamic code block
+ //		BlockReturn ret=((BlockReturn (*)(void))(block->cache.start))();
++		KAIRO_DISPATCH_COUNT(8);
+ 		BlockReturn ret=core_dynrec.runcode(block->cache.start);
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_dispatch_profile::returned(static_cast<unsigned>(ret));
++#endif
+ #ifdef KAIRO_STAGING
+ 		// Count only after generated host code has returned successfully.
+ 		// Plain counters stay on this thread; polling publishes snapshots.
+@@ -314,7 +332,7 @@
+ 			// handle this instruction
+ 			CPU_CycleLeft+=CPU_Cycles;
+ 			CPU_Cycles=1;
+-			return CPU_Core_Normal_Run();
++			return KAIRO_DISPATCH_NORMAL(ret==BR_SMCBlock ? 2 : 1);
+ 
+ #if (C_DEBUGGER)
+ 		case BR_OpcodeFull:
+--- a/third_party/dosbox-staging/src/cpu/core_normal.cpp
++++ b/third_party/dosbox-staging/src/cpu/core_normal.cpp
+@@ -1,3 +1,4 @@
++#include "kairo_dispatch_profile.h"
+ // SPDX-FileCopyrightText:  2024-2025 The DOSBox Staging Team
+ // SPDX-FileCopyrightText:  2002-2021 The DOSBox Team
+ // SPDX-License-Identifier: GPL-2.0-or-later
+@@ -132,6 +133,9 @@
+ 
+ Bits CPU_Core_Normal_Run() noexcept
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_dispatch_profile::normal_entry();
++#endif
+ 	while (CPU_Cycles-->0) {
+ 		LOADIP;
+ 		core.opcode_index=cpu.code.big*0x200;
+@@ -150,7 +154,13 @@
+ 		cycle_count++;
+ #endif
+ restart_opcode:
+-		switch (core.opcode_index+Fetchb()) {
++		switch (
++#ifdef KAIRO_GUEST_PROFILE
++        [&](){const auto token=core.opcode_index+Fetchb();kairo_dispatch_profile::opcode(token);return token;}()
++#else
++        core.opcode_index+Fetchb()
++#endif
++        ) {
+ 		#include "core_normal/prefix_none.h"
+ 		#include "core_normal/prefix_0f.h"
+ 		#include "core_normal/prefix_66.h"
+--- a/third_party/dosbox-staging/src/cpu/dyn_cache.h
++++ b/third_party/dosbox-staging/src/cpu/dyn_cache.h
+@@ -173,6 +173,9 @@
+ 	// clear out blocks that contain code which has been modified
+ 	bool InvalidateRange(Bitu start, Bitu end)
+ 	{
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_dispatch_profile::ClearContext clear_context(1);
++#endif
+ 		Bits index=1+(end>>DYN_HASH_SHIFT);
+ 		bool is_current_block = false; // if the current block is
+ 		                               // modified, it has to be exited
+@@ -487,6 +490,9 @@
+ 
+ 	void ClearRelease()
+ 	{
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_dispatch_profile::ClearContext clear_context(2);
++#endif
+ 		// clear out all cache blocks in this page
+ 		Bitu count=active_blocks;
+ 		CacheBlock **map=hash_map;
+@@ -645,6 +651,7 @@
+ {
+ #ifdef KAIRO_GUEST_PROFILE
+     kairo_guest_profile::clear(this);
++    kairo_dispatch_profile::clear(hash.index!=0);
+ #endif
+ 	Bitu ind;
+ 	// check if this is not a cross page block
+@@ -692,6 +699,9 @@
+ 
+ static CacheBlock *cache_openblock()
+ {
++#ifdef KAIRO_GUEST_PROFILE
++    kairo_dispatch_profile::ClearContext clear_context(3);
++#endif
+ 	CacheBlock *block = cache.block.active;
+ 	// check for enough space in this block
+ 	Bitu size=block->cache.size;
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder.h
+@@ -14,6 +14,19 @@
+ 	number of translated instructions is reached or some critical
+ 	instruction is encountered.
+ */
++
++#if defined(KAIRO_GUEST_PROFILE) && C_TARGET_CPU_ARM
++// Measurement only: temporaries x10/x11 are scratch across block entries.
++// Count entry attempts before the existing cycle check, including linked entries.
++static void gen_profile_dispatch_entry()
++{
++    if (!kairo_dispatch_profile::output) return;
++    gen_mov_qword_to_reg_imm(temp1, reinterpret_cast<uint64_t>(&kairo_dispatch_profile::entries));
++    cache_addd(LDR64_IMM(temp2, temp1, 0));
++    cache_addd(0x80000000u | ADD_IMM(temp2, temp2, 1, 0));
++    cache_addd(STR64_IMM(temp2, temp1, 0));
++}
++#endif
+ 
+ static CacheBlock *CreateCacheBlock(CodePageHandler *codepage, PhysPt start, Bitu max_opcodes)
+ {
+@@ -41,6 +54,9 @@
+ 	dyn_mem_write(cache_addr, cache_bytes);
+ 
+ 	InitFlagsOptimization();
++#if defined(KAIRO_GUEST_PROFILE) && C_TARGET_CPU_ARM
++    gen_profile_dispatch_entry();
++#endif
+ 
+ 	// every codeblock that is run sets cache.block.running to itself
+ 	// so the block linking knows the last executed block
+--- /dev/null
++++ b/backend-dos/src/main/cpp/kairo_dispatch_profile.h
+@@ -0,0 +1,48 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#pragma once
++#ifdef KAIRO_GUEST_PROFILE
++#include "cpu/cpu.h"
++#include <cstdio>
++#include <cstdint>
++#include <ctime>
++#include <cstring>
++#include <string>
++namespace kairo_dispatch_profile {
++inline FILE* output=nullptr;
++inline uint64_t last_flush=0,entries=0;
++inline uint64_t counts[18]={},returns[16]={},opcodes[5120]={},normal_calls[5]={},clears[8]={};
++inline unsigned normal_reason=0,clear_reason=0;
++inline uint64_t now(){timespec t{};clock_gettime(CLOCK_MONOTONIC,&t);return uint64_t(t.tv_sec)*1000000000ull+t.tv_nsec;}
++inline void close(){if(output){std::fclose(output);output=nullptr;}}
++inline void open(const std::string& dir){
++ close();last_flush=entries=0;normal_reason=clear_reason=0;
++ std::memset(counts,0,sizeof counts);std::memset(returns,0,sizeof returns);std::memset(opcodes,0,sizeof opcodes);std::memset(normal_calls,0,sizeof normal_calls);std::memset(clears,0,sizeof clears);
++ FILE* marker=std::fopen((dir+"/kairo-dispatch-profile.enable").c_str(),"rb");if(!marker)return;std::fclose(marker);
++ output=std::fopen((dir+"/kairo-dispatch-profile.jsonl").c_str(),"wb");
++}
++inline void count(unsigned n){if(output)++counts[n];}
++inline void returned(unsigned n){if(output&&n<16)++returns[n];}
++inline void normal_entry(){if(output)++normal_calls[normal_reason];}
++inline void opcode(unsigned n){if(output&&n<1024)++opcodes[normal_reason*1024+n];}
++inline Bits normal(unsigned why){
++ if(!output)return CPU_Core_Normal_Run();
++ const auto old=normal_reason;normal_reason=why;const auto result=CPU_Core_Normal_Run();normal_reason=old;return result;
++}
++struct ClearContext{unsigned old;explicit ClearContext(unsigned n):old(clear_reason){clear_reason=n;}~ClearContext(){clear_reason=old;}};
++inline void clear(bool primary){if(output)++clears[clear_reason*2+(primary?0:1)];}
++template<typename T,size_t N> inline void array(const char* name,const T(&values)[N]){
++ std::fprintf(output,",\"%s\":[",name);for(size_t i=0;i<N;++i)std::fprintf(output,"%s%llu",i?",":"",static_cast<unsigned long long>(values[i]));std::fputs("]",output);
++}
++inline void flush(){
++ if(!output)return;const auto t=now();if(t-last_flush<1000000000ull)return;last_flush=t;
++ std::fprintf(output,"{\"time\":%llu,\"entries\":%llu",static_cast<unsigned long long>(t),static_cast<unsigned long long>(entries));
++ array("counts",counts);array("returns",returns);array("normalCalls",normal_calls);array("opcodes",opcodes);array("clears",clears);
++ std::fputs("}\n",output);std::fflush(output);
++}
++}
++#define KAIRO_DISPATCH_COUNT(n) kairo_dispatch_profile::count(n)
++#define KAIRO_DISPATCH_NORMAL(n) kairo_dispatch_profile::normal(n)
++#else
++#define KAIRO_DISPATCH_COUNT(n) ((void)0)
++#define KAIRO_DISPATCH_NORMAL(n) CPU_Core_Normal_Run()
++#endif
