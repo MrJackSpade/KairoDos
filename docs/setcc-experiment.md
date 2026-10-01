@@ -51,3 +51,30 @@ close #72 or apply the patch to production before these gates pass.
 
 The harness audio configuration is for instruction correctness only; performance
 comparisons must retain the game's normal sound configuration.
+
+## Extended correctness checkpoint
+
+Twelve actual-core comparison suites passed, totaling **122,880 comparisons**:
+materialized flags and lazy CMP32 with no prefix, 66, 67 and 66+67; plus lazy CMP32
+followed by an XOR overwriting flags for those four prefix combinations. Every
+suite matched complete interpreter snapshots and the independent oracle.
+The lazy operand vector has eight distinct values repeated eight times; these
+counts are comparisons, not that many unique input combinations. XOR's undefined
+AF is excluded from the independent oracle in overwrite suites (whole snapshots
+still matched the interpreter).
+
+A further **2,048 self-modifying-code checks** matched both interpreter and oracle.
+SETcc changes an immediate in an already translated function and in the current
+block; the following execution must see 0 or 1, never the original 0x7f. These
+exercise existing invalidation paths. This is not a complete paging/fault test.
+
+Results: [extended evidence](benchmarks/ticket72-setcc-extended.json).
+`tools/setcc_smc_probe.s` contains the exact synthetic source; assemble/link and
+run it using the same harness procedure. Its output ordering is 64 flag combinations,
+16 conditions, then external-target/current-block results. The guest program
+contains no proprietary code. All runs used the same prototype core as the initial
+checkpoint. No APK was installed and production source remains unchanged.
+
+Protected mode, default 32-bit code, fault handling, additional effective-address
+forms and the A/B/A performance gate remain open. The prefixes tested here operate
+in 16-bit real-mode code; they are not a substitute for those remaining checks.

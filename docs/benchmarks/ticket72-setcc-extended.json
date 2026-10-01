@@ -1,0 +1,255 @@
+{
+  "comparisonSuites": [
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "7fe4e75bf64b8912971a28bbb375c052d07ca953da668647df194e9d80992891",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "materialized",
+        "prefix": "none",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "7fe4e75bf64b8912971a28bbb375c052d07ca953da668647df194e9d80992891",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "materialized",
+        "prefix": "66",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "7fe4e75bf64b8912971a28bbb375c052d07ca953da668647df194e9d80992891",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "materialized",
+        "prefix": "67",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "7fe4e75bf64b8912971a28bbb375c052d07ca953da668647df194e9d80992891",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "materialized",
+        "prefix": "66-67",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "4cf4be92211e99cd5037e46f329b56c72355f25284d841550437e3c20431f4b7",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "none",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "4cf4be92211e99cd5037e46f329b56c72355f25284d841550437e3c20431f4b7",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "66",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "4cf4be92211e99cd5037e46f329b56c72355f25284d841550437e3c20431f4b7",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "67",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "4cf4be92211e99cd5037e46f329b56c72355f25284d841550437e3c20431f4b7",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "66-67",
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "648d8d060c23b2331352433cca6b42cdccae1acbbbde83a5541441a85abcf63a",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "none",
+        "laterFlagOverwrite": true,
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "648d8d060c23b2331352433cca6b42cdccae1acbbbde83a5541441a85abcf63a",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "66",
+        "laterFlagOverwrite": true,
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "648d8d060c23b2331352433cca6b42cdccae1acbbbde83a5541441a85abcf63a",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "67",
+        "laterFlagOverwrite": true,
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    },
+    {
+      "cases": 10240,
+      "result": "PASS",
+      "normalVsDynamic": "byte-identical full snapshots",
+      "independentOracle": "all non-stack registers, condition result, arithmetic flags and destination memory",
+      "snapshotSha256": "648d8d060c23b2331352433cca6b42cdccae1acbbbde83a5541441a85abcf63a",
+      "coverage": {
+        "code": "16-bit real mode",
+        "flags": "lazy CMP32",
+        "prefix": "66-67",
+        "laterFlagOverwrite": true,
+        "destinations": "eight byte registers and two direct memory destinations"
+      },
+      "remaining": [
+        "lazy flags",
+        "16/32-bit prefixes/address forms",
+        "protected-mode fault and SMC checks",
+        "normal-build A/B/A benchmark"
+      ]
+    }
+  ],
+  "smc": {
+    "result": "PASS",
+    "cases": 2048,
+    "sha256": "63820796072cc68cdde6a1efd5977f2bff7e8e7522fe04357f169ee1527331cd",
+    "coverage": "writes to previously translated target and current block; 16 conditions and 64 materialized flag combinations",
+    "normalTelemetry": {
+      "translated": 0,
+      "executed": 0
+    },
+    "dynamicTelemetry": {
+      "translated": 915,
+      "executed": 21543
+    }
+  },
+  "limitations": [
+    "Lazy CMP input vector has eight distinct operand values repeated eight times, not 64 distinct lazy flag states.",
+    "16-bit real-mode code with operand/address-size prefixes does not establish protected-mode or default 32-bit code correctness.",
+    "No protected-mode fault gate or performance gate completed."
+  ]
+}
