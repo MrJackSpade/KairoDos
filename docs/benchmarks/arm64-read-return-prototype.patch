@@ -1,0 +1,87 @@
+--- a/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
++++ b/third_party/dosbox-staging/src/cpu/core_dynrec/decoder_basic.h
+@@ -708,20 +708,66 @@
+ }
+ 
+ 
++
++#if C_TARGET_CPU_ARM
++// AAPCS64 returns this pair in x0/x1: value and checked-access failure.
++// Keep handler/page-crossing behavior in the original checked helpers. Only
++// direct cached reads avoid the scratch-result store and generated reload.
++struct DynrecReadResult { uint64_t value; uint64_t fault; };
++[[gnu::noinline]] static DynrecReadResult mem_readb_result_slow(PhysPt address) {
++    const bool fault = mem_readb_checked_drc(address);
++    return {core_dynrec.readdata & 0xffu, uint64_t(fault)};
++}
++[[gnu::noinline]] static DynrecReadResult mem_readw_result_slow(PhysPt address) {
++    const bool fault = mem_readw_checked_drc(address);
++    return {core_dynrec.readdata & 0xffffu, uint64_t(fault)};
++}
++[[gnu::noinline]] static DynrecReadResult mem_readd_result_slow(PhysPt address) {
++    const bool fault = mem_readd_checked_drc(address);
++    return {uint32_t(core_dynrec.readdata), uint64_t(fault)};
++}
++static DynrecReadResult mem_readb_result_drc(PhysPt address) {
++    if (HostPt p = get_tlb_read(address)) return {host_readb(p + address), 0};
++    return mem_readb_result_slow(address);
++}
++static DynrecReadResult mem_readw_result_drc(PhysPt address) {
++    if ((address & 0xfff) < 0xfff)
++        if (HostPt p = get_tlb_read(address)) return {host_readw(p + address), 0};
++    return mem_readw_result_slow(address);
++}
++static DynrecReadResult mem_readd_result_drc(PhysPt address) {
++    if ((address & 0xfff) < 0xffd)
++        if (HostPt p = get_tlb_read(address)) return {host_readd(p + address), 0};
++    return mem_readd_result_slow(address);
++}
++#endif
++
+ // functions that enable access to the memory
+ 
+ // read a byte from a given address and store it in reg_dst
+ static void dyn_read_byte(HostReg reg_addr,HostReg reg_dst) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
++#if C_TARGET_CPU_ARM
++    gen_call_function_raw((void *)&mem_readb_result_drc);
++    dyn_check_exception(FC_OP2);
++    gen_mov_regs(reg_dst, FC_RETOP);
++#else
+ 	gen_call_function_raw((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low(reg_dst,&core_dynrec.readdata);
++#endif
+ }
+ static void dyn_read_byte_canuseword(HostReg reg_addr,HostReg reg_dst) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
++#if C_TARGET_CPU_ARM
++    gen_call_function_raw((void *)&mem_readb_result_drc);
++    dyn_check_exception(FC_OP2);
++    gen_mov_regs(reg_dst, FC_RETOP);
++#else
+ 	gen_call_function_raw((void *)&mem_readb_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_byte_to_reg_low_canuseword(reg_dst,&core_dynrec.readdata);
++#endif
+ }
+ 
+ // write a byte from reg_val into the memory given by the address
+@@ -736,10 +782,17 @@
+ // from a given address and store it in reg_dst
+ static void dyn_read_word(HostReg reg_addr,HostReg reg_dst,bool dword) {
+ 	gen_mov_regs(FC_OP1,reg_addr);
++#if C_TARGET_CPU_ARM
++    if (dword) gen_call_function_raw((void *)&mem_readd_result_drc);
++    else gen_call_function_raw((void *)&mem_readw_result_drc);
++    dyn_check_exception(FC_OP2);
++    gen_mov_regs(reg_dst, FC_RETOP);
++#else
+ 	if (dword) gen_call_function_raw((void *)&mem_readd_checked_drc);
+ 	else gen_call_function_raw((void *)&mem_readw_checked_drc);
+ 	dyn_check_exception(FC_RETOP);
+ 	gen_mov_word_to_reg(reg_dst,&core_dynrec.readdata,dword);
++#endif
+ }
+ 
+ // write a 32bit (dword=true) or 16bit (dword=false) value

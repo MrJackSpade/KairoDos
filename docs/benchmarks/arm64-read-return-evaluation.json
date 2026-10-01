@@ -1,0 +1,1009 @@
+{
+  "decision": "Rejected: no demonstrated gain in normal-PGO A/B/A; candidate is within baseline variation",
+  "builds": {
+    "normal-reference": {
+      "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+      "apkSha256": "ae2380b8239e18844c4d9e2c5403e4f73e1a260ed61e9ea0c23d6b0c48ee6d9b",
+      "elfSha256": "39adc1ca09a54a976e831a2db0fcb289b2104ae6354f87f55e7b1c4a340cec3b",
+      "packagedCoreSha256": "d61db728289fbe790e2dfe51e8a433aa24646298a49b6d4ad2b6b83595b6f462",
+      "changedPayloads": [
+        "lib/arm64-v8a/libdosbox_staging.so"
+      ],
+      "pgo": true,
+      "guestProfile": false
+    },
+    "read-return": {
+      "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+      "apkSha256": "f23468aff9e6d78769ba9ff8af52fff640a70a71e3a77f1478f546bf495a5237",
+      "elfSha256": "d36710fb1c8aaa2f00a1cedaaef81cd8dfd22825979f4baa4331498d5d7cf1d3",
+      "packagedCoreSha256": "dcd50352247fcfffb39017ce2cd6775f26ab1c7555dd74f2f3007cba2a282ad0",
+      "changedPayloads": [
+        "lib/arm64-v8a/libdosbox_staging.so"
+      ],
+      "pgo": true,
+      "guestProfile": false
+    },
+    "read-return-v2": {
+      "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+      "apkSha256": "10976046df6758f19c0f1589d584ca2889ff500a1348a8a843b40401c706d332",
+      "elfSha256": "dfc8921b179ca76c7edb54892862515bf9bb963cd933e94126b13abdb7aa03bc",
+      "packagedCoreSha256": "0934180f9962d6ee2e7bf9f188b00c4fb23d6d9a9e8b191e611d73ead70c5f25",
+      "changedPayloads": [
+        "lib/arm64-v8a/libdosbox_staging.so"
+      ],
+      "pgo": true,
+      "guestProfile": false
+    }
+  },
+  "captures": [
+    {
+      "run": "read-a1",
+      "variant": "reference",
+      "summary": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 119.95299999997951,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 119.55515910400283,
+        "threadCpuPercent": [
+          [
+            19133,
+            "KairoDos-emulat",
+            85.73357898511715
+          ],
+          [
+            19150,
+            "dosbox:mixer",
+            24.109442865126294
+          ],
+          [
+            19151,
+            "KairoDos-emulat",
+            4.0265770760221296
+          ],
+          [
+            19142,
+            "KairoDos-emulat",
+            3.151234233408623
+          ],
+          [
+            19153,
+            "KairoDos-audio",
+            0.9336990321210736
+          ],
+          [
+            19103,
+            "binder:19082_4",
+            0.57522529657459
+          ],
+          [
+            19082,
+            "loxifi.kairodos",
+            0.3584737355464836
+          ],
+          [
+            19102,
+            "binder:19082_3",
+            0.3167907430410785
+          ],
+          [
+            19149,
+            "SDLAudioP2",
+            0.2751077505356735
+          ],
+          [
+            19143,
+            "binder:19082_4",
+            0.10837578051405318
+          ],
+          [
+            19098,
+            "binder:19082_1",
+            0.04168299250540507
+          ],
+          [
+            19093,
+            "Jit thread pool",
+            0.016673197002162028
+          ],
+          [
+            19109,
+            "Profile Saver",
+            0.008336598501081014
+          ],
+          [
+            19089,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            19090,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            19092,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            19094,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            19095,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            19096,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            19097,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            19100,
+            "binder:19082_2",
+            0.0
+          ],
+          [
+            19110,
+            "RenderThread",
+            0.0
+          ],
+          [
+            19114,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            19115,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            19116,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            19117,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            19118,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            19119,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            19123,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            19125,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            19127,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            19128,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            19129,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            19132,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            19138,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            19139,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            19144,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            19145,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            19146,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            19147,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            19148,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            19152,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            19154,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            19155,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3886,
+          "rate": 32.42115801769108,
+          "intervalSeconds": 119.85999999998603,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.69325,
+          "p95IntervalMs": 66.633291,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.15599999995902,
+        "maxFrameSamplingGapSeconds": 0.6700000000128057,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            72777,
+            73333
+          ],
+          "gpu-thermal": [
+            70000,
+            70555
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.70300000003772,
+          "trackUnderrunFieldStart": {
+            "152": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "152": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "152": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "identity": {
+        "apk": "ae2380b8239e18844c4d9e2c5403e4f73e1a260ed61e9ea0c23d6b0c48ee6d9b  /data/app/~~IVuOp6RbYRzxCVWhdowt5Q==/com.loxifi.kairodos-oD146m5q0D7sCl5nmGnxeA==/base.apk",
+        "gameConfig": "1999e2a9be9ed2094649bd511d71c1217cd39fe33dc45dec6b5abafcb3a5fba5  /data/user/0/com.loxifi.kairodos/files/saves/bdf7b29bc62b029f479a843565195c61980979e581c2c59087c3e966cbd07118/staging/drive/Duke3D/DUKE3D/DUKE3D.CFG"
+      },
+      "warmup": {
+        "actualWarmupSeconds": 60.0
+      }
+    },
+    {
+      "run": "read-b2",
+      "variant": "corrected candidate",
+      "summary": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 119.95299999997951,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 119.79692046053417,
+        "threadCpuPercent": [
+          [
+            22311,
+            "KairoDos-emulat",
+            85.8002717731258
+          ],
+          [
+            22328,
+            "dosbox:mixer",
+            24.176135653134942
+          ],
+          [
+            22329,
+            "KairoDos-emulat",
+            4.059923470026454
+          ],
+          [
+            22321,
+            "KairoDos-emulat",
+            3.1929172259140284
+          ],
+          [
+            22332,
+            "KairoDos-audio",
+            0.9336990321210736
+          ],
+          [
+            22261,
+            "loxifi.kairodos",
+            0.3418005385443216
+          ],
+          [
+            22331,
+            "binder:22261_4",
+            0.3418005385443216
+          ],
+          [
+            22279,
+            "binder:22261_1",
+            0.30845414453999753
+          ],
+          [
+            22365,
+            "binder:22261_5",
+            0.2917809475378355
+          ],
+          [
+            22327,
+            "SDLAudioP2",
+            0.2834443490367545
+          ],
+          [
+            22320,
+            "binder:22261_2",
+            0.10837578051405318
+          ],
+          [
+            22273,
+            "Jit thread pool",
+            0.008336598501081014
+          ],
+          [
+            22286,
+            "Profile Saver",
+            0.008336598501081014
+          ],
+          [
+            22270,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            22271,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            22272,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            22274,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            22275,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            22276,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            22277,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            22280,
+            "binder:22261_2",
+            0.0
+          ],
+          [
+            22283,
+            "binder:22261_3",
+            0.0
+          ],
+          [
+            22287,
+            "RenderThread",
+            0.0
+          ],
+          [
+            22291,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            22292,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            22293,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            22294,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            22295,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            22296,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            22301,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            22303,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            22305,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            22306,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            22307,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            22310,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            22316,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            22317,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            22322,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            22323,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            22324,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            22325,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            22326,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            22330,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            22333,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            22334,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 3922,
+          "rate": 32.69423141046841,
+          "intervalSeconds": 119.9600000000064,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.697625,
+          "p95IntervalMs": 66.649334,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.15700000000652,
+        "maxFrameSamplingGapSeconds": 0.6700000000128057,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            72222,
+            72777
+          ],
+          "gpu-thermal": [
+            68750,
+            69375
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.59399999998277,
+          "trackUnderrunFieldStart": {
+            "154": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "154": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "154": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "identity": {
+        "apk": "10976046df6758f19c0f1589d584ca2889ff500a1348a8a843b40401c706d332  /data/app/~~iyrHUGZhxHbbmd8bqU62lA==/com.loxifi.kairodos--D9SspDsZoTTLxWBz5lAbg==/base.apk",
+        "gameConfig": "1999e2a9be9ed2094649bd511d71c1217cd39fe33dc45dec6b5abafcb3a5fba5  /data/user/0/com.loxifi.kairodos/files/saves/bdf7b29bc62b029f479a843565195c61980979e581c2c59087c3e966cbd07118/staging/drive/Duke3D/DUKE3D/DUKE3D.CFG"
+      },
+      "warmup": {
+        "actualWarmupSeconds": 60.0
+      }
+    },
+    {
+      "run": "read-a2",
+      "variant": "reference",
+      "summary": {
+        "observation": "light",
+        "observationLimits": "Sparse CPU/thermal/power checkpoints; no simpleperf or intermediate screenshots. Local frame sampler remains active.",
+        "intervalSeconds": 119.96900000004098,
+        "clockTicksPerSecond": 100,
+        "processCpuPercent": 120.55614367040701,
+        "threadCpuPercent": [
+          [
+            23896,
+            "KairoDos-emulat",
+            86.37231284745609
+          ],
+          [
+            23913,
+            "dosbox:mixer",
+            24.047879035409267
+          ],
+          [
+            23914,
+            "KairoDos-emulat",
+            4.051046520349707
+          ],
+          [
+            23902,
+            "KairoDos-emulat",
+            3.334194666954491
+          ],
+          [
+            23916,
+            "KairoDos-audio",
+            0.9752519400841886
+          ],
+          [
+            23919,
+            "binder:23845_5",
+            0.9085680467450988
+          ],
+          [
+            23845,
+            "loxifi.kairodos",
+            0.35009044003022155
+          ],
+          [
+            23912,
+            "SDLAudioP2",
+            0.29174203335851795
+          ],
+          [
+            23906,
+            "binder:23845_1",
+            0.10836132667602096
+          ],
+          [
+            23866,
+            "binder:23845_4",
+            0.058348406671703594
+          ],
+          [
+            23865,
+            "binder:23845_3",
+            0.03334194666954491
+          ],
+          [
+            23857,
+            "Jit thread pool",
+            0.008335486667386227
+          ],
+          [
+            23852,
+            "Signal Catcher",
+            0.0
+          ],
+          [
+            23855,
+            "perfetto_hprof_",
+            0.0
+          ],
+          [
+            23856,
+            "ADB-JDWP Connec",
+            0.0
+          ],
+          [
+            23858,
+            "HeapTaskDaemon",
+            0.0
+          ],
+          [
+            23859,
+            "ReferenceQueueD",
+            0.0
+          ],
+          [
+            23860,
+            "FinalizerDaemon",
+            0.0
+          ],
+          [
+            23861,
+            "FinalizerWatchd",
+            0.0
+          ],
+          [
+            23862,
+            "binder:23845_1",
+            0.0
+          ],
+          [
+            23863,
+            "binder:23845_2",
+            0.0
+          ],
+          [
+            23871,
+            "Profile Saver",
+            0.0
+          ],
+          [
+            23872,
+            "RenderThread",
+            0.0
+          ],
+          [
+            23876,
+            "mali-mem-purge",
+            0.0
+          ],
+          [
+            23877,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            23878,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            23879,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            23880,
+            "mali-utility-wo",
+            0.0
+          ],
+          [
+            23881,
+            "mali-cmar-backe",
+            0.0
+          ],
+          [
+            23886,
+            "queued-work-loo",
+            0.0
+          ],
+          [
+            23888,
+            "AsyncTask #2",
+            0.0
+          ],
+          [
+            23890,
+            "SurfaceSyncGrou",
+            0.0
+          ],
+          [
+            23891,
+            "hwuiTask0",
+            0.0
+          ],
+          [
+            23892,
+            "hwuiTask1",
+            0.0
+          ],
+          [
+            23895,
+            "pool-3-thread-1",
+            0.0
+          ],
+          [
+            23901,
+            "InsetsAnimation",
+            0.0
+          ],
+          [
+            23903,
+            "OkHttp Connecti",
+            0.0
+          ],
+          [
+            23907,
+            "SDLTimer",
+            0.0
+          ],
+          [
+            23908,
+            "InteractionJank",
+            0.0
+          ],
+          [
+            23909,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            23910,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            23911,
+            "dosbox:imgcap",
+            0.0
+          ],
+          [
+            23915,
+            "Okio Watchdog",
+            0.0
+          ],
+          [
+            23917,
+            "AudioTrack",
+            0.0
+          ],
+          [
+            23918,
+            "AudioPortEventH",
+            0.0
+          ]
+        ],
+        "threadLimits": "Only threads present at both endpoints; process CPU includes other threads.",
+        "presentations": {
+          "count": 4099,
+          "rate": 34.318486269255864,
+          "intervalSeconds": 119.44000000000233,
+          "source": "device-local-v1",
+          "medianIntervalMs": 16.686833,
+          "p95IntervalMs": 66.618125,
+          "note": "Surface submissions, not necessarily unique guest frames"
+        },
+        "hardwareFirstLines": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ]
+        },
+        "maxSamplingGapSeconds": 62.20400000002701,
+        "maxFrameSamplingGapSeconds": 0.6700000000128057,
+        "disjointPresentationHistories": 0,
+        "presentationHistoryComplete": true,
+        "thermalAndCoolingRawRanges": {
+          "soc-thermal": [
+            70555,
+            72222
+          ],
+          "gpu-thermal": [
+            66875,
+            68750
+          ],
+          "battery": [
+            18800,
+            18800
+          ],
+          "cpufreq-cpu0": [
+            0,
+            0
+          ],
+          "devfreq-fdf80200.rkvdec": [
+            0,
+            0
+          ],
+          "devfreq-fde60000.gpu": [
+            0,
+            0
+          ]
+        },
+        "audio": {
+          "snapshotSpanSeconds": 126.56300000002375,
+          "trackUnderrunFieldStart": {
+            "155": 0
+          },
+          "trackUnderrunFieldEnd": {
+            "155": 0
+          },
+          "trackUnderrunFieldDelta": {
+            "155": 0
+          },
+          "limits": "AudioFlinger dump field, not a test of emulated sample quality; snapshot window differs slightly from CPU window."
+        }
+      },
+      "identity": {
+        "apk": "ae2380b8239e18844c4d9e2c5403e4f73e1a260ed61e9ea0c23d6b0c48ee6d9b  /data/app/~~BGU3EBnwG3u-s1H5MfyXVw==/com.loxifi.kairodos-KcID76kXOERGU8MtliltBg==/base.apk",
+        "gameConfig": "1999e2a9be9ed2094649bd511d71c1217cd39fe33dc45dec6b5abafcb3a5fba5  /data/user/0/com.loxifi.kairodos/files/saves/bdf7b29bc62b029f479a843565195c61980979e581c2c59087c3e966cbd07118/staging/drive/Duke3D/DUKE3D/DUKE3D.CFG"
+      },
+      "warmup": {
+        "actualWarmupSeconds": 60.0
+      }
+    }
+  ],
+  "referenceMean": 33.36982214347347,
+  "candidateRate": 32.69423141046841,
+  "observedPercentVsReferenceMean": -2.024555989841237,
+  "excludedPrototype": {
+    "run": "read-b1",
+    "reason": "Excluded from performance decisions. The first prototype failed the expanded\ncorrectness probe: its dword slow path returned the 64-bit Bitu scratch slot\nwithout truncating the upper 32 bits when the generated destination was already\nw0 (and therefore no move was emitted). A short native probe also ran during this\ncapture, so its timing is not an uncontaminated A/B measurement.\n\nThe original 524,800-case probe used a 32-bit scratch stub and only a distinct\ndestination register. The corrected probe uses the actual pointer-sized Bitu\nslot, seeds nonzero upper bits and tests both distinct and same-register paths.\nIt reproduced the failure before the fix. The corrected candidate passed\n1,049,600 cases. Only new captures of that corrected frozen APK may be used.\n",
+    "reproducedFailure": "variant=3 mode=4 addr=0 value=aabbccdd68bb0e61 fault=0 expected=68bb0e61/0"
+  },
+  "correctedProbe": {
+    "checks": 1049600,
+    "sourceSha256": "6bea42cca1ed32ae6aa12f1dd77682a23f80e22650f22e02b37aa978bbae6795",
+    "binarySha256": "61a69bb2b549803297738b6d3338f52b50361bd120e4c46ee4e7c9dcfcba5fc5",
+    "coverage": [
+      "byte/word/dword",
+      "cached/handler",
+      "page crossing",
+      "partial faults",
+      "wrapping addresses",
+      "distinct and same destination register",
+      "nonzero upper scratch bits"
+    ],
+    "limit": "Standalone generated-code probe with simulated page handlers; not full-core fault or universal game compatibility evidence"
+  },
+  "limits": [
+    "One corrected candidate run bracketed by two references; not a statistically established regression.",
+    "Surface submissions are not unique guest FPS.",
+    "Representative-game and full-core fault adoption gates were not pursued after performance failed.",
+    "No production optimization is adopted; isolated source and device reference are restored."
+  ]
+}
