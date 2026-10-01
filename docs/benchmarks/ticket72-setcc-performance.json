@@ -1,0 +1,641 @@
+{
+  "baselineApkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+  "prototypeApkSha256": "22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2",
+  "baselineCoreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+  "prototypeCoreBuildId": "a97cd112e9297ac093e9480132b2345068b870f9",
+  "changedApkEntries": [
+    "lib/arm64-v8a/libdosbox_staging.so"
+  ],
+  "guestProfiling": "OFF verified in CMakeCache",
+  "protocol": {
+    "warmupSeconds": 60,
+    "captureSeconds": 120,
+    "sound": "existing game configuration enabled",
+    "resolution": "320x200",
+    "device": "RG DS",
+    "transport": "Wi-Fi"
+  },
+  "runs": {
+    "ticket72-a": {
+      "capture": {
+        "duration": 123.45299999997951,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#926",
+        "pid": "29464",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 119.53099999995902,
+        "threadCpuPercent": [
+          [
+            29512,
+            "KairoDos-emulat",
+            83.23
+          ],
+          [
+            29530,
+            "dosbox:mixer",
+            24.33
+          ],
+          [
+            29522,
+            "KairoDos-emulat",
+            2.16
+          ],
+          [
+            29533,
+            "KairoDos-audio",
+            1.46
+          ],
+          [
+            29529,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            29567,
+            "binder:29464_5",
+            0.74
+          ],
+          [
+            29464,
+            "loxifi.kairodos",
+            0.38
+          ],
+          [
+            29521,
+            "binder:29464_2",
+            0.21
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000",
+            "800000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111",
+            "56666"
+          ],
+          "9": [
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125",
+            "53750"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2278,
+          "rate": 19.05781763727218,
+          "medianIntervalMs": 33.310084,
+          "p95IntervalMs": 133.277958,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    260,947,372,800  cpu-cycles                # 1.836712 GHz      \n    153,459,361,213  instructions              # 1.080 G/sec       \n  141304.468669(ms)  task-clock                # 1.177515 cpus used\n     42,953,607,780  cache-references          # 302.347 M/sec     \n        425,082,536  cache-misses              # 2.992 M/sec       \n     82,566,439,699  stalled-cycles-backend    # 581.178 M/sec     \n     69,248,755,959  stalled-cycles-frontend   # 487.441 M/sec     \n\nTotal test time: 120.002305 seconds.\n",
+      "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.939 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 116,949. Samples lost: 0.\n",
+      "launchToFirstSampleSeconds": 79.76923704147339,
+      "firstSampleElapsedSeconds": 2.1560000000172295
+    },
+    "ticket72-b": {
+      "capture": {
+        "duration": 123.59399999998277,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#1001",
+        "pid": "32734",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 117.45299999997951,
+        "threadCpuPercent": [
+          [
+            330,
+            "KairoDos-emulat",
+            82.25
+          ],
+          [
+            366,
+            "dosbox:mixer",
+            24.44
+          ],
+          [
+            340,
+            "KairoDos-emulat",
+            2.21
+          ],
+          [
+            369,
+            "KairoDos-audio",
+            1.49
+          ],
+          [
+            349,
+            "SDLAudioP2",
+            0.94
+          ],
+          [
+            402,
+            "binder:32734_5",
+            0.64
+          ],
+          [
+            32734,
+            "loxifi.kairodos",
+            0.38
+          ],
+          [
+            339,
+            "binder:32734_1",
+            0.22
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "51875",
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111"
+          ],
+          "9": [
+            "49444",
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2290,
+          "rate": 19.497160566357604,
+          "medianIntervalMs": 33.3655,
+          "p95IntervalMs": 133.228959,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    260,379,006,110  cpu-cycles                # 1.836505 GHz      \n    152,601,501,975  instructions              # 1.076 G/sec       \n  140977.978458(ms)  task-clock                # 1.174799 cpus used\n     42,641,750,085  cache-references          # 300.768 M/sec     \n        427,307,210  cache-misses              # 3.014 M/sec       \n     83,090,616,969  stalled-cycles-backend    # 586.084 M/sec     \n     69,079,875,018  stalled-cycles-frontend   # 487.305 M/sec     \n\nTotal test time: 120.001795 seconds.\n",
+      "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.938 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 122,859. Samples lost: 0.\n",
+      "launchToFirstSampleSeconds": 80.5252571105957,
+      "firstSampleElapsedSeconds": 2.2660000000032596
+    },
+    "ticket72-a2": {
+      "capture": {
+        "duration": 123.375,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#1069",
+        "pid": "4649",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 118.0,
+        "threadCpuPercent": [
+          [
+            4698,
+            "KairoDos-emulat",
+            81.61
+          ],
+          [
+            4715,
+            "dosbox:mixer",
+            24.36
+          ],
+          [
+            4705,
+            "KairoDos-emulat",
+            1.97
+          ],
+          [
+            4717,
+            "KairoDos-audio",
+            1.5
+          ],
+          [
+            4714,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            4649,
+            "loxifi.kairodos",
+            0.39
+          ],
+          [
+            4663,
+            "binder:4649_1",
+            0.27
+          ],
+          [
+            4668,
+            "binder:4649_4",
+            0.27
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111"
+          ],
+          "9": [
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2061,
+          "rate": 17.466101694915253,
+          "medianIntervalMs": 33.336479,
+          "p95IntervalMs": 166.4845,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    258,014,192,855  cpu-cycles                # 1.836424 GHz      \n    150,290,246,210  instructions              # 1.070 G/sec       \n  139717.674935(ms)  task-clock                # 1.164296 cpus used\n     42,169,256,464  cache-references          # 300.148 M/sec     \n        422,080,009  cache-misses              # 3.004 M/sec       \n     82,638,115,366  stalled-cycles-backend    # 588.204 M/sec     \n     68,380,741,716  stalled-cycles-frontend   # 486.729 M/sec     \n\nTotal test time: 120.001809 seconds.\n",
+      "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.937 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 117,184. Samples lost: 0.\n",
+      "launchToFirstSampleSeconds": 80.84407687187195,
+      "firstSampleElapsedSeconds": 2.1719999999622814
+    },
+    "ticket72-b2": {
+      "capture": {
+        "duration": 123.40599999995902,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#1144",
+        "pid": "7888",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 118.71899999998277,
+        "threadCpuPercent": [
+          [
+            7944,
+            "KairoDos-emulat",
+            82.27
+          ],
+          [
+            7961,
+            "dosbox:mixer",
+            24.39
+          ],
+          [
+            7954,
+            "KairoDos-emulat",
+            2.22
+          ],
+          [
+            7963,
+            "KairoDos-audio",
+            1.47
+          ],
+          [
+            7960,
+            "SDLAudioP2",
+            0.93
+          ],
+          [
+            7908,
+            "binder:7888_3",
+            0.51
+          ],
+          [
+            7888,
+            "loxifi.kairodos",
+            0.4
+          ],
+          [
+            7905,
+            "binder:7888_1",
+            0.24
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555",
+            "56111"
+          ],
+          "9": [
+            "49444",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2334,
+          "rate": 19.659869102673866,
+          "medianIntervalMs": 33.308917,
+          "p95IntervalMs": 133.233625,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    260,337,602,677  cpu-cycles                # 1.836718 GHz      \n    152,643,417,736  instructions              # 1.077 G/sec       \n  140951.569855(ms)  task-clock                # 1.174584 cpus used\n     42,636,202,819  cache-references          # 300.839 M/sec     \n        415,973,199  cache-misses              # 2.935 M/sec       \n     84,298,223,476  stalled-cycles-backend    # 594.833 M/sec     \n     67,782,668,645  stalled-cycles-frontend   # 478.303 M/sec     \n\nTotal test time: 120.001263 seconds.\n",
+      "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.949 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 113,493. Samples lost: 0.\n",
+      "launchToFirstSampleSeconds": 80.26923179626465,
+      "firstSampleElapsedSeconds": 2.125
+    },
+    "ticket72-a3": {
+      "capture": {
+        "duration": 123.5,
+        "layer": "SurfaceView[com.loxifi.kairodos/com.mrjackspade.kairodos.MainActivity](BLAST)#1216",
+        "pid": "11132",
+        "recordExit": 0,
+        "statExit": 0
+      },
+      "summary": {
+        "intervalSeconds": 117.43700000003446,
+        "threadCpuPercent": [
+          [
+            11188,
+            "KairoDos-emulat",
+            81.86
+          ],
+          [
+            11205,
+            "dosbox:mixer",
+            24.32
+          ],
+          [
+            11195,
+            "KairoDos-emulat",
+            2.13
+          ],
+          [
+            11207,
+            "KairoDos-audio",
+            1.46
+          ],
+          [
+            11204,
+            "SDLAudioP2",
+            0.94
+          ],
+          [
+            11132,
+            "loxifi.kairodos",
+            0.4
+          ],
+          [
+            11152,
+            "binder:11132_2",
+            0.37
+          ],
+          [
+            11232,
+            "binder:11132_5",
+            0.28
+          ]
+        ],
+        "hardwareLineValues": {
+          "1": [
+            "1992000"
+          ],
+          "2": [
+            "1104000000"
+          ],
+          "3": [
+            "920000000"
+          ],
+          "4": [
+            "198000000"
+          ],
+          "5": [
+            "800000000"
+          ],
+          "7": [
+            "52500",
+            "53125",
+            "53750",
+            "54375",
+            "55000",
+            "55555"
+          ],
+          "9": [
+            "49444",
+            "50000",
+            "50625",
+            "51250",
+            "51875",
+            "52500",
+            "53125"
+          ],
+          "13": [
+            "0"
+          ],
+          "15": [
+            "0"
+          ],
+          "17": [
+            "0"
+          ]
+        },
+        "presentations": {
+          "count": 2204,
+          "rate": 18.76750938800679,
+          "medianIntervalMs": 33.319708,
+          "p95IntervalMs": 133.271833,
+          "note": "Surface submissions, not necessarily unique game frames"
+        }
+      },
+      "counters": "Performance counter statistics:\n\n#             count  event_name                # count / runtime\n    259,344,678,670  cpu-cycles                # 1.836337 GHz      \n    151,050,418,772  instructions              # 1.070 G/sec       \n  140412.130236(ms)  task-clock                # 1.170084 cpus used\n     42,322,130,353  cache-references          # 299.694 M/sec     \n        434,423,349  cache-misses              # 3.076 M/sec       \n     83,779,679,919  stalled-cycles-backend    # 593.287 M/sec     \n     68,204,819,123  stalled-cycles-frontend   # 483.000 M/sec     \n\nTotal test time: 120.001725 seconds.\n",
+      "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.948 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 116,561. Samples lost: 0.\n",
+      "launchToFirstSampleSeconds": 80.21684384346008,
+      "firstSampleElapsedSeconds": 2.2189999999827705
+    }
+  },
+  "hostCosts": {
+    "ticket72-a": {
+      "cpuSeconds": 103.39393836,
+      "selfCpuSeconds": {
+        "CPU_Core_Dynrec_Run()": 2.60606058,
+        "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)": 0.37373737,
+        "MakeCodePage(unsigned long, CodePageHandler*&)": 2.13131311,
+        "CPU_Core_Normal_Run()": 0.74747474,
+        "PIC_RunQueue()": 0.42424242
+      }
+    },
+    "ticket72-b": {
+      "cpuSeconds": 102.75757473,
+      "selfCpuSeconds": {
+        "MakeCodePage(unsigned long, CodePageHandler*&)": 2.11111109,
+        "CPU_Core_Dynrec_Run()": 2.88888886,
+        "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)": 0.41414141,
+        "PIC_RunQueue()": 0.35353535,
+        "CPU_Core_Normal_Run()": 0.33333333
+      }
+    },
+    "ticket72-a2": {
+      "cpuSeconds": 101.87878686,
+      "selfCpuSeconds": {
+        "CPU_Core_Dynrec_Run()": 2.80808078,
+        "MakeCodePage(unsigned long, CodePageHandler*&)": 2.15151513,
+        "CPU_Core_Normal_Run()": 0.84848484,
+        "PIC_RunQueue()": 0.46464646,
+        "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)": 0.47474747
+      }
+    },
+    "ticket72-b2": {
+      "cpuSeconds": 102.7272717,
+      "selfCpuSeconds": {
+        "CPU_Core_Dynrec_Run()": 2.41414139,
+        "MakeCodePage(unsigned long, CodePageHandler*&)": 2.17171715,
+        "CPU_Core_Normal_Run()": 0.35353535,
+        "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)": 0.39393939,
+        "PIC_RunQueue()": 0.35353535
+      }
+    },
+    "ticket72-a3": {
+      "cpuSeconds": 102.56565554,
+      "selfCpuSeconds": {
+        "CPU_Core_Dynrec_Run()": 2.61616159,
+        "MakeCodePage(unsigned long, CodePageHandler*&)": 2.25252523,
+        "CPU_Core_Normal_Run()": 0.73737373,
+        "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)": 0.38383838,
+        "PIC_RunQueue()": 0.44444444
+      }
+    }
+  },
+  "comparison": {
+    "baselineRates": [
+      19.05781763727218,
+      17.466101694915253,
+      18.76750938800679
+    ],
+    "prototypeRates": [
+      19.497160566357604,
+      19.659869102673866
+    ],
+    "baselineMean": 18.430476240064742,
+    "prototypeMean": 19.578514834515737,
+    "baselineSampleStdDev": 0.8476929971381713,
+    "prototypeSampleStdDev": 0.11505230938616706,
+    "prototypeMeanVsBaselineMeanPercent": 6.2290229481718695,
+    "minimumPrototypeVsMaximumBaselinePercent": 2.3053160516458115
+  },
+  "decision": "Candidate remains under investigation: positive direction in both prototype runs, magnitude uncertain due baseline variance; no adoption pending remaining correctness gates.",
+  "limitations": [
+    "Display submissions are not unique game FPS.",
+    "Only two prototype and three baseline runs; no statistical confidence claim.",
+    "Rendered-demo scene phase varies.",
+    "Nominal 60-second wait loop adds ADB time; first samples are about 80 seconds after launch for all runs.",
+    "Clock interfaces disagree; actual frequency not established.",
+    "Protected-mode/default 32-bit/fault coverage incomplete."
+  ]
+}

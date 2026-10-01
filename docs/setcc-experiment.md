@@ -78,3 +78,7 @@ checkpoint. No APK was installed and production source remains unchanged.
 Protected mode, default 32-bit code, fault handling, additional effective-address
 forms and the A/B/A performance gate remain open. The prefixes tested here operate
 in 16-bit real-mode code; they are not a substitute for those remaining checks.
+
+## Performance checkpoint
+
+Five sound-enabled actual-app runs are recorded in [the performance report](setcc-performance.md). Both prototype runs exceeded the baseline runs, but the size of the gain remains uncertain. The original APK was restored. #72 remains open for the remaining correctness gates; no production adoption.
