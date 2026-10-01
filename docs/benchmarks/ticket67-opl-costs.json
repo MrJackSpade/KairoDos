@@ -1,0 +1,113 @@
+{
+  "captures": [
+    {
+      "capture": "duke-current-320-profile",
+      "emulationTid": 24345,
+      "recordSeconds": 119.937,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "on-cpuSeconds": {
+        "total": 103.24242321,
+        "portWriteInclusive": 5.92929287,
+        "generationUnderPortWrite": 5.61616156,
+        "mutexUnderPortWrite": 0.16161616
+      },
+      "off-cpuSeconds": {
+        "total": 19.151169051,
+        "portWriteInclusive": 3.474368044,
+        "generationUnderPortWrite": 0.286029907,
+        "mutexUnderPortWrite": 3.176698885
+      }
+    },
+    {
+      "capture": "ticket72-a",
+      "emulationTid": 29512,
+      "recordSeconds": 119.939,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "on-cpuSeconds": {
+        "total": 103.39393836,
+        "portWriteInclusive": 5.76767671,
+        "generationUnderPortWrite": 5.34343429,
+        "mutexUnderPortWrite": 0.24242424
+      },
+      "off-cpuSeconds": {
+        "total": 19.067047609,
+        "portWriteInclusive": 3.347923522,
+        "mutexUnderPortWrite": 3.070297142,
+        "generationUnderPortWrite": 0.266755092
+      }
+    },
+    {
+      "capture": "ticket72-b",
+      "emulationTid": 330,
+      "recordSeconds": 119.938,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "on-cpuSeconds": {
+        "total": 102.75757473,
+        "portWriteInclusive": 5.79797974,
+        "generationUnderPortWrite": 5.42424237,
+        "mutexUnderPortWrite": 0.22222222
+      },
+      "off-cpuSeconds": {
+        "total": 19.822987639,
+        "portWriteInclusive": 3.673050223,
+        "generationUnderPortWrite": 0.340647137,
+        "mutexUnderPortWrite": 3.319303167
+      }
+    },
+    {
+      "capture": "ticket72-a2",
+      "emulationTid": 4698,
+      "recordSeconds": 119.937,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "on-cpuSeconds": {
+        "total": 101.87878686,
+        "portWriteInclusive": 5.66666661,
+        "mutexUnderPortWrite": 0.2020202,
+        "generationUnderPortWrite": 5.31313126
+      },
+      "off-cpuSeconds": {
+        "total": 20.551061398,
+        "portWriteInclusive": 3.593843166,
+        "generationUnderPortWrite": 0.288695738,
+        "mutexUnderPortWrite": 3.292884009
+      }
+    },
+    {
+      "capture": "ticket72-b2",
+      "emulationTid": 7944,
+      "recordSeconds": 119.949,
+      "elfSha256": "86e3260ff8e0fbc1f6faa92d6b7e5d7e45cad6c85026fc83a70773cd00b1d56e",
+      "on-cpuSeconds": {
+        "total": 102.7272717,
+        "portWriteInclusive": 5.91919186,
+        "generationUnderPortWrite": 5.63636358,
+        "mutexUnderPortWrite": 0.17171717
+      },
+      "off-cpuSeconds": {
+        "total": 19.638315638,
+        "portWriteInclusive": 3.560391909,
+        "mutexUnderPortWrite": 3.25207312,
+        "generationUnderPortWrite": 0.296626164
+      }
+    },
+    {
+      "capture": "ticket72-a3",
+      "emulationTid": 11188,
+      "recordSeconds": 119.948,
+      "elfSha256": "1d631cbc5c0da0fe846bd0d1edaab38a116735b621a814a20eb494d81a649524",
+      "on-cpuSeconds": {
+        "total": 102.56565554,
+        "portWriteInclusive": 5.88888883,
+        "generationUnderPortWrite": 5.49494944,
+        "mutexUnderPortWrite": 0.25252525
+      },
+      "off-cpuSeconds": {
+        "total": 19.947903819,
+        "portWriteInclusive": 3.561327322,
+        "mutexUnderPortWrite": 3.221905162,
+        "generationUnderPortWrite": 0.32712316
+      }
+    }
+  ],
+  "limitations": "Inclusive categories overlap. Off-CPU includes scheduling delay, not necessarily lock ownership alone. Attribution can miss inlined/unwound frames. Not an optimization benchmark."
+}
