@@ -1,0 +1,1374 @@
+{
+  "ticket": 60,
+  "decision": "No change: no material avoidable VRAM access target established in the measured workload.",
+  "referenceCommit": "8122b9dc",
+  "profiles": "Normal-build reference A and restored A2 from #71, 60-second warmup and 120-second rendered capture; no experimental APK or per-access counters.",
+  "measurements": {
+    "ticket71-reference-a": {
+      "emulationTid": 2305,
+      "threadCpuSeconds": 102.86868584,
+      "sampleCount": 10184,
+      "vgaMemorySourceSelfSeconds": 0.49494949000000005,
+      "vgaMemorySourceFunctions": {
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.49494949000000005
+      },
+      "vramHandlerInclusiveSeconds": 0.5050505,
+      "handlerSelfAndCallees": {
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.49494949,
+        "handle_softirqs": 0.01010101
+      },
+      "genericMemorySelfSeconds": 1.65656564,
+      "genericMemoryFunctions": {
+        "mem_writed(unsigned int, unsigned int)": 0.83838383,
+        "unsigned int mem_readd<(MemOpMode)0>(unsigned int)": 0.66666666,
+        "mem_writew(unsigned int, unsigned short)": 0.08080808,
+        "unsigned short mem_readw<(MemOpMode)0>(unsigned int)": 0.06060606,
+        "unsigned char mem_readb<(MemOpMode)0>(unsigned int)": 0.01010101
+      },
+      "genericMemoryInlineSeconds": 1.69696968,
+      "genericMemoryInlineOutsideNamedBodiesSeconds": 0.14141414000000002,
+      "checkedDynrecMemoryHelpersSelfSeconds": 11.16161605,
+      "paletteConversionSelfSeconds": 2.67676765
+    },
+    "ticket71-reference-a2": {
+      "emulationTid": 9037,
+      "threadCpuSeconds": 103.3333323,
+      "sampleCount": 10230,
+      "vgaMemorySourceSelfSeconds": 0.28282828000000004,
+      "vgaMemorySourceFunctions": {
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.28282828000000004
+      },
+      "vramHandlerInclusiveSeconds": 0.29292929,
+      "handlerSelfAndCallees": {
+        "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)": 0.28282828,
+        "finish_task_switch": 0.01010101
+      },
+      "genericMemorySelfSeconds": 1.56565655,
+      "genericMemoryFunctions": {
+        "mem_writed(unsigned int, unsigned int)": 0.71717171,
+        "unsigned int mem_readd<(MemOpMode)0>(unsigned int)": 0.69696969,
+        "mem_writew(unsigned int, unsigned short)": 0.07070707,
+        "unsigned short mem_readw<(MemOpMode)0>(unsigned int)": 0.06060606,
+        "unsigned char mem_readb<(MemOpMode)0>(unsigned int)": 0.02020202
+      },
+      "genericMemoryInlineSeconds": 1.5656565500000001,
+      "genericMemoryInlineOutsideNamedBodiesSeconds": 0.14141414000000002,
+      "checkedDynrecMemoryHelpersSelfSeconds": 10.96969686,
+      "paletteConversionSelfSeconds": 2.5252525
+    }
+  },
+  "runtimeSnapshot": {
+    "pid": 8984,
+    "apkSha256": "5a114b2b0db15ef2327b09f44daef61a2b4c8544792b7777c4b610e270f23db9",
+    "coreBuildId": "9982f89784e2630b949c1f7c06d336c7220185d7",
+    "vga": {
+      "mode": 8,
+      "chained": true,
+      "compatibleChain4": true,
+      "vmemWrap": 262144,
+      "vmemSize": 4194304,
+      "vmemDelayNs": 0
+    },
+    "pages": [
+      {
+        "guestPage": "0xa0",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa1",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa2",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa3",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa4",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa5",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa6",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa7",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa8",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xa9",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xaa",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xab",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xac",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xad",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xae",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      },
+      {
+        "guestPage": "0xaf",
+        "readDirect": "0x0",
+        "writeDirect": "0x0",
+        "readHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        },
+        "writeHandler": {
+          "objectCoreOffset": "0x18d5e90",
+          "vtableCoreOffset": "0x996ac0",
+          "flags": "0x10"
+        }
+      }
+    ],
+    "method": "Read-only /proc/PID/mem; offsets from matching ELF symbols and DWARF; snapshot after benchmark, no probe code or writes."
+  },
+  "sourceAttribution": {
+    "ticket71-reference-a": [
+      {
+        "address": "0x63fe84",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.03030303,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffd8",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.03030303,
+        "frames": [
+          {
+            "Column": 19,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "void VGA_ChainedVGA_Handler::WriteCache_template<void (*)(unsigned char*, unsigned int) noexcept, unsigned int>(void (*)(unsigned char*, unsigned int) noexcept, unsigned int, unsigned int)",
+            "Line": 375,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 373
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeCache_dword(unsigned int, unsigned int)",
+            "Line": 394,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 392
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 500,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffc8",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.03030303,
+        "frames": [
+          {
+            "Column": 12,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "FunctionName": "memcpy(void*, void const* pass_object_size0, unsigned long)",
+            "Line": 53,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "StartLine": 50
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "FunctionName": "write_unaligned_uint32(unsigned char*, unsigned int)",
+            "Line": 122,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "StartLine": 120
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "FunctionName": "host_writed(unsigned char*, unsigned int)",
+            "Line": 82,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "StartLine": 80
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeHandler_dword(unsigned int, unsigned int)",
+            "Line": 411,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 409
+          },
+          {
+            "Column": 4,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 498,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff34",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 8,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 488,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffc4",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.05050505,
+        "frames": [
+          {
+            "Column": 19,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::ToLinear(unsigned int)",
+            "Line": 354,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 352
+          },
+          {
+            "Column": 15,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeHandler_dword(unsigned int, unsigned int)",
+            "Line": 411,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 409
+          },
+          {
+            "Column": 4,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 498,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff0c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.02020202,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff04",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.03030303,
+        "frames": [
+          {
+            "Column": 16,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "FunctionName": "std::__ndk1::vector<unsigned int, std::__ndk1::allocator<unsigned int>>::operator[][abi:ne190000](unsigned long)",
+            "Line": 1412,
+            "StartAddress": "",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "StartLine": 1410
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff2c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 20,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 488,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff3c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.02020202,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 489,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffd0",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 7,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "void VGA_ChainedVGA_Handler::WriteCache_template<void (*)(unsigned char*, unsigned int) noexcept, unsigned int>(void (*)(unsigned char*, unsigned int) noexcept, unsigned int, unsigned int)",
+            "Line": 376,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 373
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeCache_dword(unsigned int, unsigned int)",
+            "Line": 394,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 392
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 500,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff00",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 16,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "FunctionName": "std::__ndk1::vector<unsigned int, std::__ndk1::allocator<unsigned int>>::operator[][abi:ne190000](unsigned long)",
+            "Line": 0,
+            "StartAddress": "",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "StartLine": 1410
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fe98",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 6,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff18",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.06060606,
+        "frames": [
+          {
+            "Column": 48,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fef8",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.02020202,
+        "frames": [
+          {
+            "Column": 38,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff40",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 12,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 492,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff14",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fffc",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 501,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffc0",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 39,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::ToLinear(unsigned int)",
+            "Line": 0,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 352
+          },
+          {
+            "Column": 15,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeHandler_dword(unsigned int, unsigned int)",
+            "Line": 411,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 409
+          },
+          {
+            "Column": 4,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 498,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fe94",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffdc",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 12,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "FunctionName": "memcpy(void*, void const* pass_object_size0, unsigned long)",
+            "Line": 53,
+            "StartAddress": "0x63ffdc",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "StartLine": 50
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "FunctionName": "write_unaligned_uint32(unsigned char*, unsigned int)",
+            "Line": 122,
+            "StartAddress": "0x63ffdc",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "StartLine": 120
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "FunctionName": "host_writed(unsigned char*, unsigned int)",
+            "Line": 82,
+            "StartAddress": "0x63ffdc",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "StartLine": 80
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "void VGA_ChainedVGA_Handler::WriteCache_template<void (*)(unsigned char*, unsigned int) noexcept, unsigned int>(void (*)(unsigned char*, unsigned int) noexcept, unsigned int, unsigned int)",
+            "Line": 375,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 373
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeCache_dword(unsigned int, unsigned int)",
+            "Line": 394,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 392
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 500,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      }
+    ],
+    "ticket71-reference-a2": [
+      {
+        "address": "0x63ff14",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff0c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fe98",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 6,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff18",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 48,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff20",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 53,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fef0",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.03030303,
+        "frames": [
+          {
+            "Column": 16,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "FunctionName": "std::__ndk1::vector<unsigned int, std::__ndk1::allocator<unsigned int>>::operator[][abi:ne190000](unsigned long)",
+            "Line": 1412,
+            "StartAddress": "",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/c++/v1/vector",
+            "StartLine": 1410
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "FunctionName": "PAGING_GetPhysicalAddress(unsigned int)",
+            "Line": 237,
+            "StartAddress": "",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/cpu/paging.h",
+            "StartLine": 236
+          },
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 487,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fe94",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.04040404,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffc4",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 19,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::ToLinear(unsigned int)",
+            "Line": 354,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 352
+          },
+          {
+            "Column": 15,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeHandler_dword(unsigned int, unsigned int)",
+            "Line": 411,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 409
+          },
+          {
+            "Column": 4,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 498,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fe8c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "write_delay()",
+            "Line": 119,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 117
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 486,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff34",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 8,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 488,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff3c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.02020202,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 489,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff2c",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 20,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 488,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ff28",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 10,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 489,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffd0",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 7,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "void VGA_ChainedVGA_Handler::WriteCache_template<void (*)(unsigned char*, unsigned int) noexcept, unsigned int>(void (*)(unsigned char*, unsigned int) noexcept, unsigned int, unsigned int)",
+            "Line": 376,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 373
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeCache_dword(unsigned int, unsigned int)",
+            "Line": 394,
+            "StartAddress": "0x63ffd0",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 392
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 500,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63ffc8",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 12,
+            "Discriminator": 0,
+            "FileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "FunctionName": "memcpy(void*, void const* pass_object_size0, unsigned long)",
+            "Line": 53,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "D:/android-sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/bits/fortify/string.h",
+            "StartLine": 50
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "FunctionName": "write_unaligned_uint32(unsigned char*, unsigned int)",
+            "Line": 122,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_unaligned.h",
+            "StartLine": 120
+          },
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "FunctionName": "host_writed(unsigned char*, unsigned int)",
+            "Line": 82,
+            "StartAddress": "0x63ffc8",
+            "StartFileName": "M:/backend-dos/../third_party/dosbox-staging/src/utils/mem_host.h",
+            "StartLine": 80
+          },
+          {
+            "Column": 3,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writeHandler_dword(unsigned int, unsigned int)",
+            "Line": 411,
+            "StartAddress": "0x63ffbc",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 409
+          },
+          {
+            "Column": 4,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 498,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      },
+      {
+        "address": "0x63fffc",
+        "symbol": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+        "seconds": 0.01010101,
+        "frames": [
+          {
+            "Column": 2,
+            "Discriminator": 0,
+            "FileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "FunctionName": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "Line": 501,
+            "StartAddress": "0x63fe84",
+            "StartFileName": "M:/third_party/dosbox-staging/src/hardware/video/vga_memory.cpp",
+            "StartLine": 484
+          }
+        ]
+      }
+    ]
+  }
+}
