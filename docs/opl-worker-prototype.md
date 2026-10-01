@@ -156,30 +156,80 @@ explicitly waits until the output ring is full before destroying the worker;
 20 such trials passed, along with processor-exception propagation. See
 [pressure records](benchmarks/ticket74-worker-pressure.json).
 These establish standalone queue behavior, not production OPL FIFO high-water
-marks. The application uses default `Track=false`; counter updates are discarded
-at compile time. They therefore are not newly enabled benchmark instrumentation.
+marks. Normal and benchmark builds use `Track=false`; counter updates are
+discarded at compile time. Verification builds now enable these statistics
+for the actual integration checks described below.
 
 The normal adopted APK was restored after this batch and its installed hash
 again matched `22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 
-## Performance builds prepared
+## Performance comparison
 
 Built baseline and worker variants from the same isolated sources with
 `guestProfile=false` and `oplVerify=false`. Their only differing non-signature
 APK entry is `lib/arm64-v8a/libdosbox_staging.so`. Packaged and saved debug ELF
 Build IDs match for each variant, and both packaged cores exclude the
 verification log marker. APK/core hashes and Build IDs are recorded in
-[build identities](benchmarks/ticket74-performance-builds.json). These builds
-have not been performance-tested or adopted.
+[build identities](benchmarks/ticket74-performance-builds.json). Repeated
+[full-observer comparisons](benchmarks/ticket74-performance.md) and
+[lighter comparisons](benchmarks/ticket74-observer-overhead.md) are now
+complete. The lighter pairs measured a 14.64% difference of mean submission
+rates, with higher total CPU and no added AudioFlinger underruns. These are
+not unique guest-frame counts or an adoption claim. The full observer bundle
+substantially affected throughput; use those profiles for attribution.
+
+## Actual integration queue pressure
+
+`-PoplWorker=true -PoplVerify=true -PoplStress=true` builds a verification-only
+one-entry queue and requests a 200-microsecond worker delay for every command.
+Stress requires verification; both are Debug-only. Without stress, capacity
+remains 64. Only verification builds track queue statistics and FIFO maxima.
+No stress flag or new metrics are enabled in normal/performance builds.
+
+The existing Doom fixture ran with DC removal on. Each row includes first
+launch, reset, and a second launch, including pause/resume, surface changes,
+paused stop, dynarec execution and JIT-release checks. All final screenshots
+were inspected and show rendered gameplay.
+
+| Configuration | Core instances | Compared sample values | Differences | Maximum existing FIFO frames |
+| --- | ---: | ---: | ---: | ---: |
+| OPL3, delayed worker, capacity 1 | 3 | 4,968,722 | 0 | 94,031 |
+| Dual OPL2, delayed worker, capacity 1 | 3 | 4,842,752 | 0 | 125,113 |
+| OPL3, no artificial delay, capacity 64 | 3 | 4,908,568 | 0 | 57,644 |
+
+All nine core instances reached **both** command and result capacity, recorded
+submit-side draining and waiting, and shut down with zero queued commands or
+results and identical issued/consumed counts. Total: **14,720,042 additional
+compared sample values, zero differences**. This closes the actual integration
+queue-pressure/lifecycle check for these exercised paths; it is not a claim
+about every possible scheduler interleaving.
+
+The existing mixer FIFO is distinct from the two bounded worker rings. Its
+large observed peaks are retained in the report; no global bound is claimed
+and no frames were dropped to impose one. Comparator overhead, forced delay,
+and lifecycle transitions make these verification runs unsuitable for normal
+latency/performance conclusions. The worker does not introduce an additional
+unbounded result queue; the shared rings remain fixed-capacity.
+
+[Application pressure evidence](benchmarks/ticket74-app-queue-pressure.json)
+contains APK/source/log hashes, fixture results, and all per-instance counters.
+`tools/check_opl_queue_log.py <logcat.txt> --mode OPL3 --capacity 64
+--require-pressure` checks the diagnostics; use `DualOPL2` and/or capacity 1
+for the stress cases. Lifecycle results and screenshots are separate checks.
+The updated source compiled with worker off, worker on without verification,
+and verification enabled; both verification APK builds succeeded.
+
+After this batch, the normal adopted APK was restored over Wi-Fi. Its installed
+SHA-256 was verified again as
+`22eba5ada93003208297e1970706d8ee9d2ff25230e16ee6afb8c3ab4577eae2`.
 
 ## Next required work
 
-Run controlled comparator-free A/B measurements on RGDS, including total CPU
-and underruns. The passing mode/lifecycle checks permit that isolated experiment
-to determine whether further prototype work is justified; they do not qualify
-the worker for adoption. If the candidate loses or cannot repeat a gain, reject
-it without expanding an unhelpful implementation. If promising, complete the
-remaining independent timer/status, sample-boundary, routing and application
-queue/lifetime stress evidence, plus another OPL workload and instrumentation
-overhead checks, before adoption. The acceptance requirements remain those in
-the design; this checkpoint alone does not justify normal deployment.
+The measured benefit justifies continuing, but does not qualify the worker for
+adoption. Complete independent timer/status, sample-boundary and routing
+evidence, plus another OPL workload's performance. The remaining frame
+collector's own overhead has not been isolated. The sample comparator follows
+the worker's generated operation stream and does not independently establish
+those timing/routing invariants or compare the complete mixed callback stream.
+The acceptance requirements remain those in the design; this checkpoint alone
+does not justify normal deployment. #74 remains open.

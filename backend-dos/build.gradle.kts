@@ -18,6 +18,8 @@ android {
                     if (providers.gradleProperty("oplWorker").orNull == "true") "ON" else "OFF"
                 arguments += "-DKAIRO_OPL_VERIFY=" +
                     if (providers.gradleProperty("oplVerify").orNull == "true") "ON" else "OFF"
+                arguments += "-DKAIRO_OPL_STRESS=" +
+                    if (providers.gradleProperty("oplStress").orNull == "true") "ON" else "OFF"
                 arguments += "-DKAIRO_GUEST_PROFILE=" +
                     if (providers.gradleProperty("guestProfile").orNull == "true") "ON" else "OFF"
             }

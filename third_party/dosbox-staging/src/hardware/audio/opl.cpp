@@ -26,6 +26,9 @@
 #if defined(KAIRO_OPL_WORKER)
 #include "kairo/ordered_worker.h"
 #include <array>
+#if defined(KAIRO_OPL_STRESS)
+#include <chrono>
+#endif
 #endif
 
 CHECK_NARROWING();
@@ -421,6 +424,17 @@ int16_t remove_dc_bias(const int16_t back_sample)
 #if defined(KAIRO_OPL_WORKER)
 struct Opl::WorkerState {
 	static constexpr uint32_t BlockFrames = 64;
+#if defined(KAIRO_OPL_STRESS)
+	static constexpr size_t QueueCapacity = 1;
+#else
+	static constexpr size_t QueueCapacity = 64;
+#endif
+#if defined(KAIRO_OPL_VERIFY)
+	static constexpr bool TrackQueue = true;
+	size_t maxFifoFrames = 0;
+#else
+	static constexpr bool TrackQueue = false;
+#endif
 	struct Command {
 		uint64_t sequence = 0;
 		uint32_t frames = 0;
@@ -447,7 +461,7 @@ struct Opl::WorkerState {
 	uint64_t compared = 0, mismatches = 0;
 #endif
 	// Declared last: join before destroying processor state.
-	kairo::OrderedWorker<Command, Result> queue;
+	kairo::OrderedWorker<Command, Result, QueueCapacity, TrackQueue> queue;
 	explicit WorkerState(Opl& opl_owner) : owner(opl_owner),
 	        queue([this](const Command& command) { return Process(command); }) {
 #if defined(KAIRO_OPL_VERIFY)
@@ -458,6 +472,10 @@ struct Opl::WorkerState {
 #endif
 	}
 	Result Process(const Command& command) {
+#if defined(KAIRO_OPL_STRESS)
+		// Verification only: pressure the actual caller/mixer ownership path.
+		std::this_thread::sleep_for(std::chrono::microseconds(200));
+#endif
 		Result result;
 		result.sequence = command.sequence;
 		result.frames = command.frames;
@@ -495,6 +513,9 @@ struct Opl::WorkerState {
 #endif
 			owner.fifo.emplace(result.pcm[i]);
 		}
+#if defined(KAIRO_OPL_VERIFY)
+		maxFifoFrames = std::max(maxFifoFrames, owner.fifo.size());
+#endif
 		generated += result.frames;
 	}
 	void Submit(Command command) {
@@ -1148,6 +1169,16 @@ Opl::~Opl()
 		LOG_MSG("KAIRO OPL verify: samples=%llu mismatches=%llu",
 		        static_cast<unsigned long long>(worker->compared),
 		        static_cast<unsigned long long>(worker->mismatches));
+		const auto queue_stats = worker->queue.statistics();
+		LOG_MSG("KAIRO OPL queue: capacity=%zu commands=%zu results=%zu current_commands=%zu current_results=%zu submit_drains=%llu submit_waits=%llu fifo_frames=%zu issued=%llu consumed=%llu",
+		        WorkerState::QueueCapacity, queue_stats.maxCommands,
+		        queue_stats.maxResults, queue_stats.currentCommands,
+		        queue_stats.currentResults,
+		        static_cast<unsigned long long>(queue_stats.submitDrains),
+		        static_cast<unsigned long long>(queue_stats.submitWaits),
+		        worker->maxFifoFrames,
+		        static_cast<unsigned long long>(worker->issued),
+		        static_cast<unsigned long long>(worker->consumed));
 #endif
 		worker.reset();
 	}

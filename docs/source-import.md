@@ -69,3 +69,6 @@ Debug-only ordered-synthesis prototype and optional synchronous comparator.
 It uses first-party shared worker infrastructure; the imported Nuked engine
 is unchanged. Original GPL notices are preserved. This experiment is not
 adopted or enabled in ordinary builds; see [status and validation limits](opl-worker-prototype.md).
+Verification-only queue statistics and a delayed one-entry stress mode also
+live in `opl.cpp`; they are excluded from normal builds and do not change the
+imported Nuked synthesis engine.
