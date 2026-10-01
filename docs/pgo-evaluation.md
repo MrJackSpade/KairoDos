@@ -1,7 +1,8 @@
 # PGO experiment plan (#70)
 
-Status: training frozen; candidate evaluation pending. No PGO runtime
-optimization has been adopted.
+Status: investigation complete. Controlled held-out results justify the
+implementation follow-up [#75](https://github.com/MrJackSpade/KairoDos/issues/75).
+No PGO runtime optimization has been adopted yet.
 The normal baseline is the OPL-enabled APK from `fda400fe` with shared
 `9be507e`; subsequent main commits through `8df2efd9` add audit artifacts.
 LTO remains off, and `-O2`, CPU target and all normal runtime settings remain
@@ -127,8 +128,119 @@ check against the baseline source. After this batch, the normal APK was
 restored over Wi-Fi and its installed SHA-256 verified as
 `c4e58b4f12d9a8414d91bf97ee474ad7dc036e0d4de38761c089e0b5e7e62a39`.
 
-Next: build an isolated profile-use candidate from the same source paths,
-remove generation hooks/counters, inspect profile mismatch diagnostics, and
-compare held-out workloads against the unchanged baseline with LTO off.
-Keep the frozen training input independent of those results. Measure training
-overhead with the matching Doom/Gravis configuration. Ticket #70 remains open.
+The subsequent candidate build and matching Doom/Gravis overhead check are
+recorded below. Keep the frozen training input independent of the held-out
+results. The held-out comparisons and decision are recorded below.
+
+## Profile-use candidate
+
+The isolated build succeeded with only
+`-fprofile-use=K:/.tmp/ticket70/profiles/training.profdata` added to the 433
+baseline compilation commands. Source and build paths match. Generation-only
+source hooks were reverted, link flags/inputs match, LTO remains off, and the
+APK payload comparison shows only the emulator shared library changed outside
+signing metadata. The build emitted no profile/mismatch diagnostics. Inspection
+of the core found no generation marker, LLVM profile runtime name, or profile
+counter sections; debug symbols and packaged/debug build IDs match.
+
+- APK SHA-256: `08e65c16d66e0c279ee697ed05a5df2d93e99e5172a2df500867fab2f32e72a2`
+- Core SHA-256: `10274a949da56bc7ee65ba396ba22ca62a674614e2a778a39da97f7f657914e5`
+- Build ID: `36ed2f013b16c08b74444ca411273233d659ea5f`
+- Core size: 25,800,312 bytes; `.text`: 5,956,324 bytes.
+
+These establish candidate identity and experiment isolation, not performance
+or compatibility. Held-out measurements are still required.
+
+## Instrumentation overhead check
+
+The matching Doom/Gravis normal build produced 27.345 surface submissions/sec
+versus 17.776 in the non-atomic training build (observed change -34.99%). Both
+used the light observer and complete device-local frame histories. Normal and
+training AudioFlinger underrun-field deltas were 64 and 640 respectively.
+Both normal capture endpoints show rendered gameplay.
+
+This is one instrumented/normal pair with different demo phases, not an exact
+causal overhead coefficient or an optimization result. Instrumentation clearly
+distorts the workload, and shared counter races remain a training limitation.
+The profile-use candidate contains none of those counters. See the
+[overhead evidence](benchmarks/ticket70-instrumentation-overhead.json).
+
+## Held-out Duke 3D comparison
+
+Four runs in baseline/candidate/candidate/baseline order used the same RGDS,
+320x200 game configuration and capture protocol (60 seconds warmup, 120 seconds
+observation, light observer, one-second device-local frame-history polling).
+All eight endpoint screenshots show rendered gameplay. Launch configuration
+and `DUKE3D.CFG` hashes matched before candidate and return-baseline runs.
+
+| Run | Build | Submissions/sec | Process CPU, one core = 100% |
+| --- | --- | ---: | ---: |
+| A1 | Baseline | 28.739 | 119.07% |
+| B1 | Profile use | 33.014 | 120.81% |
+| B2 | Profile use | 33.625 | 121.57% |
+| A2 | Baseline | 31.938 | 121.17% |
+
+Mean submissions increased from 30.339 to 33.319 (+9.82%). Both candidate runs
+exceeded both baselines, but the baselines themselves varied by 11.1%; these
+four samples do not establish a statistical distribution. This is a promising
+result, not proof of a general speedup or grounds for adoption by itself.
+All frame histories were complete, all audio-underrun-field deltas were zero,
+and sparse SoC samples ranged 46.111–48.888°C with sampled CPU cooling state 0.
+Submissions are not guaranteed unique guest FPS; audio counters do not prove
+sample correctness. Full evidence is in the [Duke comparison](benchmarks/ticket70-duke-comparison.json).
+The exact [candidate patch](benchmarks/ticket70-profile-use.patch) is archived.
+The normal APK was restored and verified before A2.
+
+## Held-out Duke II comparison
+
+This workload uses the opening room of episode one on Medium skill, with the
+player stationary and ambient game animation running. It exercises the
+real-mode/EGA path, but is not an attract demo, scrolling test or whole-game
+compatibility test. Menus require a held injected key: instantaneous injected
+presses were sometimes missed. No mappings, game files or runtime settings
+were modified to work around that observation.
+
+The initial static-intro capture was rejected. A return-baseline attempt was
+stopped during warmup because the final skill confirmation had not registered;
+its sampler had not started. Its replacement began only after verifying the
+level. These excluded attempts are not part of the four-run comparison.
+
+| Run | Build | Submissions/sec | Process CPU, one core = 100% |
+| --- | --- | ---: | ---: |
+| A1 | Baseline | 10.7825 | 43.6079% |
+| B1 | Profile use | 10.7786 | 41.6750% |
+| B2 | Profile use | 10.7748 | 41.0750% |
+| A2 | Baseline | 10.7816 | 43.7558% |
+
+Mean delivery was effectively unchanged (-0.05%), while mean CPU use decreased
+from 43.6819% to 41.3750% of one core (-5.28%). Both candidate CPU samples were
+below both baselines. All eight endpoint screenshots show the same opening
+room. Frame histories were complete, audio-underrun-field deltas were zero,
+and sparse SoC samples ranged 40–41.875°C with sampled CPU cooling state 0.
+The generated launch configuration hash matched in baseline, candidate and
+return-baseline checks. See [full Duke II evidence](benchmarks/ticket70-duke2-comparison.json).
+
+One candidate APK transfer failed during a Wi-Fi reconnect between runs.
+ADB recovered automatically; current checks showed the baseline still
+installed and Wi-Fi power saving reset to on. The normal installer helper
+disabled power saving again and the retry succeeded. No capture overlapped
+that failed transfer. After all comparisons, the normal APK was restored and
+its installed SHA-256 verified as the baseline identity above; the game exited
+cleanly. The frozen training profile hash was unchanged after held-out tests.
+
+## Decision and implementation boundary
+
+PGO is worth implementing: the held-out 3D workload improved measured delivery
+and the held-out 2D opening scene retained delivery with lower CPU cost. These
+small samples and scenes do not prove general compatibility or an exact
+whole-game speedup. Generation overhead, non-atomic counter races, unequal
+full-session training duration and limited scene coverage remain explicit
+limitations; no new profile was chosen using held-out results.
+
+Do not enable the current experimental flag as a production default. The
+profile contains absolute `M:/...` function identifiers, so profile matching
+must be proven for clean checkout paths and CI. [Implementation ticket #75](https://github.com/MrJackSpade/KairoDos/issues/75)
+owns that one compiler optimization, with reproducible profile provenance,
+matching-build verification and broader native/game regression gates before
+adoption. Keep other compiler flags, guest timing, audio/video semantics and
+game files unchanged. Kairo98 was not modified.

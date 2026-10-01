@@ -1,0 +1,7 @@
+diff --git a/backend-dos/CMakeLists.txt b/backend-dos/CMakeLists.txt
+index f44da0db..486af38e 100644
+--- a/backend-dos/CMakeLists.txt
++++ b/backend-dos/CMakeLists.txt
+@@ -42,0 +43,2 @@ add_compile_options(-O2)
++# Isolated #70 profile-use candidate; not a production default.
++add_compile_options("-fprofile-use=K:/.tmp/ticket70/profiles/training.profdata")
