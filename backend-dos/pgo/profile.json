@@ -1,0 +1,35 @@
+{
+  "format": "LLVM IR instrumentation profile text, dense counts",
+  "compilerVersion": "19.0.1",
+  "ndkProvenance": "28.2.13676358",
+  "abi": "arm64-v8a",
+  "sourceRevision": "fda400fe",
+  "sharedRevision": "9be507e9d50f07f9ebbe4574864d8e66300b62c9",
+  "portableTextSha256": "d1be365f691852776dd35cbd1eeb62affd62516cf663396cb7e6ac45f06a9032",
+  "originalIndexedSha256": "2fdbb662e38ec471be067947c87a5c5572d3307c0be2cac2048be3a8a2f4fa2c",
+  "originalTextSha256": "116d184d718497ec4c65d2163861c73939e0d27fac0baafe0dfe9206a17c02de",
+  "functionRecords": 13861,
+  "pathOccurrencesRewritten": 3332,
+  "normalization": "Replace M:/ with @KAIRO_SOURCE@/ in LLVM text export; restore actual root before llvm-profdata merge. Counts and hashes are unchanged; named indirect targets are rehashed by LLVM. Canonical text uses LF with one final newline.",
+  "mergePolicy": "Equal input weights; dense llvm-profdata merge. Only three explicit accepted paths. Rejected atomic Doom and all held-out workloads excluded.",
+  "inputs": [
+    {
+      "game": "doom",
+      "rawProfileSha256": "d3a62aa0e871b4a092f47e3e398511856f314ae182d85299ace04fabf25aa5c2",
+      "weight": 1
+    },
+    {
+      "game": "keen",
+      "rawProfileSha256": "d049c0c424f50dbf1ea4ef26c0a024d21ab3bf59447ac2ae78037525a3ea58ed",
+      "weight": 1
+    },
+    {
+      "game": "quake",
+      "rawProfileSha256": "67832571d3d53cbd57d0f89374ef1b53371a9204e7fe58ce33b167a4a94af6fb",
+      "weight": 1
+    }
+  ],
+  "provenance": "docs/pgo-evaluation.md; docs/benchmarks/ticket70-training.json",
+  "limitations": "Non-atomic training counters; unequal full-session durations; Quake calibration wait. Held-out data excluded.",
+  "contents": "Native compiler function names, CFG hashes, counters and value profiles only; no guest executables, game data, saved drives or artwork."
+}

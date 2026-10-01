@@ -1,0 +1,418 @@
+{
+  "relocation-data": {
+    "originalIndexedSha256": "2fdbb662e38ec471be067947c87a5c5572d3307c0be2cac2048be3a8a2f4fa2c",
+    "originalTextSha256": "116d184d718497ec4c65d2163861c73939e0d27fac0baafe0dfe9206a17c02de",
+    "portableTextSha256": "e511d5647731e915ea413f3085d6d27a393a940c074617d05621bf345041441c",
+    "pathOccurrencesRewritten": 3332,
+    "functionRecords": 13861,
+    "roundtripTextExact": true,
+    "relocatedTextExactAfterPrefixRestoration": true
+  },
+  "compiler-relocation-verified": {
+    "cpu": {
+      "optimizedIrEqualAfterExpectedPathAndTargetGuidRelocation": true,
+      "negativeControlLosesProfileMetadata": true,
+      "irSha256": "d85777d680db5a047ca639555d2f75f9d625618f2a91f61af86a62c4302ef72d",
+      "metadata": {
+        "original": {
+          "canonicalIrSha256": "d85777d680db5a047ca639555d2f75f9d625618f2a91f61af86a62c4302ef72d",
+          "entryCountMetadata": 57,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            15,
+            28,
+            33,
+            44,
+            50,
+            54,
+            66,
+            78,
+            108,
+            122,
+            132,
+            148,
+            227,
+            1364,
+            8225,
+            11592,
+            11593,
+            16377,
+            24777,
+            29070,
+            31871,
+            34773,
+            40663,
+            57965,
+            58141,
+            58144,
+            63843,
+            64074,
+            81139,
+            81324,
+            98621,
+            124064,
+            156762,
+            239107,
+            305223,
+            341060,
+            386866,
+            393145,
+            758416,
+            1058890,
+            1300080,
+            1503275,
+            1752475,
+            1891339,
+            2232145,
+            2408189,
+            2726198,
+            5994508,
+            10449431,
+            25792552,
+            36032645,
+            37720623
+          ],
+          "branchWeightMetadata": 174
+        },
+        "relocated": {
+          "canonicalIrSha256": "ce3ae55259e5acd4310bcc83fe7a8f261f3de65bc547b4560e3b5208bbc04e2c",
+          "entryCountMetadata": 57,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            15,
+            28,
+            33,
+            44,
+            50,
+            54,
+            66,
+            78,
+            108,
+            122,
+            132,
+            148,
+            227,
+            1364,
+            8225,
+            11592,
+            11593,
+            16377,
+            24777,
+            29070,
+            31871,
+            34773,
+            40663,
+            57965,
+            58141,
+            58144,
+            63843,
+            64074,
+            81139,
+            81324,
+            98621,
+            124064,
+            156762,
+            239107,
+            305223,
+            341060,
+            386866,
+            393145,
+            758416,
+            1058890,
+            1300080,
+            1503275,
+            1752475,
+            1891339,
+            2232145,
+            2408189,
+            2726198,
+            5994508,
+            10449431,
+            25792552,
+            36032645,
+            37720623
+          ],
+          "branchWeightMetadata": 174
+        },
+        "unrelocated": {
+          "canonicalIrSha256": "137f02238bcbe3863d8914416a3b3b29316d70413a3efd3e3646c77a617500f5",
+          "entryCountMetadata": 55,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            15,
+            33,
+            44,
+            50,
+            54,
+            66,
+            78,
+            122,
+            132,
+            148,
+            227,
+            1364,
+            8225,
+            11592,
+            11593,
+            16377,
+            24777,
+            29070,
+            31871,
+            34801,
+            40663,
+            57965,
+            58141,
+            58144,
+            63843,
+            64074,
+            81139,
+            81324,
+            98621,
+            124064,
+            156762,
+            239107,
+            305223,
+            341060,
+            386866,
+            393145,
+            758416,
+            1058890,
+            1300080,
+            1503275,
+            1752475,
+            1891339,
+            2232145,
+            2408189,
+            2726198,
+            5994508,
+            10449431,
+            25792552,
+            36032645,
+            37720623
+          ],
+          "branchWeightMetadata": 168
+        }
+      }
+    },
+    "vga_draw": {
+      "optimizedIrEqualAfterExpectedPathAndTargetGuidRelocation": true,
+      "negativeControlLosesProfileMetadata": true,
+      "irSha256": "61a497ac038360bfa00cd65ed6ec262206660fcab6bf982c8bbc98e3bce3d7ab",
+      "metadata": {
+        "original": {
+          "canonicalIrSha256": "61a497ac038360bfa00cd65ed6ec262206660fcab6bf982c8bbc98e3bce3d7ab",
+          "entryCountMetadata": 15,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            6,
+            8,
+            9,
+            11,
+            18,
+            34,
+            75,
+            74229,
+            74230,
+            74233,
+            83514,
+            12934812
+          ],
+          "branchWeightMetadata": 91
+        },
+        "relocated": {
+          "canonicalIrSha256": "f646c5631331705bfa4e525c017e1e0e5023fc96829e4c5ed2d1e8fb23117c0c",
+          "entryCountMetadata": 15,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            6,
+            8,
+            9,
+            11,
+            18,
+            34,
+            75,
+            74229,
+            74230,
+            74233,
+            83514,
+            12934812
+          ],
+          "branchWeightMetadata": 91
+        },
+        "unrelocated": {
+          "canonicalIrSha256": "bf82575e50b50e64575be47307eaba8543239db117af5c4cebe9074f8c13766a",
+          "entryCountMetadata": 9,
+          "entryCountValues": [
+            0,
+            1,
+            2,
+            6,
+            9,
+            11,
+            18,
+            34,
+            75
+          ],
+          "branchWeightMetadata": 38
+        }
+      }
+    }
+  },
+  "machine-code-comparison": {
+    "coreTextInstructionCount": 1489076,
+    "allInstructionAddressesAndMnemonicsMatch": true,
+    "operandDifferencesByMnemonic": {
+      "add": 20138,
+      "adrp": 2999
+    },
+    "examples": [
+      [
+        [
+          3703732,
+          "add",
+          "x0, x0, #0xc20"
+        ],
+        [
+          3703732,
+          "add",
+          "x0, x0, #0xb16"
+        ]
+      ],
+      [
+        [
+          3703776,
+          "add",
+          "x0, x0, #0x1e2"
+        ],
+        [
+          3703776,
+          "add",
+          "x0, x0, #0x3b9"
+        ]
+      ],
+      [
+        [
+          3708588,
+          "adrp",
+          "x1, 0x238000"
+        ],
+        [
+          3708588,
+          "adrp",
+          "x1, 0x207000"
+        ]
+      ],
+      [
+        [
+          3708592,
+          "add",
+          "x1, x1, #0x361"
+        ],
+        [
+          3708592,
+          "add",
+          "x1, x1, #0x346"
+        ]
+      ],
+      [
+        [
+          3708600,
+          "add",
+          "x3, x3, #0xd93"
+        ],
+        [
+          3708600,
+          "add",
+          "x3, x3, #0xea1"
+        ]
+      ],
+      [
+        [
+          3708648,
+          "adrp",
+          "x1, 0x238000"
+        ],
+        [
+          3708648,
+          "adrp",
+          "x1, 0x207000"
+        ]
+      ],
+      [
+        [
+          3708652,
+          "add",
+          "x1, x1, #0x361"
+        ],
+        [
+          3708652,
+          "add",
+          "x1, x1, #0x346"
+        ]
+      ],
+      [
+        [
+          3708660,
+          "add",
+          "x3, x3, #0x6ff"
+        ],
+        [
+          3708660,
+          "add",
+          "x3, x3, #0x834"
+        ]
+      ]
+    ],
+    "hostTextIdentical": true,
+    "limits": "Matching opcode sequence does not independently prove all relocated data targets equivalent; full-build/device regression gates remain necessary."
+  },
+  "configure-probe": {
+    "freshConfigureAndTransactionalOutput": true,
+    "unchangedProfileReused": true,
+    "diagnosticBuildRejected": true,
+    "tamperedProfileRejectedEvenWithExistingCache": true
+  },
+  "portableBuild": {
+    "apkSha256": "4f894466208c6e4109a3e37d5cb677ca80709eae5d3e91c597d51fb4dac731aa",
+    "coreSha256": "8176b5caffc98a4fc694ab8eeae38ea2dacc544c77bd9b1f67a63e781756f87c",
+    "debugElfSha256": "c791f5dcd07aea30ac137e8e86b1abb0781a42a686044bfd506dafc7dc5cb7fb",
+    "changedPayloadsFromMeasuredCandidate": [
+      "lib/arm64-v8a/libkairodos_host.so",
+      "lib/arm64-v8a/libdosbox_staging.so"
+    ],
+    "measuredTextSha256": "ef8d89a80c9d64aa03e5ed3ca932e050e19ea0c829c085aca63ac4d41bf92132",
+    "portableTextSha256": "92676e14059508f5ce33fa0357f4a94189193030c7d3d04c9af52d51aa51d969",
+    "textIdenticalToMeasuredCandidate": false,
+    "textBytes": 5956324,
+    "generationMarkersAbsent": true,
+    "compileCommandsChecked": 433
+  },
+  "newlineNormalization": {
+    "previousPortableHash": "e511d5647731e915ea413f3085d6d27a393a940c074617d05621bf345041441c",
+    "portableTextSha256": "d1be365f691852776dd35cbd1eeb62affd62516cf663396cb7e6ac45f06a9032",
+    "lineEndingNormalizationPreservesOriginalLlvmTextExport": true,
+    "canonicalBytes": 2880710
+  },
+  "finalArtifactConfigure": {
+    "freshConfigureAndTransactionalOutput": true,
+    "unchangedProfileReused": true,
+    "diagnosticBuildRejected": true,
+    "tamperedProfileRejectedEvenWithExistingCache": true
+  }
+}
