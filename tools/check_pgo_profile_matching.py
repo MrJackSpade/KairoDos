@@ -20,6 +20,10 @@ if args.compile_commands:
 else:
     candidates = []
     for path in args.build_root.rglob('compile_commands.json'):
+        # AGP also publishes an IDE convenience copy under .cxx/tools. Only
+        # native build directories identify actual, distinct configurations.
+        if path.relative_to(args.build_root).parts[0] == 'tools':
+            continue
         commands = json.loads(path.read_text())
         if any('-fprofile-use=' in c['command'] for c in commands):
             candidates.append(path)
