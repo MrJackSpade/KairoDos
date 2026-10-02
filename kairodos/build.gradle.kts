@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.loxifi.kairodos"
-        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 900
-        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.0"
+        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 901
+        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.1"
         testInstrumentationRunner = "com.mrjackspade.kairodos.CatalogUpdateInstrumentation"
         externalNativeBuild {
             cmake {
@@ -37,6 +37,10 @@ android {
             signingConfig = signingConfigs.getByName("releaseKey")
             isMinifyEnabled = false
         }
+        create("withImagesRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += "release"
+        }
     }
 
     externalNativeBuild {
@@ -48,10 +52,13 @@ android {
     sourceSets.getByName("main").assets.setSrcDirs(listOf(layout.buildDirectory.dir("generated/staging-assets")))
     sourceSets.getByName("debug").assets.srcDir(layout.buildDirectory.dir("generated/debug-assets"))
     sourceSets.getByName("release").assets.srcDir(layout.buildDirectory.dir("generated/release-assets"))
+    sourceSets.getByName("withImagesRelease").assets.srcDirs(
+        layout.buildDirectory.dir("generated/release-assets"),
+        layout.buildDirectory.dir("generated/release-artwork"))
 }
 
-// Public APK and Play bundle use identical reviewed catalog metadata. Keep the
-// private artwork/description inputs available to local debug builds only.
+// All release outputs use the public metadata. The optional image-inclusive
+// APK adds bundled artwork; local debug assets retain the development inputs.
 val debugAssets by tasks.registering(Sync::class) {
     from("src/main/assets")
     into(layout.buildDirectory.dir("generated/debug-assets"))
@@ -60,6 +67,13 @@ val releaseAssets by tasks.registering(Sync::class) {
     from("src/main/assets") { exclude("art/**", "catalog/dos/**") }
     from(zipTree(rootProject.file("catalog/online-v1.zip"))) { into("catalog/dos") }
     into(layout.buildDirectory.dir("generated/release-assets"))
+}
+val releaseArtwork by tasks.registering(Sync::class) {
+    from("src/main/assets") { include("art/**") }
+    into(layout.buildDirectory.dir("generated/release-artwork"))
+}
+tasks.matching { it.name == "preWithImagesReleaseBuild" }.configureEach {
+    dependsOn(releaseAssets, releaseArtwork)
 }
 tasks.matching { it.name == "preDebugBuild" }.configureEach { dependsOn(debugAssets) }
 tasks.matching { it.name == "preReleaseBuild" }.configureEach { dependsOn(releaseAssets) }

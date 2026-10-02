@@ -7,7 +7,9 @@ import zipfile
 root = pathlib.Path(__file__).resolve().parents[1]
 with zipfile.ZipFile(root / 'catalog/online-v1.zip') as public:
     expected = {name: public.read(name) for name in public.namelist()}
-for argument in sys.argv[1:]:
+if len(sys.argv) not in (3, 4):
+    raise SystemExit('Usage: audit_play_release.py APK AAB [WITH_IMAGES_APK]')
+for index, argument in enumerate(sys.argv[1:]):
     path = pathlib.Path(argument)
     prefix = 'base/' if path.suffix == '.aab' else ''
     with zipfile.ZipFile(path) as archive:
@@ -19,5 +21,9 @@ for argument in sys.argv[1:]:
         for asset in ('THIRD_PARTY_NOTICES.txt', 'PRIVACY_POLICY.txt'):
             assert archive.read(prefix + 'assets/' + asset) == (
                 root / 'kairodos/src/main/assets' / asset).read_bytes(), asset
-        assert not any(name.startswith(prefix + 'assets/art/') for name in archive.namelist())
+        artwork = [name for name in archive.namelist() if name.startswith(prefix + 'assets/art/')]
+        if index == 2:
+            assert any(name.endswith('.webp') for name in artwork), 'Image APK contains no images'
+        else:
+            assert not artwork
     print(f'{path}: reviewed DOS catalog and current notices verified')

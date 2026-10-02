@@ -94,12 +94,13 @@ jobs:
         run: |
           python3 tools/GenerateStagingNotices.py
           git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
-      - name: Build release APK and matching Play bundle
+      - name: Build both release APKs and matching Play bundle
         env:
           KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
         run: >-
           ./gradlew --no-daemon
           :kairodos:assembleRelease
+          :kairodos:assembleWithImagesRelease
           :kairodos:bundleRelease
           -PkairodosVersionName="$KAIRODOS_VERSION_NAME"
           -PkairodosVersionCode="$KAIRODOS_VERSION_CODE"
@@ -130,21 +131,34 @@ jobs:
             echo "Unexpected Play bundle signing certificate: $bundle_signer" >&2
             exit 1
           fi
+      - name: Verify image-inclusive APK
+        shell: bash
+        run: |
+          apk=kairodos/build/outputs/apk/withImagesRelease/kairodos-withImagesRelease.apk
+          tools="$ANDROID_HOME/build-tools/${{ steps.android-toolchain.outputs.build-tools }}"
+          actual=$("$tools/apksigner" verify --print-certs "$apk" | awk '/Signer #1 certificate SHA-256 digest:/ {print $NF}')
+          test "$actual" = c321ec6b35e2509741362fcc3fede816c81510aa8133d791ea55ce0e1594a51c
+          badging=$("$tools/aapt" dump badging "$apk")
+          grep -F "package: name='com.loxifi.kairodos' versionCode='$KAIRODOS_VERSION_CODE' versionName='$KAIRODOS_VERSION_NAME'" <<< "$badging"
+          if grep -q '^application-debuggable' <<< "$badging"; then exit 1; fi
+          "$tools/zipalign" -c -P 16 4 "$apk"
       - name: Verify native alignment and matching distribution payloads
         run: |
-          python3 shared/tools/audit_android_release.py kairodos/build/outputs/apk/release/kairodos-release.apk kairodos/build/outputs/bundle/release/kairodos-release.aab
+          python3 shared/tools/audit_android_release.py kairodos/build/outputs/apk/release/kairodos-release.apk kairodos/build/outputs/bundle/release/kairodos-release.aab kairodos/build/outputs/apk/withImagesRelease/kairodos-withImagesRelease.apk
           "$ANDROID_HOME/build-tools/${{ steps.android-toolchain.outputs.build-tools }}/zipalign" -c -P 16 -v 4 kairodos/build/outputs/apk/release/kairodos-release.apk
       - name: Audit distribution contents
         run: >-
           python3 tools/audit_play_release.py
           kairodos/build/outputs/apk/release/kairodos-release.apk
           kairodos/build/outputs/bundle/release/kairodos-release.aab
+          kairodos/build/outputs/apk/withImagesRelease/kairodos-withImagesRelease.apk
       - uses: actions/upload-artifact@v4
         with:
           name: kairodos-${{ env.KAIRODOS_ARTIFACT_REF }}-release
           path: |
             kairodos/build/outputs/apk/release/kairodos-release.apk
             kairodos/build/outputs/bundle/release/kairodos-release.aab
+            kairodos/build/outputs/apk/withImagesRelease/kairodos-withImagesRelease.apk
           if-no-files-found: error
           retention-days: 30
       - name: Publish GitHub Release
@@ -155,17 +169,19 @@ jobs:
         run: |
           tag="$GITHUB_REF_NAME"
           apk="$RUNNER_TEMP/KairoDos-$tag.apk"
+          images="$RUNNER_TEMP/KairoDos-$tag-with-images.apk"
+          cp kairodos/build/outputs/apk/withImagesRelease/kairodos-withImagesRelease.apk "$images"
           bundle="$RUNNER_TEMP/KairoDos-$tag-play.aab"
           cp kairodos/build/outputs/apk/release/kairodos-release.apk "$apk"
           cp kairodos/build/outputs/bundle/release/kairodos-release.aab "$bundle"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" "$apk" "$bundle" --clobber
+            gh release upload "$tag" "$apk" "$bundle" "$images" --clobber
           else
             release_flags=()
             if [[ "$tag" == *-* ]]; then
               release_flags+=(--prerelease)
             fi
-            gh release create "$tag" "$apk" "$bundle" \
+            gh release create "$tag" "$apk" "$bundle" "$images" \
               --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
               --notes-file "docs/releases/$tag.md"
           fi

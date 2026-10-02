@@ -28,10 +28,10 @@
 
 # Tagged release signing (both products)
 
-- Kairo98's latest prior public tag was `v0.8.0`; both products use `v0.9.0` / versionCode `900` for the next synchronized release. Do not move existing release tags.
+- Both products use synchronized release versions; `v0.9.1` / versionCode `901` restores the required image-inclusive APK outputs after `v0.9.0`. Do not move existing release tags.
 - KairoDos release APKs and AABs use the same persistent Kairo certificate as Kairo98, alias `kairo98-beta`, at the local Kairo98 signing path above. For DOS release builds load `KAIRO_RELEASE_KEYSTORE` and `KAIRO_RELEASE_PASSWORD` from those ignored files; never print the password. GitHub Actions uses `KAIRO_RELEASE_KEYSTORE_B64` and `KAIRO_RELEASE_PASSWORD` secrets in `MrJackSpade/KairoDos`, explicitly authorized October 2, 2026.
 - DOS debug builds retain the existing Android debug signer. Release APKs cannot update those debug-signed device installations. Never uninstall, change the application ID, or overwrite signing credentials to bypass this mismatch.
-- Both tag workflows publish signed release APKs and matching AABs. DOS release assets use the sanitized public catalog export and omit unreviewed artwork. Local debug assets remain unchanged. See `docs/release-parity.md` for Play signing continuity and verification limits.
+- Both tag workflows publish signed release APKs and matching AABs. DOS release assets use the sanitized public catalog export. The base APK and Play bundle omit artwork; the additional with-images APK includes it. Local debug assets remain unchanged. See `docs/release-parity.md` for Play signing continuity and verification limits.
 
 # RGDS deployment
 
@@ -66,3 +66,5 @@
 - Do not hand-edit bundled files under kairodos/src/main/assets/catalog/dos/ or the public catalog/online-v1.zip and catalog/online-v1.json outputs. Use the catalog generator for bundled data and tools/BuildPublicDosCatalog.ps1 for the sanitized public archive.
 - Keep this checkout's versioned pre-commit hook active with git config core.hooksPath .githooks. It checks the public archive against the bundled catalog before a direct commit to main.
 - Bundled catalog generation uses private source data unavailable in a clean checkout. Review bundled changes carefully; the local hook can verify the public export but cannot reproduce the private import.
+
+- Every tagged release must publish both signed APK variants (with and without bundled images) plus the Play AAB. Do not drop the image-inclusive output when changing release signing or workflows.

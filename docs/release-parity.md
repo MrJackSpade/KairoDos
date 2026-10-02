@@ -44,3 +44,11 @@ work. Do not infer Play approval from a successful tag build.
 References: [Play App Signing](https://developer.android.com/studio/publish/app-signing),
 [16 KB page sizes](https://developer.android.com/guide/practices/page-sizes),
 [target API requirements](https://developer.android.com/google/play/requirements/target-sdk).
+
+## Image-inclusive download
+
+From v0.9.1, each tagged release also publishes `KairoDos-<tag>-with-images.apk`.
+It includes the bundled artwork and uses the same package, release signer,
+version, and non-artwork payload as the smaller APK. CI builds and audits all
+three outputs and verifies both APK signatures. The Play AAB remains the
+variant without bundled artwork.
