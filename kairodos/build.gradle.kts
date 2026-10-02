@@ -6,12 +6,13 @@ plugins {
 apply(from = rootProject.file("shared/gradle/android-module.gradle"))
 
 android {
+    androidResources { noCompress += listOf("json", "idx") }
     namespace = "com.mrjackspade.kairodos"
 
     defaultConfig {
         applicationId = "com.loxifi.kairodos"
-        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 906
-        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.6"
+        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 907
+        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.7"
         testInstrumentationRunner = "com.mrjackspade.kairodos.CatalogUpdateInstrumentation"
         externalNativeBuild {
             cmake {
@@ -50,33 +51,31 @@ android {
     }
 
     sourceSets.getByName("main").assets.setSrcDirs(listOf(layout.buildDirectory.dir("generated/staging-assets")))
-    sourceSets.getByName("debug").assets.srcDir(layout.buildDirectory.dir("generated/debug-assets"))
+    sourceSets.getByName("debug").assets.srcDir(layout.buildDirectory.dir("generated/release-assets"))
     sourceSets.getByName("release").assets.srcDir(layout.buildDirectory.dir("generated/release-assets"))
     sourceSets.getByName("withImagesRelease").assets.srcDirs(
         layout.buildDirectory.dir("generated/release-assets"),
         layout.buildDirectory.dir("generated/release-artwork"))
 }
 
-// All release outputs use the public metadata. The optional image-inclusive
-// APK adds bundled artwork; local debug assets retain the development inputs.
-val debugAssets by tasks.registering(Sync::class) {
-    from("src/main/assets")
-    into(layout.buildDirectory.dir("generated/debug-assets"))
-}
-val releaseAssets by tasks.registering(Sync::class) {
-    from("src/main/assets") { exclude("art/**", "catalog/dos/**") }
-    from(zipTree(rootProject.file("catalog/online-v1.zip"))) { into("catalog/dos") }
+// Same executable and core metadata for every distribution. Play omits the
+// additional artwork catalog; the image-inclusive GitHub APK adds image payloads.
+val catalogAssets by tasks.registering(Sync::class) {
+    from("src/main/assets") { exclude("catalog/**", "art/**") }
+    from(rootProject.file("catalog/parts")) {
+        into("catalog")
+        if (providers.gradleProperty("kairoDistribution").orNull == "play") exclude("art.nsfw.*")
+    }
     into(layout.buildDirectory.dir("generated/release-assets"))
 }
 val releaseArtwork by tasks.registering(Sync::class) {
-    from("src/main/assets") { include("art/**") }
+    from(rootProject.file("catalog/artwork")) { include("art/**") }
     into(layout.buildDirectory.dir("generated/release-artwork"))
 }
-tasks.matching { it.name == "preWithImagesReleaseBuild" }.configureEach {
-    dependsOn(releaseAssets, releaseArtwork)
+tasks.matching { it.name.startsWith("pre") && it.name.endsWith("Build") }.configureEach {
+    dependsOn(catalogAssets)
 }
-tasks.matching { it.name == "preDebugBuild" }.configureEach { dependsOn(debugAssets) }
-tasks.matching { it.name == "preReleaseBuild" }.configureEach { dependsOn(releaseAssets) }
+tasks.matching { it.name == "preWithImagesReleaseBuild" }.configureEach { dependsOn(releaseArtwork) }
 
 val stagingResources by tasks.registering(Sync::class) {
     from(rootProject.file("third_party/dosbox-staging/resources"))

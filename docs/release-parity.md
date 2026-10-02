@@ -53,3 +53,10 @@ It includes the bundled artwork and uses the same package, release signer,
 version, and non-artwork payload as the smaller APK. CI builds and audits all
 three outputs and verifies both APK signatures. The Play AAB remains the
 variant without bundled artwork.
+
+
+## 0.9.7 catalog distribution adjustment
+
+Both distributions use the same revision, executable features, package ID and signer. Sanitized metadata and controls cover every game. The GitHub APKs additionally carry `art.nsfw.json` and its byte-range index; the Play AAB omits both. The with-images APK includes all catalog artwork payloads, while the smaller APK and Play AAB omit image payloads. This explicitly supersedes older statements requiring identical catalog assets in APK and AAB.
+
+The tag workflow builds APKs normally, then invokes the same bundle task with `-PkairoDistribution=play`. Release audits allow only the additional artwork catalog/index difference and inspect exact catalog parts plus image payloads. Native-library parity and signing checks remain enabled. No Play upload is performed.

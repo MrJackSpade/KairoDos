@@ -38,7 +38,7 @@ def generate(check=False):
     excluded = set(policy['excluded'])
     marked = {k for k,v in games.items() if any('♥' in r.get('tags',[]) for r in [v,*v.get('variants',{}).values()])}
     assert marked <= excluded and excluded <= games.keys(), 'Review every adult-marked record'
-    core_ids = games.keys() - excluded
+    core_ids = games.keys()
     approved = policy['approvedArtwork']
     art_root = ROOT / 'catalog/artwork'
     for path,sha in approved.items():
@@ -48,7 +48,7 @@ def generate(check=False):
                 'folders':{k:[x for x in v if x in excluded] for k,v in files['folders.json'].items() if any(x in excluded for x in v)},
                 'controllers':controllers(files['controller-profiles-v1.json'],excluded)}
     def clean(value):
-        if isinstance(value,dict): return {k:clean(v) for k,v in value.items() if not(k=='description' and not v.strip())}
+        if isinstance(value,dict): return {k:clean(v) for k,v in value.items() if not((k=='description' and not v.strip()) or (k=='artwork' and not v))}
         if isinstance(value,list): return [clean(x) for x in value]
         return value
     optional=clean(optional); core=clean(core)
@@ -62,6 +62,13 @@ def generate(check=False):
         if check:
             assert json.loads((output/name).read_text('utf8'))==value, f'Stale generated core: {name}'
         else: (output/name).write_bytes(compact(value))
+    from catalog_parts import generate_parts
+    full_documents = dict(generated)
+    complete_games = clean(games)
+    for i in range(256):
+        full_documents[f'{i:02x}.json'] = {'schemaVersion':1,'games':{k:v for k,v in complete_games.items() if k.split(':')[1].startswith(f'{i:02x}')}}
+    generate_parts(ROOT, 'kairodos', {'dos/'+k:v for k,v in full_documents.items()},
+        {'schemaVersion':1,'games':clean(games),'folders':{},'controllers':{}}, expand, compact_art, check)
     if check:
         with zipfile.ZipFile(ROOT/'catalog/optional/kairodos-adult-v1.zip') as archive:
             assert json.loads(archive.read('data.json')) == optional, 'Stale optional DOS catalog'

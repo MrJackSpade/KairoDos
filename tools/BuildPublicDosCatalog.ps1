@@ -19,7 +19,6 @@ if ($review.schemaVersion -ne 1) { throw 'Unsupported metadata review schema' }
 $excluded = (Get-Content (Join-Path $PSScriptRoot '../catalog/core-review-v1.json') -Raw | ConvertFrom-Json -AsHashtable).excluded
 $reviewShards = @{}
 foreach ($item in $review.records) {
-    if ($excluded.ContainsKey($item.contentId)) { continue }
     $prefix = $item.contentId.Split(':')[1].Substring(0, 2)
     if (-not $reviewShards.ContainsKey($prefix)) {
         $reviewShards[$prefix] = Get-Content -LiteralPath (Join-Path $source "$prefix.json") -Raw |

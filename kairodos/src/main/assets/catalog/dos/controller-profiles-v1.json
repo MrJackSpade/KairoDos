@@ -304,6 +304,7 @@
     "sha256-dos-manifest-v1:a86d5c0c47fc3ec55e0367ba027b80239064c71428b4a69a95bda206bfc8a7d8": "dpad-mouse-point-and-select-v1",
     "sha256-dos-manifest-v1:a8afdf30890e00e8eedc94a0e3975c2faa9c20da53b189c22f3c8b18ac403461": "dpad-mouse-point-and-select-v1",
     "sha256-dos-manifest-v1:a8c7d1d212517ac9141be36ed6ec2948d7a07db584b07a7df5211782b89c17fd": "tag-team-wrestling-native-joystick-one-button-v1",
+    "sha256-dos-manifest-v1:a8d5b7dc74eccbfeaa3581d8d57eae8b4aa4665f2e2b25639762c34446f2bf77": "dpad-mouse-point-and-select-v1",
     "sha256-dos-manifest-v1:a8e2b57151007ba111f51b36247f266aa11afe5a005d13a9f1bdc2e144896708": "peach-the-lobster-keyboard-arrows-gh-v1",
     "sha256-dos-manifest-v1:a8f8937238485d601d69197574d676c98dcd2896f25d7161ff6af5cb51e61353": "dpad-mouse-left-right-v1",
     "sha256-dos-manifest-v1:a90257ec45342e832781b3fc88ad0571e4f6a254f0ba172639e4d5f938ede7d7": "dpad-mouse-left-right-v1",
@@ -509,6 +510,7 @@
     "sha256-dos-manifest-v1:e75366955a6f83ba2656fa33eff89363e211e2ef309671d14a332bc35a776fd0": "4x4-offroad-racing-dos-native-joystick-v1",
     "sha256-dos-manifest-v1:e9c8c0472564a85feb443b04bb619f7c3a360e0e5e6c9644240b6cd302785725": "math-rescue-native-joystick-inferred-v1",
     "sha256-dos-manifest-v1:ea258f0b33b06d29092113ef02c09cf17b34246625347a3a08cb3d58e0a64812": "dpad-arrows-space-primary-action-v1",
+    "sha256-dos-manifest-v1:ed95d186603f1836e8b207451205ae87cf9fdbd770fe5a0687b00ed2178bfcc0": "melvin-freebush-parser-v1",
     "sha256-dos-manifest-v1:ee3f5438ae7afd9ce25b75541a9c067c781b4508d115b4979ed08146a5656fa6": "dpad-native-joystick-one-button-contextual-v1",
     "sha256-dos-manifest-v1:ef29aceb5fdc32025bfe5e57132013588824909570ca92b6bdf90cad7661193d": "brudal-baddle-native-dpad-keyed-actions-v1",
     "sha256-dos-manifest-v1:f07e7394e215981475fe83513313ec787ed3ffbccd27685e3946a3f9603ed44a": "dpad-mouse-point-and-select-v1",
@@ -21300,6 +21302,123 @@
             "input": "virtual:start",
             "keys": [
               27
+            ]
+          }
+        ]
+      }
+    },
+    "melvin-freebush-parser-v1": {
+      "description": "Text-adventure controls: D-pad arrows move, A/B/X enter LOOK/GET/OPEN, Start submits the command, Select deletes. Use the app keyboard for command nouns and other text.",
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            108
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            103
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            111
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            8
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              108
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              103
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              111
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              8
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
             ]
           }
         ]

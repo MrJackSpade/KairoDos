@@ -29,6 +29,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         val controllerProfile: String?
     ) : LibraryGame
 
+    private val parts = com.mrjackspade.kairo.frontend.CatalogParts(context)
     private val cache = object : LruCache<String, JSONObject>(8) {}
     private val bundledCache = object : LruCache<String, JSONObject>(8) {}
     override val installedCatalogs by lazy {
@@ -100,11 +101,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         return true
     }
 
-    private fun readAssetCatalog(name: String): JSONObject = runCatching {
-        context.assets.open("catalog/dos/$name").use { input ->
-            JSONObject(input.bufferedReader().readText())
-        }
-    }.getOrDefault(JSONObject())
+    private fun readAssetCatalog(name: String): JSONObject = parts.read("dos/$name")
 
     private fun readFolderIndex(): JSONObject {
         val combined = JSONObject(readAssetCatalog("folders.json").toString())
@@ -297,7 +294,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     companion object {
         private const val ARTWORK_ROOT =
-            "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/kairodos/src/main/assets/"
+            "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/catalog/artwork/"
         private val remoteArtworkPath = Regex(
             "art/catalog/dos/[0-9a-f]{2}/[0-9a-f]{64}/[0-9a-f]{12}/(?:boxArt|preview)\\.webp")
     }
@@ -311,9 +308,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     private fun bundledShard(prefix: String): JSONObject? {
         bundledCache.get(prefix)?.let { return it }
-        val parsed = runCatching { context.assets.open("catalog/dos/$prefix.json").use {
-            JSONObject(it.bufferedReader().readText())
-        } }.getOrNull() ?: return null
+        val parsed = readAssetCatalog("$prefix.json")
         bundledCache.put(prefix, parsed)
         return parsed
     }

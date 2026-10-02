@@ -94,18 +94,10 @@ internal class DosCatalogUpdate(context: Context) {
                         require(contentId.matches(id) && id.substringAfter(':').startsWith(prefix) &&
                             games.optJSONObject(id) != null) { "Invalid catalog game record" }
                         val record = games.getJSONObject(id)
-                        fun clean(value: JSONObject): Boolean =
-                            !value.optString("title").contains('♥') &&
-                                (value.optJSONArray("tags")?.let { tags ->
-                                    (0 until tags.length()).none { tags.optString(it) == "♥" }
-                                } ?: true) && (value.optJSONObject("variants")?.let { variants ->
-                                    variants.keys().asSequence().all { clean(variants.getJSONObject(it)) }
-                                } ?: true)
                         val invalid = DosCatalogFields.invalidPath(record)
                         require(invalid == null) {
                             "Invalid catalog field $id:$invalid"
                         }
-                        require(clean(record)) { "Adult-marked record in core catalog" }
                         val flag = record.opt("hidden")
                         if (flag is Boolean) {
                             require(hidden.opt(id) == flag) { "Catalog hidden index differs from $id" }

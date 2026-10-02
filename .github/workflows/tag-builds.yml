@@ -94,6 +94,10 @@ jobs:
         run: |
           python3 tools/GenerateStagingNotices.py
           git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
+      - name: Generate separate artwork download
+        run: |
+          python3 tools/build_catalog_packages.py
+          git diff --exit-code -- catalog/parts catalog/optional/kairodos-art.nsfw.meta.json
       - name: Build both release APKs and matching Play bundle
         env:
           KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
@@ -101,9 +105,12 @@ jobs:
           ./gradlew --no-daemon
           :kairodos:assembleRelease
           :kairodos:assembleWithImagesRelease
-          :kairodos:bundleRelease
           -PkairodosVersionName="$KAIRODOS_VERSION_NAME"
           -PkairodosVersionCode="$KAIRODOS_VERSION_CODE"
+      - name: Build Play bundle with reviewed artwork catalog only
+        env:
+          KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
+        run: ./gradlew --no-daemon :kairodos:bundleRelease -PkairoDistribution=play -PkairodosVersionName="$KAIRODOS_VERSION_NAME" -PkairodosVersionCode="$KAIRODOS_VERSION_CODE"
       - name: Verify release signer
         env:
           KAIRO_BUILD_TOOLS: ${{ steps.android-toolchain.outputs.build-tools }}
@@ -174,8 +181,8 @@ jobs:
           bundle="$RUNNER_TEMP/KairoDos-$tag-play.aab"
           cp kairodos/build/outputs/apk/release/kairodos-release.apk "$apk"
           cp kairodos/build/outputs/bundle/release/kairodos-release.aab "$bundle"
-          optional="catalog/optional/kairodos-adult-v1.zip"
-          optional_manifest="catalog/optional/kairodos-adult-v1.meta.json"
+          optional="catalog/optional/kairodos-art.nsfw.zip"
+          optional_manifest="catalog/optional/kairodos-art.nsfw.meta.json"
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" "$bundle" "$images" "$optional" "$optional_manifest" --clobber
           else

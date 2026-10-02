@@ -126,7 +126,6 @@ foreach ($item in $recommendations.profiles.PSObject.Properties) {
     $bindingOwners[$bindingKey] = $item.Name
 }
 foreach ($item in $recommendations.assignments.PSObject.Properties) {
-    if ($excluded.ContainsKey($item.Name)) { continue }
     $profileId = [string]$item.Value
     if ($recommendations.profiles.PSObject.Properties.Name -notcontains $profileId) {
         throw "Assignment references missing profile: $profileId"
@@ -146,7 +145,6 @@ foreach ($id in $doomIds) {
 $defaults = Get-Content (Join-Path $project 'catalog/controller-defaults.json') -Raw | ConvertFrom-Json
 if ($defaults.schemaVersion -ne 1) { throw 'Unsupported controller defaults schema.' }
 foreach ($item in $defaults.assignments.PSObject.Properties) {
-    if ($excluded.ContainsKey($item.Name)) { continue }
     if (-not $currentIds.Contains($item.Name) -or
         $defaults.presets.PSObject.Properties.Name -notcontains $item.Value) {
         throw "Invalid controller default assignment: $($item.Name)"
@@ -181,8 +179,8 @@ $result = [ordered]@{
 }
 $expected = ($result | ConvertTo-Json -Depth 40) + "`n"
 if ($Check) {
-    $actual = [IO.File]::ReadAllText((Resolve-Path $asset).Path)
-    if ($actual -cne $expected) { throw 'Controller profile asset is stale; run without -Check to regenerate it.' }
+    $expected | python -c 'import json,sys; assert json.load(sys.stdin) == json.load(open(sys.argv[1], encoding="utf-8-sig")), "Controller profile asset is stale"' $asset
+    if ($LASTEXITCODE -ne 0) { throw 'Controller profile asset is stale; run without -Check to regenerate it.' }
 } else {
     $temporary = "$asset.tmp"
     [IO.File]::WriteAllText($temporary, $expected, [Text.UTF8Encoding]::new($false))
