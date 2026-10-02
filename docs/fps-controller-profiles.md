@@ -18,14 +18,14 @@ reloads the active game's mapping, releasing held inputs through the shared mapp
 | Right stick | Turn (original Doom has no vertical look) | Turn, aim up/down |
 | RT / R2 | Fire | Fire |
 | LT / L2 | Hold to run | Hold to run |
-| LB / L1 | Previous weapon key in 1–7 cycle | Previous weapon |
-| RB / R1 | Next weapon key in 1–7 cycle | Next weapon |
+| LB / L1 | Unassigned | Previous weapon |
+| RB / R1 | Fire (duplicate of RT) | Next weapon |
 | X | Open / use | Open / use |
-| A | Confirm (Enter) | Jump |
-| B | Back / game menu (Escape) | Crouch |
+| A | Open / use (Space) | Jump |
+| B | Unassigned | Crouch |
 | Y | Map (duplicate of D-pad Up) | Medkit |
 | D-pad Up | Map | Map |
-| D-pad Left / Right | Map zoom out / in | Previous / next inventory item |
+| D-pad Left / Right | Previous / next weapon key in 1–7 cycle | Previous / next inventory item |
 | D-pad Down | Map overview | Use selected inventory item |
 | Left stick click | Unbound | Hold to run |
 | Right stick click | Unbound | Quick kick |
@@ -35,10 +35,11 @@ reloads the active game's mapping, releasing held inputs through the shared mapp
 Kairo's menu button is unchanged. Use left-stick forward/back to navigate the
 games' own menus and Select to confirm. Duke retains its existing right-stick
 sensitivity and native Home/End aiming, avoiding changes to mouse-aiming mode.
-The catalog now sets Doom turning to 4x and Duke turning to 2x. Doom's 8x-to-4x
-change was published after deployment of the APK containing the catalog fix.
+The catalog sets Doom turning to 8x and Duke turning to 2x. Doom was doubled
+from 4x for Kairo #16. Only Start and Select send Escape and Enter respectively;
+the former A/B menu duplicates are removed. X remains a duplicate Open/use.
 
-Doom has no native previous/next weapon action: its bumpers share Kairo's key
+Doom has no native previous/next weapon action: D-pad Left/Right share Kairo's key
 cycle. This cycles selection keys, including weapons not yet owned, and cannot
 track weapon changes made in-game or on the keyboard. Duke uses native previous/
 next weapon keys instead. Doom's map controls follow
@@ -47,7 +48,7 @@ Duke bindings follow the installed game's original `DUKE3D.CFG` key definitions.
 
 `ControllerMouseFixture` exercises these profiles through the shared mapper:
 trigger button/axis ownership and release, stick movement and sensitivity,
-bumper cycle direction/wrap, map and inventory inputs, profile serialization,
+D-pad cycle direction/wrap, map and inventory inputs, profile serialization,
 saved custom mappings and the unchanged Without Sticks controls.
 `ControllerCatalogFixture` installs two different snapshots into an isolated
 catalog directory and verifies both override bundled Doom/Duke defaults without
@@ -62,3 +63,30 @@ The application APK was unchanged. Only the instrumentation test package was
 updated to inspect the resolved bindings and expose download errors. Run
 `CatalogUpdateInstrumentation` with `catalogControllerSpeed=4` to verify the
 active profile; add `catalogFetch=true` to exercise the production download path.
+
+## Doom update, Kairo #16 (October 2, 2026)
+
+Both apps passed the shared `KeyCycleFixture` on the RGDS before publication,
+including PC98 guest keys, existing shoulders, D-pad hat events, independent
+pair/sequence state, wrapping, release and controller-confirmed editor save.
+
+The generated archive audit found only Doom's With Sticks preset changed.
+Without Sticks, legacy Doom bindings, Duke, every other profile and every other
+archive entry were byte/structurally unchanged as applicable.
+
+Installed KairoDos APK SHA-256
+`15f3979d597f237ca2e4279846d026938247435af802724a12e34909046525fa`
+retained the previous bundled profile. After publishing catalog revision
+`fe25f352dd4ef5d76ea6ba1d51f1556e9dd69ee327a31fe4f5cf25fb790df251`,
+the same APK fetched it through `DosGameCatalog.downloadUpdate()` and resolved
+8x turning, A=Space, D-pad Left/Right cycles, and R1/R2 fire. No app APK reinstall
+occurred after publication; only the test package changed.
+
+Run `CatalogUpdateInstrumentation` with `catalogControllerSpeed=8`,
+`catalogFetch=true`, and `controllerMouse=true` for this check. It also exercises
+the downloaded defaults through the real mapper: stick movement and measured
+mouse distance, D-pad shared wrap, overlapping R1/R2 ownership, unchanged Duke
+and Without Sticks inputs, designated-only Escape/Enter, explicit custom
+override precedence and return to catalog defaults after clearing an override.
+The fixture's old 35% deadzone expectations were updated to the existing 10%
+default from Kairo #7; production deadzone behavior was not changed here.

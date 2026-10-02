@@ -14,7 +14,7 @@ $joystickControls = @('b','y','select','start','up','down','left','right','a','x
     'joy1up','joy1down','joy1left','joy1right','joy2up','joy2down','joy2left','joy2right')
 $mouseControls = @('moveUp','moveDown','moveLeft','moveRight','leftButton','rightButton')
 $actions = @('menu','pause','restart','exit')
-$cycleInputs = @('virtual:l1','virtual:r1','virtual:l2','virtual:r2')
+$cycleInputs = @('virtual:l1','virtual:r1','virtual:l2','virtual:r2','virtual:left','virtual:right')
 $guestKeyCodes = [Collections.Generic.HashSet[int]]::new()
 foreach ($code in @((48..57) + (97..122) + (256..293) +
         @(8,9,13,27,32,39,44,45,46,47,59,61,91,92,93,96,127,301,303,304,305,306,307,308))) {

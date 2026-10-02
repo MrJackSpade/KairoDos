@@ -227,7 +227,7 @@ def apply_controller_recommendations(catalog_profiles: dict, recommendations: di
                            for direction in ("up", "down", "left", "right"))}
     mouse_controls = {"moveUp", "moveDown", "moveLeft", "moveRight", "leftButton", "rightButton"}
     actions = {"menu", "pause", "restart", "exit"}
-    cycle_inputs = {"virtual:l1", "virtual:r1", "virtual:l2", "virtual:r2"}
+    cycle_inputs = {"virtual:l1", "virtual:r1", "virtual:l2", "virtual:r2", "virtual:left", "virtual:right"}
     guest_key_codes = (set(map(ord, "0123456789qwertyuiopasdfghjkl'zxcvbnm"))
                        | set(map(ord, "-=[]\\;',./")) | {8, 9, 13, 27, 32, 127, 301, 303,
                            304, 305, 306, 307, 308} | set(range(256, 294)))

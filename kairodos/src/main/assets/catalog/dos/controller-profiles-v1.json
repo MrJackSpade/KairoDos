@@ -13218,14 +13218,26 @@
           },
           {
             "input": "virtual:left",
-            "keys": [
-              45
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
             ]
           },
           {
             "input": "virtual:right",
-            "keys": [
-              61
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
             ]
           },
           {
@@ -13255,23 +13267,17 @@
           {
             "input": "virtual:rsleft",
             "mouse": "moveLeft",
-            "mouseSpeed": 4
+            "mouseSpeed": 8
           },
           {
             "input": "virtual:rsright",
             "mouse": "moveRight",
-            "mouseSpeed": 4
+            "mouseSpeed": 8
           },
           {
             "input": "virtual:a",
             "keys": [
-              13
-            ]
-          },
-          {
-            "input": "virtual:b",
-            "keys": [
-              27
+              32
             ]
           },
           {
@@ -13287,27 +13293,9 @@
             ]
           },
           {
-            "input": "virtual:l1",
-            "cycleKeys": [
-              49,
-              50,
-              51,
-              52,
-              53,
-              54,
-              55
-            ]
-          },
-          {
             "input": "virtual:r1",
-            "cycleKeys": [
-              49,
-              50,
-              51,
-              52,
-              53,
-              54,
-              55
+            "keys": [
+              306
             ]
           },
           {

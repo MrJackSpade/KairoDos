@@ -38,6 +38,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var endSessionUri: String? = null
     private var catalogProgress = false
     private var snapshotActivation = false
+    private var keyCycle = false
     private var startup = false
     private var traceStartup = false
     private var exitDialog = false
@@ -89,6 +90,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         endSessionUri = arguments?.getString("endSessionUri")
         catalogProgress = arguments?.getString("catalogProgress") == "true"
         snapshotActivation = arguments?.getString("snapshotActivation") == "true"
+        keyCycle = arguments?.getString("keyCycle") == "true"
         startup = arguments?.getString("startup") == "true"
         traceStartup = arguments?.getString("traceStartup") == "true"
         start()
@@ -101,6 +103,17 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     }
     override fun onStart() {
         val result = Bundle()
+        if (keyCycle) {
+            try {
+                com.mrjackspade.kairo.frontend.KeyCycleFixture.verify(this)
+                result.putString("stream", "D-pad/shoulder cycles, independent sequences, wrap, hats, release, codec and editor save: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (startup) {
             try {
                 result.putString("stream", com.mrjackspade.kairo.frontend.StartupFixture.measure(this, traceStartup))
@@ -192,6 +205,20 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                 val speed = bindings.single { it.input == "virtual:rsright" }.mouseSpeed
                 check(speed == expected) { "Resolved Doom speed $speed, expected $expected" }
                 check(bindings.single { it.input == "virtual:r2" }.keys == listOf(306))
+                if (controllerMouse) {
+                    val downloaded = java.util.zip.ZipFile(File(targetContext.filesDir, "dos-catalog-update-v1.zip")).use { zip ->
+                        zip.getInputStream(zip.getEntry("controller-profiles-v1.json")).use {
+                            JSONObject(it.bufferedReader().readText()).getJSONObject("presets")
+                        }
+                    }
+                    check(bindings.single { it.input == "virtual:a" }.keys == listOf(32))
+                    check(bindings.single { it.input == "virtual:left" }.cycleKeys == (49..55).toList())
+                    check(bindings.single { it.input == "virtual:right" }.cycleKeys == (49..55).toList())
+                    check(bindings.single { it.input == "virtual:r1" }.keys == listOf(306))
+                    var failure: Throwable? = null
+                    runOnMainSync { failure = runCatching { ControllerMouseFixture.verify(targetContext, downloaded) }.exceptionOrNull() }
+                    failure?.let { throw it }
+                }
                 result.putString("stream", "Active catalog: Doom turning=$speed, RT=fire; APK unchanged\n")
                 finish(Activity.RESULT_OK, result)
             } catch (failure: Throwable) {

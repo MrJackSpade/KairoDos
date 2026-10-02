@@ -11,10 +11,10 @@ import kotlin.math.abs
 
 /** Real shared mapper, profile persistence and relative movement at controlled elapsed times. */
 object ControllerMouseFixture {
-    fun verify(context: Context) {
+    fun verify(context: Context, downloadedPresets: JSONObject? = null) {
         ControllerCatalogFixture.verify(context)
         verifyKeyboard(context)
-        val presets = JSONObject(context.assets.open("catalog/dos/controller-profiles-v1.json")
+        val presets = downloadedPresets ?: JSONObject(context.assets.open("catalog/dos/controller-profiles-v1.json")
             .bufferedReader().use { it.readText() }).getJSONObject("presets")
         fun profile(id: String, layout: ControllerLayout) = DosControllerBindings.parse(
             presets.getJSONObject(id).getJSONObject("defaults").getJSONArray(layout.key).toString())
@@ -82,10 +82,10 @@ object ControllerMouseFixture {
             check(totalX() == result)
             return result
         }
-        check(sample(0.30f) == 0)
-        check(sample(0.35f) == 0)
-        check(abs(sample(0.5f) - doomDistance * 3 / 13) <= 2)
-        check(abs(sample(0.675f) - doomDistance / 2) <= 2)
+        check(sample(0.09f) == 0)
+        check(sample(0.10f) == 0)
+        check(abs(sample(0.325f) - doomDistance / 4) <= 2)
+        check(abs(sample(0.55f) - doomDistance / 2) <= 2)
         check(abs(sample(1f) - doomDistance) <= 1)
         check(abs(sample(-1f) + doomDistance) <= 1)
         moves.clear()
@@ -108,7 +108,7 @@ object ControllerMouseFixture {
         mapper.releaseAll()
 
         // Exercise the With Sticks defaults through real Android controller events,
-        // including axis/button trigger overlap and shared bumper cycle state.
+        // including axis/button trigger overlap and shared D-pad cycle state.
         fun button(code: Int, down: Boolean) {
             check(mapper.key(KeyEvent(0, 0, if (down) KeyEvent.ACTION_DOWN else KeyEvent.ACTION_UP,
                 code, 0, 0, 42, 0, 0, InputDevice.SOURCE_GAMEPAD)))
@@ -144,15 +144,25 @@ object ControllerMouseFixture {
             mapper.releaseAll()
         }
         mapper.bindings = profile("doom-v1", ControllerLayout.WITH_STICKS)
-        tap(KeyEvent.KEYCODE_BUTTON_L1, 55)
-        tap(KeyEvent.KEYCODE_BUTTON_R1, 49) // Wrap and share the same index.
-        tap(KeyEvent.KEYCODE_BUTTON_R1, 50)
-        tap(KeyEvent.KEYCODE_BUTTON_L1, 49)
-        tap(KeyEvent.KEYCODE_DPAD_LEFT, 45)
-        tap(KeyEvent.KEYCODE_DPAD_RIGHT, 61)
+        tap(KeyEvent.KEYCODE_DPAD_LEFT, 55)
+        tap(KeyEvent.KEYCODE_DPAD_RIGHT, 49) // Wrap and share the same index.
+        tap(KeyEvent.KEYCODE_DPAD_RIGHT, 50)
+        tap(KeyEvent.KEYCODE_DPAD_LEFT, 49)
+        tap(KeyEvent.KEYCODE_BUTTON_R1, 306)
         tap(KeyEvent.KEYCODE_DPAD_DOWN, 48)
-        tap(KeyEvent.KEYCODE_BUTTON_A, 13)
-        tap(KeyEvent.KEYCODE_BUTTON_B, 27)
+        tap(KeyEvent.KEYCODE_BUTTON_A, 32)
+        check(!mapper.hasButton(KeyEvent.KEYCODE_BUTTON_B))
+        check(!mapper.hasButton(KeyEvent.KEYCODE_BUTTON_L1))
+        check(mapper.bindings.filter { 13 in it.keys || 27 in it.keys }.map { it.input }.toSet() ==
+            setOf("virtual:start", "virtual:select"))
+        check(mapper.bindings.filter { it.mouse?.startsWith("move") == true }.all { it.mouseSpeed == 8f })
+        keys.clear()
+        button(KeyEvent.KEYCODE_BUTTON_R1, true)
+        button(KeyEvent.KEYCODE_BUTTON_R2, true)
+        button(KeyEvent.KEYCODE_BUTTON_R1, false)
+        check(keys == listOf(306 to true))
+        button(KeyEvent.KEYCODE_BUTTON_R2, false)
+        check(keys == listOf(306 to true, 306 to false))
         tap(KeyEvent.KEYCODE_BUTTON_Y, 9)
         mapper.bindings = profile("duke3d-fps-v1", ControllerLayout.WITH_STICKS)
         tap(KeyEvent.KEYCODE_BUTTON_L1, 59)
