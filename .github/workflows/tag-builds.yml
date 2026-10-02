@@ -23,6 +23,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check out pinned Kairo frontend
         run: bash tools/checkout_shared.sh
+      - name: Verify portable catalog archive generation
+        run: python3 -m unittest discover -s shared/tools -p test_catalog_package.py
       - uses: ./shared/.github/actions/setup-android
         id: android-toolchain
       - name: Validate tag and set app version
