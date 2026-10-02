@@ -23,6 +23,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var menuNavigation = false
     private var controllerMouse = false
     private var catalogControllerSpeed: Float? = null
+    private var catalogFetch = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -47,6 +48,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         menuNavigation = arguments?.getString("menuNavigation") == "true"
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         catalogControllerSpeed = arguments?.getString("catalogControllerSpeed")?.toFloat()
+        catalogFetch = arguments?.getString("catalogFetch") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -65,6 +67,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogControllerSpeed?.let { expected ->
             try {
                 val catalog = DosGameCatalog(targetContext)
+                if (catalogFetch) catalog.downloadUpdate()
                 val id = "sha256-dos-manifest-v1:a54ee0d6d549825fadefa6bc8516f976c31a9d7b5a91fed00007ef40d01a7cd3"
                 val prefs = targetContext.getSharedPreferences("kairodos", android.content.Context.MODE_PRIVATE)
                 val bindings = catalog.gameControllerBindings(id, "DOOM.zip",

@@ -53,3 +53,12 @@ saved custom mappings and the unchanged Without Sticks controls.
 catalog directory and verifies both override bundled Doom/Duke defaults without
 changing the APK. It also verifies explicit custom controls win and clearing
 them returns to the downloaded mapping.
+
+RGDS catalog-only verification (October 1, 2026): installed KairoDos SHA-256
+`fc2d8cdc24bad5a27d5e0bd9b77bac9e0e94e574a5a9baae5ba1e15f3ec51acd`
+resolved Doom turning at 8x before publication and 4x after fetching public
+catalog revision `a96e570da72d0f4a597a3b47b9badb9271b3423d1b713e8e426d306b47bd1473`.
+The application APK was unchanged. Only the instrumentation test package was
+updated to inspect the resolved bindings and expose download errors. Run
+`CatalogUpdateInstrumentation` with `catalogControllerSpeed=4` to verify the
+active profile; add `catalogFetch=true` to exercise the production download path.
