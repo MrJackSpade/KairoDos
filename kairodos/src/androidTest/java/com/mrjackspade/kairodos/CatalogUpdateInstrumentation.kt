@@ -50,6 +50,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var catalogOverrides = false
     private var stagingStorage = false
     private var dosPromptUri: String? = null
+    private var dosProgramUri: String? = null
+    private var dosMedia = false
     private var stagingArchive: String? = null
     private var stagingOplMode: String? = null
     private var stagingOplDcBias = false
@@ -83,6 +85,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
         stagingStorage = arguments?.getString("stagingStorage") == "true"
         dosPromptUri = arguments?.getString("dosPromptUri")
+        dosProgramUri = arguments?.getString("dosProgramUri")
+        dosMedia = arguments?.getString("dosMedia") == "true"
         stagingArchive = arguments?.getString("stagingArchive")
         stagingOplMode = arguments?.getString("stagingOplMode")
         stagingOplDcBias = arguments?.getString("stagingOplDcBias") == "true"
@@ -252,6 +256,18 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             }
             if (resolutionSource != null) {
                 result.putString("stream", DukeResolutionFixture.run(this, resolutionSource!!, resolutionWidth, resolutionNoDouble))
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (dosMedia) {
+                DosMediaFixture.verify(this)
+                result.putString("stream", "DOS FAT/ISO image browsing and program launch, catalog and standalone mounts: OK\n")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (dosProgramUri != null) {
+                DosProgramFixture.verify(this, dosProgramUri!!)
+                result.putString("stream", "DOS Run program: cancel, BAT/CMD/COM/EXE launch, working directory and normal Play: OK\n")
                 finish(Activity.RESULT_OK, result)
                 return
             }

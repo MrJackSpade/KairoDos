@@ -35,7 +35,8 @@ internal object DosStagingLaunchConfig {
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
-              bootToPrompt: Boolean = false): File {
+              target: DosLaunchTarget = DosLaunchTarget.Normal): File {
+        val manualProgram = target == DosLaunchTarget.Browse || target is DosLaunchTarget.Program
         val source = launch?.configs?.get(name)
         val folder = launch?.folder.orEmpty()
         val parentMount = launch?.let { DosLaunchConfig.mountsParent(it, name) } == true
@@ -80,7 +81,7 @@ internal object DosStagingLaunchConfig {
         lines += "@echo off"
         // This is a one-session launch choice, not a saved startup variant.
         // Do not execute catalog setup scripts, BOOT, or a lone executable.
-        if (bootToPrompt) {
+        if (target == DosLaunchTarget.Prompt) {
             lines += "mount C \"${gameRoot.absolutePath}\""
             lines += "C:"
             lines += "dir /w"
@@ -91,19 +92,22 @@ internal object DosStagingLaunchConfig {
                 ?: mountedRoot.absolutePath
             lines += "mount $contentDrive \"$initialRoot\"" + (initialMount?.groupValues?.get(5) ?: "")
             lines += "$contentDrive:"
-            lines += DosLaunchConfig.setupLines(folder, player)
+            if (!manualProgram) lines += DosLaunchConfig.setupLines(folder, player)
             if (source == null) {
                 if (drive.media != null) {
                     when (drive.media.extension.lowercase()) {
                         "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
-                        "img", "ima" -> lines += "boot \"${drive.media.absolutePath}\""
+                        "img", "ima" -> if (manualProgram) {
+                            val floppy = drive.media.length() <= 2_949_120
+                            lines += "imgmount ${if (floppy) "A" else "D"} \"${drive.media.absolutePath}\" -t ${if (floppy) "floppy" else "hdd"}"
+                        } else lines += "boot \"${drive.media.absolutePath}\""
                         else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
                     }
                 } else {
                     val executables = mountedRoot.listFiles().orEmpty().filter {
                         it.isFile && it.extension.lowercase() in setOf("exe", "com", "bat")
                     }
-                    if (executables.size == 1) lines += executables.single().name
+                    if (executables.size == 1 && !manualProgram) lines += executables.single().name
                     else lines += "dir /w"
                 }
             } else for (original in commands.lineSequence()) {
@@ -135,11 +139,37 @@ internal object DosStagingLaunchConfig {
                     }.joinToString(" ")
                     continue
                 }
+                if (manualProgram) continue // Mounts only; never execute the game's startup script.
                 var adapted = if (folder.isEmpty()) line else sourceGame.replace(line) { dosPrefix }
                 adapted = sourceDiscs.replace(adapted) { dosPrefix + "discs\\" }
                 adapted = sourceFloppy.replace(adapted) { dosPrefix + "floppy\\" }
                 lines += adapted
             }
+        }
+        if (target is DosLaunchTarget.Program) {
+            val program = target.path
+            val directory = program.substringBeforeLast('\\').ifEmpty { "\\" }
+                .let { if (it.length == 2) "$it\\" else it }
+            lines += program.take(2)
+            // These are short paths returned by DOS, not host filenames. The
+            // DOS CD handler treats quotes literally (unlike MOUNT/COPY).
+            lines += "cd ${directory.replace("%", "%%")}"
+            if (program.endsWith(".cmd", true)) {
+                // DOS-compatible CMD text is run as a batch file on an app-owned
+                // scratch drive. Never rename/overwrite a file in the game drive.
+                require(target.occupiedDrives.isNotEmpty()) { "Mounted DOS drives are needed to run a command script" }
+                val used = target.occupiedDrives + lines.mapNotNull { Regex("(?i)^\\s*@?(?:img)?mount\\s+([a-z])\\s+").find(it)
+                    ?.groupValues?.get(1)?.uppercase()?.single() }.toSet()
+                val letter = ('Y' downTo 'A').firstOrNull { it !in used }
+                    ?: error("No free DOS drive for the command script")
+                val scratch = File(config.parentFile, "command-script").apply {
+                    require(isDirectory || mkdirs()) { "Could not prepare command script drive" }
+                }
+                File(scratch, "KAIRO.BAT").writeText("@echo Could not read command script.\r\n")
+                lines += "mount $letter \"${scratch.absolutePath}\""
+                lines += "copy ${DosLaunchTarget.batchQuote(program)} $letter:\\KAIRO.BAT >NUL"
+                lines += "call $letter:\\KAIRO.BAT"
+            } else lines += program.replace("%", "%%")
         }
         // Product-owned host settings override desktop settings in the source
         // profile. They do not change the emulated VGA refresh rate.

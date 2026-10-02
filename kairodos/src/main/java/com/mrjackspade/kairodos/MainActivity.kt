@@ -35,6 +35,7 @@ import com.mrjackspade.kairo.frontend.TouchInputPolicy
 import com.mrjackspade.kairo.frontend.TouchInputSelection
 import com.mrjackspade.kairo.frontend.ScopedTouchInput
 import com.mrjackspade.kairo.frontend.Ui
+import com.mrjackspade.kairo.frontend.DirectoryPicker
 import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryScanSummary
 import com.mrjackspade.kairo.frontend.LibraryFlow
@@ -289,6 +290,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var installerPromptOpen = false
     private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
+    private var programPicker: DirectoryPicker? = null
+    private var pendingProgramPicker: (() -> Unit)? = null
     @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
     @Volatile private var audio: AudioTrack? = null
@@ -532,11 +535,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }) else emptyList()) +
             (if (entry.playable) listOf(GameSettingsRow("Boot to DOS prompt",
                 "Open this game's writable C: drive without startup commands", false) {
-                val saved = id?.let(dosGameSettings::startupVariant)
-                val config = saved?.takeIf { it in variants }
-                    ?: variants.firstOrNull { it == "dosbox.conf" }
-                    ?: variants.sorted().firstOrNull() ?: "dosbox.conf"
-                startGame(entry, config, bootToPrompt = true)
+                startGame(entry, manualConfig(entry), target = DosLaunchTarget.Prompt)
+            }, GameSettingsRow("Run program", "Browse game files for a setup program or another executable", false) {
+                startGame(entry, manualConfig(entry), target = DosLaunchTarget.Browse)
             }) else emptyList())
         GameSettingsCoordinator.show(this, common, entry.playable, machineRows,
             CommonGameSettingsActions(
@@ -622,8 +623,52 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
     }
 
+    private fun manualConfig(game: DosLibrary.Game): String {
+        val variants = catalog.resolve(game.contentId ?: "", game.displayName).launch?.configs?.keys.orEmpty()
+        return game.contentId?.let(dosGameSettings::startupVariant)?.takeIf { it in variants }
+            ?: variants.firstOrNull { it == "dosbox.conf" } ?: variants.sorted().firstOrNull() ?: "dosbox.conf"
+    }
+
+    private fun closeProgramPicker() {
+        pendingProgramPicker = null
+        val picker = programPicker
+        programPicker = null
+        picker?.close()
+    }
+
+    private fun showProgramPicker(game: DosLibrary.Game, configName: String, generation: Int) {
+        if (generation != launchGeneration || isFinishing || isDestroyed) return
+        releaseGuestInputs()
+        userPaused = true
+        refreshControllerUi()
+        val mountedDrives = java.util.concurrent.atomic.AtomicReference<Set<Char>>(emptySet())
+        programPicker = DirectoryPicker.show(this, "Run program", DirectoryPicker.Location("", "Drives"), { path ->
+            check(generation == launchGeneration) { "Game session ended" }
+            val response = nativeListDirectory(path)
+            check(response.startsWith("OK\n")) { response.substringAfter('\n') }
+            if (path.isEmpty()) mountedDrives.set(response.lineSequence().drop(1)
+                .filter { it.startsWith("D\t") }.map { it.substringAfter('\t').first() }.toSet())
+            response.lineSequence().drop(1).filter(String::isNotEmpty).mapNotNull { line ->
+                val directory = line.startsWith("D\t")
+                val id = line.substringAfter('\t')
+                if (!directory && id.substringAfterLast('.').lowercase() !in DosLaunchTarget.executableExtensions) null
+                else DirectoryPicker.Entry(id, id.trimEnd('\\').substringAfterLast('\\'), directory)
+            }.toList()
+        }, { entry ->
+            programPicker = null
+            if (generation == launchGeneration)
+                startGame(game, configName, target = DosLaunchTarget.Program(entry.id, mountedDrives.get()))
+        }, {
+            if (generation == launchGeneration && programPicker != null) {
+                programPicker = null
+                userPaused = false
+                refreshControllerUi()
+            }
+        })
+    }
+
     private fun startGame(game: DosLibrary.Game, configName: String,
-                          fromFrontend: Boolean = false, bootToPrompt: Boolean = false) {
+                          fromFrontend: Boolean = false, target: DosLaunchTarget = DosLaunchTarget.Normal) {
         val selected = tree
         if (!game.external && selected == null) {
             libraryScreen.showStatus("Choose a DOS folder for this game")
@@ -631,7 +676,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         if (!game.playable) return
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
-        if (!bootToPrompt && DosLaunchConfig.needsPlayer(launch) &&
+        if (target == DosLaunchTarget.Normal && DosLaunchConfig.needsPlayer(launch) &&
             game.contentId?.let(dosGameSettings::playerName) == null) {
             choosePlayerName(game, configName, fromFrontend)
             return
@@ -639,6 +684,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val playerName = game.contentId?.let(dosGameSettings::playerName)
         val availableGames = games.toList()
         val generation = ++launchGeneration
+        closeProgramPicker()
         prepareCancelled.set(true)
         val cancelled = AtomicBoolean(false)
         prepareCancelled = cancelled
@@ -692,7 +738,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                 }
                 require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
-                val dependencies = (if (bootToPrompt) emptySet() else
+                val dependencies = (if (target == DosLaunchTarget.Prompt) emptySet() else
                     DosLaunchConfig.requiredFolders(launch, configName))
                     .associateWith { folder ->
                         val ids = catalog.contentIdsForFolder(folder).toSet()
@@ -718,7 +764,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, playerName,
                     effectiveVoodoo() == 1, effectiveDirectTouch(),
-                    dosGameSettings.videoHardware(playableGame.contentId), bootToPrompt)
+                    dosGameSettings.videoHardware(playableGame.contentId), target)
+                if (target == DosLaunchTarget.Browse) runOnUiThread {
+                    if (generation == launchGeneration) pendingProgramPicker = {
+                        showProgramPicker(playableGame, configName, generation)
+                    }
+                }
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
@@ -986,6 +1037,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     statusLabel?.text = "${sessionGameTitle ?: "Game"} · running"
                     if (audioThread == null || audioThread?.isAlive != true) startAudio()
                     updateSurfaceLayout()
+                    // Wait until autoexec mounts have completed and the shell is
+                    // reading input, rather than opening on the initial VGA frame.
+                    if (pendingProgramPicker != null && nativeInputTelemetry().getOrNull(3) == 1L && !installerPromptOpen) {
+                        val open = pendingProgramPicker
+                        pendingProgramPicker = null
+                        open?.invoke()
+                    }
                 }
             }
             pollSession(id)
@@ -1284,6 +1342,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun endSessionForLibrary(done: () -> Unit) {
         endingSessionForLibrary = true
         launchGeneration++
+        closeProgramPicker()
         prepareCancelled.set(true)
         releaseGuestInputs()
         audioGeneration++
@@ -1321,6 +1380,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val returnToFrontend = completed && sessionFromFrontend
         sessionFromFrontend = false
         launchGeneration++
+        closeProgramPicker()
         prepareCancelled.set(true)
         if (!nativeStopped) nativeStop()
         audioGeneration++
@@ -1540,6 +1600,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         externalDispatcher.cancel()
         secondaryDisplay.stop()
         launchGeneration++
+        closeProgramPicker()
         prepareCancelled.set(true)
         nativeStop()
         audioGeneration++

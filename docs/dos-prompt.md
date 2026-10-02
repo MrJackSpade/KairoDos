@@ -30,7 +30,7 @@ No Kairo98 or shared implementation change is required.
 - Duke's `DUKE3D.CFG` remained
   `4da3770012f4860101e78581b6c56f1bac6658326f32d54cb35a834e40f20cdb`.
 
-## Mounted file enumeration (issue #25, in progress)
+## Mounted file enumeration (issue #25)
 
 The native `nativeListDirectory` worker API queues directory reads onto the
 emulation thread, including while paused. Empty input lists mounted user drives;
@@ -43,14 +43,10 @@ The RGDS prompt fixture additionally passed mounted-drive discovery, recursive
 navigation to a Duke executable while paused, invalid-path rejection, followed
 by the writable shell and normal-launch checks above.
 
-This is infrastructure for the executable picker, not the completed feature.
-The shared asynchronous directory picker now passes UI/controller tests in both
-apps on RGDS (see `shared/docs/directory-picker.md`). Remaining work includes DOS
-mounting/selection/launch integration and FAT/ISO fixture coverage. The DOS host
-must use mounted guest paths, preserve normal startup
-defaults, set the selected program's working directory, and handle cancellation
-and session teardown. Staging natively executes EXE/COM/BAT; DOS-compatible CMD
-scripts need explicit handling without claiming Windows command support.
+The shared asynchronous directory picker passes UI/controller tests in both apps
+on RGDS (see `shared/docs/directory-picker.md`). The DOS Run program action uses it
+for one-session executable selection. See [dos-program-picker.md](dos-program-picker.md)
+for launch behavior, CMD handling, and FAT/ISO validation.
 
 Instrumentation component:
 `com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.
