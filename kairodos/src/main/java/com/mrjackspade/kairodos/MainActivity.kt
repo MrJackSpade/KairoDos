@@ -845,10 +845,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 userPaused = !userPaused
                 closeMenu()
             },
-            SettingsEntry("Keyboard", { "Show the DOS keyboard" }) {
-                closeMenu()
-                if (!secondaryDisplay.isShowing) touchUi.showKeyboard()
-            },
             SettingsEntry("Exit", { "Stop the game and close KairoDos" }) {
                 confirmExit()
             }
@@ -1195,7 +1191,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showAbout() {
         AboutDocuments.show(this, "KairoDos",
-            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or using the menu.\n\nKairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
+            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or swiping inward from the right edge. On dual-screen devices, the keyboard appears on the other screen.\n\nKairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
             "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt")
     }
 
