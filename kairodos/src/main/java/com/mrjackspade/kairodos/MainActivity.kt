@@ -278,7 +278,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val controllerEditorFlow by lazy {
         ControllerEditorFlow(controllerEditor, DosLibrary.Game::contentId, ::closeMenu,
             ::releaseGuestInputs, { keyboard?.close() },
-            { onScreenControls?.show() }, { Ui.message(this, it) })
+            { onReturn -> onScreenControls?.show(onReturn) }, { Ui.message(this, it) })
     }
     private val tree: Uri? get() = libraryFlow.tree
     private var prepareCancelled = AtomicBoolean(false)
