@@ -1,0 +1,171 @@
+name: Tagged Android builds
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version name for a manual build'
+        required: true
+        default: '0.1.0-ci'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out pinned Kairo frontend
+        run: bash tools/checkout_shared.sh
+      - uses: ./shared/.github/actions/setup-android
+        id: android-toolchain
+      - name: Validate tag and set app version
+        shell: bash
+        env:
+          MANUAL_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="$MANUAL_VERSION"
+          fi
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Expected a version such as 0.2.0" >&2
+            exit 1
+          fi
+          echo "KAIRODOS_VERSION_NAME=$version" >> "$GITHUB_ENV"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            IFS=. read -r major minor patch <<< "$version"
+            patch=${patch%%-*}
+            version_code=$((10#$major * 1000000 + 10#$minor * 100 + 10#$patch))
+          else
+            version_code=$GITHUB_RUN_NUMBER
+          fi
+          echo "KAIRODOS_VERSION_CODE=$version_code" >> "$GITHUB_ENV"
+          echo "KAIRODOS_ARTIFACT_REF=${GITHUB_REF_NAME//\//-}" >> "$GITHUB_ENV"
+      - name: Validate release notes
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          notes="docs/releases/${GITHUB_REF_NAME}.md"
+          if [[ ! -s "$notes" ]]; then
+            echo "Missing release notes: $notes" >&2
+            exit 1
+          fi
+      - name: Require accessible shared source for a tagged release
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          visibility=$(gh api repos/MrJackSpade/Kairo --jq .private) || {
+            echo "The pinned Kairo frontend source is not publicly accessible" >&2
+            exit 1
+          }
+          if [[ "$visibility" != "false" ]]; then
+            echo "The pinned Kairo frontend source must be public before this release" >&2
+            exit 1
+          fi
+      - name: Prepare persistent release signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KAIRO_RELEASE_KEYSTORE_B64 }}
+          KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
+        shell: bash
+        run: |
+          if [[ -z "$KEYSTORE_B64" || -z "$KAIRO_RELEASE_PASSWORD" ]]; then
+            echo "Release signing secrets are missing" >&2
+            exit 1
+          fi
+          keystore="$RUNNER_TEMP/kairodos-beta.p12"
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$keystore"
+          echo "KAIRO_RELEASE_KEYSTORE=$keystore" >> "$GITHUB_ENV"
+      - name: Verify public catalog and build pinned emulator dependencies
+        shell: pwsh
+        run: |
+          ./tools/BuildPublicDosCatalog.ps1 -Check
+          ./tools/PrepareStagingDependencies.ps1
+      - name: Verify offline emulator notices
+        run: |
+          python3 tools/GenerateStagingNotices.py
+          git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
+      - name: Build release APK and matching Play bundle
+        env:
+          KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
+        run: >-
+          ./gradlew --no-daemon
+          :kairodos:assembleRelease
+          :kairodos:bundleRelease
+          -PkairodosVersionName="$KAIRODOS_VERSION_NAME"
+          -PkairodosVersionCode="$KAIRODOS_VERSION_CODE"
+      - name: Verify release signer
+        env:
+          KAIRO_BUILD_TOOLS: ${{ steps.android-toolchain.outputs.build-tools }}
+        shell: bash
+        run: |
+          expected="c321ec6b35e2509741362fcc3fede816c81510aa8133d791ea55ce0e1594a51c"
+          bundle=kairodos/build/outputs/bundle/release/kairodos-release.aab
+          apk=kairodos/build/outputs/apk/release/kairodos-release.apk
+          actual=$("$ANDROID_HOME/build-tools/$KAIRO_BUILD_TOOLS/apksigner" verify --print-certs "$apk" |
+            awk '/Signer #1 certificate SHA-256 digest:/ {print $NF}')
+          if [[ "$actual" != "$expected" ]]; then
+            echo "Unexpected release signing certificate for $apk: $actual" >&2
+            exit 1
+          fi
+          badging=$("$ANDROID_HOME/build-tools/$KAIRO_BUILD_TOOLS/aapt" dump badging "$apk")
+          grep -F "package: name='com.loxifi.kairodos' versionCode='$KAIRODOS_VERSION_CODE' versionName='$KAIRODOS_VERSION_NAME'" <<< "$badging"
+          if grep -q '^application-debuggable' <<< "$badging"; then
+            echo "Release APK must not be debuggable" >&2
+            exit 1
+          fi
+          jarsigner -verify "$bundle" | grep -F "jar verified"
+          bundle_signer=$(keytool -printcert -jarfile "$bundle" |
+            awk '/SHA256:/ {print $2}' | tr -d ':' | tr '[:upper:]' '[:lower:]')
+          if [[ "$bundle_signer" != "$expected" ]]; then
+            echo "Unexpected Play bundle signing certificate: $bundle_signer" >&2
+            exit 1
+          fi
+      - name: Verify native alignment and matching distribution payloads
+        run: |
+          python3 shared/tools/audit_android_release.py kairodos/build/outputs/apk/release/kairodos-release.apk kairodos/build/outputs/bundle/release/kairodos-release.aab
+          "$ANDROID_HOME/build-tools/${{ steps.android-toolchain.outputs.build-tools }}/zipalign" -c -P 16 -v 4 kairodos/build/outputs/apk/release/kairodos-release.apk
+      - name: Audit distribution contents
+        run: >-
+          python3 tools/audit_play_release.py
+          kairodos/build/outputs/apk/release/kairodos-release.apk
+          kairodos/build/outputs/bundle/release/kairodos-release.aab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kairodos-${{ env.KAIRODOS_ARTIFACT_REF }}-release
+          path: |
+            kairodos/build/outputs/apk/release/kairodos-release.apk
+            kairodos/build/outputs/bundle/release/kairodos-release.aab
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          tag="$GITHUB_REF_NAME"
+          apk="$RUNNER_TEMP/KairoDos-$tag.apk"
+          bundle="$RUNNER_TEMP/KairoDos-$tag-play.aab"
+          cp kairodos/build/outputs/apk/release/kairodos-release.apk "$apk"
+          cp kairodos/build/outputs/bundle/release/kairodos-release.aab "$bundle"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" "$bundle" --clobber
+          else
+            release_flags=()
+            if [[ "$tag" == *-* ]]; then
+              release_flags+=(--prerelease)
+            fi
+            gh release create "$tag" "$apk" "$bundle" \
+              --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
+              --notes-file "docs/releases/$tag.md"
+          fi

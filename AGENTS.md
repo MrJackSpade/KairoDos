@@ -26,6 +26,13 @@
 - Kairo98's `kairo98/build.gradle.kts` uses those environment variables for the `beta` signing config, including debug builds. Build `:kairo98:assembleWithImagesDebug` with the variables set, then install `kairo98/build/outputs/apk/withImages/debug/kairo98-withImages-debug.apk` with `adb install -r`. An ordinary debug APK uses a different key and cannot update the existing installations on the Retroid or RGDS.
 - Keep Kairo98's pinned `shared/` submodule on the same first-party Kairo commit as KairoDos when changing shared controller code. Build both apps and update both devices after such changes.
 
+# Tagged release signing (both products)
+
+- Kairo98's latest prior public tag was `v0.8.0`; both products use `v0.9.0` / versionCode `900` for the next synchronized release. Do not move existing release tags.
+- KairoDos release APKs and AABs use the same persistent Kairo certificate as Kairo98, alias `kairo98-beta`, at the local Kairo98 signing path above. For DOS release builds load `KAIRO_RELEASE_KEYSTORE` and `KAIRO_RELEASE_PASSWORD` from those ignored files; never print the password. GitHub Actions uses `KAIRO_RELEASE_KEYSTORE_B64` and `KAIRO_RELEASE_PASSWORD` secrets in `MrJackSpade/KairoDos`, explicitly authorized October 2, 2026.
+- DOS debug builds retain the existing Android debug signer. Release APKs cannot update those debug-signed device installations. Never uninstall, change the application ID, or overwrite signing credentials to bypass this mismatch.
+- Both tag workflows publish signed release APKs and matching AABs. DOS release assets use the sanitized public catalog export and omit unreviewed artwork. Local debug assets remain unchanged. See `docs/release-parity.md` for Play signing continuity and verification limits.
+
 # RGDS deployment
 
 - The RGDS wireless ADB port changes. Discover it with `adb mdns services`; the device advertises `adb-dd437d64c337800f` and has model `RG_DS`. Do not ask the user for a port before checking mDNS.
