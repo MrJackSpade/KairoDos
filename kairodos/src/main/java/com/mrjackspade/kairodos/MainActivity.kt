@@ -77,7 +77,6 @@ import com.mrjackspade.kairo.frontend.CatalogUpdateController
 import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
-import android.graphics.BitmapFactory
 import android.widget.EditText
 import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
@@ -221,7 +220,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 swappedKeyboard?.close()
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }, {
-                librarySelectionGeneration++
                 secondaryDisplay.setLibraryInfo(null)
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() })
@@ -299,8 +297,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var keyboard: GuestKeyboardPanel? = null
     private var swappedKeyboard: GuestKeyboardPanel? = null
     private lateinit var secondaryDisplay: SecondaryDisplayCoordinator
-    private val libraryArtExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
-    private var librarySelectionGeneration = 0
     private var statusLabel: TextView? = null
     private var loadingStatus: TextView? = null
     private var sessionGameTitle: String? = null
@@ -427,7 +423,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showLibrary() {
-        librarySelectionGeneration++
+        if (::secondaryDisplay.isInitialized) secondaryDisplay.setLibraryInfo(null)
         currentGame = null
         gameRoot?.let(appRoot::removeView)
         gameRoot = null
@@ -478,7 +474,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showLibrarySelection(entry: DosLibrary.Game?) {
         if (!::secondaryDisplay.isInitialized) return
-        val generation = ++librarySelectionGeneration
         if (entry == null) {
             secondaryDisplay.setLibraryInfo(null)
             return
@@ -487,23 +482,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val info = SecondaryDisplayCoordinator.LibraryInfo(game.title,
             listOf(entry.displayName) + game.tags,
             game.description ?: "No description available yet.", null, hasArtwork = game.preview != null)
-        secondaryDisplay.setLibraryInfo(info)
-        val art = game.preview ?: return
-        libraryArtExecutor.execute {
-            val bitmap = runCatching {
-                catalog.openArtwork(art).use { stream ->
-                    BitmapFactory.decodeStream(stream, null, BitmapFactory.Options().apply {
-                        inSampleSize = 2
-                    })
-                }
-            }.getOrNull() ?: return@execute
-            runOnUiThread {
-                if (generation == librarySelectionGeneration &&
-                    libraryScreen.visibility == View.VISIBLE && !isDestroyed)
-                    secondaryDisplay.setLibraryInfo(info.copy(art = bitmap))
-                else bitmap.recycle()
-            }
-        }
+        secondaryDisplay.setLibraryInfo(info, game.preview, catalog::openArtwork)
     }
 
     private fun previewGame(game: DosLibrary.Game) = artwork.view(game)
@@ -959,7 +938,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             preparing = false)
         val showingGuest = currentGame != null && presentation.showGuest
         if (libraryScreen.visibility != View.VISIBLE) {
-            librarySelectionGeneration++
             secondaryDisplay.setLibraryInfo(null)
         }
         if (secondaryDisplay.swapped && showingGuest) {
@@ -1519,7 +1497,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         controllerDevices.unregister()
         libraryFlow.cancel()
         externalDispatcher.cancel()
-        libraryArtExecutor.shutdownNow()
         secondaryDisplay.stop()
         launchGeneration++
         prepareCancelled.set(true)

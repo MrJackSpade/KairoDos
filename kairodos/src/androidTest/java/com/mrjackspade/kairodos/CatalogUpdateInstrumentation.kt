@@ -5,6 +5,7 @@ import android.app.Instrumentation
 import android.os.Bundle
 import com.mrjackspade.kairo.frontend.CatalogFieldLayers
 import com.mrjackspade.kairo.frontend.LibraryScrollFixture
+import com.mrjackspade.kairo.frontend.LibraryArtworkFixture
 import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipEntry
@@ -26,6 +27,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var catalogControllerSpeed: Float? = null
     private var catalogFetch = false
     private var libraryScroll = false
+    private var libraryArtwork = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -52,6 +54,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogControllerSpeed = arguments?.getString("catalogControllerSpeed")?.toFloat()
         catalogFetch = arguments?.getString("catalogFetch") == "true"
         libraryScroll = arguments?.getString("libraryScroll") == "true"
+        libraryArtwork = arguments?.getString("libraryArtwork") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -67,10 +70,10 @@ class CatalogUpdateInstrumentation : Instrumentation() {
 
     override fun onStart() {
         val result = Bundle()
-        if (libraryScroll) {
+        if (libraryScroll || libraryArtwork) {
             try {
-                LibraryScrollFixture.verify(this)
-                result.putString("stream", "Library selection avoids row rebinding and preserves recycled-row activation: OK\n")
+                if (libraryArtwork) LibraryArtworkFixture.verify(this) else LibraryScrollFixture.verify(this)
+                result.putString("stream", "${if (libraryArtwork) "Library artwork cache, ordering, failures and lifecycle" else "Library selection avoids row rebinding and preserves recycled-row activation"}: OK\n")
                 finish(Activity.RESULT_OK, result)
             } catch (failure: Throwable) {
                 result.putString("stream", failure.stackTraceToString())
