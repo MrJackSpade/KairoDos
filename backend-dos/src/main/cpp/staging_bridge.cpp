@@ -6,11 +6,15 @@
 #include "gui/common.h"
 #include "config/setup.h"
 #include "cpu/cpu.h"
+#include "dos/dos.h"
+#include "shell/shell.h"
+#include "misc/unicode.h"
 #include "hardware/input/joystick.h"
 #include "hardware/input/mouse.h"
 #include "libs/loguru/loguru.hpp"
 #include <android/log.h>
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
@@ -22,6 +26,66 @@ void KairoResetHostTiming();
 static_assert(C_DYNREC && C_TARGET_CPU_ARM,
     "KairoDos requires the ARM64 dynamic recompiler");
 KairoStagingCpuCounters kairo_staging_cpu_counters{};
+
+// Read the guest filesystem, rather than the archive's host paths: this also
+// enumerates FAT/ISO mounts and returns the exact DOS short names to execute.
+extern "C" const char* kairo_staging_list_directory(const char* input) {
+    static std::string result;
+    result = "ERROR\nDOS filesystem is not ready";
+    if (!DOS_GetFirstShell() || !dos.tables.tempdta) return result.c_str();
+    const std::string utf8 = input ? input : "";
+    result = "OK\n";
+    if (utf8.empty()) {
+        // Z: contains emulator utilities, not a game's files.
+        for (size_t index = 0; index < 25 && index < Drives.size(); ++index)
+            if (Drives[index]) result += std::string("D\t") + char('A' + index) + ":\\\n";
+        return result.c_str();
+    }
+    const auto path = utf8_to_dos(utf8, DosStringConvertMode::NoSpecialCharacters,
+                                 UnicodeFallback::EmptyString);
+    if (path.size() < 3 || path.size() + 4 >= DOS_PATHLENGTH ||
+        path[0] < 'A' || path[0] > 'Y' || path[1] != ':' || path[2] != '\\' ||
+        path.find_first_of("\r\n\t\"*?<>|/") != std::string::npos ||
+        path.find(':', 2) != std::string::npos || path.find("..") != std::string::npos ||
+        !Drives[path[0] - 'A']) {
+        result = "ERROR\nInvalid DOS directory";
+        return result.c_str();
+    }
+    // Preserve both the caller's DTA pointer and the shell's temporary search
+    // record, including error state. All accesses occur on the core thread.
+    struct SearchState {
+        RealPt dta = dos.dta();
+        uint16_t error = dos.errorcode;
+        std::array<uint8_t, sizeof(sDTA)> bytes{};
+        SearchState() {
+            MEM_BlockRead(RealToPhysical(dos.tables.tempdta), bytes.data(), bytes.size());
+            dos.dta(dos.tables.tempdta);
+        }
+        ~SearchState() {
+            MEM_BlockWrite(RealToPhysical(dos.tables.tempdta), bytes.data(), bytes.size());
+            dos.dta(dta);
+            dos.errorcode = error;
+        }
+    } saved;
+    FatAttributeFlags attributes{};
+    if (path.size() > 3 && (!DOS_GetFileAttr(path.c_str(), &attributes) || !attributes.directory)) {
+        result = "ERROR\nDOS directory does not exist";
+        return result.c_str();
+    }
+    const std::string prefix = path.back() == '\\' ? path : path + "\\";
+    DOS_DTA dta(dos.dta());
+    bool found = DOS_FindFirst((prefix + "*.*").c_str(), FatAttributeFlags::NotVolume);
+    while (found) {
+        DOS_DTA::Result entry{};
+        dta.GetResult(entry);
+        if (!entry.IsDummyDirectory() && (entry.IsDirectory() || entry.IsFile())) {
+            result += entry.IsDirectory() ? "D\t" : "F\t";
+            result += dos_to_utf8(prefix + entry.name, DosStringConvertMode::NoSpecialCharacters) + "\n";
+        }
+        found = DOS_FindNext();
+    }
+    return result.c_str();
+}
 
 namespace {
 KairoStagingCallbacks callbacks{};

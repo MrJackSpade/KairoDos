@@ -12,6 +12,8 @@
 #include <cstring>
 #include <deque>
 #include <mutex>
+#include <memory>
+#include <chrono>
 #include <shared_mutex>
 #include <string>
 #include <thread>
@@ -25,6 +27,11 @@ std::mutex surface_mutex, frame_mutex, input_mutex, control_mutex, error_mutex;
 ANativeWindow* surface = nullptr;
 int surface_width = 0, surface_height = 0;
 std::condition_variable frame_ready, control_changed;
+struct DirectoryRequest {
+    std::string path, result;
+    bool done = false;
+};
+std::shared_ptr<DirectoryRequest> directory_request;
 std::vector<uint8_t> pending_frame;
 unsigned pending_width = 0, pending_height = 0;
 uint64_t pending_frame_time = 0;
@@ -59,6 +66,7 @@ struct Core {
     decltype(&kairo_staging_mouse) mouse = nullptr;
     decltype(&kairo_staging_read_audio) read_audio = nullptr;
     decltype(&kairo_staging_audio_rate) audio_rate = nullptr;
+    decltype(&kairo_staging_list_directory) list_directory = nullptr;
 } core;
 void set_error(const std::string& message) {
     std::lock_guard lock(error_mutex);
@@ -77,7 +85,8 @@ bool load_core() {
     return symbol(core.run, "kairo_staging_run") && symbol(core.key, "kairo_staging_key") &&
         symbol(core.configure, "kairo_staging_configure") &&
         symbol(core.joypad, "kairo_staging_joypad") && symbol(core.mouse, "kairo_staging_mouse") &&
-        symbol(core.read_audio, "kairo_staging_read_audio") && symbol(core.audio_rate, "kairo_staging_audio_rate");
+        symbol(core.read_audio, "kairo_staging_read_audio") && symbol(core.audio_rate, "kairo_staging_audio_rate") &&
+        symbol(core.list_directory, "kairo_staging_list_directory");
 }
 void unload_core() {
     std::unique_lock lock(core_api_mutex);
@@ -173,9 +182,21 @@ int poll() {
     bool resumed = false;
     {
         std::unique_lock lock(control_mutex);
-        if (paused && !stop_requested && !reset_requested) {
+        while (!stop_requested && !reset_requested) {
+            if (directory_request) {
+                auto request = std::move(directory_request);
+                lock.unlock();
+                const std::string result = core.list_directory(request->path.c_str());
+                lock.lock();
+                request->result = result;
+                request->done = true;
+                control_changed.notify_all();
+            }
+            if (!paused) break;
             resumed = true;
-            control_changed.wait(lock, [] { return !paused || stop_requested || reset_requested; });
+            control_changed.wait(lock, [] {
+                return !paused || stop_requested || reset_requested || directory_request;
+            });
         }
     }
     if (stop_requested || reset_requested) return 0;
@@ -241,7 +262,28 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     frame_ready.notify_all(); renderer.join();
     const bool ok = result == 0 || stop_requested;
     status = ok ? 0 : 3;
+    control_changed.notify_all();
     return ok;
+}
+// Worker-thread API. The emulation thread owns every DOS filesystem access,
+// including while paused; the UI and audio threads never inspect guest memory.
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeListDirectory(JNIEnv* env, jobject, jstring path) {
+    auto request = std::make_shared<DirectoryRequest>();
+    request->path = string(env, path);
+    std::unique_lock lock(control_mutex);
+    if (status != 2 || stop_requested || reset_requested)
+        return env->NewStringUTF("ERROR\nDOS session is not ready");
+    if (directory_request)
+        return env->NewStringUTF("ERROR\nAnother directory request is pending");
+    directory_request = request;
+    control_changed.notify_all();
+    control_changed.wait_for(lock, std::chrono::seconds(8), [&] {
+        return request->done || stop_requested || reset_requested || status != 2;
+    });
+    if (directory_request == request) directory_request.reset();
+    return env->NewStringUTF(request->done ? request->result.c_str() :
+        "ERROR\nDOS directory request was interrupted or timed out");
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeStop(JNIEnv*, jobject) {

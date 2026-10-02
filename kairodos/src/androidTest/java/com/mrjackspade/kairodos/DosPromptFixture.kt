@@ -67,6 +67,29 @@ internal object DosPromptFixture {
             check(!file.exists()) { "Pre-existing fixture marker; refusing to overwrite" }
             marker = file
             Thread.sleep(1500)
+            call("nativePause", true)
+            try {
+                val drives = call("nativeListDirectory", "") as String
+                check(drives.startsWith("OK\n") && drives.contains("D\tC:\\\n")) { drives }
+                check(!drives.contains("Z:"))
+                val pending = java.util.ArrayDeque<String>().apply { add("C:\\") }
+                var executable = false
+                var visits = 0
+                while (pending.isNotEmpty() && !executable && visits++ < 50) {
+                    val directory = pending.removeFirst()
+                    val listing = call("nativeListDirectory", directory) as String
+                    check(listing.startsWith("OK\n")) { listing }
+                    for (entry in listing.lineSequence().drop(1).filter(String::isNotEmpty)) {
+                        val path = entry.substringAfter('\t')
+                        check(path.startsWith("C:\\") && !path.endsWith("\\..") && !path.endsWith("\\."))
+                        if (entry.startsWith("D\t")) pending.add(path)
+                        if (entry.startsWith("F\t") && path.endsWith(".EXE", true)) executable = true
+                    }
+                }
+                check(executable) { "Could not browse to a game executable" }
+                for (invalid in listOf("C:\\..", "C:\\*.EXE", "C:\\MISSING", "Z:\\", "/data"))
+                    check((call("nativeListDirectory", invalid) as String).startsWith("ERROR\n"))
+            } finally { call("nativePause", false) }
             fun key(code: Int) {
                 call("nativeKey", code, true); Thread.sleep(60)
                 call("nativeKey", code, false); Thread.sleep(60)

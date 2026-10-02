@@ -33,6 +33,10 @@ void kairo_staging_mouse(int dx, int dy, bool left, bool right,
     int pointer_x, int pointer_y, bool pointer_pressed, bool absolute);
 int kairo_staging_read_audio(int16_t* samples, int frames);
 int kairo_staging_audio_rate();
+// Emulation-thread only. Empty path lists mounted user drives; otherwise an
+// absolute UTF-8 DOS directory. Result lives until the next call: OK or ERROR
+// on the first line, followed by D/F, a tab, and an absolute UTF-8 DOS path.
+const char* kairo_staging_list_directory(const char* path);
 }
 
 bool KairoStagingPoll();

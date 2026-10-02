@@ -30,5 +30,26 @@ No Kairo98 or shared implementation change is required.
 - Duke's `DUKE3D.CFG` remained
   `4da3770012f4860101e78581b6c56f1bac6658326f32d54cb35a834e40f20cdb`.
 
+## Mounted file enumeration (issue #25, in progress)
+
+The native `nativeListDirectory` worker API queues directory reads onto the
+emulation thread, including while paused. Empty input lists mounted user drives;
+an absolute DOS directory lists its children using the core's filesystem and DOS
+short names. It preserves the DOS DTA pointer, temporary search record, and error
+state. Requests time out or cancel on session shutdown; host filesystem paths,
+wildcards, parent traversal, and the emulator's Z: drive are rejected.
+
+The RGDS prompt fixture additionally passed mounted-drive discovery, recursive
+navigation to a Duke executable while paused, invalid-path rejection, followed
+by the writable shell and normal-launch checks above.
+
+This is infrastructure for the executable picker, not the completed feature.
+Remaining work includes the shared asynchronous directory picker and its tests
+in both apps, DOS mounting/selection/launch integration, and FAT/ISO fixture
+coverage. The DOS host must use mounted guest paths, preserve normal startup
+defaults, set the selected program's working directory, and handle cancellation
+and session teardown. Staging natively executes EXE/COM/BAT; DOS-compatible CMD
+scripts need explicit handling without claiming Windows command support.
+
 Instrumentation component:
 `com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.

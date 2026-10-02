@@ -89,6 +89,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
     private external fun nativeReset()
+    private external fun nativeListDirectory(path: String): String
     private external fun nativeStatus(): Int
     private external fun nativeInputTelemetry(): LongArray
     private external fun nativeCpuTelemetry(): LongArray
