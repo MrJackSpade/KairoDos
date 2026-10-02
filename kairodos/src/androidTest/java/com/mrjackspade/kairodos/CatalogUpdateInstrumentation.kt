@@ -61,8 +61,10 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var resolutionSource: String? = null
     private var resolutionWidth = 320
     private var resolutionNoDouble = false
+    private var touchKeyboardUri: String? = null
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
+        touchKeyboardUri = arguments?.getString("touchKeyboardUri")
         audioOutputPolicy = arguments?.getString("audioOutputPolicy") == "true"
         hardwareRender = arguments?.getString("hardwareRender") == "true"
         hardwareGame = arguments?.getString("hardwareGame")
@@ -117,6 +119,16 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     }
     override fun onStart() {
         val result = Bundle()
+        touchKeyboardUri?.let { uri ->
+            try {
+                result.putString("stream", com.mrjackspade.kairo.frontend.TouchKeyboardFixture.verify(this, uri))
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (keyCycle) {
             try {
                 com.mrjackspade.kairo.frontend.KeyCycleFixture.verify(this)

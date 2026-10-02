@@ -861,6 +861,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
+        frame.setOnTouchListener { _, event ->
+            sessionFlow?.isOpen != true && !controllerEditor.isOpen &&
+                onScreenControls?.isOpen != true && touchUi.handleKeyboardTouch(event,
+                    inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD)
+        }
         root.addView(frame, FrameLayout.LayoutParams(-1, -1))
         loadingStatus = TextView(this).apply {
             text = if (game.installer) "Preparing installer archive…" else "Preparing DOS game…"
@@ -1083,16 +1088,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         handleGameTouchAt(event, view.width, view.height)
 
     private fun handleGameTouchAt(event: MotionEvent, width: Int, height: Int): Boolean {
+        if (touchUi.handleKeyboardTouch(event,
+                inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD))
+            return true
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             lastX = event.x; lastY = event.y; moved = false
-        }
-        if (inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD) {
-            if (event.actionMasked == MotionEvent.ACTION_MOVE &&
-                abs(event.x - lastX) + abs(event.y - lastY) > Ui.dp(this, 12)) moved = true
-            if (event.actionMasked == MotionEvent.ACTION_UP && !moved &&
-                !secondaryDisplay.isKeyboardVisible)
-                touchUi.showKeyboard()
-            return true
         }
         val direct = effectiveDirectTouch()
         if (direct) {
