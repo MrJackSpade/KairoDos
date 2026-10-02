@@ -8,6 +8,7 @@ import com.mrjackspade.kairo.frontend.LibraryScrollFixture
 import com.mrjackspade.kairo.frontend.LibraryArtworkFixture
 import com.mrjackspade.kairo.frontend.LibraryMenuFixture
 import com.mrjackspade.kairo.frontend.DeadZoneFixture
+import com.mrjackspade.kairo.frontend.LibrarySearchFixture
 import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipEntry
@@ -32,6 +33,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var libraryArtwork = false
     private var libraryMenu = false
     private var deadZone = false
+    private var librarySearch = false
+    private var traceSearch = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -61,6 +64,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         libraryArtwork = arguments?.getString("libraryArtwork") == "true"
         libraryMenu = arguments?.getString("libraryMenu") == "true"
         deadZone = arguments?.getString("deadZone") == "true"
+        librarySearch = arguments?.getString("librarySearch") == "true"
+        traceSearch = arguments?.getString("traceSearch") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -76,6 +81,16 @@ class CatalogUpdateInstrumentation : Instrumentation() {
 
     override fun onStart() {
         val result = Bundle()
+        if (librarySearch) {
+            try {
+                result.putString("stream", LibrarySearchFixture.measure(this, traceSearch))
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (libraryScroll || libraryArtwork || libraryMenu || deadZone) {
             try {
                 if (deadZone) DeadZoneFixture.verify(this)
