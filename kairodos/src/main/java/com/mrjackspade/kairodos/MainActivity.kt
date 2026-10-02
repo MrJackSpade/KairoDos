@@ -483,10 +483,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             secondaryDisplay.setLibraryInfo(null)
             return
         }
-        val game = catalog.resolve(entry.contentId ?: "", entry.displayName)
+        val game = libraryScreen.metadata(entry)
         val info = SecondaryDisplayCoordinator.LibraryInfo(game.title,
             listOf(entry.displayName) + game.tags,
-            game.description ?: "No description available yet.", null)
+            game.description ?: "No description available yet.", null, hasArtwork = game.preview != null)
         secondaryDisplay.setLibraryInfo(info)
         val art = game.preview ?: return
         libraryArtExecutor.execute {

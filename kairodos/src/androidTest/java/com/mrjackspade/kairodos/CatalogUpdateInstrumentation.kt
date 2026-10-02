@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.os.Bundle
 import com.mrjackspade.kairo.frontend.CatalogFieldLayers
+import com.mrjackspade.kairo.frontend.LibraryScrollFixture
 import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipEntry
@@ -24,6 +25,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var controllerMouse = false
     private var catalogControllerSpeed: Float? = null
     private var catalogFetch = false
+    private var libraryScroll = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -49,6 +51,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         controllerMouse = arguments?.getString("controllerMouse") == "true"
         catalogControllerSpeed = arguments?.getString("catalogControllerSpeed")?.toFloat()
         catalogFetch = arguments?.getString("catalogFetch") == "true"
+        libraryScroll = arguments?.getString("libraryScroll") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -64,6 +67,17 @@ class CatalogUpdateInstrumentation : Instrumentation() {
 
     override fun onStart() {
         val result = Bundle()
+        if (libraryScroll) {
+            try {
+                LibraryScrollFixture.verify(this)
+                result.putString("stream", "Library selection avoids row rebinding and preserves recycled-row activation: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         catalogControllerSpeed?.let { expected ->
             try {
                 val catalog = DosGameCatalog(targetContext)
