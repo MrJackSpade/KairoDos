@@ -35,6 +35,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var libraryMenu = false
     private var deadZone = false
     private var librarySearch = false
+    private var endSessionUri: String? = null
     private var exitDialog = false
     private var traceSearch = false
     private var libraryKeyboard = false
@@ -81,11 +82,23 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         resolutionWidth = arguments?.getString("resolutionWidth")?.toInt() ?: 320
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
         exitDialog = arguments?.getString("exitDialog") == "true"
+        endSessionUri = arguments?.getString("endSessionUri")
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
+        endSessionUri?.let { uri ->
+            try {
+                com.mrjackspade.kairo.frontend.EndSessionFixture.verify(this, uri)
+                result.putString("stream", "Library cancellation, teardown and relaunch: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (exitDialog) {
             try {
                 com.mrjackspade.kairo.frontend.ExitDialogFixture.verify(this)

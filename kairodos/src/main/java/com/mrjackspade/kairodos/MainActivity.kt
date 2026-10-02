@@ -222,7 +222,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }, {
                 secondaryDisplay.setLibraryInfo(null)
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() })
+            }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() }, ::endSessionForLibrary)
     }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private val touchUi by lazy {
@@ -431,7 +431,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun openLibraryOverGame() {
-        if (currentGame != null) sessionNavigation.showLibrary()
+        sessionNavigation.requestLibrary()
     }
 
     private fun resumeGameFromLibrary() { sessionNavigation.resumeGame() }
@@ -971,7 +971,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun pollSession(id: String) {
         handler.postDelayed({
-            if (currentGame?.id != id) return@postDelayed
+            if (currentGame?.id != id || endingSessionForLibrary) return@postDelayed
             if (nativeStatus() == 2) {
                 InputModeDecider.GuestInput.fromNative(nativeInputTelemetry())?.let {
                     inputModeDecider.observe(it, android.os.SystemClock.elapsedRealtime())
@@ -1277,12 +1277,50 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         Ui.styleDialog(dialog)
     }
 
-    private fun leaveGame(completed: Boolean = true) {
+    private var endingSessionForLibrary = false
+
+    private fun endSessionForLibrary(done: () -> Unit) {
+        endingSessionForLibrary = true
+        launchGeneration++
+        prepareCancelled.set(true)
+        releaseGuestInputs()
+        audioGeneration++
+        val previousAudio = audio
+        val previousThread = audioThread
+        val previousGame = gameThread
+        Thread {
+            runCatching { previousAudio?.stop() }
+            // nativeRun initializes its stop flag. If Library is requested during
+            // launch, cancellation can race that initialization; keep requesting
+            // stop until the canceled launch has actually returned.
+            do {
+                nativeStop()
+                previousGame?.join(100)
+            } while (previousGame?.isAlive == true)
+            previousThread?.join()
+            runOnUiThread {
+                leaveGame(completed = false, nativeStopped = true, showAfter = false)
+                gameRoot?.let(appRoot::removeView)
+                gameRoot = null
+                gameThread = null
+                audioThread = null
+                surface = null
+                videoFrame = null
+                keyboard = null
+                onScreenControls = null
+                statusLabel = null
+                endingSessionForLibrary = false
+                done()
+            }
+        }.apply { name = "KairoDos-end-session"; start() }
+    }
+
+    private fun leaveGame(completed: Boolean = true, nativeStopped: Boolean = false, showAfter: Boolean = true) {
         val returnToFrontend = completed && sessionFromFrontend
         sessionFromFrontend = false
         launchGeneration++
         prepareCancelled.set(true)
-        nativeStop()
+        if (!nativeStopped) nativeStop()
         audioGeneration++
         gamepad.releaseAll()
         keys.releaseAll()
@@ -1303,7 +1341,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         currentGame = null
         controllerProfiles.configuration.endSession()
         gamepad.bindings = controllerFlow.global()
-        if (!returnToFrontend || installerPromptOpen) showLibrary()
+        if (showAfter && (!returnToFrontend || installerPromptOpen)) showLibrary()
         if (returnToFrontend) {
             if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
         }
