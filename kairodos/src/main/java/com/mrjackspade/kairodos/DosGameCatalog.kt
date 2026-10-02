@@ -53,8 +53,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     @Synchronized fun reloadUserCatalog() { userCatalog = readUserCatalog() }
 
     /** Call off the main thread; a failed download leaves the active catalog in place. */
-    fun downloadUpdate(): Boolean {
-        if (!online.download()) return false
+    fun downloadUpdate(task: com.mrjackspade.kairo.frontend.CatalogUpdateTask = com.mrjackspade.kairo.frontend.CatalogUpdateTask()): Boolean {
+        if (!online.download(task)) return false
         synchronized(this) {
             cache.evictAll()
             folderIndex = null

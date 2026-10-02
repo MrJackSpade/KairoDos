@@ -16,8 +16,8 @@ internal class DosCatalogUpdate(context: Context) {
     @Synchronized fun read(name: String): JSONObject? = archive?.let { readEntry(it, name) }
 
     /** Call from a worker thread. A failed fetch or validation keeps the current catalog. */
-    fun download(): Boolean {
-        if (!store.download()) return false
+    fun download(task: com.mrjackspade.kairo.frontend.CatalogUpdateTask = com.mrjackspade.kairo.frontend.CatalogUpdateTask()): Boolean {
+        if (!store.download(task)) return false
         synchronized(this) {
             archive?.close()
             archive = store.activeFile()?.let(::ZipFile)

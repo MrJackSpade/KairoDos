@@ -172,7 +172,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (libraryScreen.visibility == View.VISIBLE)
                     android.widget.Toast.makeText(this, "Game catalog updated",
                         android.widget.Toast.LENGTH_SHORT).show()
-            })
+            }, libraryScreen::showCatalogUpdate)
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
@@ -1530,6 +1530,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             super.onDestroy()
             return
         }
+        catalogUpdates.cancel()
         backCoordinator.unregister()
         releaseGuestInputs()
         controllerDevices.unregister()

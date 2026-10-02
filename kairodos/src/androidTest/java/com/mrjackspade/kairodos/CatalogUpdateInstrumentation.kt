@@ -36,6 +36,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var deadZone = false
     private var librarySearch = false
     private var endSessionUri: String? = null
+    private var catalogProgress = false
     private var exitDialog = false
     private var traceSearch = false
     private var libraryKeyboard = false
@@ -83,11 +84,23 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
         exitDialog = arguments?.getString("exitDialog") == "true"
         endSessionUri = arguments?.getString("endSessionUri")
+        catalogProgress = arguments?.getString("catalogProgress") == "true"
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
+        if (catalogProgress) {
+            try {
+                com.mrjackspade.kairo.frontend.CatalogProgressFixture.verify(this)
+                result.putString("stream", "Catalog progress, completion, failure, cancellation and metadata-only check: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         endSessionUri?.let { uri ->
             try {
                 com.mrjackspade.kairo.frontend.EndSessionFixture.verify(this, uri)
