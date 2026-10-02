@@ -7,6 +7,7 @@ import com.mrjackspade.kairo.frontend.CatalogFieldLayers
 import com.mrjackspade.kairo.frontend.LibraryScrollFixture
 import com.mrjackspade.kairo.frontend.LibraryArtworkFixture
 import com.mrjackspade.kairo.frontend.LibraryMenuFixture
+import com.mrjackspade.kairo.frontend.DeadZoneFixture
 import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipEntry
@@ -30,6 +31,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var libraryScroll = false
     private var libraryArtwork = false
     private var libraryMenu = false
+    private var deadZone = false
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -58,6 +60,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         libraryScroll = arguments?.getString("libraryScroll") == "true"
         libraryArtwork = arguments?.getString("libraryArtwork") == "true"
         libraryMenu = arguments?.getString("libraryMenu") == "true"
+        deadZone = arguments?.getString("deadZone") == "true"
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -73,11 +76,12 @@ class CatalogUpdateInstrumentation : Instrumentation() {
 
     override fun onStart() {
         val result = Bundle()
-        if (libraryScroll || libraryArtwork || libraryMenu) {
+        if (libraryScroll || libraryArtwork || libraryMenu || deadZone) {
             try {
-                if (libraryMenu) LibraryMenuFixture.verify(this)
+                if (deadZone) DeadZoneFixture.verify(this)
+                else if (libraryMenu) LibraryMenuFixture.verify(this)
                 else if (libraryArtwork) LibraryArtworkFixture.verify(this) else LibraryScrollFixture.verify(this)
-                result.putString("stream", "${if (libraryMenu) "Library menu key/hat scrolling" else if (libraryArtwork) "Library artwork cache, ordering, failures and lifecycle" else "Library selection avoids row rebinding and preserves recycled-row activation"}: OK\n")
+                result.putString("stream", "${if (deadZone) "Default/custom/reset deadzone and axis activation" else if (libraryMenu) "Library menu key/hat scrolling" else if (libraryArtwork) "Library artwork cache, ordering, failures and lifecycle" else "Library selection avoids row rebinding and preserves recycled-row activation"}: OK\n")
                 finish(Activity.RESULT_OK, result)
             } catch (failure: Throwable) {
                 result.putString("stream", failure.stackTraceToString())
