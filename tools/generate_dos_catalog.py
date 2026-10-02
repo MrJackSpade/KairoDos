@@ -20,6 +20,7 @@ import zipfile
 
 from PIL import Image
 from dos_catalog_review import apply_review, read_review
+from dos_artwork import compact, expand, transform
 
 PREFIX = "sha256-dos-manifest-v1:"
 HEADER = b"kairo-dos-manifest-v1\0"
@@ -121,6 +122,7 @@ def import_launch_only(root: Path, catalog: Path) -> None:
     configs, by_game_folder = launch_configs(root, records)
     shards = {path.stem: json.loads(path.read_text(encoding="utf-8"))
               for path in catalog.glob("[0-9a-f][0-9a-f].json")}
+    shards = transform(shards, expand)
     artwork_by_title = {}
     for shard in shards.values():
         for record in shard["games"].values():
@@ -190,8 +192,8 @@ def import_launch_only(root: Path, catalog: Path) -> None:
         matched += 1
         if index % 250 == 0:
             print(f"Launch metadata {index} archives, {matched} matched", flush=True)
-    reviewed = apply_review({key: value for shard in shards.values()
-                             for key, value in shard["games"].items()}, read_review())
+    reviewed = transform(apply_review({key: value for shard in shards.values()
+                             for key, value in shard["games"].items()}, read_review()), compact)
     for shard in shards.values():
         shard["games"] = {key: reviewed[key] for key in shard["games"]}
     for prefix, shard in shards.items():
@@ -406,6 +408,7 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
             raise ValueError(f"source archive changed or failed scan: {item.name}")
     old = {key: value for path in catalog.glob("[0-9a-f][0-9a-f].json")
            for key, value in json.loads(path.read_text(encoding="utf-8"))["games"].items()}
+    old = transform(old, expand)
     old_by_title: dict[str, list[tuple[str, dict]]] = {}
     old_by_stem: dict[str, list[tuple[str, dict]]] = {}
     for content_id, record in old.items():
@@ -484,7 +487,7 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
     refreshed = {content_id: variants[0][1] if len(variants) == 1 else
                  {"title": " / ".join(value["title"] for _, value in variants),
                   "variants": dict(variants)} for content_id, variants in rows.items()}
-    refreshed = apply_review(refreshed, read_review())
+    refreshed = transform(apply_review(refreshed, read_review()), compact)
     shards = {f"{index:02x}": {"schemaVersion": 1, "games": {}} for index in range(256)}
     for content_id, record in refreshed.items():
         shards[content_id.split(":", 1)[1][:2]]["games"][content_id] = record
@@ -507,6 +510,8 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
     recommendations = json.loads(recommendation_path.read_text(encoding="utf-8"))
     profiles = apply_controller_recommendations(profiles, recommendations,
         set(refreshed), profile_migrations)
+    # Compare the persisted representations, not expanded matching inputs.
+    old = transform(old, compact)
     added = sorted(refreshed.keys() - old.keys())
     removed = sorted(old.keys() - refreshed.keys())
     changed = sorted(key for key in old.keys() & refreshed.keys() if old[key] != refreshed[key])
@@ -649,8 +654,8 @@ def main() -> None:
         destination.mkdir(parents=True, exist_ok=True)
         # A private partial scan can omit reviewed identities; publishing a full
         # refresh above requires every review to resolve.
-        reviewed = apply_review({key: value for games in shards.values()
-                                 for key, value in games.items()}, read_review(), require_all=False)
+        reviewed = transform(apply_review({key: value for games in shards.values()
+                                 for key, value in games.items()}, read_review(), require_all=False), compact)
         for prefix, games in shards.items():
             (destination / f"{prefix}.json").write_text(json.dumps(
                 {"schemaVersion": 1, "games": {key: reviewed[key] for key in games}},

@@ -19,6 +19,8 @@ jobs:
         run: ./tools/BuildPublicDosCatalog.ps1 -Check
       - name: Verify reviewed catalog language and description export
         run: python3 -m unittest discover -s tools -p 'test_dos_catalog_review.py'
+      - name: Verify compact artwork references
+        run: python3 -m unittest discover -s tools -p 'test_dos_artwork.py'
       - name: Build pinned Staging Android dependencies
         shell: pwsh
         run: ./tools/PrepareStagingDependencies.ps1

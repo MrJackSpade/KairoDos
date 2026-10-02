@@ -3,6 +3,7 @@ import argparse
 import copy
 import json
 from pathlib import Path
+from dos_artwork import compact, transform
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW = ROOT / "catalog/metadata-review-v1.json"
@@ -65,7 +66,7 @@ def regenerate(catalog=CATALOG, *, check=False):
     paths = sorted(catalog.glob("[0-9a-f][0-9a-f].json"))
     shards = {p: json.loads(p.read_text(encoding="utf-8")) for p in paths}
     original = {key: record for shard in shards.values() for key, record in shard["games"].items()}
-    reviewed = apply_review(original, read_review())
+    reviewed = transform(apply_review(original, read_review()), compact)
     changed = 0
     for path, shard in shards.items():
         games = {key: reviewed[key] for key in shard["games"]}

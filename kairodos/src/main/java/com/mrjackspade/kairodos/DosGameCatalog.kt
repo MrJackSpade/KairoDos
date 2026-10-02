@@ -169,8 +169,9 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         if (id.matches(contentId)) {
             val prefix = contentId.substringAfter(':').take(2)
             fun add(name: String, value: JSONObject?) {
-                sources += CatalogFieldLayers.Source(name, value)
-                selectVariant(value, fileName)?.let {
+                val expanded = runCatching { DosArtworkReferences.record(value) }.getOrNull()
+                sources += CatalogFieldLayers.Source(name, expanded)
+                selectVariant(expanded, fileName)?.let {
                     sources += CatalogFieldLayers.Source(name, it)
                 }
             }

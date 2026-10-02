@@ -61,6 +61,21 @@ function Write-PublicJson([System.Text.Json.JsonElement] $value,
     if ($value.ValueKind -eq [System.Text.Json.JsonValueKind]::Object) {
         $writer.WriteStartObject()
         foreach ($property in $value.EnumerateObject()) {
+            if ($property.Name -eq 'artwork') {
+                $art = $property.Value
+                if ($art.ValueKind -ne [System.Text.Json.JsonValueKind]::Object) {
+                    throw 'Invalid artwork object'
+                }
+                $fields = @($art.EnumerateObject() | ForEach-Object Name)
+                if ($fields.Count -gt 0) {
+                    if ($fields.Count -ne 3 -or @($fields | Where-Object { $_ -notin @('id', 'variant', 'kinds') }).Count -gt 0 -or
+                        $art.GetProperty('id').GetString() -cnotmatch '^[0-9a-f]{64}$' -or
+                        $art.GetProperty('variant').GetString() -cnotmatch '^[0-9a-f]{12}$' -or
+                        $art.GetProperty('kinds').GetInt32() -notin @(1, 2, 3)) {
+                        throw 'Regenerate compact artwork with tools/dos_catalog_review.py'
+                    }
+                }
+            }
             # Empty imported notes are not valid description overrides. Keep all
             # nonempty descriptions, including the reviewed editorial rewrites.
             if ($property.Name -eq 'description' -and

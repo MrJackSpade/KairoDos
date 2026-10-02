@@ -39,7 +39,8 @@ internal object DosCatalogFields {
     }
 
     fun invalidPath(record: JSONObject): String? {
-        val fields = JSONObject(record.toString()).apply { remove("variants") }
+        val fields = runCatching { DosArtworkReferences.record(record)!! }
+            .getOrElse { return "artwork" }.apply { remove("variants") }
         CatalogFieldLayers.invalidPath(fields, ::objectField, ::validValue)?.let {
             return it.joinToString(".")
         }

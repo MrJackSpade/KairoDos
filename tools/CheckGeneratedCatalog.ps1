@@ -6,7 +6,7 @@ Set-Location (Join-Path $PSScriptRoot '..')
 $source = 'kairodos/src/main/assets/catalog/dos/'
 $public = @('catalog/online-v1.zip', 'catalog/online-v1.json')
 $inputs = @('catalog/metadata-review-v1.json', 'tools/dos_catalog_review.py',
-    'tools/generate_dos_catalog.py', 'tools/BuildPublicDosCatalog.ps1')
+    'tools/dos_artwork.py', 'tools/generate_dos_catalog.py', 'tools/BuildPublicDosCatalog.ps1')
 $staged = @(git diff --cached --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect staged files.' }
 if (-not $All -and -not @($staged | Where-Object {

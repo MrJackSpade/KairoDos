@@ -70,3 +70,20 @@ Missing identities, changed source titles, and missing variants require review
 instead of silently applying an edit to a different game. The public-export
 check rejects stale reviewed fields. Blank source notes are omitted because
 they are not valid description overrides; all nonempty descriptions are exported.
+
+## Compact artwork references (0.9.5)
+
+Distributed records store `artwork: {id, variant, kinds}` instead of image paths.
+`id` is the 64-character artwork identity, `variant` is its 12-character variant,
+and `kinds` is 1 for cover, 2 for preview, or 3 for both. An empty object means
+no artwork. The artwork identity can differ from the current game content ID
+because a catalog refresh can retain artwork from a previous identity.
+
+`DosArtworkReferences` reconstructs the established asset paths before catalog
+layering. The existing download template then supplies the host. Cached files,
+bundled images, legacy catalog records, and local artwork overrides retain their
+existing paths and precedence. Generators reject references that cannot be
+represented losslessly. The public exporter rejects unconverted artwork.
+Old apps reject the new snapshot and keep their active catalog until updated;
+0.9.5 can read both representations. This changes catalog representation, not
+access permissions on the image server.
