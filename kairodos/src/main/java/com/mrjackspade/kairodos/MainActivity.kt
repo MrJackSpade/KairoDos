@@ -775,7 +775,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         SettingsEntry("Controller", { "Gamepad and on-screen controls" }) {
             showControllerScope(currentGame?.takeIf { it.contentId != null })
         },
-        SettingsEntry("Sound", { if (preferences.getBoolean("muted", false)) "Muted" else "On" }) {
+        SettingsEntry.sound({ preferences.getBoolean("muted", false) }) {
             val muted = !preferences.getBoolean("muted", false)
             preferences.edit().putBoolean("muted", muted).apply()
             audio?.setVolume(if (muted) 0f else 1f)
