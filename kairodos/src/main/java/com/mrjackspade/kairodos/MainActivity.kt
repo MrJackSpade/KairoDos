@@ -772,10 +772,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
         SettingsEntry("Graphics", graphics::settingsLabel, { showGraphicsSettings(null) }),
-        SettingsEntry("On-screen controls", { "Button layout and visibility" }) {
-            closeMenu()
-            showOnScreenControls()
-        },
         SettingsEntry("Controller", { "Gamepad and on-screen controls" }) {
             showControllerScope(currentGame?.takeIf { it.contentId != null })
         },
