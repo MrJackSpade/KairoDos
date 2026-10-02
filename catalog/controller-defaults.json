@@ -1,0 +1,709 @@
+{
+  "schemaVersion": 1,
+  "assignments": {
+    "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158": "duke3d-fps-v1",
+    "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke3d-fps-v1"
+  },
+  "presets": {
+    "doom-v1": {
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            306
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            32
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            304
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            9
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            44
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            46
+          ]
+        },
+        {
+          "input": "virtual:l2",
+          "cycleKeys": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ]
+        },
+        {
+          "input": "virtual:r2",
+          "cycleKeys": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              48
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              45
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              61
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:rsleft",
+            "mouse": "moveLeft",
+            "mouseSpeed": 4
+          },
+          {
+            "input": "virtual:rsright",
+            "mouse": "moveRight",
+            "mouseSpeed": 4
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ]
+      }
+    },
+    "duke3d-fps-v1": {
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            306
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            32
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            97
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            122
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            44
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            46
+          ]
+        },
+        {
+          "input": "virtual:l2",
+          "keys": [
+            59
+          ]
+        },
+        {
+          "input": "virtual:r2",
+          "keys": [
+            39
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        },
+        {
+          "input": "button:106",
+          "keys": [
+            304
+          ]
+        },
+        {
+          "input": "button:107",
+          "keys": [
+            9
+          ]
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              122
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              59
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              39
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          },
+          {
+            "input": "button:106",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "button:107",
+            "keys": [
+              9
+            ]
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              91
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              93
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:rsleft",
+            "mouse": "moveLeft",
+            "mouseSpeed": 2
+          },
+          {
+            "input": "virtual:rsright",
+            "mouse": "moveRight",
+            "mouseSpeed": 2
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              122
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              109
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              59
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              39
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          },
+          {
+            "input": "virtual:rsup",
+            "keys": [
+              278
+            ]
+          },
+          {
+            "input": "virtual:rsdown",
+            "keys": [
+              279
+            ]
+          },
+          {
+            "input": "button:106",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "button:107",
+            "keys": [
+              96
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

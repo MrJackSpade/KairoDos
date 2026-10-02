@@ -361,7 +361,7 @@
     "sha256-dos-manifest-v1:079b1a56fb42e084f397f86b99ecf663a682272131d1844e92a9a68d6b15bc8a": "dpad-mouse-left-right-v1",
     "sha256-dos-manifest-v1:0812d2093bbb1c3a3f3a129a877ebbdc440505d145cfaf064b9c3b20cbb364e6": "rott-dark-war-native-joystick-v1",
     "sha256-dos-manifest-v1:05084961d33ca903760c405a3e3dee4a5affa9b3be7bdc44036a0d0b2ab7e604": "loopz-dos-native-joystick-v1",
-    "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158": "duke-nukem-3d-joystick-v1",
+    "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158": "duke3d-fps-v1",
     "sha256-dos-manifest-v1:0586392077da0981cbda11c3137a268ec38e93940d560acb7bf0e192603b6a64": "secret-silver-blades-native-joystick-menu-v1",
     "sha256-dos-manifest-v1:04d1b6427d9092d09cf522cc2a9846171d8fb0e508698088850b481e11730e80": "skyroads-native-joystick-jump-inferred-v1",
     "sha256-dos-manifest-v1:04327f9f3861b0b376fdc6e2b6d62aa37b6bbe176be94e595cc5869f14849579": "time-commando-dpad-keyboard-actions-v1",
@@ -398,7 +398,7 @@
     "sha256-dos-manifest-v1:151997df1e7bf8469b069d430b023975bf46c28a80f8cc1e826243c9e1430e38": "abmis-the-lion-keyboard-v1",
     "sha256-dos-manifest-v1:6beb5cefaa2162331d529b70c8c7645c88e5c6b5b6d337be80efd123ac52618d": "dpad-mouse-point-and-select-v1",
     "sha256-dos-manifest-v1:6ad8b60b6b5471c197dec17495d72f398e6f0bb008485ad68ec96bbfac228fa6": "air-strike-mouse-turret-v1",
-    "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke-nukem-3d-joystick-v1",
+    "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke3d-fps-v1",
     "sha256-dos-manifest-v1:70e64a9c94eb773541838aa7dc54610d09d2661929b4075240064252479244fa": "4k-adventure-parser-v1",
     "sha256-dos-manifest-v1:7011272dc804dad022acb0c669063d85227b63d19cf1f68fd0b13dbd9632b5be": "abuse-dpad-arrow-movement-button-aim-v1",
     "sha256-dos-manifest-v1:678ef6c2447855c89025f396d93594bf601b3e2413893eb9176839e02616a57b": "dpad-mouse-left-right-v1",
@@ -12997,6 +12997,350 @@
         ]
       }
     },
+    "doom-v1": {
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            306
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            32
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            304
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            9
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            44
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            46
+          ]
+        },
+        {
+          "input": "virtual:l2",
+          "cycleKeys": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ]
+        },
+        {
+          "input": "virtual:r2",
+          "cycleKeys": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              48
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              45
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              61
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:rsleft",
+            "mouse": "moveLeft",
+            "mouseSpeed": 4
+          },
+          {
+            "input": "virtual:rsright",
+            "mouse": "moveRight",
+            "mouseSpeed": 4
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ]
+      }
+    },
     "dpad-arrow-space-ctrl-inferred-v1": {
       "description": "Shared low-confidence key layout: D-pad sends arrow keys, A sends Space, and B sends Ctrl. Game-specific action meanings remain inferred.",
       "bindings": [
@@ -14327,163 +14671,6 @@
         ]
       }
     },
-    "duke-nukem-3d-joystick-v1": {
-      "description": "Native joystick on the D-pad: button 1 fires and button 2 moves forward. Keyboard supplements provide door use, jump, crouch, run, and strafing without analog sticks.",
-      "bindings": [
-        {
-          "input": "virtual:up",
-          "joystick": "joy1up"
-        },
-        {
-          "input": "virtual:down",
-          "joystick": "joy1down"
-        },
-        {
-          "input": "virtual:left",
-          "joystick": "joy1left"
-        },
-        {
-          "input": "virtual:right",
-          "joystick": "joy1right"
-        },
-        {
-          "input": "virtual:a",
-          "joystick": "b"
-        },
-        {
-          "input": "virtual:b",
-          "joystick": "y"
-        },
-        {
-          "input": "virtual:x",
-          "keys": [
-            32
-          ]
-        },
-        {
-          "input": "virtual:y",
-          "keys": [
-            97
-          ]
-        },
-        {
-          "input": "virtual:l1",
-          "keys": [
-            308,
-            276
-          ]
-        },
-        {
-          "input": "virtual:r1",
-          "keys": [
-            308,
-            275
-          ]
-        },
-        {
-          "input": "virtual:l2",
-          "keys": [
-            304
-          ]
-        },
-        {
-          "input": "virtual:r2",
-          "keys": [
-            122
-          ]
-        },
-        {
-          "input": "virtual:select",
-          "keys": [
-            9
-          ]
-        },
-        {
-          "input": "virtual:start",
-          "keys": [
-            27
-          ]
-        }
-      ],
-      "defaults": {
-        "withoutSticks": [
-          {
-            "input": "virtual:up",
-            "joystick": "joy1up"
-          },
-          {
-            "input": "virtual:down",
-            "joystick": "joy1down"
-          },
-          {
-            "input": "virtual:left",
-            "joystick": "joy1left"
-          },
-          {
-            "input": "virtual:right",
-            "joystick": "joy1right"
-          },
-          {
-            "input": "virtual:a",
-            "joystick": "b"
-          },
-          {
-            "input": "virtual:b",
-            "joystick": "y"
-          },
-          {
-            "input": "virtual:x",
-            "keys": [
-              32
-            ]
-          },
-          {
-            "input": "virtual:y",
-            "keys": [
-              97
-            ]
-          },
-          {
-            "input": "virtual:l1",
-            "keys": [
-              308,
-              276
-            ]
-          },
-          {
-            "input": "virtual:r1",
-            "keys": [
-              308,
-              275
-            ]
-          },
-          {
-            "input": "virtual:l2",
-            "keys": [
-              304
-            ]
-          },
-          {
-            "input": "virtual:r2",
-            "keys": [
-              122
-            ]
-          },
-          {
-            "input": "virtual:select",
-            "keys": [
-              9
-            ]
-          },
-          {
-            "input": "virtual:start",
-            "keys": [
-              27
-            ]
-          }
-        ]
-      }
-    },
     "duke-nukem-trilogy-keyboard-v1": {
       "description": "Keyboard fallback for all three DOS episodes: D-pad left/right walk, Up interacts, A jumps with Ctrl, B fires with Alt, Start pauses with P, and X opens F1 help.",
       "bindings": [
@@ -14572,6 +14759,362 @@
             "input": "virtual:start",
             "keys": [
               112
+            ]
+          }
+        ]
+      }
+    },
+    "duke3d-fps-v1": {
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            306
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            32
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            97
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            122
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            44
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            46
+          ]
+        },
+        {
+          "input": "virtual:l2",
+          "keys": [
+            59
+          ]
+        },
+        {
+          "input": "virtual:r2",
+          "keys": [
+            39
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        },
+        {
+          "input": "button:106",
+          "keys": [
+            304
+          ]
+        },
+        {
+          "input": "button:107",
+          "keys": [
+            9
+          ]
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              122
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              59
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              39
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          },
+          {
+            "input": "button:106",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "button:107",
+            "keys": [
+              9
+            ]
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              9
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              91
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              93
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              44
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              46
+            ]
+          },
+          {
+            "input": "virtual:rsleft",
+            "mouse": "moveLeft",
+            "mouseSpeed": 2
+          },
+          {
+            "input": "virtual:rsright",
+            "mouse": "moveRight",
+            "mouseSpeed": 2
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              122
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              32
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              109
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              59
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              39
+            ]
+          },
+          {
+            "input": "virtual:l2",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "virtual:r2",
+            "keys": [
+              306
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          },
+          {
+            "input": "virtual:rsup",
+            "keys": [
+              278
+            ]
+          },
+          {
+            "input": "virtual:rsdown",
+            "keys": [
+              279
+            ]
+          },
+          {
+            "input": "button:106",
+            "keys": [
+              304
+            ]
+          },
+          {
+            "input": "button:107",
+            "keys": [
+              96
             ]
           }
         ]

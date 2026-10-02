@@ -2,6 +2,7 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.view.InputDevice
+import android.view.KeyEvent
 import android.view.MotionEvent
 import com.mrjackspade.kairo.frontend.*
 import org.json.JSONArray
@@ -11,12 +12,19 @@ import kotlin.math.abs
 /** Real shared mapper, profile persistence and relative movement at controlled elapsed times. */
 object ControllerMouseFixture {
     fun verify(context: Context) {
+        ControllerCatalogFixture.verify(context)
         verifyKeyboard(context)
-        val duke = DosControllerBindings.duke3d()
+        val presets = JSONObject(context.assets.open("catalog/dos/controller-profiles-v1.json")
+            .bufferedReader().use { it.readText() }).getJSONObject("presets")
+        fun profile(id: String, layout: ControllerLayout) = DosControllerBindings.parse(
+            presets.getJSONObject(id).getJSONObject("defaults").getJSONArray(layout.key).toString())
+        val doomDistance = 480f * profile("doom-v1", ControllerLayout.WITH_STICKS)
+            .single { it.input == "virtual:rsright" }.mouseSpeed
+        val duke = profile("duke3d-fps-v1", ControllerLayout.WITH_STICKS)
         check(DosControllerBindings.parse(DosControllerBindings.toJson(duke).toString()) == duke)
         check(duke.none { it.joystick != null })
-        check(duke.single { it.input == "virtual:l2" }.keys == listOf(59))
-        check(duke.single { it.input == "virtual:r2" }.keys == listOf(39))
+        check(duke.single { it.input == "virtual:l2" }.keys == listOf(304))
+        check(duke.single { it.input == "virtual:r2" }.keys == listOf(306))
         val moves = mutableListOf<Pair<Int, Int>>()
         val clicks = mutableListOf<Pair<Int, Boolean>>()
         val mouse = MouseInputRouter({ x, y -> moves.add(x to y) }, { b, d -> clicks.add(b to d) })
@@ -54,7 +62,7 @@ object ControllerMouseFixture {
 
         val keys = mutableListOf<Pair<Int, Boolean>>()
         val mapper = GamepadMapper(InputRouter({ code, down -> keys.add(code to down) }, 341),
-            JoystickInputRouter({ _, _ -> }), mouse, {}, {}, DosControllerBindings.doom())
+            JoystickInputRouter({ _, _ -> }), mouse, {}, {}, profile("doom-v1", ControllerLayout.WITH_STICKS))
         fun motion(value: Float, axis: Int = MotionEvent.AXIS_Z) {
             val properties = MotionEvent.PointerProperties().apply { id = 0 }
             val coords = MotionEvent.PointerCoords().apply { setAxisValue(axis, value) }
@@ -76,10 +84,10 @@ object ControllerMouseFixture {
         }
         check(sample(0.30f) == 0)
         check(sample(0.35f) == 0)
-        check(abs(sample(0.5f) - 886) <= 2)
-        check(abs(sample(0.675f) - 1920) <= 2)
-        check(abs(sample(1f) - 3840) <= 1)
-        check(abs(sample(-1f) + 3840) <= 1)
+        check(abs(sample(0.5f) - doomDistance * 3 / 13) <= 2)
+        check(abs(sample(0.675f) - doomDistance / 2) <= 2)
+        check(abs(sample(1f) - doomDistance) <= 1)
+        check(abs(sample(-1f) + doomDistance) <= 1)
         moves.clear()
         motion(1f, MotionEvent.AXIS_X)
         check(keys.last() == (46 to true) && moves.isEmpty())
@@ -99,6 +107,80 @@ object ControllerMouseFixture {
         check(keys.last() == (279 to false))
         mapper.releaseAll()
 
+        // Exercise the With Sticks defaults through real Android controller events,
+        // including axis/button trigger overlap and shared bumper cycle state.
+        fun button(code: Int, down: Boolean) {
+            check(mapper.key(KeyEvent(0, 0, if (down) KeyEvent.ACTION_DOWN else KeyEvent.ACTION_UP,
+                code, 0, 0, 42, 0, 0, InputDevice.SOURCE_GAMEPAD)))
+        }
+        fun tap(code: Int, guest: Int) {
+            keys.clear()
+            button(code, true)
+            button(code, false)
+            check(keys == listOf(guest to true, guest to false)) { "$code -> $keys, expected $guest" }
+        }
+        for (modern in listOf(profile("doom-v1", ControllerLayout.WITH_STICKS),
+                profile("duke3d-fps-v1", ControllerLayout.WITH_STICKS))) {
+            check(DosControllerBindings.parse(DosControllerBindings.toJson(modern).toString()) == modern)
+            mapper.bindings = modern
+            keys.clear()
+            button(KeyEvent.KEYCODE_BUTTON_R2, true)
+            motion(1f, MotionEvent.AXIS_RTRIGGER)
+            button(KeyEvent.KEYCODE_BUTTON_R2, false)
+            check(keys == listOf(306 to true)) // Axis still owns fire.
+            motion(0f, MotionEvent.AXIS_RTRIGGER)
+            check(keys == listOf(306 to true, 306 to false))
+            tap(KeyEvent.KEYCODE_BUTTON_L2, 304)
+            tap(KeyEvent.KEYCODE_BUTTON_X, 32)
+            tap(KeyEvent.KEYCODE_BUTTON_START, 27)
+            tap(KeyEvent.KEYCODE_BUTTON_SELECT, 13)
+            tap(KeyEvent.KEYCODE_DPAD_UP, 9)
+            keys.clear()
+            motion(-1f, MotionEvent.AXIS_X)
+            check(keys == listOf(44 to true)) // Stick strafes; D-pad no longer moves.
+            motion(0f, MotionEvent.AXIS_X)
+            check(keys.last() == (44 to false))
+            check(abs(sample(1f) - 480f * modern.single { it.input == "virtual:rsright" }.mouseSpeed) <= 1)
+            mapper.releaseAll()
+        }
+        mapper.bindings = profile("doom-v1", ControllerLayout.WITH_STICKS)
+        tap(KeyEvent.KEYCODE_BUTTON_L1, 55)
+        tap(KeyEvent.KEYCODE_BUTTON_R1, 49) // Wrap and share the same index.
+        tap(KeyEvent.KEYCODE_BUTTON_R1, 50)
+        tap(KeyEvent.KEYCODE_BUTTON_L1, 49)
+        tap(KeyEvent.KEYCODE_DPAD_LEFT, 45)
+        tap(KeyEvent.KEYCODE_DPAD_RIGHT, 61)
+        tap(KeyEvent.KEYCODE_DPAD_DOWN, 48)
+        tap(KeyEvent.KEYCODE_BUTTON_A, 13)
+        tap(KeyEvent.KEYCODE_BUTTON_B, 27)
+        tap(KeyEvent.KEYCODE_BUTTON_Y, 9)
+        mapper.bindings = profile("duke3d-fps-v1", ControllerLayout.WITH_STICKS)
+        tap(KeyEvent.KEYCODE_BUTTON_L1, 59)
+        tap(KeyEvent.KEYCODE_BUTTON_R1, 39)
+        tap(KeyEvent.KEYCODE_DPAD_LEFT, 91)
+        tap(KeyEvent.KEYCODE_DPAD_RIGHT, 93)
+        tap(KeyEvent.KEYCODE_DPAD_DOWN, 13)
+        tap(KeyEvent.KEYCODE_BUTTON_A, 97)
+        tap(KeyEvent.KEYCODE_BUTTON_B, 122)
+        tap(KeyEvent.KEYCODE_BUTTON_Y, 109)
+        tap(KeyEvent.KEYCODE_BUTTON_THUMBL, 304)
+        tap(KeyEvent.KEYCODE_BUTTON_THUMBR, 96)
+        keys.clear()
+        motion(-1f, MotionEvent.AXIS_RZ)
+        mapper.releaseAll()
+        check(keys == listOf(278 to true, 278 to false))
+        // Without Sticks retains D-pad turning, shoulder strafing and face-button fire.
+        for (legacy in listOf(profile("doom-v1", ControllerLayout.WITHOUT_STICKS),
+                profile("duke3d-fps-v1", ControllerLayout.WITHOUT_STICKS))) {
+            mapper.bindings = legacy
+            tap(KeyEvent.KEYCODE_DPAD_LEFT, 276)
+            tap(KeyEvent.KEYCODE_DPAD_RIGHT, 275)
+            tap(KeyEvent.KEYCODE_BUTTON_L1, 44)
+            tap(KeyEvent.KEYCODE_BUTTON_R1, 46)
+            tap(KeyEvent.KEYCODE_BUTTON_A, 306)
+        }
+        mapper.releaseAll()
+
         val codec = ControllerBindingsCodec({ emptyList() }, { it in 0..340 }, emptyList(), emptyList())
         val binding = listOf(ControllerBinding("virtual:rsright", mouse = "moveRight", mouseSpeed = 4.3f))
         check(codec.parse(codec.toJson(binding).toString()) == binding)
@@ -111,11 +193,11 @@ object ControllerMouseFixture {
         }
         check(!codec.valid(JSONArray().put(JSONObject().put("input", "virtual:a")
             .put("keys", JSONArray().put(13)).put("mouseSpeed", 2))))
-        val original = DosControllerBindings.doom().map { it.copy(mouseSpeed = 1f) }
-        check(DosControllerBindings.parse(DosControllerBindings.toJson(original).toString()) == DosControllerBindings.doom())
+        val original = profile("doom-v1", ControllerLayout.WITH_STICKS).map { it.copy(mouseSpeed = 1f) }
+        check(DosControllerBindings.parse(DosControllerBindings.toJson(original).toString()) == original)
         val custom = original.map { if (it.input == "virtual:a") it.copy(keys = listOf(32)) else it }
         check(DosControllerBindings.parse(DosControllerBindings.toJson(custom).toString()) == custom)
-        val tuned = DosControllerBindings.doom().map { if (it.mouse != null) it.copy(mouseSpeed = 4f) else it }
+        val tuned = profile("doom-v1", ControllerLayout.WITH_STICKS).map { if (it.mouse != null) it.copy(mouseSpeed = 4f) else it }
         check(DosControllerBindings.parse(DosControllerBindings.toJson(tuned).toString()) == tuned)
         val name = "controller_mouse_fixture"
         val prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE)

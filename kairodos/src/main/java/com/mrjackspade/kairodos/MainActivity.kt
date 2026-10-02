@@ -140,12 +140,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         ControllerProfileCoordinator(controllerProfiles, gamepad,
             DosLibrary.Game::contentId,
             { game: DosLibrary.Game ->
-                dosGameSettings.controllerBindings(game.contentId!!)?.let(DosControllerBindings::parse)
-                    ?: DosControllerBindings.builtInFor(game.contentId, controllerProfiles.configuration.layout)
-                    ?: catalog.resolve(game.contentId, game.displayName).controllerProfile?.let { profile ->
-                        if (profile == "doom-v1") DosControllerBindings.doom(controllerProfiles.configuration.layout)
-                        else catalog.controllerBindings(profile, controllerProfiles.configuration.layout)?.let(DosControllerBindings::parse)
-                    } ?: controllerProfiles.global()
+                catalog.gameControllerBindings(game.contentId!!, game.displayName,
+                    controllerProfiles.configuration.layout, dosGameSettings.controllerBindings(game.contentId))
+                    ?: controllerProfiles.global()
             },
             { id, bindings -> dosGameSettings.setControllerBindings(id,
                 DosControllerBindings.toJson(bindings).toString()) },
@@ -172,7 +169,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
-            { libraryScreen.showEntries(games) }, {
+            { libraryScreen.showEntries(games); controllerFlow.refresh(null) }, {
                 if (libraryScreen.visibility == View.VISIBLE)
                     android.widget.Toast.makeText(this, "Game catalog updated",
                         android.widget.Toast.LENGTH_SHORT).show()
@@ -520,7 +517,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val controllerSource = when {
             id == null -> "Global"
             dosGameSettings.controllerBindings(id) != null -> "User override"
-            DosControllerBindings.builtInFor(id) != null -> "Game default"
             record.controllerProfile != null -> "Catalog"
             else -> "Global"
         }
@@ -947,10 +943,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (controllerProfiles.configuration.layout != com.mrjackspade.kairo.frontend.ControllerLayout.WITH_STICKS)
             return null
         if (game?.contentId != null) {
-            if (dosGameSettings.controllerBindings(game.contentId) != null ||
-                DosControllerBindings.builtInFor(game.contentId) != null) return null
+            if (dosGameSettings.controllerBindings(game.contentId) != null) return null
             val profile = catalog.resolve(game.contentId, game.displayName).controllerProfile
-            if (profile == "doom-v1") return null
             if (profile != null && !catalog.controllerFallback(profile)) return null
             if (profile != null) return "Using Without Sticks fallback"
         }

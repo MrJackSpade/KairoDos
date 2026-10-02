@@ -20,7 +20,7 @@ internal object ControllerMenuFixture {
             MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         lateinit var root: FrameLayout
         lateinit var editor: ControllerEditor<String>
-        var bindings = DosControllerBindings.duke3d()
+        var bindings = DosControllerBindings.parse(DosGameCatalog(activity).controllerBindings("duke3d-fps-v1", ControllerLayout.WITH_STICKS))
         var physical = PhysicalControllerBindings.defaults()
         fun ui(action: () -> Unit) { instrumentation.runOnMainSync { action() }; instrumentation.waitForIdleSync() }
         fun key(code: Int) = ui {

@@ -43,7 +43,6 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     // Parsing this large index while opening the library delays the first frame.
     private var folderIndex: JSONObject? = null
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
-    private var doomContentIds = readDoomContentIds()
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
     private val overrides = GameMetadataOverrides(overridesFile, validRecord = { contentId, record ->
         id.matches(contentId) && DosCatalogFields.invalidPath(record) == null
@@ -62,7 +61,6 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             onlineHidden = online.read("hidden-index-v1.json")
                 ?.optJSONObject("hidden") ?: JSONObject()
             onlineControllerProfiles = online.read("controller-profiles-v1.json")
-            doomContentIds = readDoomContentIds()
         }
         return true
     }
@@ -98,11 +96,14 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         controllerProfileCatalog().optJSONObject("presets")?.optJSONObject(profileId)
             ?.optJSONObject("defaults")?.optJSONArray("withSticks") == null
 
-    private fun readDoomContentIds(): Set<String> = runCatching {
-        val games = controllerProfileCatalog()
-            .getJSONObject("profiles").getJSONArray("doom-v1")
-        (0 until games.length()).map(games::getString).toSet()
-    }.getOrDefault(emptySet())
+    /** Only explicitly saved controls can supersede catalog data. Defaults are never saved here. */
+    fun gameControllerBindings(contentId: String, fileName: String,
+                               layout: com.mrjackspade.kairo.frontend.ControllerLayout,
+                               userBindings: String? = null): List<com.mrjackspade.kairo.frontend.ControllerBinding>? =
+        userBindings?.let(DosControllerBindings::parse)
+            ?: resolve(contentId, fileName).controllerProfile?.let {
+                controllerBindings(it, layout)?.let(DosControllerBindings::parse)
+            }
 
     @Synchronized override fun resolve(contentId: String, fileName: String): Game {
         val record = layered(contentId, fileName).record
@@ -119,11 +120,15 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             Launch(source.optString("folder"), configs.keys().asSequence()
                 .associateWith { configs.optString(it) }, source.optBoolean("exception"))
         }
-        val controllerProfile = when {
-            contentId in doomContentIds -> "doom-v1"
-            else -> controllerProfileCatalog().optJSONObject("assignments")
-                ?.optString(contentId)?.takeIf { !it.isNullOrBlank() }
-        }
+        val controllers = controllerProfileCatalog()
+        val controllerProfile = controllers.optJSONObject("assignments")
+            ?.optString(contentId)?.takeIf { it.isNotBlank() }
+            ?: controllers.optJSONObject("profiles")?.let { profiles ->
+                profiles.keys().asSequence().firstOrNull { profile ->
+                    val ids = profiles.optJSONArray(profile)
+                    ids != null && (0 until ids.length()).any { ids.optString(it) == contentId }
+                }
+            }
         return Game(title, description,
             artworkStore.availablePath(boxArtPath),
             artworkStore.availablePath(previewPath),

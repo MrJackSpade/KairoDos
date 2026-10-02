@@ -17,7 +17,7 @@ $actions = @('menu','pause','restart','exit')
 $cycleInputs = @('virtual:l1','virtual:r1','virtual:l2','virtual:r2')
 $guestKeyCodes = [Collections.Generic.HashSet[int]]::new()
 foreach ($code in @((48..57) + (97..122) + (256..293) +
-        @(8,9,13,27,32,39,44,45,46,47,61,91,92,93,127,301,303,304,305,306,307,308))) {
+        @(8,9,13,27,32,39,44,45,46,47,59,61,91,92,93,96,127,301,303,304,305,306,307,308))) {
     [void]$guestKeyCodes.Add($code)
 }
 
@@ -139,7 +139,19 @@ foreach ($item in $recommendations.profiles.PSObject.Properties) { $presets[$ite
 foreach ($id in $doomIds) {
     if ($assignments.Contains($id)) { throw "Doom ID also has a recommendation: $id" }
 }
-$usedProfiles = @($assignments.Values | Sort-Object -Unique)
+# Reviewed defaults are source data, including both controller configurations.
+# They replace old researched assignments; runtime code must not special-case games.
+$defaults = Get-Content (Join-Path $project 'catalog/controller-defaults.json') -Raw | ConvertFrom-Json
+if ($defaults.schemaVersion -ne 1) { throw 'Unsupported controller defaults schema.' }
+foreach ($item in $defaults.assignments.PSObject.Properties) {
+    if (-not $currentIds.Contains($item.Name) -or
+        $defaults.presets.PSObject.Properties.Name -notcontains $item.Value) {
+        throw "Invalid controller default assignment: $($item.Name)"
+    }
+    $assignments[$item.Name] = $item.Value
+}
+foreach ($item in $defaults.presets.PSObject.Properties) { $presets[$item.Name] = $item.Value }
+$usedProfiles = @( (@($assignments.Values) + @($existingProfiles.PSObject.Properties.Name)) | Sort-Object -Unique)
 $finalPresets = [ordered]@{}
 foreach ($profileId in $usedProfiles) {
     if (-not $presets.Contains($profileId)) { throw "Assigned profile has no preset: $profileId" }

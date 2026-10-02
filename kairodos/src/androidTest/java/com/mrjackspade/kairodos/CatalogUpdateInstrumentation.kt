@@ -22,6 +22,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var presentationTiming = true
     private var menuNavigation = false
     private var controllerMouse = false
+    private var catalogControllerSpeed: Float? = null
     private var stateSlots = false
     private var inputDispatch = false
     private var catalogOverrides = false
@@ -45,6 +46,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         presentationTiming = arguments?.getString("presentationTiming") != "false"
         menuNavigation = arguments?.getString("menuNavigation") == "true"
         controllerMouse = arguments?.getString("controllerMouse") == "true"
+        catalogControllerSpeed = arguments?.getString("catalogControllerSpeed")?.toFloat()
         stateSlots = arguments?.getString("stateSlots") == "true"
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
@@ -60,6 +62,26 @@ class CatalogUpdateInstrumentation : Instrumentation() {
 
     override fun onStart() {
         val result = Bundle()
+        catalogControllerSpeed?.let { expected ->
+            try {
+                val catalog = DosGameCatalog(targetContext)
+                val id = "sha256-dos-manifest-v1:a54ee0d6d549825fadefa6bc8516f976c31a9d7b5a91fed00007ef40d01a7cd3"
+                val prefs = targetContext.getSharedPreferences("kairodos", android.content.Context.MODE_PRIVATE)
+                val bindings = catalog.gameControllerBindings(id, "DOOM.zip",
+                    com.mrjackspade.kairo.frontend.ControllerLayout.WITH_STICKS,
+                    DosPerGameSettings(prefs, com.mrjackspade.kairo.frontend.GameSettingScope(prefs))
+                        .controllerBindings(id))!!
+                val speed = bindings.single { it.input == "virtual:rsright" }.mouseSpeed
+                check(speed == expected) { "Resolved Doom speed $speed, expected $expected" }
+                check(bindings.single { it.input == "virtual:r2" }.keys == listOf(306))
+                result.putString("stream", "Active catalog: Doom turning=$speed, RT=fire; APK unchanged\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         try {
             if (audioOutputPolicy) {
                 result.putString("stream", AudioOutputPolicyFixture.verify())

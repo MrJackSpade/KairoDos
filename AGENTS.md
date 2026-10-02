@@ -54,6 +54,8 @@
 
 # Generated catalog guard
 
+- Game controller defaults, including mouse sensitivity and With Sticks variants, are catalog data. Never add game-specific Kotlin bindings, content-ID overrides, or parser migrations that rewrite catalog values. Only explicitly saved user controls override a downloaded profile. Reviewed FPS defaults live in `catalog/controller-defaults.json`; regenerate and publish them with the tools below. A profile-only update must work without rebuilding the APK.
+
 - Do not hand-edit bundled files under kairodos/src/main/assets/catalog/dos/ or the public catalog/online-v1.zip and catalog/online-v1.json outputs. Use the catalog generator for bundled data and tools/BuildPublicDosCatalog.ps1 for the sanitized public archive.
 - Keep this checkout's versioned pre-commit hook active with git config core.hooksPath .githooks. It checks the public archive against the bundled catalog before a direct commit to main.
 - Bundled catalog generation uses private source data unavailable in a clean checkout. Review bundled changes carefully; the local hook can verify the public export but cannot reproduce the private import.
