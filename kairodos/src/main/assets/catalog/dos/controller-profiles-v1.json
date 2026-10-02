@@ -14962,25 +14962,43 @@
           {
             "input": "virtual:up",
             "keys": [
-              9
+              59
             ]
           },
           {
             "input": "virtual:down",
             "keys": [
-              13
+              106
             ]
           },
           {
             "input": "virtual:left",
-            "keys": [
-              91
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              48
             ]
           },
           {
             "input": "virtual:right",
-            "keys": [
-              93
+            "cycleKeys": [
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              48
             ]
           },
           {
@@ -15020,13 +15038,13 @@
           {
             "input": "virtual:a",
             "keys": [
-              97
+              32
             ]
           },
           {
             "input": "virtual:b",
             "keys": [
-              122
+              113
             ]
           },
           {
@@ -15038,7 +15056,7 @@
           {
             "input": "virtual:y",
             "keys": [
-              109
+              304
             ]
           },
           {
@@ -15050,19 +15068,19 @@
           {
             "input": "virtual:r1",
             "keys": [
-              39
+              306
             ]
           },
           {
             "input": "virtual:l2",
             "keys": [
-              304
+              104
             ]
           },
           {
             "input": "virtual:r2",
             "keys": [
-              306
+              114
             ]
           },
           {
@@ -15083,26 +15101,24 @@
           },
           {
             "input": "virtual:rsup",
-            "keys": [
-              278
-            ]
+            "mouse": "moveUp",
+            "mouseSpeed": 2
           },
           {
             "input": "virtual:rsdown",
-            "keys": [
-              279
-            ]
+            "mouse": "moveDown",
+            "mouseSpeed": 2
           },
           {
             "input": "button:106",
             "keys": [
-              304
+              119
             ]
           },
           {
             "input": "button:107",
             "keys": [
-              96
+              110
             ]
           }
         ]

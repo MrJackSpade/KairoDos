@@ -16,33 +16,33 @@ reloads the active game's mapping, releasing held inputs through the shared mapp
 | --- | --- | --- |
 | Left stick | Move forward/back, strafe left/right | Same |
 | Right stick | Turn (original Doom has no vertical look) | Turn, aim up/down |
-| RT / R2 | Fire | Fire |
-| LT / L2 | Hold to run | Hold to run |
+| RT / R2 | Fire | R |
+| LT / L2 | Hold to run | H |
 | LB / L1 | Unassigned | Previous weapon |
-| RB / R1 | Fire (duplicate of RT) | Next weapon |
+| RB / R1 | Fire (duplicate of RT) | Ctrl |
 | X | Open / use | Open / use |
-| A | Open / use (Space) | Jump |
-| B | Unassigned | Crouch |
-| Y | Map (duplicate of D-pad Up) | Medkit |
-| D-pad Up | Map | Map |
-| D-pad Left / Right | Previous / next weapon key in 1–7 cycle | Previous / next inventory item |
-| D-pad Down | Map overview | Use selected inventory item |
-| Left stick click | Unbound | Hold to run |
-| Right stick click | Unbound | Quick kick |
+| A | Open / use (Space) | Space |
+| B | Unassigned | Q |
+| Y | Map (duplicate of D-pad Up) | Shift |
+| D-pad Up | Map | ; |
+| D-pad Left / Right | Previous / next weapon key in 1–7 cycle | Previous / next key in 1234567890 cycle |
+| D-pad Down | Map overview | J |
+| Left stick click | Unbound | W |
+| Right stick click | Unbound | N |
 | Start | Game menu (Escape) | Confirm (Enter) |
 | Select | Confirm (Enter) | Game menu / cancel (Escape) |
 
 Kairo's menu button is unchanged. Use left-stick forward/back to navigate the
 games' own menus; Select confirms in Doom and Start confirms in Duke. Duke retains its existing right-stick
-sensitivity and native Home/End aiming, avoiding changes to mouse-aiming mode.
+sensitivity; both right-stick axes now send proportional mouse movement.
+Enable mouse aiming in Duke for vertical movement to control looking up/down.
 The catalog sets Doom turning to 8x and Duke turning to 2x. Doom was doubled
 from 4x for Kairo #16. In Doom, only Start and Select send Escape and Enter respectively;
 the former A/B menu duplicates are removed. X remains a duplicate Open/use.
 
 Doom has no native previous/next weapon action: D-pad Left/Right share Kairo's key
 cycle. This cycles selection keys, including weapons not yet owned, and cannot
-track weapon changes made in-game or on the keyboard. Duke uses native previous/
-next weapon keys instead. Doom's map controls follow
+track weapon changes made in-game or on the keyboard. Duke also uses the shared key cycle, with keys 1234567890. Doom's map controls follow
 [the original game source](https://github.com/id-Software/DOOM/blob/master/linuxdoom-1.10/am_map.c).
 Duke bindings follow the installed game's original `DUKE3D.CFG` key definitions.
 
@@ -123,3 +123,11 @@ The archive audit found only the two requested Duke bindings changed.
 
 Duke's own configuration was not edited; its before/after SHA-256 remained
 `4da3770012f4860101e78581b6c56f1bac6658326f32d54cb35a834e40f20cdb`.
+
+## Explicit Duke With Sticks correction (October 2, 2026)
+
+The user specified R1=Ctrl, L3=W, R3=N, B=Q, A=Space, Y=Shift,
+D-pad Up=semicolon, Down=J, Left/Right=weapon key cycle 1234567890,
+L2=H and R2=R. Treat this table as the requested layout; do not replace it
+with inferred conventional FPS defaults. Right-stick up/down also send analog mouse movement at 2x, matching horizontal
+turning. Other unspecified controls retain their bindings.
