@@ -12,6 +12,7 @@ import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Hash-keyed, data-only game metadata. Game media is never read from these records. */
 class DosGameCatalog(private val context: Context) : LibraryCatalog {
@@ -37,7 +38,9 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         ?.optJSONObject("hidden") ?: JSONObject()
     private val bundledControllerProfiles by lazy { readAssetCatalog("controller-profiles-v1.json") }
     private var onlineControllerProfiles = online.read("controller-profiles-v1.json")
-    val artworkStore = CatalogArtworkStore(context, { false },
+    val artworkStore = CatalogArtworkStore(context, { url ->
+        url.startsWith(ARTWORK_ROOT) && remoteArtworkPath.matches(url.removePrefix(ARTWORK_ROOT))
+    },
         "art/catalog/dos/")
     // Dependency folder lookup is only needed when preparing a game launch.
     // Parsing this large index while opening the library delays the first frame.
@@ -220,6 +223,31 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     }
 
     override fun openArtwork(path: String): InputStream = artworkStore.open(path)
+
+    data class ArtworkSource(val path: String, val url: String)
+
+    /** Use catalog paths even when images are absent from the smaller APK. */
+    @Synchronized fun missingArtworkFor(entries: List<DosLibrary.Game>): List<ArtworkSource> =
+        entries.asSequence().filter { it.playable }.flatMap { entry ->
+            val record = layered(entry.contentId ?: "", entry.displayName)
+            val artwork = record.record.optJSONObject("artwork")
+            listOf("boxArt", "preview").mapNotNull { kind ->
+                val path = DosCatalogFields.safeArtPath(artwork?.optString(kind))
+                path?.takeIf { remoteArtworkPath.matches(it) &&
+                    record.sourceOf("artwork", kind) in setOf("Shipped catalog", "Updated catalog") }
+            }.asSequence()
+        }.distinct().filter { artworkStore.availablePath(it) == null }
+            .map { ArtworkSource(it, ARTWORK_ROOT + it) }.toList()
+
+    fun downloadArtwork(source: ArtworkSource, cancelled: AtomicBoolean) =
+        artworkStore.download(source.path, source.url, cancelled)
+
+    companion object {
+        private const val ARTWORK_ROOT =
+            "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/kairodos/src/main/assets/"
+        private val remoteArtworkPath = Regex(
+            "art/catalog/dos/[0-9a-f]{2}/[0-9a-f]{64}/[0-9a-f]{12}/(?:boxArt|preview)\\.webp")
+    }
 
     private fun shard(prefix: String): JSONObject? {
         cache.get(prefix)?.let { return it }

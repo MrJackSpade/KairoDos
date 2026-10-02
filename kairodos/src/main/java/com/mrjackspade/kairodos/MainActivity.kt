@@ -159,6 +159,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             libraryScreen::showStatus, "KairoDos-external-game")
     }
     private val catalog by lazy { DosGameCatalog(this) }
+    private val artworkDownloads by lazy {
+        com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController(
+            this, libraryScreen, { games }, catalog::missingArtworkFor, catalog::downloadArtwork)
+    }
     private val artwork by lazy {
         ArtworkCoordinator(this, catalog.artworkStore, { game: DosLibrary.Game -> game.contentId },
             { game, kind ->
@@ -344,7 +348,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
             { refreshLibrary(true) },
             { catalogUpdates.check(false) },
-            null, {}, settingsEntries(),
+            { artworkDownloads.start() }, { artworkDownloads.cancel() }, settingsEntries(),
             { preferences.getString("last_played_entry", null) }, ::launch,
             ::previewGame, ::showGameDetails, ::showLibrarySelection)
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
@@ -1593,6 +1597,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         catalogUpdates.cancel()
+        artworkDownloads.cancel()
         backCoordinator.unregister()
         releaseGuestInputs()
         controllerDevices.unregister()
