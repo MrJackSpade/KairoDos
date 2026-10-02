@@ -17,3 +17,7 @@ local.properties
 *.swo
 *.apk
 *.aab
+
+# Generated Python bytecode
+__pycache__/
+*.py[cod]

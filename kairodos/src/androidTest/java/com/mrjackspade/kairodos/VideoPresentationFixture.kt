@@ -26,6 +26,52 @@ internal object VideoPresentationFixture {
     @JvmStatic private external fun nativeProfileFrameCopies(active: Boolean)
     @JvmStatic private external fun nativeProfilePresenterDelay(milliseconds: Int)
 
+    /** Exercise the real activity, mixer, surface and saved game settings. */
+    fun measureInstalled(test: Instrumentation, uri: String, game: String, seconds: Int): JSONObject {
+        require(game in setOf("doom", "duke") && seconds in 10..180)
+        val intent = test.targetContext.packageManager.getLaunchIntentForPackage(test.targetContext.packageName)!!
+            .setAction(Intent.ACTION_VIEW).setData(android.net.Uri.parse(uri))
+            .putExtra("kairo98.skipStartupChoices", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val activity = test.startActivitySync(intent)
+        fun call(name: String, vararg args: Any?): Any? = MainActivity::class.java.declaredMethods
+            .single { it.name == name }.apply { isAccessible = true }.invoke(activity, *args)
+        try {
+            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60)
+            while (call("nativeStatus") != 2 && System.nanoTime() < deadline) Thread.sleep(50)
+            check(call("nativeStatus") == 2) { "Game failed to launch" }
+            Thread.sleep(3500)
+            fun key(code: Int) {
+                call("nativeKey", code, true); Thread.sleep(100)
+                call("nativeKey", code, false); Thread.sleep(180)
+            }
+            key(if (game == "doom") '2'.code else '1'.code)
+            key('n'.code)
+            Thread.sleep(60000)
+            nativeProfileReset(true)
+            val before = call("nativeCpuTelemetry") as LongArray
+            val start = System.nanoTime()
+            Log.i("VideoPresentation", "PROFILE_START installed $game ns=$start")
+            Thread.sleep(seconds * 1000L)
+            val elapsed = System.nanoTime() - start
+            nativeProfileResetEnabledOff()
+            val metrics = JSONObject(nativeProfileSnapshot())
+            check(metrics.getJSONObject("convert").getLong("count") > 0) { "No rendered frames; reject measurement" }
+            return JSONObject().put("game", game).put("launchPath", "installed Activity ACTION_VIEW")
+                .put("configuration", nativeProfileConfiguration()).put("warmupSeconds", 60)
+                .put("durationNs", elapsed).put("videoWidth", call("nativeVideoWidth"))
+                .put("videoHeight", call("nativeVideoHeight"))
+                .put("cpuBefore", JSONArray(before.toList()))
+                .put("cpuAfter", JSONArray((call("nativeCpuTelemetry") as LongArray).toList()))
+                .put("metrics", metrics).also { result ->
+                    val reports = File(test.targetContext.cacheDir, "video-presentation-reports").apply { mkdirs() }
+                    File(reports, "$game-installed.json").writeText(result.toString(2))
+                }
+        } finally {
+            nativeProfileReset(false)
+            test.runOnMainSync { activity.finish() }
+        }
+    }
+
     fun measure(instrumentation: Instrumentation, archivePath: String, game: String,
                 seconds: Int, observeCopies: Boolean = false,
                 surfaceScenario: String = "normal", observeTiming: Boolean = true): JSONObject {
