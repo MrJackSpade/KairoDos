@@ -35,6 +35,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var libraryMenu = false
     private var deadZone = false
     private var librarySearch = false
+    private var exitDialog = false
     private var traceSearch = false
     private var libraryKeyboard = false
     private var stateSlots = false
@@ -79,11 +80,23 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         resolutionSource = arguments?.getString("resolutionSource")
         resolutionWidth = arguments?.getString("resolutionWidth")?.toInt() ?: 320
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
+        exitDialog = arguments?.getString("exitDialog") == "true"
         start()
     }
 
     override fun onStart() {
         val result = Bundle()
+        if (exitDialog) {
+            try {
+                com.mrjackspade.kairo.frontend.ExitDialogFixture.verify(this)
+                result.putString("stream", "Exit dialog keys, hats, cancel and exit: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (librarySearch) {
             try {
                 result.putString("stream", LibrarySearchFixture.measure(this, traceSearch))
