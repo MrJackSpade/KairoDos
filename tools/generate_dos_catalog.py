@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 from PIL import Image
+from dos_catalog_review import apply_review, read_review
 
 PREFIX = "sha256-dos-manifest-v1:"
 HEADER = b"kairo-dos-manifest-v1\0"
@@ -126,6 +127,14 @@ def import_launch_only(root: Path, catalog: Path) -> None:
             for variant in record.get("variants", {}).values() if "variants" in record else (record,):
                 if variant.get("artwork"):
                     artwork_by_title.setdefault(variant.get("title"), variant["artwork"])
+    # A display spelling must not prevent raw source titles from finding art.
+    old_games = {key: value for shard in shards.values() for key, value in shard["games"].items()}
+    for item in read_review()["records"]:
+        previous = old_games.get(item["contentId"], {})
+        if item.get("variant"):
+            previous = previous.get("variants", {}).get(item["variant"], {})
+        if previous.get("artwork"):
+            artwork_by_title.setdefault(item["sourceTitle"], previous["artwork"])
     matched = 0
     missing_config = []
     new_catalog = []
@@ -181,6 +190,10 @@ def import_launch_only(root: Path, catalog: Path) -> None:
         matched += 1
         if index % 250 == 0:
             print(f"Launch metadata {index} archives, {matched} matched", flush=True)
+    reviewed = apply_review({key: value for shard in shards.values()
+                             for key, value in shard["games"].items()}, read_review())
+    for shard in shards.values():
+        shard["games"] = {key: reviewed[key] for key in shard["games"]}
     for prefix, shard in shards.items():
         (catalog / f"{prefix}.json").write_text(json.dumps(shard, ensure_ascii=False,
             separators=(",", ":")), encoding="utf-8")
@@ -400,6 +413,15 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
             old_by_title.setdefault(" ".join(variant["title"].casefold().split()), []).append((content_id, variant))
             if stem:
                 old_by_stem.setdefault(stem, []).append((content_id, variant))
+    # Identity migration still recognizes the original source title after a
+    # display-only edit. Do not duplicate unchanged titles (that adds ambiguity).
+    for item in read_review()["records"]:
+        previous = old.get(item["contentId"], {})
+        if item.get("variant"):
+            previous = previous.get("variants", {}).get(item["variant"], {})
+        if previous and previous.get("title") != item["sourceTitle"]:
+            old_by_title.setdefault(" ".join(item["sourceTitle"].casefold().split()), []).append(
+                (item["contentId"], previous))
     with zipfile.ZipFile(root / "Content/XODOSMetadata.zip") as metadata:
         xml = game_records(metadata)
     configs, by_folder = launch_configs(root, xml)
@@ -462,6 +484,7 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
     refreshed = {content_id: variants[0][1] if len(variants) == 1 else
                  {"title": " / ".join(value["title"] for _, value in variants),
                   "variants": dict(variants)} for content_id, variants in rows.items()}
+    refreshed = apply_review(refreshed, read_review())
     shards = {f"{index:02x}": {"schemaVersion": 1, "games": {}} for index in range(256)}
     for content_id, record in refreshed.items():
         shards[content_id.split(":", 1)[1][:2]]["games"][content_id] = record
@@ -624,10 +647,14 @@ def main() -> None:
             shards.setdefault(content_id.split(":", 1)[1][:2], {})[content_id] = record
         destination = args.output / "catalog" / "dos"
         destination.mkdir(parents=True, exist_ok=True)
+        # A private partial scan can omit reviewed identities; publishing a full
+        # refresh above requires every review to resolve.
+        reviewed = apply_review({key: value for games in shards.values()
+                                 for key, value in games.items()}, read_review(), require_all=False)
         for prefix, games in shards.items():
             (destination / f"{prefix}.json").write_text(json.dumps(
-                {"schemaVersion": 1, "games": games}, ensure_ascii=False,
-                separators=(",", ":")), encoding="utf-8")
+                {"schemaVersion": 1, "games": {key: reviewed[key] for key in games}},
+                ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         (args.output / "manifest.json").write_text(json.dumps({
             "schemaVersion": 1, "source": "eXoDOS v6 Content/XODOSMetadata.zip", "archives": len(files),
             "matches": sum(len(group) for group in rows.values()),

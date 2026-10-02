@@ -1,0 +1,1288 @@
+{
+  "schemaVersion": 1,
+  "policy": "Reviewed display text only. Hearts mark known adult-themed games; absence is not an age rating. Keep game identities, matching keys, launch data and user content unchanged. Descriptions summarize premise and gameplay without graphic details.",
+  "records": [
+    {
+      "contentId": "sha256-dos-manifest-v1:0434b56f16510e29ccc5581e9899bf5fce60a4a7bd0ed1ef1f0fae572fcd3564",
+      "variant": "",
+      "sourceTitle": "Circuit's Edge",
+      "fields": {
+        "description": "Private investigator Marid Audran must solve a murder after a crime boss clears his name. Explore the cyberpunk district of Budayeen, gather clues, buy cybernetic upgrades, and survive turn-based encounters in this RPG based on When Gravity Fails."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:0586392077da0981cbda11c3137a268ec38e93940d560acb7bf0e192603b6a64",
+      "variant": "",
+      "sourceTitle": "Secret of The Silver Blades",
+      "fields": {
+        "description": "A magical well brings a party of adventurers to a frozen town under siege. Create up to six characters, explore first-person environments, and command them in tactical turn-based battles using the Gold Box AD&D system."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158",
+      "variant": "",
+      "sourceTitle": "Duke Nukem 3D",
+      "fields": {
+        "description": "Duke fights an alien invasion across futuristic Los Angeles in a first-person shooter built around exploration, secrets, and interactive scenery. Experiment with an unusual arsenal, use environmental objects, and find routes through each level."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:06fbc625be04837a898b36aad830a082fa357967cb86c3c8b5a052fa422d0e65",
+      "variant": "",
+      "sourceTitle": "Crime and Punishment",
+      "fields": {
+        "description": "Act as a judge deciding sentences in a series of criminal cases. Weigh the circumstances and request evidence, then compare your decision with the game's judge; requesting more information reduces the points available."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:07e2a51accc95795a2f1c0f239b66fd25c858892a011496aa5d9374fe6591e91",
+      "variant": "",
+      "sourceTitle": "Rome: Pathway to Power",
+      "fields": {
+        "description": "Rise from enslavement in Herculaneum to positions of influence in ancient Rome. Adventure sections let you explore and solve problems in different ways, while military stages put you in command of an army."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:0b856b80315fd2aac4885043582cd61779f693c04ba5ede5ce0c2279cedcab43",
+      "variant": "",
+      "sourceTitle": "Legend of the Red Dragon",
+      "fields": {
+        "description": "Choose a character class and build strength through monster battles, equipment upgrades, and random events before facing the Red Dragon. This text-menu BBS RPG also lets players challenge one another, with optional modules adding activities on individual boards."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:0c337a6b46b3ab0b2b5ec1a4646bdf4bea6a3366679f5156ed6edfe2f4cbc77b",
+      "variant": "",
+      "sourceTitle": "Penthouse: Electric Jigsaw",
+      "fields": {
+        "description": "Assemble photographic jigsaw puzzles by fitting the pieces together. This edition uses images from Penthouse.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:1221c4aaaaad6668ff149310c650fc67ee777a23ad8009868a952d89fd48397d",
+      "variant": "",
+      "sourceTitle": "Silk",
+      "fields": {
+        "description": "Draw lines to claim territory and reveal the picture beneath the playfield. Reach the required coverage while avoiding enemies that grow more dangerous over time, and collect food bonuses to extend the timer.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:126447d10b40ad03a3da77044a75eaa34e75274e21c444868b9761ba7565b003",
+      "variant": "",
+      "sourceTitle": "Rex Nebular and the Cosmic Gender Bender",
+      "fields": {
+        "description": "Rex crash-lands on a mysterious planet while searching for a valuable vase. Explore an unusual society, use its transformation technology, and solve inventory puzzles to recover the prize and find a way home.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:1323457af5b9b0a391b00857badf81df2d048a3ee04929b0020adc4e0533ecf8",
+      "variant": "",
+      "sourceTitle": "The Farmer's Daughter",
+      "fields": {
+        "description": "A broken-down car leaves the protagonist stranded near an unfriendly farm. Explore the grounds, find useful objects, and work around the residents' routines before help arrives in this timed text adventure.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:14bed306f309c471a23a4dc5d172fb7d53b4393f17dec4d5e9be94eae7781d08",
+      "variant": "",
+      "sourceTitle": "Strip Poker II",
+      "fields": {
+        "title": "Str♥p Poker II",
+        "description": "Play five-card draw against two photographed opponents, Suzi and Melissa. Winning hands advances the presentation, and optional data disks provide additional opponents.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:184292ee27ec9f850d08f33230cdefcd8be398229cf77af657d5600247ee2196",
+      "variant": "",
+      "sourceTitle": "Softporn Adventure",
+      "fields": {
+        "title": "Softp♥rn Adventure",
+        "description": "A comedy text adventure by Chuck Benton, originally published by On-Line Systems. Explore nightlife locations and solve object puzzles in the game that later inspired Leisure Suit Larry.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:193d6d26923aeedd0653de5083746b6cb29ef841bde7a7099d874b9da7797667",
+      "variant": "",
+      "sourceTitle": "Butt Slam!!!",
+      "fields": {
+        "description": "Two players take turns pursuing and evading each other on a two-dimensional playfield. Score by catching the other player, then switch roles at regular intervals.",
+        "heart": true,
+        "title": "B♥tt Slam!!!"
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:1b1ef306f7f84c3a63f22c00750fd1559085fc3da9ae25c3708d33c00a99c940",
+      "variant": "",
+      "sourceTitle": "Xtrek",
+      "fields": {
+        "description": "Newly assigned ensign Marty Stu tries to earn a permanent posting aboard the Enterprise. This unofficial Star Trek text adventure uses a small set of commands for exploration, conversations, and object puzzles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:1e5d2be022e9e51bb80fab784189c9d94e057b3be2014c20901cfc17e734f1d1",
+      "variant": "",
+      "sourceTitle": "PimpWars",
+      "fields": {
+        "title": "P♥mpWars",
+        "description": "Compete with other BBS players to raise enough money to buy a restaurant. Manage a nightlife business, expand into new districts, and balance daily income against rival players' interference through text menus.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:1fe7bb92b4c8977a937298be6e3e2c747d96b84bdd63e49c8da1dcbbd2ee1b94",
+      "variant": "",
+      "sourceTitle": "SimuSex",
+      "fields": {
+        "title": "SimuS♥x",
+        "description": "An early mouse-controlled character simulation from Erosoft. Select a scene and use mouse movements to control its animation; interaction is limited compared with a conventional adventure game.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2019bb45361af8884d13b811a680f2c3e8430a51e3279d979590a2d449a35bba",
+      "variant": "",
+      "sourceTitle": "Star Wars: Making Magic",
+      "fields": {
+        "description": "An interactive behind-the-scenes CD-ROM about the Star Wars Trilogy Special Edition. Browse production material explaining changes made for the revised films."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:253584831f133f257f2aad64c9c35c2248474a4dc15cd5ee77215a33a98aa9f3",
+      "variant": "",
+      "sourceTitle": "Geisha",
+      "fields": {
+        "description": "Travel to Tokyo to rescue Eva from a scientist who plans to transform her into a machine. Explore through a mouse-driven adventure interface and complete several smaller challenges along the way.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:254510256665960a07b7d7377d5f66c7581ff789a336fa8d97e7e9014285219b",
+      "variant": "",
+      "sourceTitle": "Fascination (1991)",
+      "fields": {
+        "description": "An unexpected encounter leaves you holding a sample of a mysterious invention after its creator is killed. Deliver it to the right person, investigate the surrounding intrigue, and avoid being blamed for the murder.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2676860d8f3eab4c6bebeda336dae1b1d9a0c18e655cb96fd045a87a0631a750",
+      "variant": "",
+      "sourceTitle": "Jo Guest in the Milk Round",
+      "fields": {
+        "description": "A routine milk delivery turns into an unexpected visit in this photographic adventure starring Jo Guest. Use the mouse to explore the house and choose how the encounter develops.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:292c09e4bf74877dfee2f57012c8284da6a99dc331de41a4c822b14e227edcb8",
+      "variant": "",
+      "sourceTitle": "Gal Pani II",
+      "fields": {
+        "description": "Claim sections of the playfield to reveal photographic images in this Gals Panic spinoff. Its territory-capture puzzles follow the Qix style of play.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2953143102f43bf561fbcbdc81705c003ea4d912ca0b59b75f5e072ea1347da9",
+      "variant": "",
+      "sourceTitle": "Soko-Sex",
+      "fields": {
+        "title": "Soko-S♥x",
+        "description": "Push crates onto their target squares in a series of Sokoban-style puzzles. Completing stages reveals portions of a photographic gallery.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2b611a3841ece097ff489e3b65f393421db0a4e6803ce4f2b4ff30da95baf0fc",
+      "variant": "",
+      "sourceTitle": "Around the World: Christmas",
+      "fields": {
+        "description": "A winter-themed edition of the Around the World platform game, with snow replacing the original scenery."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2be95e0abae10e00c5443ab28787b991818234edb4ddb128246f6780020aef7a",
+      "variant": "",
+      "sourceTitle": "Runaway City",
+      "fields": {
+        "description": "College student Hiroaki Hanya investigates the unusual good fortune shaping his relationships. Advance the illustrated story through commands such as looking, talking, thinking, and moving between locations.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2da6adfd55374f6f85f10fca58f7cd68de2671f6dbbbb24a6fccb3a0294f859c",
+      "variant": "",
+      "sourceTitle": "Fantasy II",
+      "fields": {
+        "description": "Choose from eight short interactive scenarios in this sequel to Fantasy. Fill in details that personalize how each story unfolds.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2eba2c43edc805a1c8894ed7f32907ca8759f2ac3966144b3114a7ff49ec70fd",
+      "variant": "",
+      "sourceTitle": "Strip Poker Professional rev. B",
+      "fields": {
+        "title": "Str♥p Poker Professional rev. B",
+        "description": "This revised poker edition supports up to three opponents at once and introduces new SVGA photographs. Play five-card draw and expand the opponent roster with compatible data disks.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:2f41eb17d8713d2173512679cd22c9d4a39a9c8c489517e5d868032f3f932bcf",
+      "variant": "",
+      "sourceTitle": "Penthouse: Hot Numbers Deluxe",
+      "fields": {
+        "description": "Compete across ten numbered-grid challenges with SVGA presentation and spoken commentary. Alternate horizontal and vertical moves to collect points, with three difficulty settings, an optional timer, and a hidden-fields mode.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:30923973659ba94ff899fe894000913f63d5142b6ed58a213f1fd0dfc6603da7",
+      "variant": "",
+      "sourceTitle": "Teenage Queen",
+      "fields": {
+        "description": "A chance meeting with a roller skater leads to a series of poker hands. Follow the illustrated encounter as the game moves from a park to a nightclub.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:30bfc9718abee08910fa73b32a2b901ec448c3dc131c8845febb685ae97356c6",
+      "variant": "",
+      "sourceTitle": "XTREK: Deep Space Nine",
+      "fields": {
+        "description": "Explore an unofficial Deep Space Nine story through a small set of text commands. Interactions with the show's characters drive the scenario.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:31381878883828125e22e68285e4fc05c8982739a5d0903820786400aa3e7f4f",
+      "variant": "",
+      "sourceTitle": "Mahjong Houtei Raoyui",
+      "fields": {
+        "description": "Challenge seven characters to one-on-one mahjong matches. Most opponents can be selected in any order, with the final challenge reserved until later and illustrations awarded for wins.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:32118d034353b04face21336e828159ee018beddd669f6a8d141d58e7f8864df",
+      "variant": "",
+      "sourceTitle": "Lorna",
+      "fields": {
+        "description": "Guide the comic-book heroine Lorna through hostile alien environments. Fight mutant enemies using close-range attacks or an assault rifle in a side-scrolling action game."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:3237101bcd32948f3fb11f968c7bb45ae98bb1296ce6faa83ccf72c6b5432821",
+      "variant": "",
+      "sourceTitle": "SeXXcapades",
+      "fields": {
+        "title": "S♥XXcapades",
+        "description": "A party board game for two to eight players. Roll dice, follow the prompts on each space, and gain or lose money as you work toward a chosen winning total.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:32514d37e93f4cd0720d0178f5dcd089a9db967c1240b3f3a4370d18957fe3db",
+      "variant": "",
+      "sourceTitle": "Super Panic Monsters",
+      "fields": {
+        "description": "Dig holes to trap enemies as you move through arcade stages inspired by Lode Runner. Collect power-ups and choose between two characters with the same abilities.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:34bab04c3e2a3c876c2a67dc70de1058baaf4fb8ea5ec13a2a97d97624f3dc74",
+      "variant": "",
+      "sourceTitle": "XTREK Deep Space Nine: The Second Coming",
+      "fields": {
+        "description": "Return to an unofficial Deep Space Nine setting in another short text adventure. Use a limited command vocabulary to guide encounters with its characters.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:37c1179f71e0194de540d330287672061ea05bb4cf730381c91c09b07d7d0b9e",
+      "variant": "",
+      "sourceTitle": "Strip Poker III",
+      "fields": {
+        "title": "Str♥p Poker III",
+        "description": "Play five-card draw against up to three photographed opponents at once. This installment adds VGA presentation and an introductory voice sequence, with further opponents available on data disks.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:37fe2331da99e08afa19259ebb8b5511bfa3125d18ad5e26febb2be4c48afc6b",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry in the Land of the Lounge Lizards",
+      "fields": {
+        "description": "Guide Larry Laffer through a disastrous search for romance in the first Leisure Suit Larry adventure. Explore illustrated locations, type commands, and solve inventory puzzles to earn points and advance the comedy.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:3b19dc77d47a0b058fc63ea29cf99c7927f796d47407aa99dcc893e31377b696",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry: In the Land of the Lounge Lizards (SCI Remake)",
+      "fields": {
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:3bedb3d17f554846b0efe78cc85b8e4e1ad85020cd3e73c0a28196d6dc41ab49",
+      "variant": "",
+      "sourceTitle": "James Bond 007: Goldfinger",
+      "fields": {
+        "description": "Help James Bond foil Goldfinger's plan to seize the world's gold supply. Investigate the plot and overcome familiar adversaries in a text adventure based on the film."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:3c5110a0bc37bfb0c858d83021617cf5e398f411340f06148eb6981d1d038b5f",
+      "variant": "",
+      "sourceTitle": "Fuck Quest 2: Romancing the Bone",
+      "fields": {
+        "title": "F♥ck Quest 2: Romancing the B♥ne",
+        "description": "Richard travels to New York hoping to meet a television star. Explore the city and type commands to solve puzzles in this short AGI adventure sequel.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:3d9add91cb9677d99b35061f4ab07d449f6b7bf14451eb802a57d5399e73a6b8",
+      "variant": "",
+      "sourceTitle": "Fantasy",
+      "fields": {
+        "description": "A short interactive story with a small set of details that the player can customize.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:406d19ad084d897f7653e732fe0712389b142a32949c9925b8e8efe409f4ede3",
+      "variant": "",
+      "sourceTitle": "Emergency Room",
+      "fields": {
+        "description": "Work through more than 400 cases at Legacy Memorial Hospital. Examine patients, choose tests and treatments, and handle follow-up care with reference material available throughout the medical simulation."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:416b597ff77466041049454a3aaf05b817f723d7ab66e0432c9334f1024802d2",
+      "variant": "",
+      "sourceTitle": "GunBlaze",
+      "fields": {
+        "description": "Detective Mark Flint helps Jewel escape a secret society pursuing her unusual necklace in nineteenth-century London. Explore city locations and fight turn-based battles where ammunition and reloading matter.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:41d9c451203eac23d0f16770da4edcd361f6536dfd351c435cdda992a2cb3c75",
+      "variant": "",
+      "sourceTitle": "Girlfriend Terri",
+      "fields": {
+        "description": "Type sentences to converse with Terri in an early character simulation. The program combines generated replies with live-action presentation.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:49f65cdee40265fd4fa07251b8add370d556af44ae895ddbb362c35817132f32",
+      "variant": "",
+      "sourceTitle": "Cover Girl Strip Poker",
+      "fields": {
+        "title": "Cover Girl Str♥p Poker",
+        "description": "Choose from eight photographed opponents in a poker game supporting up to three human players. Language options and optional character comments customize the presentation.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:4fa692b22194a3427809a79846adc14c5c19e984585a55bf9d51ddde6d96cad0",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry 7: Love for Sail!",
+      "fields": {
+        "heart": true,
+        "description": "Larry joins a cruise-ship contest and looks for ingenious ways to outdo the other passengers. Choose context-sensitive actions or type your own commands to solve the adventure's unconventional puzzles."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:512ef5f3db0a6cd6ea576ed5665d07f30a67cf732e2fff753296d0cc5362e171",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry 5: Passionate Patti Does a Little Undercover Work",
+      "fields": {
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:568ac9cff982536455a37620d6b0e9e8941b24098cabb51306bc05633fed3c01",
+      "variant": "",
+      "sourceTitle": "Man Enough",
+      "fields": {
+        "description": "Join a dating agency and get to know five potential partners through conversations and live-action scenes. Choose replies that reflect each person's preferences, with occasional minigames changing the pace.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:5a64fc8f76a89f5c7138e0792d573485422958de4bdd8536d8376358c86f4158",
+      "variant": "",
+      "sourceTitle": "Sextris",
+      "fields": {
+        "title": "S♥xtris",
+        "description": "Arrange falling blocks into complete rows to uncover each stage's background image. Later levels increase the falling speed and may begin with blocks already on the board.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:5a98f7bd6a8d23f32cdd7a957d858530b3dbbed8c88ea489aa217102386cd519",
+      "variant": "",
+      "sourceTitle": "Emmanuelle: A Game of Eroticism",
+      "fields": {
+        "title": "Emmanuelle: A Game of Er♥ticism",
+        "description": "Travel between beaches, bars, and cities in an adventure centered on Emmanuelle and her admirers. Choose dialogue responses and tackle smaller challenges involving casinos, rivals, and smugglers.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:5d444af2a5dae50ea4e289ef53da6317983ae14b84fddf41458c09cda572e145",
+      "variant": "",
+      "sourceTitle": "Biing!: Sex, Intrigue and Scalpels",
+      "fields": {
+        "title": "Biing!: S♥x, Intrigue and Scalpels",
+        "description": "Build and run a chaotic hospital in this management comedy. Buy premises, recruit staff, and balance resources while dealing with an eccentric workforce.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:5e14922fef271d78e828848d432c7cf2f73571817cd8a587c59909b42a5d6ab9",
+      "variant": "",
+      "sourceTitle": "Planet of Lust",
+      "fields": {
+        "title": "Planet of L♥st",
+        "description": "Brad Stallion and his shipboard computer Sandie set out to rescue a princess and foil a rival's plans. Use typed commands to explore illustrated locations, inspect objects, and solve adventure puzzles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:5fb59ff7111d11e52c254750f65beef8372bb2ab8cc99b762fc0e3ad16b24515",
+      "variant": "",
+      "sourceTitle": "Dan Dolme",
+      "fields": {
+        "description": "Guide Dan through a strange video-game world as he searches for his missing girlfriend. Collect gold, find ways through obstacles, and avoid water and deep pits in a platform game without conventional enemies.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:617a752596f766aae9293475003b783952441e444e8135dedfba52cec591868d",
+      "variant": "",
+      "sourceTitle": "Logo",
+      "fields": {
+        "description": "Three tile-puzzle variations each offer 120 timed stages. Recreate arrangements or clear pieces by manipulating their colors and values, with passwords available every five levels.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:61a7979285a79107792102aeca87367158eeb66a0fd64e45ee5e430250d7946d",
+      "variant": "",
+      "sourceTitle": "Grailquest",
+      "fields": {
+        "description": "Explore an Arthurian adventure in search of the Grail. Use a mouse-driven interface to investigate locations and complete smaller quests along the way."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:669f0012f154d77cc7bd6655dccce67cd07fa66af60918c4b9ab3fe603a8709d",
+      "variant": "",
+      "sourceTitle": "Strip Poker: A Sizzling Game of Chance",
+      "fields": {
+        "title": "Str♥p Poker: A Sizzling Game of Chance",
+        "description": "Challenge photographed opponents to five-card draw. Manage your bets and win successive rounds, with optional data disks adding more opponents to the original pair.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:68e6e3f2cffa076cdd5f4dc50da3ad02af1736a69e58f865d5d99571478ec1dc",
+      "variant": "",
+      "sourceTitle": "Madam Fifi's Whorehouse I: The Next Day!",
+      "fields": {
+        "title": "Madam Fifi's Wh♥rehouse I: The Next Day!",
+        "description": "Explore the aftermath of a night at Madam Fifi's in a short text adventure. Enter commands to discover what happens next.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:6afca8ef213db40ee2a9dbc70bfb07f822d42c93791ee016c0bc9ae5bba04607",
+      "variant": "",
+      "sourceTitle": "Strip Poker Professional Volume II",
+      "fields": {
+        "title": "Str♥p Poker Professional Volume II",
+        "description": "A further collection of poker challenges in Artworx's series. Win hands against photographed opponents to progress through the presentation.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:6e305f4a9423af73ed7c2f059703bdd3a69bf5cd6678b3d1915c4bc91ce7c51d",
+      "variant": "",
+      "sourceTitle": "A Night with Beverly",
+      "fields": {
+        "description": "A short, unofficial Star Trek text adventure centered on an encounter with Beverly. Enter commands to guide the story.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:73dc485d7ecd8945feceeb4cb9772b7a56474f50ca2944ef8cc6847bfdc46a1d",
+      "variant": "",
+      "sourceTitle": "Sex Vixens From Space",
+      "fields": {
+        "title": "S♥x Vixens From Space",
+        "description": "Space adventurer Brad Stallion investigates a band of interstellar raiders with help from the computer Sandie. Explore two planets, a space station, and his ship while solving adventure puzzles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:74633fad6dbe34409705a8e858471308374d1005d10701a4c81c94e17ac1c2da",
+      "variant": "",
+      "sourceTitle": "Haebyeon-ui Baegu",
+      "fields": {
+        "description": "Play two-on-two beach volleyball from an angled overhead view. Up to four players can share a computer, with computer-controlled teammates filling the remaining positions; anticipate the ball's path and return it across the net."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:75402b3fca5b9b4d6ef00b37cf8b6c07ee41b3d4930b83048440d1e2c1f8a9ad",
+      "variant": "",
+      "sourceTitle": "Leather Goddesses of Phobos",
+      "fields": {
+        "heart": true,
+        "description": "Abducted in 1936 by invaders from Phobos, the protagonist must escape and stop their plans for Earth. Explore a comic science-fiction world, collect useful items, and solve puzzles through typed commands."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:75cc0400c96127312bc5a50d37884478c5f5e4dc67d180e53f83e70c774ad4a7",
+      "variant": "",
+      "sourceTitle": "Leather Goddesses of Phobos 2: Gas Pump Girls Meet the Pulsating Inconvenience from Planet X!",
+      "fields": {
+        "description": "An alien crash-lands near Atom City in 1958 seeking help for his occupied home world. Play as Barth, gas-station owner Zeke, or astronomer's daughter Lydia in this science-fiction comedy adventure.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:7709d3f06d465701e65a6b2fe75df8415aa3206f8495c4b17e490acf5ea328a1",
+      "variant": "",
+      "sourceTitle": "Duke Screw 'Em 38D",
+      "fields": {
+        "title": "Duke Scr♥w 'Em 38D",
+        "description": "Explore thirty levels in a first-person shooter built with the Pie 3D engine. Search corridors for equipment, collect weapons, and fight through waves of unusual enemies.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:77e7ea26a55070e9b147304cdf7a0a02dcf08af1b7aaf8fa15f554b55b778730",
+      "variant": "",
+      "sourceTitle": "Adult Film Cameraman",
+      "fields": {
+        "description": "Experiment with a simulated camera view over three photographic scenes. Pan with the mouse, zoom with its buttons, and record camera movements for later playback.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:787d17d4df7c021bcbfc8fc52aae0e652a2f5ca9f6b2d2078f84f9fe2dfbfbcd",
+      "variant": "",
+      "sourceTitle": "Uncover It",
+      "fields": {
+        "description": "Control two linked paddles to keep a ball in play while breaking blocks. The ball can escape from any side of the field, and completing a stage reveals a gallery image.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:789e3d055def568f8b5fa279d6381d074d81a18d71a218866c411363517c3792",
+      "variant": "",
+      "sourceTitle": "Night Trap",
+      "fields": {
+        "description": "Monitor a lakeside house through security cameras and trigger traps to protect its visitors. Follow events across different rooms and time your actions carefully in a live-action video game."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:791f516e11d5a169ba8bfb3fc348f0da62f9c09dfdb79778bf09581db368510f",
+      "variant": "",
+      "sourceTitle": "Blue Angel 69",
+      "fields": {
+        "heart": true,
+        "description": "Choose numbered squares on an eight-by-eight board to collect points while limiting your opponent's options. One player moves horizontally and the other vertically; ten stages reveal illustrations as you win."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:7ec68c12d92e6f4a1bbe1e227a83b6934985f548d4169a0cdc0cb559bb46c80c",
+      "variant": "",
+      "sourceTitle": "Madame Ching's Dungeon of Ecstasy",
+      "fields": {
+        "description": "Escape a dungeon viewed from above while keeping a rising status meter under control. Find keys, use helpful items, and navigate the maze before time runs out.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:82cc71586c3cd0b7a163d78b2441ec72c5e93d295abd4ad469b3ad34f06291ea",
+      "variant": "",
+      "sourceTitle": "Metal & Lace: The Battle of the Robo Babes",
+      "fields": {
+        "description": "Enter MeCha Island's robot-fighting tournament and investigate the secrets behind it. Choose machines with different strengths, earn money, and buy upgrades between bouts.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:841804cfdd107edb992f23abab10f459b205e320e77225b69d8af5de717b66c9",
+      "variant": "",
+      "sourceTitle": "Pork 2: The Gizzard of Showbiz",
+      "fields": {
+        "description": "A comic text adventure that reworks scenes from Zork II in an urban setting. Solve a compact sequence of parody puzzles and confront an unusual musical villain."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:84a6b0bb1884e1a7c0cef10ecbaabb453748ffd80773770ff91209a63a70c708",
+      "variant": "",
+      "sourceTitle": "Astrotit",
+      "fields": {
+        "title": "Astrot♥t",
+        "description": "A surreal scrolling shooter with four-color CGA landscapes. Move through science-fiction scenery and fire at waves of bizarre enemies.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:85cebb705965efa71da3731011907a5f20deaaf3257d59085ffc40d4a46f24bd",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry 3: Passionate Patti in Pursuit of the Pulsating Pectorals",
+      "fields": {
+        "description": "Larry starts over on a tropical island after losing his home and job. Follow his misadventures and the story of musician Patti through exploration, dialogue, and inventory puzzles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:862d582a2ef7389bb609303d32b9449381ee549a18e30d2d90ae0e9ec0b1d34b",
+      "variant": "",
+      "sourceTitle": "Ranx: The Video Game",
+      "fields": {
+        "description": "Control the cyborg Ranx in an action adventure adapted from the Italian comic. Deliver an antidote in New York, continue to a rescue mission in Rome, and collect supplies for repairs while fighting through the streets."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:890f95dac5eb9835a923009b50c97f0b8c813a2db81d79c3f79e46ee1aef5cb4",
+      "variant": "",
+      "sourceTitle": "Madame Ching's Palace of Pleasure",
+      "fields": {
+        "description": "A captured resistance member must escape Madame Ching's palace on the planet Tralfaz. Search the maze for keys and supplies while managing a rising status meter.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:8ac6484468988a837ab09c037cfe4f408ccfe736f2ecd356fd5f0281f8f1afd8",
+      "variant": "",
+      "sourceTitle": "L-MAN",
+      "fields": {
+        "description": "Xiao Jianren discovers his connection to an ancient alien race and must stop a new struggle for Earth. Choose attack and defense commands in timed, turn-based fights, or select characters for one- or two-player versus battles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:8b96081538ada1cb1db8d4a81c1bbe174368370bc7191b0d405f1545c4bd5b26",
+      "variant": "",
+      "sourceTitle": "Femme Fatale",
+      "fields": {
+        "description": "Solve a collection of simple puzzles accompanied by photographic images.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:8f92f69e398cbb6a2a5c7a4ac93dc73fd42c7f4f0d48f88ac590c1b09fb67539",
+      "variant": "",
+      "sourceTitle": "Porno Adventure",
+      "fields": {
+        "title": "P♥rno Adventure",
+        "description": "Create a customized fantasy scenario and explore it through typed commands in this text-based simulation.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:92e904ee1b862361b37c6abe0cbecc7381e1d3b8821243608f74eb05731b0e83",
+      "variant": "",
+      "sourceTitle": "Knights of Xentar",
+      "fields": {
+        "description": "Robbed of his possessions, Desmond accepts a job that draws him into a journey across towns and dungeons. Develop the party, gather equipment, and pause automatic battles to use items, cast spells, or change tactics.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:934d2130aadb739f61c50b1e0bf7e5daf8545d5de5142deb20d8639409ceb72c",
+      "variant": "",
+      "sourceTitle": "Centerfold Squares",
+      "fields": {
+        "description": "Compete against the computer to claim squares on a board and reveal the underlying photograph. Choose from several difficulty levels and a selection of images.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9390e240717fd2107365db8964f6ef3af00c94e2403dbfb66f8f8cbeaf7bd131",
+      "variant": "",
+      "sourceTitle": "Porntris",
+      "fields": {
+        "title": "P♥rntris",
+        "description": "Move and rotate falling blocks to complete horizontal rows. Each cleared row reveals part of an animated panel, with the level ending when the panel is complete.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:940d9178b1ec0ecd3da5ecade0443b7d1d57663fd0216f7190be1e05e795dc75",
+      "variant": "",
+      "sourceTitle": "Huj Hujowi Nie Rowny",
+      "fields": {
+        "title": "H♥j H♥jowi Nie Rowny",
+        "description": "Explore surreal side-scrolling stages with ZX Spectrum-style graphics. Gather every required item, distinguish useful pickups from hazards, and shoot enemies that pursue you.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9507582f23139b5ecbd561487d8b0e45dfdf807bd0aa8bc1b885e439871527d3",
+      "variant": "",
+      "sourceTitle": "Granny's Place",
+      "fields": {
+        "description": "Explore Granny's house in a short text adventure from Temple Software. Most puzzles involve finding objects and giving them to the right character, using a small set of typed commands.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:961060a748763b7447062c6f7eba948a54eaa6c075de6f57823116f13859ebcb",
+      "variant": "",
+      "sourceTitle": "Girlfriend Tracy",
+      "fields": {
+        "description": "Converse with Tracy through typed input in a character simulation using voice, text, and live-action video. Status panels track the conversation, her mood, and the current setting.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:992f321d5f2f306a6b88c640889ee7db789298fbe03e38ecdf5e03517a53faa5",
+      "variant": "",
+      "sourceTitle": "Drive-In",
+      "fields": {
+        "description": "An early text adventure about a date at a drive-in cinema. Choose actions to influence how the evening develops.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9936c5813e0c1c7c01a23b133f7171bc89c639acc1b4188c9776390a467c5bc0",
+      "variant": "",
+      "sourceTitle": "Pizza Quest I: Cruisin for a Bruisin",
+      "fields": {
+        "description": "Work for an intergalactic pizza shop and make deliveries across the universe in this comedy adventure."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9965147de696c22bf4060d29bdd1792452b1ba097338b20252662fb5c59841c7",
+      "variant": "",
+      "sourceTitle": "Late Night Sexy TV Show",
+      "fields": {
+        "title": "Late Night S♥xy TV Show",
+        "description": "Enter a television quiz show with a dating-game twist. Learn the other contestants' preferences and earn money to buy items that improve your chances of making a connection.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9c427dfd014a7c84924a78fc751c3b932a95394e426182c825f26736c05a77d5",
+      "variant": "",
+      "sourceTitle": "Dime City",
+      "fields": {
+        "description": "Build influence in a fictional city's criminal underworld while pursuing political power. Manage money, recruit helpers, buy property and vehicles, and take part in overhead action sequences against rivals."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:9f5f645f8a8fa62ae2080e7f60c51e4043a38a3e11fa0f10fc101434c9007ec9",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry 6: Shape Up or Slip Out!",
+      "fields": {
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:a4b72c0ef30cb7ee808e027c90d155663571470f9d8eaf42f933a8cdcc8ae6d6",
+      "variant": "",
+      "sourceTitle": "Mad Paradox",
+      "fields": {
+        "description": "Pursue Gorgus after the death of the hero's father in a Japanese-style RPG. Travel through towns and dungeons, collect items, gain experience, and fight turn-based battles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:a8d5b7dc74eccbfeaa3581d8d57eae8b4aa4665f2e2b25639762c34446f2bf77",
+      "variant": "",
+      "sourceTitle": "Penthouse: Hot Numbers",
+      "fields": {
+        "description": "Compete on an eight-by-eight grid where selecting squares changes your score and uncovers an image. One player moves horizontally and the other vertically; the highest score wins when no moves remain.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:adbba0dc9a7a6eea3bc6eb1397a2e749a334366832c69bdbdbca89e3dcf8a33d",
+      "variant": "",
+      "sourceTitle": "Sexy Droids",
+      "fields": {
+        "heart": true,
+        "title": "S♥xy Droids",
+        "description": "Compete with an android opponent over fifteen grid-based challenges. Take turns selecting positive or negative values, moving horizontally or vertically according to your role, and try to finish with the higher score."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:aec64b8e62e460dd0f3e5d0e2adb1312408d1934a4b458988a05b486195c2837",
+      "variant": "",
+      "sourceTitle": "Susan (A Lustful Game)",
+      "fields": {
+        "title": "Susan (A L♥stful Game)",
+        "description": "Help the protagonist prepare for a date with Susan in an Adventure Game Toolkit text adventure. Search houses, a park, and a construction-site maze for objects needed to fulfill her requests.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:b237875c96be42ea33670c7d95909b11233daee380d4e3102d2e2911148a43e0",
+      "variant": "",
+      "sourceTitle": "Vida",
+      "fields": {
+        "description": "A short photographic point-and-click story about meeting Vida. Try different actions to advance the encounter, with unsuccessful choices generally allowing another attempt.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:b32ba20caedb9c0c15a774c746bf9d7ec2235f2d5f63e2c49530c8f8f6fd53c5",
+      "variant": "",
+      "sourceTitle": "Leisure Suit Larry Goes Looking for Love (in Several Wrong Places)",
+      "fields": {
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:b3eeb4dbb77b1e9ebb2f7ca137d023cd9652553fd4efb3321c46f218ce1017dc",
+      "variant": "",
+      "sourceTitle": "X Rock",
+      "fields": {
+        "description": "Rotate falling clusters of colored balls and arrange matching colors in horizontal or vertical lines. Balls settle separately after landing, and finishing a stage unlocks a gallery image.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:b45c02e4431e03cc69c34860ae73a4be197a0c73eaf589f1f747e269b95e961e",
+      "variant": "",
+      "sourceTitle": "Bomb'X",
+      "fields": {
+        "description": "Navigate fifty maze-like stages, collect bonuses, and use attacks to clear obstacles or stun enemies. The game also offers competitive play for up to four players.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:b55fd7c654f2911391ed56376615e5735e409dc6f3e9330cae70f9288df12cbd",
+      "variant": "",
+      "sourceTitle": "Kingdom O' Magic",
+      "fields": {
+        "description": "Choose between two protagonists in a fantasy adventure spoof with British humor. Explore a nonlinear world, trade barbed dialogue with wandering characters, and solve puzzles across several quests."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ba02c661ffcbdcc09bdd1dde9eff0a63dbbd449a04a64302d1dbe4d3a8a0e102",
+      "variant": "",
+      "sourceTitle": "The Legend of the Purple Tit",
+      "fields": {
+        "title": "The Legend of the Purple T♥t",
+        "description": "A detective searches for a missing princess and a mysterious relic in this BBS door game. Repeated rounds of short minigames build the score needed to complete the investigation.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:bbedf448c0ed21a0b1585a279207405b60231098378a18b4e4ba02c00e8e0f8e",
+      "variant": "",
+      "sourceTitle": "Cobra Mission",
+      "fields": {
+        "description": "Private investigator JR Knight and companion Faythe investigate gang activity in Cobra City. Explore districts, gather clues, and aim at enemies' weak points in real-time mouse-controlled battles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:bd3757a9ba52dd3cd81bfb75b9a93e472f5c67824abf87fdd95cab8d2b583b3a",
+      "variant": "",
+      "sourceTitle": "Redneck Rampage Rides Again",
+      "fields": {
+        "description": "After crash-landing a UFO, Leonard and Bubba fight their way back to Hickston. This standalone sequel adds vehicles, weapons, and enemies across fourteen first-person shooter levels."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:bdb53722f9e821b8f9b34eadbb5b5f23fb5c58cbe01d1e0e5c893c730dda1fda",
+      "variant": "",
+      "sourceTitle": "Low Blow",
+      "fields": {
+        "description": "An unconventional boxing game where low blows and other normally forbidden moves are allowed. Enter a tournament against the computer or challenge a friend."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:be5e933a4e44284d0273f8450b3b6881bdd225d180a35bd23db0910c5d3aae8f",
+      "variant": "",
+      "sourceTitle": "Strip Poker II Plus",
+      "fields": {
+        "title": "Str♥p Poker II Plus",
+        "description": "Play five-card draw against Donna or Sam in Anco's continuation of the series. Exchange cards, raise bets, and manage a starting bankroll of one hundred dollars.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:bed0a1061986390cc7bf1ab633d033a07752b5e08b853c4328dba86ac01bba80",
+      "variant": "",
+      "sourceTitle": "F-Tetris",
+      "fields": {
+        "description": "Arrange falling blocks in a DOS puzzle game with three difficulty levels, high scores, and joypad support. An optional challenge mode deliberately withholds useful pieces, while a monochrome mode accommodates older displays."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:bfd84dc2753805fba5427cede60b89d69cb092f167320659ffeebca6be81b2fd",
+      "variant": "",
+      "sourceTitle": "Romantic Encounters at the Dome",
+      "fields": {
+        "description": "Attend a social event and try to build a romantic connection through conversation. This text adventure focuses on how different approaches affect the people you meet."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:c58d2390da2e2b928fb54ec6320f70782e172ef8213e0d53e60c8443029ebea2",
+      "variant": "",
+      "sourceTitle": "Super Dog Story",
+      "fields": {
+        "description": "Rescue dogs from hostile forces in a cartoon platform game built around an unusual comic attack."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:c70846a8932eadeb46c03bdbe9f31be482420859cff0b14f5535e05f28142fc6",
+      "variant": "",
+      "sourceTitle": "Redneck Rampage: Suckin' Grits on Route 66",
+      "fields": {
+        "description": "A twelve-level expansion for Redneck Rampage. Follow Bubba and Leonard through unusual roadside destinations, including a gator farm and an alien museum."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ca95644b5215186bfaca4c8724ed7872b436f7087df9369856514211a713fb0c",
+      "variant": "",
+      "sourceTitle": "The Awe-Chasm",
+      "fields": {
+        "description": "Switch between two explorers with different abilities as they search the Awe-Chasm for treasure. Solve typed-command puzzles by having the characters work together, with five hundred points available in total."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:cbd1df717e66147ebaa8057eb40b2473e1f3b1b90cf5854f63e583e17108454f",
+      "variant": "",
+      "sourceTitle": "Young Stuff",
+      "fields": {
+        "description": "A short BBS door game about trying to win Kim's interest. Choose from a limited set of actions before your opportunities run out.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:cbe7a82d092e41b5458da5bd23eaa5aa8954b6a92eb57a3fa54e9c08b12104fe",
+      "variant": "",
+      "sourceTitle": "Gal Pani",
+      "fields": {
+        "description": "Trace boundaries and capture territory to uncover photographic images. This personal-computer spinoff of Gals Panic uses Qix-style play.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ccc4dea15dba764212c0cd68a8921727f234a3e3f5b6b7c90bbec7950221e8fc",
+      "variant": "",
+      "sourceTitle": "Treehouse Truants",
+      "fields": {
+        "description": "Compete for schoolyard dominance in a text-menu BBS role-playing game. Improve equipment and abilities through encounters with rivals as you work toward becoming King of the Castle."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ccf1a33a30aef8ecab550d2c337cf62276545c20d118396d3f96f7cb4f3536b7",
+      "variant": "",
+      "sourceTitle": "Dreamweb",
+      "fields": {
+        "description": "Troubled bartender Ryan follows a mysterious mission through a dystopian city. Search compact overhead scenes, question characters, and manage limited inventory space in a dark point-and-click adventure.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:cda79b534e25eb20914b637203efdeabfefbe3e01d3809899064f4c0127e2245",
+      "variant": "",
+      "sourceTitle": "Laffer Utilities",
+      "fields": {
+        "description": "A Leisure Suit Larry-themed collection of eighteen novelty utilities. Browse jokes, lightly practical tools, and printable material presented as office distractions."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ce2a1ee89c8c259dcce78a7e3832912bc2b0513164eea49e497f8735e8bd467a",
+      "variant": "",
+      "sourceTitle": "PornPipe",
+      "fields": {
+        "title": "P♥rnPipe",
+        "description": "Connect pipe sections before the flow reaches the end of the route. Four stages vary the construction rules, sometimes supplying random pieces and sometimes asking you to rearrange pieces already on the board.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ced07107b51f53aa415ab38d862c95ffa7d810bb4920fdbd6f4bf476540f2706",
+      "variant": "",
+      "sourceTitle": "Bad-Bad",
+      "fields": {
+        "description": "Navigate a hostile household and find a way out before a thirty-minute deadline. This text adventure revolves around avoiding other characters and choosing your route carefully.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:cfde4b11f690e31dc38f9f4c137de3eea28ecb21244c367fc5fe905860afe93a",
+      "variant": "",
+      "sourceTitle": "SeXoniX",
+      "fields": {
+        "heart": true,
+        "title": "S♥XoniX",
+        "description": "Trace boundaries to enclose sections of a playfield and reveal the image below. Avoid enemies while drawing, when an unfinished line leaves you vulnerable."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d0c7be7b4274355a24ac7709e33c1cb2a3b0cdd8536bbd33ac2d4b169884ffb1",
+      "variant": "",
+      "sourceTitle": "Sex Olympics",
+      "fields": {
+        "title": "S♥x Olympics",
+        "description": "Brad Stallion competes with a rival in an interplanetary adventure. Explore locations with a mouse-driven interface, solve object puzzles, and interfere with the rival's plans.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d1288eeae3707f2624614b589f9ff3fd9e1dcf8483a5b163da315f7c1c33d298",
+      "variant": "",
+      "sourceTitle": "Playhouse Strippoker",
+      "fields": {
+        "title": "Playhouse Str♥ppoker",
+        "description": "Play a series of poker hands against illustrated opponents. Win rounds to advance the presentation in this European card-game release.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d41fea10650e126f7f93c23cb880136bd026ee738f7f4cf855d559c82dbdc329",
+      "variant": "",
+      "sourceTitle": "Rodger Ramrod",
+      "fields": {
+        "description": "Explore a first-person shooter with cartoon sequences hidden throughout its levels. Search for objects and fight through a series of bizarre challenges.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d4b7036e3102d961fb3360167a05b28bf7c37305f771032c48d68c7acb594554",
+      "variant": "",
+      "sourceTitle": "Porky's Strip Poker",
+      "fields": {
+        "title": "Porky's Str♥p Poker",
+        "description": "A single-player poker game against a computer-controlled opponent. Compare hands and place bets to work through the match.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d58f8434b476d059fc5717495f3ea12f0efe05cc59dd51b5e6e1f0df0c778f0f",
+      "variant": "",
+      "sourceTitle": "Softporn II",
+      "fields": {
+        "title": "Softp♥rn II",
+        "description": "Customize two characters and guide their reunion before one of them moves away. The text-driven simulation uses player-supplied details to shape its responses.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:d9a3343c3d725c7a03b55f92bd2ffbfd460bc62917cd9d9db4da54af3a75a00a",
+      "variant": "",
+      "sourceTitle": "Pornmania",
+      "fields": {
+        "title": "P♥rnmania",
+        "description": "A multimedia collection combining platform action, maze challenges, and falling-block puzzles with selectable video scenes.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:db4b124d779a5ed24481b32eed9e61ace1501fd2d135249c3fd9ba3909842a1f",
+      "variant": "",
+      "sourceTitle": "Three Sisters' Story",
+      "fields": {
+        "description": "Two brothers' plan for revenge draws the protagonist into the lives of the Okamura sisters. Follow an illustrated drama about divided loyalties as the family's circumstances deteriorate and relationships change.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:dcfd9908b2204040a9c7b8134ca83cc7a728fa8c2fceab01f214a9d572faa276",
+      "variant": "",
+      "sourceTitle": "Fuck Quest",
+      "fields": {
+        "title": "F♥ck Quest",
+        "description": "A short parody of early Sierra adventures. Explore illustrated rooms and type commands to solve puzzles, with familiar-looking graphics and sound supporting the comedy.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e3c39ff19a60481b2f582883e73db492a48cbbbddd38995a15a9ca20150c827e",
+      "variant": "",
+      "sourceTitle": "WUZ",
+      "fields": {
+        "description": "A brief humorous fantasy told through interactive fiction. Customize the protagonist and choose how to respond to the characters encountered along a simple puzzle route.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e50a8dc40d124f25abc38548a8463fda6fd5e6b88d521ae2e5f89fe6c3cb53ef",
+      "variant": "",
+      "sourceTitle": "Nippon Safes Inc.",
+      "fields": {
+        "description": "Explore Tokyo as three characters with separate stories: a safecracker, a boxer, and a dancer. Complete their individual puzzles in any order before their paths converge in the finale of this cartoon comedy adventure."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e5eee27a05f742a0ac8f1a1d60e69a77600acf9a8c276a2b6eeb364f3520d352",
+      "variant": "",
+      "sourceTitle": "Marble Cooking",
+      "fields": {
+        "description": "Apprentice magician Marble accidentally releases a demon and must put things right. Lay trails of carrots and summon her rabbit companion Sirius at the right moment to defeat enemies in single-screen action puzzles.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e64b1dcd00d2f184f0c3876964a179bf54f9a225f5aa6c94cbf64b0f331981c8",
+      "variant": "",
+      "sourceTitle": "Immoral Cumbat",
+      "fields": {
+        "title": "Immoral C♥mbat",
+        "description": "A first-person shooter presented in VGA grayscale. Navigate its levels and confront unusual enemies in a deliberately crude parody setting.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e759e882182ab55205b7659c279231afc46fccadbc591300e1218230372cf09b",
+      "variant": "",
+      "sourceTitle": "Golden Immortal",
+      "fields": {
+        "description": "Explore a multimedia fantasy adventure featuring martial-arts sequences and illustrated environments. The quest combines story scenes, sound, and encounters tied to ancient powers.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:e7bc843e9532df2b18b96504c1c4426c600596c9c9bda8a076f7864481ae21fe",
+      "variant": "",
+      "sourceTitle": "GirlFriend",
+      "fields": {
+        "description": "An early character-conversation program that combines typed exchanges with a small collection of pictures. Its simple responses and configurable characters are the main focus.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:eb6834fa055af0d10482fe404a7a81e85d8f6dd51ab47c94a94da404f8e7bdfc",
+      "variant": "",
+      "sourceTitle": "Redneck Rampage",
+      "fields": {
+        "description": "Help Leonard and Bubba recover their prize pig after aliens overrun Hickston, Arkansas. Explore rural locations and use an eccentric arsenal in a first-person shooter built with the Build engine."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ed8e8dbcb12ecec7ccf3071acd7a4f9b4a9436e690233cd42e1c24a1440b94ec",
+      "variant": "",
+      "sourceTitle": "Lost City of Atlantis, The",
+      "fields": {
+        "description": "Guide Raghim through side-scrolling stages on a journey to Atlantis. Gather seven crystals per level, trade pearls for weapons, and collect food and healing items while avoiding monsters."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ed95d186603f1836e8b207451205ae87cf9fdbd770fe5a0687b00ed2178bfcc0",
+      "variant": "",
+      "sourceTitle": "The Adventures of Melvin Freebush",
+      "fields": {
+        "description": "Melvin searches town for the person he hopes will become his perfect date. Explore locations and type commands to guide his attempts at romance.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ee8be2cb916cc6d95c66e14a5c5ed6c6b3223948335cd5925633e3046069c39b",
+      "variant": "",
+      "sourceTitle": "Cuntlet II",
+      "fields": {
+        "description": "An arcade action game modeled on Gauntlet, with a deliberately unconventional theme.",
+        "heart": true,
+        "title": "C♥ntlet II"
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ee98cb0f57399f3b18b901edb3f0807015c7524227e72bd98643ad83ec15878b",
+      "variant": "",
+      "sourceTitle": "Teresa: House Guest",
+      "fields": {
+        "description": "A meeting at an office party leads to an unexpected house guest. Explore scenes and choose dialogue in this photographic point-and-click story, retrying from the beginning when an approach fails.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:efb676032df06fff8c7863ea968ac130d0851ee77b6c2722b2be0d83ec366132",
+      "variant": "",
+      "sourceTitle": "Spellcasting 101: Sorcerers Get All The Girls",
+      "fields": {
+        "description": "New magic student Ernie Eaglebeak must recover a powerful device stolen from Sorcerer University. Explore the campus and nearby islands, learn spells, and solve illustrated text-adventure puzzles in a comic fantasy world.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:f1db34ca80761ca10d86fd184af873301ff70eaee0c3a8cc5ce19159e00cdd53",
+      "variant": "",
+      "sourceTitle": "Strip Poker Professional",
+      "fields": {
+        "title": "Str♥p Poker Professional",
+        "description": "Play five-card draw against up to three photographed opponents. This installment introduces SVGA presentation while retaining the series' familiar betting rules.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:f2dec499b8504fddc30508a2e30d7a64392d82a7745ffb0543ff1ea70041534f",
+      "variant": "",
+      "sourceTitle": "L'affaire Morlov",
+      "fields": {
+        "description": "Journalist Paul Keirn has forty-eight hours to clear his name and rescue Virginie. Travel around Paris, question witnesses, and inspect photographic clues in a real-time thriller with live-action video.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:f3aa58f953fb9bf0d99e6bf798385fa7aca439c62145f9723777bffcc2bd4e2b",
+      "variant": "",
+      "sourceTitle": "Dr. Ruth's Computer Game of Good Sex",
+      "fields": {
+        "title": "Dr. Ruth's Computer Game of Good S♥x",
+        "description": "Answer timed multiple-choice questions about relationships and personal health, prepared by Dr. Ruth and her researchers. Both accuracy and response speed affect the score."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:f69e78afeb9c4a21dd49c739b0971490e2a03c37e21c8ea2f4accae6ba540fd5",
+      "variant": "",
+      "sourceTitle": "5X",
+      "fields": {
+        "description": "Capture more territory than computer-controlled rivals to advance through a series of boards. Hidden background images appear as play progresses; different editions provide different image sets."
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:f84672e8bf445653519f3779b5ae0f6fdbda62c312b0b5f71c1efb706d8eb95e",
+      "variant": "",
+      "sourceTitle": "15 Move Hole Puzzle",
+      "fields": {
+        "description": "Arrange numbered tiles on a four-by-four board by sliding them into the empty space. Eight stages reveal background pictures as tiles reach their positions, with later puzzles restricting which tiles can move.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:fb2d5eb6774735b93deb7ddb767b733ba12a001c9ca82c06daaf7f1170e663fa",
+      "variant": "",
+      "sourceTitle": "Mozaik",
+      "fields": {
+        "description": "Reassemble pictures by sliding square tiles into an empty space. This variation on the fifteen puzzle offers a selection of forty-five images.",
+        "heart": true
+      }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:ff4ef2ea26b70c77f80c9ed62e055ae954350b1ff152f240c415ec7104bb9fb1",
+      "variant": "",
+      "sourceTitle": "Seasons of the Sakura",
+      "fields": {
+        "description": "Follow Shuji Yamagami as he settles into a new school and builds relationships with his classmates. Move between illustrated locations and select dialogue and thought commands to guide the story.",
+        "heart": true
+      }
+    }
+  ]
+}

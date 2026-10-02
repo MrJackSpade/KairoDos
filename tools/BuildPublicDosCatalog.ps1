@@ -11,6 +11,28 @@ $metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, 
 $shardNames = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ })
 $names = $shardNames + @('folders.json', 'controller-profiles-v1.json',
     'hidden-index-v1.json')
+$review = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../catalog/metadata-review-v1.json') -Raw |
+    ConvertFrom-Json -AsHashtable
+if ($review.schemaVersion -ne 1) { throw 'Unsupported metadata review schema' }
+$reviewShards = @{}
+foreach ($item in $review.records) {
+    $prefix = $item.contentId.Split(':')[1].Substring(0, 2)
+    if (-not $reviewShards.ContainsKey($prefix)) {
+        $reviewShards[$prefix] = Get-Content -LiteralPath (Join-Path $source "$prefix.json") -Raw |
+            ConvertFrom-Json -AsHashtable
+    }
+    $record = $reviewShards[$prefix].games[$item.contentId]
+    if ($item.variant) { $record = $record.variants[$item.variant] }
+    if ($null -eq $record) { throw "Missing reviewed record: $($item.contentId)" }
+    foreach ($field in $item.fields.Keys) {
+        $matchesReview = if ($field -eq 'heart') {
+            (($record.tags -ccontains '♥') -eq $item.fields.heart)
+        } else { $record[$field] -ceq $item.fields[$field] }
+        if (-not $matchesReview) {
+            throw "Regenerate reviewed metadata with tools/dos_catalog_review.py: $($item.contentId) / $field"
+        }
+    }
+}
 if ($Check) {
     & (Join-Path $PSScriptRoot 'GenerateDosControllerProfiles.ps1') -Check
 } else {
@@ -39,7 +61,11 @@ function Write-PublicJson([System.Text.Json.JsonElement] $value,
     if ($value.ValueKind -eq [System.Text.Json.JsonValueKind]::Object) {
         $writer.WriteStartObject()
         foreach ($property in $value.EnumerateObject()) {
-            if ($property.Name -eq 'description') { continue }
+            # Empty imported notes are not valid description overrides. Keep all
+            # nonempty descriptions, including the reviewed editorial rewrites.
+            if ($property.Name -eq 'description' -and
+                $property.Value.ValueKind -eq [System.Text.Json.JsonValueKind]::String -and
+                [string]::IsNullOrWhiteSpace($property.Value.GetString())) { continue }
             $writer.WritePropertyName($property.Name)
             Write-PublicJson $property.Value $writer
         }
