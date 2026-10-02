@@ -63,6 +63,10 @@ def read_review():
 
 
 def regenerate(catalog=CATALOG, *, check=False):
+    if catalog.resolve() == CATALOG.resolve():
+        from build_catalog_packages import generate
+        generate(check=check)
+        return
     paths = sorted(catalog.glob("[0-9a-f][0-9a-f].json"))
     shards = {p: json.loads(p.read_text(encoding="utf-8")) for p in paths}
     original = {key: record for shard in shards.values() for key, record in shard["games"].items()}

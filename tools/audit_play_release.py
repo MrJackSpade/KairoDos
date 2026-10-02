@@ -27,3 +27,9 @@ for index, argument in enumerate(sys.argv[1:]):
         else:
             assert not artwork
     print(f'{path}: reviewed DOS catalog and current notices verified')
+
+# Inspect actual signed distribution assets with the same exclusion ledger as generation.
+import subprocess
+subprocess.run([sys.executable, str(pathlib.Path(__file__).resolve().parents[1] /
+    "shared/tools/audit_core_catalog.py"), "dos", *sys.argv[1:]], check=True,
+    cwd=pathlib.Path(__file__).resolve().parents[1])

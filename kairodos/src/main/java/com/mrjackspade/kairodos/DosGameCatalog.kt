@@ -31,6 +31,37 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     private val cache = object : LruCache<String, JSONObject>(8) {}
     private val bundledCache = object : LruCache<String, JSONObject>(8) {}
+    override val installedCatalogs by lazy {
+        com.mrjackspade.kairo.frontend.InstalledCatalogs(context, "dos", ::validateInstalled) {
+            synchronized(this) { cache.evictAll(); folderIndex = null; combinedControllerProfiles = null }
+        }
+    }
+    private fun validateInstalled(root: JSONObject): Set<String> {
+        require(root.optInt("schemaVersion") == 1 && root.keys().asSequence().toSet() ==
+            setOf("schemaVersion", "games", "folders", "controllers"))
+        val games = root.getJSONObject("games")
+        val images = HashSet<String>()
+        fun artwork(record: JSONObject) {
+            val expanded = DosArtworkReferences.record(record)!!
+            val art = expanded.optJSONObject("artwork")
+            for (kind in listOf("boxArt", "preview")) art?.optString(kind)?.takeIf { it.isNotEmpty() }?.let(images::add)
+            expanded.optJSONObject("variants")?.let { variants ->
+                for (name in variants.keys()) artwork(variants.getJSONObject(name))
+            }
+        }
+        for (key in games.keys()) {
+            require(id.matches(key) && DosCatalogFields.invalidPath(games.getJSONObject(key)) == null)
+            artwork(games.getJSONObject(key))
+        }
+        val folders = root.getJSONObject("folders")
+        for (folder in folders.keys()) {
+            require(folder.length in 1..128 && !folder.contains("..") && !folder.contains('/') && !folder.contains('\\'))
+            val ids = folders.getJSONArray(folder)
+            require(ids.length() <= 128 && (0 until ids.length()).all { games.has(ids.getString(it)) })
+        }
+        DosCatalogUpdate.validateControllers(root.getJSONObject("controllers"), games.keys().asSequence().toSet())
+        return images
+    }
     private val online = DosCatalogUpdate(context)
     private val bundledHidden = readAssetCatalog("hidden-index-v1.json")
         .optJSONObject("hidden") ?: JSONObject()
@@ -60,6 +91,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         if (!online.download(task)) return false
         synchronized(this) {
             cache.evictAll()
+            combinedControllerProfiles = null
             folderIndex = null
             onlineHidden = online.read("hidden-index-v1.json")
                 ?.optJSONObject("hidden") ?: JSONObject()
@@ -79,11 +111,29 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         online.read("folders.json")?.let { update ->
             for (folder in update.keys()) combined.put(folder, update.get(folder))
         }
+        for (catalog in installedCatalogs.catalogs()) catalog.data.optJSONObject("folders")?.let { folders ->
+            for (folder in folders.keys()) combined.put(folder, folders.get(folder))
+        }
         return combined
     }
 
-    private fun controllerProfileCatalog(): JSONObject =
-        onlineControllerProfiles ?: bundledControllerProfiles
+    private var combinedControllerProfiles: JSONObject? = null
+    private fun controllerProfileCatalog(): JSONObject {
+        val installed = installedCatalogs.catalogs()
+        if (installed.isEmpty()) return onlineControllerProfiles ?: bundledControllerProfiles
+        combinedControllerProfiles?.let { return it }
+        val result = JSONObject((onlineControllerProfiles ?: bundledControllerProfiles).toString())
+        for (catalog in installed) {
+            val extra = catalog.data.getJSONObject("controllers")
+            for (field in listOf("profiles", "assignments", "presets")) {
+                val target = result.optJSONObject(field) ?: JSONObject().also { result.put(field, it) }
+                val values = extra.optJSONObject(field) ?: continue
+                for (key in values.keys()) target.put(key, values.get(key))
+            }
+        }
+        combinedControllerProfiles = result
+        return result
+    }
 
     fun controllerBindings(profileId: String, layout: com.mrjackspade.kairo.frontend.ControllerLayout =
         com.mrjackspade.kairo.frontend.ControllerLayout.WITHOUT_STICKS): String? = runCatching {
@@ -133,8 +183,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 }
             }
         return Game(title, description,
-            artworkStore.availablePath(boxArtPath),
-            artworkStore.availablePath(previewPath),
+            installedCatalogs.artwork(boxArtPath) ?: artworkStore.availablePath(boxArtPath),
+            installedCatalogs.artwork(previewPath) ?: artworkStore.availablePath(previewPath),
             record.optJSONArray("tags")?.let { array ->
                 (0 until array.length()).mapNotNull { index ->
                     array.optString(index).takeIf { it.isNotBlank() }
@@ -159,6 +209,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         return CatalogFieldLayers.hidden(
             bundledHidden.opt(contentId),
             onlineHidden.opt(contentId),
+            *installedCatalogs.sources(contentId).map { it.record?.opt("hidden") }.toTypedArray(),
             userCatalog.optJSONObject("games")?.optJSONObject(contentId)?.opt("hidden"),
             overrides.record(contentId)?.opt("hidden")
         )
@@ -179,6 +230,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 ?.optJSONObject("games")?.optJSONObject(contentId))
             add("Updated catalog", shard(prefix)
                 ?.optJSONObject("games")?.optJSONObject(contentId))
+            for (source in installedCatalogs.sources(contentId)) add(source.name, source.record)
             add("User catalog", userCatalog.optJSONObject("games")
                 ?.optJSONObject(contentId))
             add("User override", overrides.record(contentId))
@@ -223,7 +275,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         overrides.clear(contentId)
     }
 
-    override fun openArtwork(path: String): InputStream = artworkStore.open(path)
+    override fun openArtwork(path: String): InputStream = installedCatalogs.openArtwork(path) ?: artworkStore.open(path)
 
     data class ArtworkSource(val path: String, val url: String)
 

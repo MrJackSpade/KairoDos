@@ -52,7 +52,9 @@ class CatalogReviewTests(unittest.TestCase):
     def test_bundled_and_public_catalog_retain_reviewed_descriptions(self):
         games = {key: value for path in CATALOG.glob("[0-9a-f][0-9a-f].json")
                  for key, value in json.loads(path.read_text(encoding="utf-8"))["games"].items()}
-        self.assertEqual(games, apply_review(games, read_review()))
+        self.assertEqual(games, apply_review(games, read_review(), require_all=False))
+        excluded = json.loads((ROOT / "catalog/core-review-v1.json").read_text("utf8"))["excluded"]
+        self.assertTrue({x["contentId"] for x in read_review()["records"]} - games.keys() <= excluded.keys())
         archive = ROOT / "catalog/online-v1.zip"
         metadata = json.loads(archive.with_suffix(".json").read_text(encoding="utf-8"))
         self.assertEqual(metadata["sha256"], hashlib.sha256(archive.read_bytes()).hexdigest())

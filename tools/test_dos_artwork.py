@@ -46,4 +46,4 @@ class ArtworkTests(unittest.TestCase):
                         else:
                             check(item)
             check(source)
-        self.assertGreater(count, 14000)
+        self.assertEqual(count, len(json.loads((root / "catalog/core-review-v1.json").read_text("utf8"))["approvedArtwork"]))

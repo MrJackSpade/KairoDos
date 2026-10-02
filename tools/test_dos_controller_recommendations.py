@@ -22,6 +22,9 @@ class DosControllerRecommendationsTest(unittest.TestCase):
             for content_id in json.loads(path.read_text("utf-8"))["games"]
         }
 
+        # Recommendations cover both independently distributed partitions.
+        excluded = json.loads((ROOT / "catalog/excluded-ids-v1.json").read_text("utf8"))["ids"]
+        current_ids.update(excluded)
         generated = apply_controller_recommendations(
             base, recommendations, current_ids, {})
 

@@ -85,6 +85,7 @@ foreach ($prefix in 0..255) {
     foreach ($contentId in $shard.games.PSObject.Properties.Name) { [void]$currentIds.Add($contentId) }
 }
 
+$excluded = (Get-Content (Join-Path $project 'catalog/core-review-v1.json') -Raw | ConvertFrom-Json -AsHashtable).excluded
 $assignments = [ordered]@{}
 $presets = [ordered]@{}
 if ($Rebuild) {
@@ -125,6 +126,7 @@ foreach ($item in $recommendations.profiles.PSObject.Properties) {
     $bindingOwners[$bindingKey] = $item.Name
 }
 foreach ($item in $recommendations.assignments.PSObject.Properties) {
+    if ($excluded.ContainsKey($item.Name)) { continue }
     $profileId = [string]$item.Value
     if ($recommendations.profiles.PSObject.Properties.Name -notcontains $profileId) {
         throw "Assignment references missing profile: $profileId"
@@ -144,6 +146,7 @@ foreach ($id in $doomIds) {
 $defaults = Get-Content (Join-Path $project 'catalog/controller-defaults.json') -Raw | ConvertFrom-Json
 if ($defaults.schemaVersion -ne 1) { throw 'Unsupported controller defaults schema.' }
 foreach ($item in $defaults.assignments.PSObject.Properties) {
+    if ($excluded.ContainsKey($item.Name)) { continue }
     if (-not $currentIds.Contains($item.Name) -or
         $defaults.presets.PSObject.Properties.Name -notcontains $item.Value) {
         throw "Invalid controller default assignment: $($item.Name)"

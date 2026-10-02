@@ -4,8 +4,8 @@ $ErrorActionPreference = 'Stop'
 Set-Location (Join-Path $PSScriptRoot '..')
 
 $source = 'kairodos/src/main/assets/catalog/dos/'
-$public = @('catalog/online-v1.zip', 'catalog/online-v1.json')
-$inputs = @('catalog/metadata-review-v1.json', 'tools/dos_catalog_review.py',
+$public = @('catalog/online-v1.zip', 'catalog/online-v1.json', 'catalog/core-v2.zip', 'catalog/core-v2.json', 'catalog/excluded-ids-v1.json', 'catalog/optional/kairodos-adult-v1.zip', 'catalog/optional/kairodos-adult-v1.meta.json')
+$inputs = @('catalog/complete-input-v1.zip', 'catalog/core-review-v1.json', 'tools/build_catalog_packages.py', 'catalog/metadata-review-v1.json', 'tools/dos_catalog_review.py',
     'tools/dos_artwork.py', 'tools/generate_dos_catalog.py', 'tools/BuildPublicDosCatalog.ps1')
 $staged = @(git diff --cached --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect staged files.' }

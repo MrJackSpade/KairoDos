@@ -5,17 +5,21 @@ Add-Type -AssemblyName System.IO.Compression
 $source = Join-Path $PSScriptRoot '../kairodos/src/main/assets/catalog/dos'
 $outputs = @(
     (Join-Path $PSScriptRoot '../catalog/online-v1.zip'),
-    (Join-Path $PSScriptRoot '../shared/catalog/dos/online-v1.zip')
+    (Join-Path $PSScriptRoot '../shared/catalog/dos/online-v1.zip'),
+    (Join-Path $PSScriptRoot '../catalog/core-v2.zip'),
+    (Join-Path $PSScriptRoot '../shared/catalog/dos/core-v2.zip')
 )
 $metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, '.json') })
 $shardNames = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ })
 $names = $shardNames + @('folders.json', 'controller-profiles-v1.json',
-    'hidden-index-v1.json')
+    'hidden-index-v1.json', 'core-v2.json')
 $review = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../catalog/metadata-review-v1.json') -Raw |
     ConvertFrom-Json -AsHashtable
 if ($review.schemaVersion -ne 1) { throw 'Unsupported metadata review schema' }
+$excluded = (Get-Content (Join-Path $PSScriptRoot '../catalog/core-review-v1.json') -Raw | ConvertFrom-Json -AsHashtable).excluded
 $reviewShards = @{}
 foreach ($item in $review.records) {
+    if ($excluded.ContainsKey($item.contentId)) { continue }
     $prefix = $item.contentId.Split(':')[1].Substring(0, 2)
     if (-not $reviewShards.ContainsKey($prefix)) {
         $reviewShards[$prefix] = Get-Content -LiteralPath (Join-Path $source "$prefix.json") -Raw |
@@ -131,8 +135,9 @@ function Test-Archive([string] $path) {
 function Get-MetadataBytes([string] $path) {
     $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
     $size = ([IO.FileInfo]::new([IO.Path]::GetFullPath($path))).Length
+    $archiveName = [IO.Path]::GetFileName($path)
     return ,[Text.Encoding]::UTF8.GetBytes(
-        "{`"schemaVersion`":1,`"archive`":`"online-v1.zip`",`"sha256`":`"$hash`",`"size`":$size}`n")
+        "{`"schemaVersion`":1,`"archive`":`"$archiveName`",`"sha256`":`"$hash`",`"size`":$size}`n")
 }
 
 if (-not $Check) {
@@ -158,7 +163,7 @@ if (-not $Check) {
         Move-Item -LiteralPath $temporary -Destination $path -Force
     } finally { if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary } }
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($outputs[1])) | Out-Null
-    Copy-Item -LiteralPath $path -Destination $outputs[1] -Force
+    foreach ($destination in $outputs[1..($outputs.Count - 1)]) { Copy-Item -LiteralPath $path -Destination $destination -Force }
     for ($index = 0; $index -lt $outputs.Count; $index++) {
         [IO.File]::WriteAllBytes($metadataOutputs[$index], (Get-MetadataBytes $outputs[$index]))
     }
@@ -179,3 +184,8 @@ for ($index = 0; $index -lt $outputs.Count; $index++) {
     }
 }
 Write-Host 'Public DOS catalog and revision metadata match both sanitized archives.'
+
+python (Join-Path $PSScriptRoot 'build_catalog_packages.py') --check
+if ($LASTEXITCODE -ne 0) { throw 'Catalog partitions are stale' }
+python (Join-Path $PSScriptRoot '../shared/tools/audit_core_catalog.py') dos
+if ($LASTEXITCODE -ne 0) { throw 'Clean core audit failed' }

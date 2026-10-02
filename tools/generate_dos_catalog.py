@@ -386,10 +386,9 @@ def retired_identities(old: dict[str, dict], current: dict[str, dict]) -> dict[s
     return result
 
 
-def refresh_from_staging(root: Path, staging: Path) -> None:
+def refresh_from_staging(root: Path, staging: Path, catalog: Path) -> None:
     """Reconcile a completed private scan with bundled metadata, without new art."""
     project = Path(__file__).resolve().parent.parent
-    catalog = project / "kairodos/src/main/assets/catalog/dos"
     manifest = json.loads((staging / "manifest.json").read_text(encoding="utf-8"))
     if manifest["errors"]:
         raise ValueError("resolve archive errors before refreshing the catalog")
@@ -463,7 +462,7 @@ def refresh_from_staging(root: Path, staging: Path) -> None:
                                   game.findtext("PlayMode")) if value] if game is not None
                                 else previous.get("tags", []),
                         "artwork": {kind: asset for kind, asset in previous.get("artwork", {}).items()
-                                    if (project / "kairodos/src/main/assets" / asset).is_file()}})
+                                    if (project / "catalog/artwork" / asset).is_file()}})
         config = configs.get(item.name.casefold())
         if config is None:
             with zipfile.ZipFile(item.path) as archive:
@@ -557,16 +556,23 @@ def main() -> None:
     parser.add_argument("--refresh-from-staging", action="store_true",
                         help="reconcile a completed scan with bundled catalog and provenance")
     args = parser.parse_args()
-    if args.refresh_from_staging:
-        refresh_from_staging(args.root, args.output)
-        return
-    if args.folder_index_only:
-        write_folder_index(Path(__file__).resolve().parent.parent /
-                           "kairodos" / "src" / "main" / "assets" / "catalog" / "dos")
-        return
-    if args.launch_only:
-        import_launch_only(args.root, Path(__file__).resolve().parent.parent /
-                           "kairodos" / "src" / "main" / "assets" / "catalog" / "dos")
+    if args.refresh_from_staging or args.folder_index_only or args.launch_only:
+        import tempfile
+        from build_catalog_packages import generate, ROOT
+        from catalog_package import write_zip
+        with tempfile.TemporaryDirectory(prefix="dos-complete-input-") as temporary:
+            catalog = Path(temporary)
+            with zipfile.ZipFile(ROOT / "catalog/complete-input-v1.zip") as source:
+                for name in source.namelist():
+                    if "/" in name or "\\" in name or not name.endswith(".json"):
+                        raise ValueError("Invalid complete catalog input")
+                    (catalog / name).write_bytes(source.read(name))
+            if args.refresh_from_staging: refresh_from_staging(args.root, args.output, catalog)
+            elif args.folder_index_only: write_folder_index(catalog)
+            else: import_launch_only(args.root, catalog)
+            write_zip(ROOT / "catalog/complete-input-v1.zip",
+                      {path.name:path.read_bytes() for path in catalog.glob("*.json")})
+        generate()
         return
     args.output.mkdir(parents=True, exist_ok=True)
     previous_art = {}

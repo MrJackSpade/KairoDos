@@ -1283,6 +1283,13 @@
         "description": "Follow Shuji Yamagami as he settles into a new school and builds relationships with his classmates. Move between illustrated locations and select dialogue and thought commands to guide the story.",
         "heart": true
       }
+    },
+    {
+      "contentId": "sha256-dos-manifest-v1:614a019507aa6fcbece571affda38e2bbcdc9f27d3d30e19f2017951161e23c8",
+      "sourceTitle": "Ivan 'Ironman' Stewart's Super Off Road",
+      "fields": {
+        "description": "Race off-road trucks around compact dirt circuits with jumps and tight turns. Earn prize money, upgrade your truck, and compete against other drivers across a series of races."
+      }
     }
   ]
 }

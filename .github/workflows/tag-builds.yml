@@ -174,14 +174,16 @@ jobs:
           bundle="$RUNNER_TEMP/KairoDos-$tag-play.aab"
           cp kairodos/build/outputs/apk/release/kairodos-release.apk "$apk"
           cp kairodos/build/outputs/bundle/release/kairodos-release.aab "$bundle"
+          optional="catalog/optional/kairodos-adult-v1.zip"
+          optional_manifest="catalog/optional/kairodos-adult-v1.meta.json"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" "$apk" "$bundle" "$images" --clobber
+            gh release upload "$tag" "$apk" "$bundle" "$images" "$optional" "$optional_manifest" --clobber
           else
             release_flags=()
             if [[ "$tag" == *-* ]]; then
               release_flags+=(--prerelease)
             fi
-            gh release create "$tag" "$apk" "$bundle" "$images" \
+            gh release create "$tag" "$apk" "$bundle" "$images" "$optional" "$optional_manifest" \
               --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
               --notes-file "docs/releases/$tag.md"
           fi

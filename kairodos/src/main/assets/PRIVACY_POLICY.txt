@@ -1,5 +1,5 @@
 KairoDos Privacy Policy
-Last updated: September 28, 2026
+Last updated: October 2, 2026
 
 KairoDos is an Android DOS emulator published by Loxifi LLC. This policy covers the paid Google Play edition and the free GitHub edition. For privacy questions or requests, email admin@loxifi.com.
 
@@ -10,6 +10,10 @@ KairoDos reads game files and folders that you choose through Android's file pic
 Catalog updates
 
 KairoDos may request a catalog metadata update over HTTPS from raw.githubusercontent.com. That request sends ordinary network information, including your IP address, to the hosting service. It does not send your library's game files, names, or hashes. The hosting service controls its own logs and retention.
+
+Imported catalog files
+
+When you import a catalog file, a copy of its metadata, artwork and update address is stored privately on your device. Checking installed catalogs contacts only the update addresses supplied by those installed files over HTTPS. Those servers receive your IP address and ordinary request information, but not your game files, library names or content hashes. The servers control their own logs and retention. Removing a catalog deletes its imported metadata and artwork, while keeping your games and personal overrides.
 
 Storage and deletion
 

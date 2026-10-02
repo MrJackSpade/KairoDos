@@ -40,6 +40,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var librarySearch = false
     private var endSessionUri: String? = null
     private var catalogProgress = false
+    private var catalogInstall = false
+    private var catalogPackageFile: String? = null
     private var snapshotActivation = false
     private var keyCycle = false
     private var directoryPicker = false
@@ -103,6 +105,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
         exitDialog = arguments?.getString("exitDialog") == "true"
         endSessionUri = arguments?.getString("endSessionUri")
+        catalogPackageFile = arguments?.getString("catalogPackageFile")
+        catalogInstall = arguments?.getString("catalogInstall") == "true"
         catalogProgress = arguments?.getString("catalogProgress") == "true"
         snapshotActivation = arguments?.getString("snapshotActivation") == "true"
         keyCycle = arguments?.getString("keyCycle") == "true"
@@ -119,6 +123,16 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     }
     override fun onStart() {
         val result = Bundle()
+        if (catalogInstall) {
+            try {
+                result.putString("stream", com.mrjackspade.kairo.frontend.CatalogInstallFixture.verify(this, catalogPackageFile))
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         touchKeyboardUri?.let { uri ->
             try {
                 result.putString("stream", com.mrjackspade.kairo.frontend.TouchKeyboardFixture.verify(this, uri))
@@ -232,7 +246,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                 check(speed == expected) { "Resolved Doom speed $speed, expected $expected" }
                 check(bindings.single { it.input == "virtual:r2" }.keys == listOf(306))
                 if (controllerMouse) {
-                    val downloaded = java.util.zip.ZipFile(File(targetContext.filesDir, "dos-catalog-update-v1.zip")).use { zip ->
+                    val downloaded = java.util.zip.ZipFile(File(targetContext.filesDir, "dos-core-update-v2.zip")).use { zip ->
                         zip.getInputStream(zip.getEntry("controller-profiles-v1.json")).use {
                             JSONObject(it.bufferedReader().readText()).getJSONObject("presets")
                         }
@@ -393,7 +407,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             shipped.getJSONObject("launch").getString("folder"))
 
         val validator = DosCatalogUpdate(targetContext)
-        File(targetContext.filesDir, "dos-catalog-update-v1.zip").takeIf(File::isFile)
+        File(targetContext.filesDir, "dos-core-update-v2.zip").takeIf(File::isFile)
             ?.let(validator::validateFile)
         val valid = File(targetContext.cacheDir, "catalog-partial-fixture.zip")
         val invalid = File(targetContext.cacheDir, "catalog-invalid-fixture.zip")
@@ -424,6 +438,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                 .put("schemaVersion", 1).put("profiles", JSONObject()))
             writeEntry(zip, "hidden-index-v1.json", JSONObject()
                 .put("schemaVersion", 1).put("hidden", JSONObject()))
+            writeEntry(zip, "core-v2.json", JSONObject().put("schemaVersion", 2))
         }
     }
 

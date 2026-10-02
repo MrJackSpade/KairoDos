@@ -474,6 +474,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (libraryScreen.handleCatalogResult(requestCode, resultCode, data)) return
         if (artwork.handleActivityResult(requestCode, resultCode, data)) return
         libraryFlow.handleActivityResult(requestCode, resultCode, data)
     }
@@ -1597,6 +1598,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         catalogUpdates.cancel()
+        catalog.installedCatalogs.close()
         artworkDownloads.cancel()
         backCoordinator.unregister()
         releaseGuestInputs()
