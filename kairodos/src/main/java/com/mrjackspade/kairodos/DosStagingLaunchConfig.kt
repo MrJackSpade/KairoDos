@@ -34,7 +34,8 @@ internal object DosStagingLaunchConfig {
 
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, player: String?,
-              singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0): File {
+              singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
+              bootToPrompt: Boolean = false): File {
         val source = launch?.configs?.get(name)
         val folder = launch?.folder.orEmpty()
         val parentMount = launch?.let { DosLaunchConfig.mountsParent(it, name) } == true
@@ -77,60 +78,68 @@ internal object DosStagingLaunchConfig {
         if (marker != null) lines += source!!.substring(0, marker.range.first).trimEnd()
         lines += "[autoexec]"
         lines += "@echo off"
-        val initialMount = commands.lineSequence().mapNotNull { mount.matchEntire(it) }
-            .firstOrNull { it.groupValues[2].equals("C", true) }
-        val initialRoot = initialMount?.let { nativePath(it.groupValues[4].trim('"')) }
-            ?: mountedRoot.absolutePath
-        lines += "mount $contentDrive \"$initialRoot\"" + (initialMount?.groupValues?.get(5) ?: "")
-        lines += "$contentDrive:"
-        lines += DosLaunchConfig.setupLines(folder, player)
-        if (source == null) {
-            if (drive.media != null) {
-                when (drive.media.extension.lowercase()) {
-                    "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
-                    "img", "ima" -> lines += "boot \"${drive.media.absolutePath}\""
-                    else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
-                }
-            } else {
-                val executables = mountedRoot.listFiles().orEmpty().filter {
-                    it.isFile && it.extension.lowercase() in setOf("exe", "com", "bat")
-                }
-                if (executables.size == 1) lines += executables.single().name
-                else lines += "dir /w"
-            }
-        } else for (original in commands.lineSequence()) {
-            val line = original.trimEnd('\r')
-            val trimmed = line.trim()
-            if (mountC.matches(trimmed) || (contentDrive == "C" && trimmed.equals("C:", true))) continue
-            val mounted = mount.matchEntire(line)
-            if (mounted != null) {
-                val originalPath = mounted.groupValues[4].trim('"')
-                val path = nativePath(originalPath)
-                val prefix = if (File(path).isFile && File(path).extension.lowercase() in
-                    setOf("iso", "cue", "img", "ima")) mounted.groupValues[1].replace("mount", "imgmount", true)
-                    else mounted.groupValues[1]
-                lines += "$prefix${mounted.groupValues[2]} \"$path\"${mounted.groupValues[5]}"
-                continue
-            }
-            if (trimmed.startsWith("imgmount ", true) || trimmed.startsWith("@imgmount ", true)) {
-                // Image mounting accepts host paths. Quoted paths can contain
-                // spaces; retain the source quoting and convert only operands.
-                val originalTokens = Regex("\"[^\"]*\"|\\S+").findAll(line).map { it.value }.toList()
-                val tokens = originalTokens.filterIndexed { index, token ->
-                    !token.equals("-ide", true) && (index == 0 || !originalTokens[index - 1].equals("-ide", true))
-                }
-                lines += tokens.mapIndexed { index, token ->
-                    if (index < 2 || token.startsWith('-')) token else {
-                        val path = nativePath(token.trim('"'))
-                        if (path != token.trim('"')) "\"$path\"" else token
+        // This is a one-session launch choice, not a saved startup variant.
+        // Do not execute catalog setup scripts, BOOT, or a lone executable.
+        if (bootToPrompt) {
+            lines += "mount C \"${gameRoot.absolutePath}\""
+            lines += "C:"
+            lines += "dir /w"
+        } else {
+            val initialMount = commands.lineSequence().mapNotNull { mount.matchEntire(it) }
+                .firstOrNull { it.groupValues[2].equals("C", true) }
+            val initialRoot = initialMount?.let { nativePath(it.groupValues[4].trim('"')) }
+                ?: mountedRoot.absolutePath
+            lines += "mount $contentDrive \"$initialRoot\"" + (initialMount?.groupValues?.get(5) ?: "")
+            lines += "$contentDrive:"
+            lines += DosLaunchConfig.setupLines(folder, player)
+            if (source == null) {
+                if (drive.media != null) {
+                    when (drive.media.extension.lowercase()) {
+                        "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
+                        "img", "ima" -> lines += "boot \"${drive.media.absolutePath}\""
+                        else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
                     }
-                }.joinToString(" ")
-                continue
+                } else {
+                    val executables = mountedRoot.listFiles().orEmpty().filter {
+                        it.isFile && it.extension.lowercase() in setOf("exe", "com", "bat")
+                    }
+                    if (executables.size == 1) lines += executables.single().name
+                    else lines += "dir /w"
+                }
+            } else for (original in commands.lineSequence()) {
+                val line = original.trimEnd('\r')
+                val trimmed = line.trim()
+                if (mountC.matches(trimmed) || (contentDrive == "C" && trimmed.equals("C:", true))) continue
+                val mounted = mount.matchEntire(line)
+                if (mounted != null) {
+                    val originalPath = mounted.groupValues[4].trim('"')
+                    val path = nativePath(originalPath)
+                    val prefix = if (File(path).isFile && File(path).extension.lowercase() in
+                        setOf("iso", "cue", "img", "ima")) mounted.groupValues[1].replace("mount", "imgmount", true)
+                        else mounted.groupValues[1]
+                    lines += "$prefix${mounted.groupValues[2]} \"$path\"${mounted.groupValues[5]}"
+                    continue
+                }
+                if (trimmed.startsWith("imgmount ", true) || trimmed.startsWith("@imgmount ", true)) {
+                    // Image mounting accepts host paths. Quoted paths can contain
+                    // spaces; retain the source quoting and convert only operands.
+                    val originalTokens = Regex("\"[^\"]*\"|\\S+").findAll(line).map { it.value }.toList()
+                    val tokens = originalTokens.filterIndexed { index, token ->
+                        !token.equals("-ide", true) && (index == 0 || !originalTokens[index - 1].equals("-ide", true))
+                    }
+                    lines += tokens.mapIndexed { index, token ->
+                        if (index < 2 || token.startsWith('-')) token else {
+                            val path = nativePath(token.trim('"'))
+                            if (path != token.trim('"')) "\"$path\"" else token
+                        }
+                    }.joinToString(" ")
+                    continue
+                }
+                var adapted = if (folder.isEmpty()) line else sourceGame.replace(line) { dosPrefix }
+                adapted = sourceDiscs.replace(adapted) { dosPrefix + "discs\\" }
+                adapted = sourceFloppy.replace(adapted) { dosPrefix + "floppy\\" }
+                lines += adapted
             }
-            var adapted = if (folder.isEmpty()) line else sourceGame.replace(line) { dosPrefix }
-            adapted = sourceDiscs.replace(adapted) { dosPrefix + "discs\\" }
-            adapted = sourceFloppy.replace(adapted) { dosPrefix + "floppy\\" }
-            lines += adapted
         }
         // Product-owned host settings override desktop settings in the source
         // profile. They do not change the emulated VGA refresh rate.

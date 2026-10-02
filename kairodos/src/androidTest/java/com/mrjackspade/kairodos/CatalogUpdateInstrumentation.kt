@@ -48,6 +48,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var inputDispatch = false
     private var catalogOverrides = false
     private var stagingStorage = false
+    private var dosPromptUri: String? = null
     private var stagingArchive: String? = null
     private var stagingOplMode: String? = null
     private var stagingOplDcBias = false
@@ -80,6 +81,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         inputDispatch = arguments?.getString("inputDispatch") == "true"
         catalogOverrides = arguments?.getString("catalogOverrides") == "true"
         stagingStorage = arguments?.getString("stagingStorage") == "true"
+        dosPromptUri = arguments?.getString("dosPromptUri")
         stagingArchive = arguments?.getString("stagingArchive")
         stagingOplMode = arguments?.getString("stagingOplMode")
         stagingOplDcBias = arguments?.getString("stagingOplDcBias") == "true"
@@ -248,6 +250,12 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             }
             if (resolutionSource != null) {
                 result.putString("stream", DukeResolutionFixture.run(this, resolutionSource!!, resolutionWidth, resolutionNoDouble))
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (dosPromptUri != null) {
+                DosPromptFixture.verify(this, dosPromptUri!!)
+                result.putString("stream", "DOS prompt: controller settings action, writable shell, normal relaunch: OK\n")
                 finish(Activity.RESULT_OK, result)
                 return
             }

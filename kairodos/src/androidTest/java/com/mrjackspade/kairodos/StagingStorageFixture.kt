@@ -60,6 +60,23 @@ internal object StagingStorageFixture {
             check(config.contains("cycles=12000") && !config.contains("KAIRO:") && !config.contains("eXoDOS"))
             check(config.contains("core = dynamic"))
             check(config.contains("output = texturenb"))
+            // Prompt mode must never run game/setup commands or boot an image,
+            // including unknown archives with exactly one executable.
+            val promptSources = listOf(launch, null,
+                launch.copy(folder = "legord", configs = mapOf("dosbox.conf" to
+                    "[dosbox]\nmachine=ega\n[autoexec]\nmount c .\\eXoDOS\\missing\nboot disk.img\nexit\n")),
+                launch.copy(configs = mapOf("dosbox.conf" to
+                    "[autoexec]\nimgmount c disk.img -t hdd\nboot -l c\n")))
+            for (source in promptSources) for (media in listOf<File?>(null, File(game, "disk.img"))) {
+                val prompt = DosStagingLaunchConfig.write(File(root, "prompt.conf"),
+                    DosStagingStorage.Drive(game, media), source, "dosbox.conf",
+                    emptyMap(), null, false, false, bootToPrompt = true).readText()
+                val autoexec = prompt.substringAfter("[autoexec]\r\n").substringBefore("[sdl]")
+                check(autoexec == "@echo off\r\nmount C \"${game.absolutePath}\"\r\nC:\r\ndir /w\r\n")
+                if (source?.folder == "legord") check(prompt.contains("machine=ega"))
+            }
+            check(DosStagingLaunchConfig.write(File(root, "launch.conf"), DosStagingStorage.Drive(drive),
+                launch, "dosbox.conf", emptyMap(), null, false, false).readText() == config)
             val videoLaunch = launch.copy(configs = mapOf("dosbox.conf" to
                 "[dosbox]\nmachine=ega\n[autoexec]\nGAME.EXE\n"))
             for (choice in DosVideoHardware.choices.indices) {

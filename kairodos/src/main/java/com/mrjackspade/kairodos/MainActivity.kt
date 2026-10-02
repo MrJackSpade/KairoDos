@@ -528,6 +528,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 "DOS player name", id?.let(dosGameSettings::playerName)
                     ?: "Choose on first play", false) {
                 choosePlayerName(entry, null)
+            }) else emptyList()) +
+            (if (entry.playable) listOf(GameSettingsRow("Boot to DOS prompt",
+                "Open this game's writable C: drive without startup commands", false) {
+                val saved = id?.let(dosGameSettings::startupVariant)
+                val config = saved?.takeIf { it in variants }
+                    ?: variants.firstOrNull { it == "dosbox.conf" }
+                    ?: variants.sorted().firstOrNull() ?: "dosbox.conf"
+                startGame(entry, config, bootToPrompt = true)
             }) else emptyList())
         GameSettingsCoordinator.show(this, common, entry.playable, machineRows,
             CommonGameSettingsActions(
@@ -614,7 +622,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun startGame(game: DosLibrary.Game, configName: String,
-                          fromFrontend: Boolean = false) {
+                          fromFrontend: Boolean = false, bootToPrompt: Boolean = false) {
         val selected = tree
         if (!game.external && selected == null) {
             libraryScreen.showStatus("Choose a DOS folder for this game")
@@ -622,7 +630,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }
         if (!game.playable) return
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
-        if (DosLaunchConfig.needsPlayer(launch) &&
+        if (!bootToPrompt && DosLaunchConfig.needsPlayer(launch) &&
             game.contentId?.let(dosGameSettings::playerName) == null) {
             choosePlayerName(game, configName, fromFrontend)
             return
@@ -683,7 +691,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                 }
                 require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
-                val dependencies = DosLaunchConfig.requiredFolders(launch, configName)
+                val dependencies = (if (bootToPrompt) emptySet() else
+                    DosLaunchConfig.requiredFolders(launch, configName))
                     .associateWith { folder ->
                         val ids = catalog.contentIdsForFolder(folder).toSet()
                         val dependency = availableGames.firstOrNull { it.contentId in ids }
@@ -708,7 +717,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, playerName,
                     effectiveVoodoo() == 1, effectiveDirectTouch(),
-                    dosGameSettings.videoHardware(playableGame.contentId))
+                    dosGameSettings.videoHardware(playableGame.contentId), bootToPrompt)
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
                         sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
