@@ -119,8 +119,8 @@ object ControllerMouseFixture {
             button(code, false)
             check(keys == listOf(guest to true, guest to false)) { "$code -> $keys, expected $guest" }
         }
-        for (modern in listOf(profile("doom-v1", ControllerLayout.WITH_STICKS),
-                profile("duke3d-fps-v1", ControllerLayout.WITH_STICKS))) {
+        for (profileId in listOf("doom-v1", "duke3d-fps-v1")) {
+            val modern = profile(profileId, ControllerLayout.WITH_STICKS)
             check(DosControllerBindings.parse(DosControllerBindings.toJson(modern).toString()) == modern)
             mapper.bindings = modern
             keys.clear()
@@ -132,8 +132,8 @@ object ControllerMouseFixture {
             check(keys == listOf(306 to true, 306 to false))
             tap(KeyEvent.KEYCODE_BUTTON_L2, 304)
             tap(KeyEvent.KEYCODE_BUTTON_X, 32)
-            tap(KeyEvent.KEYCODE_BUTTON_START, 27)
-            tap(KeyEvent.KEYCODE_BUTTON_SELECT, 13)
+            tap(KeyEvent.KEYCODE_BUTTON_START, if (profileId == "duke3d-fps-v1") 13 else 27)
+            tap(KeyEvent.KEYCODE_BUTTON_SELECT, if (profileId == "duke3d-fps-v1") 27 else 13)
             tap(KeyEvent.KEYCODE_DPAD_UP, 9)
             keys.clear()
             motion(-1f, MotionEvent.AXIS_X)

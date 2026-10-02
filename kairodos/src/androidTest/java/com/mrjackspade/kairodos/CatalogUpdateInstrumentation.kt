@@ -215,11 +215,18 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                     check(bindings.single { it.input == "virtual:left" }.cycleKeys == (49..55).toList())
                     check(bindings.single { it.input == "virtual:right" }.cycleKeys == (49..55).toList())
                     check(bindings.single { it.input == "virtual:r1" }.keys == listOf(306))
+                    val dukeId = "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158"
+                    val duke = catalog.gameControllerBindings(dukeId, "Duke3D.zip",
+                        com.mrjackspade.kairo.frontend.ControllerLayout.WITH_STICKS)!!
+                    check(duke.single { it.input == "virtual:start" }.keys == listOf(13))
+                    check(duke.single { it.input == "virtual:select" }.keys == listOf(27))
                     var failure: Throwable? = null
                     runOnMainSync { failure = runCatching { ControllerMouseFixture.verify(targetContext, downloaded) }.exceptionOrNull() }
                     failure?.let { throw it }
                 }
-                result.putString("stream", "Active catalog: Doom turning=$speed, RT=fire; APK unchanged\n")
+                result.putString("stream", "Active catalog: Doom turning=$speed, RT=fire; " +
+                    (if (controllerMouse) "Duke Start=Enter/Select=Escape, mapper and custom override checks passed; " else "") +
+                    "APK unchanged\n")
                 finish(Activity.RESULT_OK, result)
             } catch (failure: Throwable) {
                 result.putString("stream", failure.stackTraceToString())

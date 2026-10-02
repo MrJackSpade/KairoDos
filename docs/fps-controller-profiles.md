@@ -29,14 +29,14 @@ reloads the active game's mapping, releasing held inputs through the shared mapp
 | D-pad Down | Map overview | Use selected inventory item |
 | Left stick click | Unbound | Hold to run |
 | Right stick click | Unbound | Quick kick |
-| Start | Game menu (Escape) | Game menu (Escape) |
-| Select | Confirm (Enter) | Confirm / use selected inventory item (Enter) |
+| Start | Game menu (Escape) | Confirm (Enter) |
+| Select | Confirm (Enter) | Game menu / cancel (Escape) |
 
 Kairo's menu button is unchanged. Use left-stick forward/back to navigate the
-games' own menus and Select to confirm. Duke retains its existing right-stick
+games' own menus; Select confirms in Doom and Start confirms in Duke. Duke retains its existing right-stick
 sensitivity and native Home/End aiming, avoiding changes to mouse-aiming mode.
 The catalog sets Doom turning to 8x and Duke turning to 2x. Doom was doubled
-from 4x for Kairo #16. Only Start and Select send Escape and Enter respectively;
+from 4x for Kairo #16. In Doom, only Start and Select send Escape and Enter respectively;
 the former A/B menu duplicates are removed. X remains a duplicate Open/use.
 
 Doom has no native previous/next weapon action: D-pad Left/Right share Kairo's key
@@ -90,3 +90,36 @@ and Without Sticks inputs, designated-only Escape/Enter, explicit custom
 override precedence and return to catalog defaults after clearing an override.
 The fixture's old 35% deadzone expectations were updated to the existing 10%
 default from Kairo #7; production deadzone behavior was not changed here.
+
+## Duke Start/Select correction, Kairo #21 (October 2, 2026)
+
+The RGDS `retrogame_joypad` is `/dev/input/event9`; its
+`Vendor_484b_Product_1101.kl` maps Linux key 315 to BUTTON_START and 314 to
+BUTTON_SELECT. No saved physical mapping overrides were present. The active
+downloaded Duke With Sticks profile had Start=Escape (27) and Select=Enter (13),
+opposite to its existing Without Sticks profile.
+
+Only those two With Sticks assignments changed:
+
+| Physical input | Virtual input | Guest key |
+| --- | --- | --- |
+| Start (315 / Android BUTTON_START) | start | Enter, 13 |
+| Select (314 / Android BUTTON_SELECT) | select | Escape, 27 |
+
+Raw press/release events injected through the discovered gamepad node reproduced
+the old behavior: Start dismissed the New Game menu and Select opened episode
+selection. After the catalog update, Select opened the menu, Start opened
+episode selection, and Select returned to the main menu. One brief 80 ms Select
+event did not visibly dismiss the episode menu; a deliberate 350 ms press did.
+This test establishes the assignment correction, not an input-latency guarantee.
+
+Public revision `cc5a34e34887b7314693aa2a15721fbf76529e46788019b3b6203b3800a58244`
+was fetched by the unchanged installed APK
+`468884b91f80508999bb696007c9a907ba08f3c73f2163c53a6cbd364b0d4acd`.
+The production resolver and shared-mapper fixture passed both Duke assignments,
+Doom/Without Sticks regressions, and explicit custom override precedence.
+Only the instrumentation APK changed; no app reinstall or control reset was used.
+The archive audit found only the two requested Duke bindings changed.
+
+Duke's own configuration was not edited; its before/after SHA-256 remained
+`4da3770012f4860101e78581b6c56f1bac6658326f32d54cb35a834e40f20cdb`.
