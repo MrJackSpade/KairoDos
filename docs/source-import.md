@@ -85,7 +85,14 @@ object hidden visibility. The Android host uses only the C callback bridge and
 does not import this object. Other data and weak-symbol binding remains unchanged;
 non-Kairo builds retain upstream visibility. Original GPL notices are preserved.
 See [the measured evaluation](paging-storage-evaluation.md) for ABI, runtime and
-performance evidence and the remaining final integration gate.
+performance evidence and the completed final integration gate.
+
+## Core-owned lazy-flag storage
+
+Under `KAIRO_STAGING`, `src/cpu/lazyflags.h` gives the core-owned `lflags`
+object hidden visibility. The Android host does not import this object; the
+C bridge, flag representation and non-Kairo visibility remain unchanged.
+Original GPL notices are preserved. See [evaluation](lazy-flag-storage-evaluation.md).
 
 ## Ordered OPL worker
 

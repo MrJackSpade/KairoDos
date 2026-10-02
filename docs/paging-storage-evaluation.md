@@ -1,8 +1,8 @@
 # Core-owned paging storage
 
-Status: retained after repeated normal-PGO comparison and representative runtime
-checks. Final normal-product integration and deployment validation remains open
-in the broader low-level investigation; do not treat this as its completion.
+Status: retained; the final normal-product gate is complete. See the
+[integration result](low-level-final-integration.md), which supersedes isolated
+percentages when describing the shipped combined result.
 
 ## Change and ABI audit
 
@@ -52,6 +52,5 @@ checks do not prove universal game compatibility. The normal-PGO matching gate
 passes without weakening it.
 
 [Raw summaries, identities and runtime evidence](benchmarks/paging-storage-evaluation.json)
-retain the measurements. The current RGDS installation is the tested normal-PGO
-candidate; later experiments must overwrite that same package and restore the
-verified final normal build when the full investigation concludes.
+retain the measurements. The final RGDS installation is the verified normal combined build documented
+in the integration report.

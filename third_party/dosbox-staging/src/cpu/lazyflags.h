@@ -32,7 +32,12 @@ struct LazyFlags {
 	uint_fast8_t oldcf = 0;
 };
 
+// Kairo's C callback bridge does not export the core's lazy-flag state.
+#if defined(KAIRO_STAGING)
+extern LazyFlags lflags __attribute__((visibility("hidden")));
+#else
 extern LazyFlags lflags;
+#endif
 
 inline constexpr uint8_t &lf_var1b = lflags.var1.byte[BL_INDEX];
 inline constexpr uint8_t &lf_var2b = lflags.var2.byte[BL_INDEX];

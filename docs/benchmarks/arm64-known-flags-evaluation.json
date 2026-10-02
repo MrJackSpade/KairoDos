@@ -1,5 +1,5 @@
 {
-  "status": "Normal isolated measurements complete; final combined normal-product gate remains open",
+  "status": "Retained; final normal-product integration complete; see low-level-final-comparison.json",
   "builds": {
     "normal-reference": {
       "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
@@ -1358,6 +1358,6 @@
     "Speed comparisons use the normal PGO APK with verification disabled.",
     "Surface submissions are not necessarily unique guest frames.",
     "Two observations per condition, scene phases and sparse clocks/thermals limit precision.",
-    "Final integrated normal build and remaining visibility experiment are not complete."
+    "Isolated results are historical; the final combined comparison supersedes them for the shipped gain."
   ]
 }

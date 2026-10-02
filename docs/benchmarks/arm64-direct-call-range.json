@@ -1,0 +1,21 @@
+{
+  "callSites": 710218,
+  "withinBlRange": 0,
+  "minAbsoluteDisplacementBytes": 189114360,
+  "maxAbsoluteDisplacementBytes": 200069992,
+  "uniqueTargets": 167,
+  "incompleteTrailingRecordExcluded": 1,
+  "limits": "Translation-site count from existing diagnostic capture, not execution counts or a normal-PGO measurement. ASLR/layout may differ by process; no relocation or memory-layout change is proposed.",
+  "build": {
+    "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
+    "diagnosticApkSha256": "49e02161103b0fbb793ffff22075b6dee8a7e71643c29030762122eb7a2508d9",
+    "diagnosticElfSha256": "9d934725523835005dd1831ea178708e9fd8db17c37b1ffe9e4d3d0e99017565",
+    "diagnosticPackagedCoreSha256": "a1a34f43cda9f3b4744e4f494a25023425bfec6973ce9a91a1607a5f7624e138",
+    "changedPayloads": [
+      "lib/arm64-v8a/libdosbox_staging.so"
+    ],
+    "pgo": false,
+    "guestProfile": true
+  },
+  "metadataSha256": "2bfa3dbd39f5f4549d82fd62e9222c6b539b420b30be2e5743a5c5942db8397f"
+}

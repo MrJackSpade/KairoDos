@@ -1,0 +1,5119 @@
+{
+  "profile": {
+    "build": {
+      "apkSha256": "f4f06f933d2912cebfda8cddf00f64b44f0ef61c0dc8c6a1ded9c8fd3b193772",
+      "elfSha256": "4ee71b4411313c36749cfd30e3ab611d905dad952f3fbea14f17744d6292a87b",
+      "packagedCoreSha256": "dc31e1aeeee864a13857587a2a357ce73e60bad4442f700b889d34fd234d7f5c",
+      "source": {
+        "rootRevision": "99c4c7666bc2e09b1e9449e79c9be763fcfde716",
+        "sharedRevision": "56be86b8ae6590a9d4381c1f0e68cd17b36bf152",
+        "source": "Exact Git archive plus exact committed delta; uncommitted root/shared files excluded"
+      },
+      "options": {
+        "KAIRO_GUEST_PROFILE": "OFF",
+        "KAIRO_OPL_VERIFY": "OFF",
+        "KAIRO_OPL_STRESS": "OFF",
+        "KAIRO_OPL_WORKER": "ON",
+        "KAIRO_PGO": "ON"
+      },
+      "matchingSections": [
+        ".text",
+        ".rodata",
+        ".dynsym",
+        ".note.gnu.build-id"
+      ]
+    },
+    "observation": "Normal PGO, diagnostics off, 199 Hz cpu-clock plus process hardware counters",
+    "threads": [
+      {
+        "tid": 25739,
+        "name": "KairoDos-emulat",
+        "seconds": 104.49244925,
+        "normalObservedInclusiveSeconds": 0.326633125,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {
+          "CPU_Core_Normal_Run()": 0.25125625,
+          "CPU_LAR(unsigned long, unsigned long&)": 0.01005025,
+          "DoString(STRING_OP)": 0.025125625,
+          "FillFlags()": 0.025125625,
+          "finish_task_switch": 0.005025125,
+          "mt_free_rcu": 0.005025125,
+          "unsigned int mem_readd<(MemOpMode)0>(unsigned int)": 0.005025125
+        },
+        "functions": [
+          {
+            "name": "unknown",
+            "seconds": 51.497481
+          },
+          {
+            "name": "mem_readd_checked_drc(unsigned int)",
+            "seconds": 4.623115
+          },
+          {
+            "name": "CPU_Core_Dynrec_Run()",
+            "seconds": 4.025125125
+          },
+          {
+            "name": "mem_readb_checked_drc(unsigned int)",
+            "seconds": 3.4773865
+          },
+          {
+            "name": "VGA_DrawSingleLine(unsigned int)",
+            "seconds": 2.9949745
+          },
+          {
+            "name": "mem_writed_checked_drc(unsigned int, unsigned int)",
+            "seconds": 2.879396625
+          },
+          {
+            "name": "mem_readw_checked_drc(unsigned int)",
+            "seconds": 2.58291425
+          },
+          {
+            "name": "get_CF()",
+            "seconds": 1.9095475
+          },
+          {
+            "name": "Scale1x_32(void const*)",
+            "seconds": 1.231155625
+          },
+          {
+            "name": "FillFlagsNoCFOF()",
+            "seconds": 0.99497475
+          },
+          {
+            "name": "__memcmp_aarch64",
+            "seconds": 0.839195875
+          },
+          {
+            "name": "VGA_ChainedVGA_Handler::writed(unsigned int, unsigned int)",
+            "seconds": 0.81407025
+          },
+          {
+            "name": "dynrec_push_dword(unsigned int)",
+            "seconds": 0.809045125
+          },
+          {
+            "name": "dynrec_pop_dword()",
+            "seconds": 0.788944625
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.7839195
+          },
+          {
+            "name": "mem_writed(unsigned int, unsigned int)",
+            "seconds": 0.768844125
+          },
+          {
+            "name": "unsigned int mem_readd<(MemOpMode)0>(unsigned int)",
+            "seconds": 0.75376875
+          },
+          {
+            "name": "dynrec_cmp_dword(unsigned int, unsigned int)",
+            "seconds": 0.628140625
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)14>()",
+            "seconds": 0.447236125
+          },
+          {
+            "name": "PIC_RunQueue()",
+            "seconds": 0.43216075
+          },
+          {
+            "name": "mem_writew_checked_drc(unsigned int, unsigned short)",
+            "seconds": 0.4221105
+          },
+          {
+            "name": "dynrec_add_dword(unsigned int, unsigned int)",
+            "seconds": 0.417085375
+          },
+          {
+            "name": "dynrec_dimul_dword(unsigned int, unsigned int)",
+            "seconds": 0.40201
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.366834125
+          },
+          {
+            "name": "perf_iterate_ctx",
+            "seconds": 0.366834125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)13>()",
+            "seconds": 0.366834125
+          },
+          {
+            "name": "get_ZF()",
+            "seconds": 0.366834125
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.346733625
+          },
+          {
+            "name": "dynrec_movsd_dword(unsigned int, int, unsigned int, unsigned int)",
+            "seconds": 0.321608
+          },
+          {
+            "name": "dynrec_cmp_word(unsigned short, unsigned short)",
+            "seconds": 0.306532625
+          },
+          {
+            "name": "dynrec_dec_dword(unsigned int)",
+            "seconds": 0.29145725
+          },
+          {
+            "name": "CreateCacheBlock(CodePageHandler*, unsigned int, unsigned long)",
+            "seconds": 0.266331625
+          },
+          {
+            "name": "DmaChannel::ReadOrWrite(DmaDirection, unsigned long, unsigned char*)",
+            "seconds": 0.256281375
+          },
+          {
+            "name": "CPU_Core_Normal_Run()",
+            "seconds": 0.25125625
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.241206
+          },
+          {
+            "name": "read_byte_from_port(unsigned short)",
+            "seconds": 0.23115575
+          },
+          {
+            "name": "dynrec_sub_dword(unsigned int, unsigned int)",
+            "seconds": 0.23115575
+          },
+          {
+            "name": "dynrec_test_dword(unsigned int, unsigned int)",
+            "seconds": 0.226130625
+          },
+          {
+            "name": "mem_writeb_checked_drc(unsigned int, unsigned char)",
+            "seconds": 0.226130625
+          },
+          {
+            "name": "CodePageHandler::writeb_checked(unsigned int, unsigned char)",
+            "seconds": 0.226130625
+          },
+          {
+            "name": "mt_find",
+            "seconds": 0.21105525
+          },
+          {
+            "name": "change_protection",
+            "seconds": 0.21105525
+          },
+          {
+            "name": "kmem_cache_alloc",
+            "seconds": 0.206030125
+          },
+          {
+            "name": "perf_event_mmap",
+            "seconds": 0.206030125
+          },
+          {
+            "name": "dynrec_cmp_byte(unsigned char, unsigned char)",
+            "seconds": 0.195979875
+          },
+          {
+            "name": "kmem_cache_free",
+            "seconds": 0.185929625
+          },
+          {
+            "name": "dynrec_imul_dword(unsigned int)",
+            "seconds": 0.1809045
+          },
+          {
+            "name": "dynrec_adc_dword_simple(unsigned int, unsigned int)",
+            "seconds": 0.1809045
+          },
+          {
+            "name": "mas_wr_modify",
+            "seconds": 0.1809045
+          },
+          {
+            "name": "CPU_SetSegGeneral(SegNames, unsigned long)",
+            "seconds": 0.175879375
+          },
+          {
+            "name": "PIC_AddEvent(void (*)(unsigned int), double, unsigned int)",
+            "seconds": 0.175879375
+          },
+          {
+            "name": "dynrec_get_ncf()",
+            "seconds": 0.175879375
+          },
+          {
+            "name": "dynrec_adc_byte(unsigned char, unsigned char)",
+            "seconds": 0.175879375
+          },
+          {
+            "name": "dynrec_sbb_dword_simple(unsigned int, unsigned int)",
+            "seconds": 0.17085425
+          },
+          {
+            "name": "play_dma_transfer(unsigned int)",
+            "seconds": 0.165829125
+          },
+          {
+            "name": "write_byte_to_port(unsigned short, unsigned char)",
+            "seconds": 0.160804
+          },
+          {
+            "name": "mtree_range_walk",
+            "seconds": 0.155778875
+          },
+          {
+            "name": "per_tick_callback()",
+            "seconds": 0.155778875
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)13>()",
+            "seconds": 0.15075375
+          },
+          {
+            "name": "PCSPEAKER_PicCallback()",
+            "seconds": 0.145728625
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)12>()",
+            "seconds": 0.145728625
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.1407035
+          },
+          {
+            "name": "perf_event_mmap_output",
+            "seconds": 0.135678375
+          },
+          {
+            "name": "__kernel_clock_gettime",
+            "seconds": 0.125628125
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.125628125
+          },
+          {
+            "name": "normal_loop()",
+            "seconds": 0.120603
+          },
+          {
+            "name": "NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)",
+            "seconds": 0.120603
+          },
+          {
+            "name": "SDL_GetWindowSize",
+            "seconds": 0.115577875
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)14>()",
+            "seconds": 0.115577875
+          },
+          {
+            "name": "dynrec_test_byte(unsigned char, unsigned char)",
+            "seconds": 0.11055275
+          },
+          {
+            "name": "__vma_adjust",
+            "seconds": 0.11055275
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.11055275
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)15>()",
+            "seconds": 0.105527625
+          },
+          {
+            "name": "dynrec_adc_byte_simple(unsigned char, unsigned char)",
+            "seconds": 0.105527625
+          },
+          {
+            "name": "GFX_PollAndHandleEvents()",
+            "seconds": 0.1005025
+          },
+          {
+            "name": "dynrec_get_nzf()",
+            "seconds": 0.1005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)5>()",
+            "seconds": 0.1005025
+          },
+          {
+            "name": "call_rcu",
+            "seconds": 0.095477375
+          },
+          {
+            "name": "SDL_PushEvent",
+            "seconds": 0.095477375
+          },
+          {
+            "name": "down_write",
+            "seconds": 0.09045225
+          },
+          {
+            "name": "SDL_PumpEventsInternal",
+            "seconds": 0.09045225
+          },
+          {
+            "name": "TIMER_AddTick()",
+            "seconds": 0.09045225
+          },
+          {
+            "name": "dynrec_idiv_dword(unsigned int)",
+            "seconds": 0.085427125
+          },
+          {
+            "name": "gus_pic_callback()",
+            "seconds": 0.080402
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)2>()",
+            "seconds": 0.080402
+          },
+          {
+            "name": "perf_output_begin",
+            "seconds": 0.080402
+          },
+          {
+            "name": "mprotect_fixup",
+            "seconds": 0.080402
+          },
+          {
+            "name": "dyn_fill_ea(unsigned char, bool)",
+            "seconds": 0.080402
+          },
+          {
+            "name": "RMR_DrawLine_Passthrough(void const*)",
+            "seconds": 0.080402
+          },
+          {
+            "name": "RWQueue<AudioFrame>::NonblockingBulkEnqueue(std::__ndk1::vector<AudioFrame, std::__ndk1::allocator<AudioFrame>>&, unsigned long)",
+            "seconds": 0.080402
+          },
+          {
+            "name": "IO_ReadB(unsigned short)",
+            "seconds": 0.080402
+          },
+          {
+            "name": "dynrec_add_byte(unsigned char, unsigned char)",
+            "seconds": 0.080402
+          },
+          {
+            "name": "void set_cpu_test_flags_for_division<int>(int)",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "vma_merge",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "dyn_closeblock()",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "mprotect",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)13>()",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "dynrec_dshr_dword(unsigned int, unsigned int, unsigned char)",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "mas_wr_walk_descend",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "mas_preallocate",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "KairoStagingPoll()",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "kairo_staging_joypad",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "__task_pid_nr_ns",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "___slab_alloc",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "dynrec_dec_byte(unsigned char)",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "MixerChannel::GetFramesPerTick()",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "rcu_cblist_dequeue",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "up_write",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "start_line_handler(void const*)",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "SDL_JoystickUpdate",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "GFX_GetViewportSizeInPixels()",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "SDL_WaitEventTimeout",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "RENDER_CalcRestrictedViewportSizeInPixels(DosBox::Rect const&)",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<31ul, (BranchTypes)4>()",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "anon_vma_interval_tree_remove",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "mas_store_b_node",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "dynrec_test_word(unsigned short, unsigned short)",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "FillFlags()",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "memset",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "mas_wr_walk",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<32ul, (BranchTypes)12>()",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "typematic_tick()",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "dyn_read_word(unsigned char, unsigned char, bool)",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)4>()",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)15>()",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "mem_writew(unsigned int, unsigned short)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "CPU_IRET(bool, unsigned long)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "memmove",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "__clear_cache",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "mas_store_prealloc",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "SDL_ReleaseAutoReleaseKeys",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "gen_mov_memval_to_reg(unsigned char, void*, unsigned long)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "dynrec_push_word(unsigned short)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "clock_gettime",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "__arm64_sys_mprotect",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "dynrec_io_readB(unsigned long)",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "perf_output_copy",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "get_OF()",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "CacheBlock::Clear()",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "CodePageHandler::DelCacheBlock(CacheBlock*)",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)12>()",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "unsigned short mem_readw<(MemOpMode)0>(unsigned int)",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<31ul, (BranchTypes)5>()",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "fmod",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "JOYSTICK_Move_X(unsigned char, short)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "dynrec_xor_dword(unsigned int, unsigned int)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "mas_alloc_nodes",
+            "seconds": 0.040201
+          },
+          {
+            "name": "selinux_file_mprotect",
+            "seconds": 0.040201
+          },
+          {
+            "name": "dyn_branchflag_from_producer(BranchTypes)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "__rb_insert_augmented",
+            "seconds": 0.040201
+          },
+          {
+            "name": "get_SF()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "__split_vma",
+            "seconds": 0.040201
+          },
+          {
+            "name": "dyn_dop_word_gencall(DualOps, bool)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "CPU_Interrupt(unsigned long, unsigned long, unsigned long)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.040201
+          },
+          {
+            "name": "rcu_core",
+            "seconds": 0.040201
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<22ul, (BranchTypes)4>()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "CPU_Pop32()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "std::__ndk1::chrono::steady_clock::now()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)15>()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)2>()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "CPU_RET(bool, unsigned long, unsigned long)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "_raw_spin_unlock_irq",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "dynrec_rol_dword(unsigned int, unsigned char)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "std::__ndk1::mutex::lock()",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "gen_add_direct_word(void*, unsigned int, bool)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "mas_walk",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "security_file_mprotect",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "__aarch64_ldadd4_acq_rel",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "Opl::PortRead(unsigned short, io_width_t)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "mas_find",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "avc_lookup",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "decode_fetchb_imm(unsigned long&)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "dynrec_cwde(unsigned short)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "generate_frames(int)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "dynrec_get_nzf_and_sf_eq_of()",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "CPU_IO_Exception(unsigned long, unsigned long)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "dynrec_inc_dword(unsigned int)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)4>()",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "SDL_AtomicGet",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "SDL_SendPendingSignalEvents",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "invoke_syscall",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "__rcu_read_unlock",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "__memmove_aarch64_simd",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "kairo_staging_mouse",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "mas_destroy",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "mas_replace_node",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "VGA_VerticalTimer(unsigned int)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "CPU_JMP(bool, unsigned long, unsigned long, unsigned long)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "capture_callback()",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "(anonymous namespace)::KairoRenderer::GetCanvasSizeInPixels()",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "mas_wr_end_piv",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "anon_vma_clone",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "slab_pre_alloc_hook",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "__aarch64_ldset4_acq_rel",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "vga_read_p3da(unsigned short, io_width_t)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "CAPTURE_IsCapturingAudio()",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "mas_leaf_max_gap",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "WEBSERVER_IsEnabled()",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "RENDER_EndUpdate(bool)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dynrec_get_cf_or_zf()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "gen_mov_qword_to_reg_imm(unsigned char, unsigned long)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "gen_fill_function_ptr(unsigned char const*, void*, unsigned long)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "armpmu_filter_match",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "tlb_finish_mmu",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "__perf_event_header__init_id",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "SDL_AssertJoysticksLocked",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "unsigned char mem_readb<(MemOpMode)0>(unsigned int)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "CPU_PopSeg(SegNames, bool)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "get_obj_cgroup_from_current",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "CPU_STI()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "pthread_cond_signal",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "DoString(STRING_OP)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "SDL_GetVideoDevice",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::deallocate(void*, scudo::Chunk::Origin, unsigned long, unsigned long)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "armv8pmu_filter_match",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "Opl::RenderUpToNow()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "vm_stat_account",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "avc_has_perm",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "gen_jmp_ptr(void*, long)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dyn_shift_word_gencall(ShiftOps, bool)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "vm_area_dup",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "may_expand_vm",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "slab_post_alloc_hook",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "down_write_killable",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "vm_get_page_prot",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dyn_branchflag_to_reg(BranchTypes)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dyn_branched_exit(BranchTypes, int)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "MixerChannel::WakeUp()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dynrec_pop_word()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "futex_hash",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)9>()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "GFX_GetPresentationMode()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dyn_dop_evgv(DualOps)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "Opl::PortWrite(unsigned short, unsigned int, io_width_t)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "DOSBOX_RunMachine()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "GFX_GetDpiScaleFactor()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dynrec_get_zf()",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "dynrec_adc_dword(unsigned int, unsigned int)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "__rcu_read_lock",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "PIC_ActivateIRQ(unsigned char)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "vm_normal_page",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)5>()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "gen_add_imm(unsigned char, unsigned int)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "anon_vma_interval_tree_insert",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dyn_dop_gvev(DualOps)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)12>()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "kairo_staging_configure",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "SDL_GestureProcessEvent",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "tasklet_action_common",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dyn_grp2_ev(grp2_types)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dynrec_stosd_dword(unsigned int, int, unsigned int)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dyn_grp1_ev_iv(bool)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "CPU_Pop16()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "__aarch64_swp4_acq_rel",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dynrec_movsw_dword(unsigned int, int, unsigned int, unsigned int)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "SDL_WasInit",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "IO_WriteB(unsigned short, unsigned char)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dynrec_shr_dword(unsigned int, unsigned char)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "nanosleep",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)5>()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "strlcpy",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "futex_wake_mark",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "decode_fetchd()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "decode_fetchd_imm(unsigned long&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "unlink_anon_vmas",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "mas_wr_store_entry",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "CPU_PUSHF(unsigned long)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "dynrec_sar_dword(unsigned int, unsigned char)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "file_map_prot_check",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "mab_mas_cp",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dynrec_and_byte(unsigned char, unsigned char)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "vma_set_page_prot",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "RWQueue<AudioFrame>::NonblockingBulkEnqueue(std::__ndk1::vector<AudioFrame, std::__ndk1::allocator<AudioFrame>>&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__ndk1::recursive_mutex::lock()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "DUMMY_PumpEvents",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dynrec_shl_dword(unsigned int, unsigned char)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "CPU_LAR(unsigned long, unsigned long&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "DUMMY_JoystickDetect",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dynrec_leave_word()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dyn_dshift_ev_gv(bool, bool)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dynrec_neg_dword(unsigned int)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "SDL_AtomicAdd",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)4>()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "mas_prev",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "gen_mov_byte_to_reg_low(unsigned char, void*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__get_obj_cgroup_from_memcg",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "perf_iterate_sb",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "PIT0_Event(unsigned int)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "OplChip::Read()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<23ul, (BranchTypes)6>()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "rcu_do_batch",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__sync_icache_dcache",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__ndk1::mutex::unlock()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "write_sb(unsigned short, unsigned int, io_width_t)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "read_sb(unsigned short, io_width_t)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__ndk1::__function::__func<std::__ndk1::__bind<unsigned char (Opl::*)(unsigned short, io_width_t), Opl*, std::__ndk1::placeholders::__ph<1> const&, std::__ndk1::placeholders::__ph<2> const&>, std::__ndk1::allocator<std::__ndk1::__bind<unsigned char (Opl::*)(unsigned short, io_width_t), Opl*, std::__ndk1::placeholders::__ph<1> const&, std::__ndk1::placeholders::__ph<2> const&>>, unsigned int (unsigned short, io_width_t)>::operator()(unsigned short&&, io_width_t&&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__ndk1::__function::__func<unsigned char (*)(unsigned short, io_width_t), std::__ndk1::allocator<unsigned char (*)(unsigned short, io_width_t)>, unsigned int (unsigned short, io_width_t)>::operator()(unsigned short&&, io_width_t&&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__arm64_sys_nanosleep",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "malloc",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "get_timespec64",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dyn_write_byte(unsigned char, unsigned char)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "VGA_VertInterrupt(unsigned int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "CPU_ENTER(bool, unsigned long, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "arch_counter_get_cntpct",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "GetChannelFromPort(unsigned short)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<22ul, (BranchTypes)2>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__arm64_sys_futex",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::this_thread::sleep_for(std::__ndk1::chrono::duration<long long, std::__ndk1::ratio<1l, 1000000000l>> const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "mas_prev_slot",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "PAGING_Enable(bool)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "mas_update_gap",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dyn_sop_word_gencall(SingleOps, bool)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dynrec_io_writeB(unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__slab_free",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__list_del_entry_valid",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<32ul, (BranchTypes)4>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dyn_string(STRING_OP)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "CacheBlock::Cache::GrowMaskForTypeAt(unsigned char, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "JOYSTICK_Move_Y(unsigned char, short)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "vma_is_stack_for_current",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "split_pad_vma",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_wait_setup",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "ReelMagic_RENDER_StartUpdate()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "strlen",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "get_futex_key",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "Opl::WorkerState::Consume(Opl::WorkerState::Result)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "CPU_WRITE_CRX(unsigned long, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "free",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "should_failslab",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "GFX_StartUpdate(unsigned int*&, int&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__slab_alloc",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "ImageCapturer::IsCaptureRequested() const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__anon_vma_interval_tree_augment_rotate",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "tlb_flush_mmu_tlbonly",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dyn_sop_word(SingleOps, unsigned char)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "DMA_Read_Port(unsigned short, io_width_t)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<22ul, (BranchTypes)5>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "update_blocked_averages",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "RENDER_StartUpdate()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<32ul, (BranchTypes)15>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "CodePageHandler::writew_checked(unsigned int, unsigned short)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "int33_handler()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "DmaChannel::Read(unsigned long, unsigned char*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "SDL_LockMutex",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "FPU_FLD_F32_EA(unsigned int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "FPU_FST_F32(unsigned int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "preempt_schedule_irq",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<33ul, (BranchTypes)14>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "mt_free_rcu",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "perf_event__output_id_sample",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<32ul, (BranchTypes)5>()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "split_vma",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "void kairo::OrderedWorker<Opl::WorkerState::Command, Opl::WorkerState::Result, 64ul, false>::submit<Opl::WorkerState::Submit(Opl::WorkerState::Command)::'lambda'(Opl::WorkerState::Result)>(Opl::WorkerState::Command, Opl::WorkerState::Submit(Opl::WorkerState::Command)::'lambda'(Opl::WorkerState::Result)&&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::condition_variable::notify_one()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "read_command(unsigned short, io_width_t)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CPU_POPF(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "MAPPER_IsUsingJoysticks()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_lock_irqsave",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "cmos_selreg(unsigned short, unsigned int, io_width_t)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "local_bh_enable",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CPU_Push32(unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "selinux_inode_permission",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "FPU_PREP_PUSH()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__strrchr_chk",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "vga_dac_send_color(unsigned char, unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CAPTURE_IsCapturingPostRenderImage()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "vma_wants_writenotify",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "INT8_Handler()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arch_counter_read",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__futex_queue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "try_to_wake_up",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "clone_endio",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "write_p3c9(unsigned short, unsigned int, io_width_t)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "f2fs_file_read_iter",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_not_word(unsigned short)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "INT10_VideoModeChangeInProgress()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_get_cf()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_shl_word(unsigned short, unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "vma_mas_store",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "rcu_core_si",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_movsw_word(unsigned short, short, unsigned int, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "hrtimer_init_sleeper",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CPU_SET_CRX(unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "video_profile::record(video_profile::Stage, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "operator delete[](void*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dyn_dop_byte_gencall(DualOps)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<32ul, (BranchTypes)14>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "ktime_get_mono_fast_ns",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<22ul, (BranchTypes)13>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__list_add_valid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)3>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "SDL_UpdateSteamVirtualGamepadInfo",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "write_command(unsigned short, unsigned int, io_width_t)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "bionic_trace_end()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dyn_dop_word_imm_old(DualOps, unsigned char, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_not_byte(unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__futex_unqueue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "rb_next",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_div_dword(unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_q_lock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "new_slab",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "mem_unalignedwrited_checked(unsigned int, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::deque<AudioFrame, std::__ndk1::allocator<AudioFrame>>::__add_back_capacity()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_xor_byte(unsigned char, unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "(anonymous namespace)::KairoRenderer::PresentFrame()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "path_put",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_rcl_word(unsigned short, unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "GFX_EndUpdate()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "OplChip::Write(unsigned short, unsigned char)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arch_vma_name",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CPU_SMSW()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CPU_Push16(unsigned short)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "EA_16_46_n()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "SDL_PollEvent",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "kfree",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "lseek",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "(anonymous namespace)::KairoRenderer::StartFrame(unsigned int*&, int&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "CStickBindGroup::UpdateJoystick()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__arch_copy_from_user",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "gen_add_regval32_to_reg(unsigned char, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "SDL_GetTicks64",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "perf_output_end",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "VGA_DisplayStartLatch(unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "MEM_BlockWrite(unsigned int, void const*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::HybridMutex::unlock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "rebalance_domains",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pl330_tasklet",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "SDL_GetTicks",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "DmaController::ReadControllerReg(unsigned short, io_width_t)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_cond_broadcast",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_and_word(unsigned short, unsigned short)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo_malloc",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "wake_up_var",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "cmpxchg_double_slab",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dynrec_cld()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "plist_del",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "ScopedTrace::~ScopedTrace()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arch_stack_walk",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<31ul, (BranchTypes)6>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "put_ucounts",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "RWQueue<AudioFrame>::Start()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "perf_output_put_handle",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "note_gp_changes",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::HybridMutex::tryLock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<24ul, (BranchTypes)7>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned int dynrec_known_condition<22ul, (BranchTypes)3>()",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25756,
+        "name": "dosbox:mixer",
+        "seconds": 27.12562475,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "OPL3_Generate4Ch",
+            "seconds": 13.75879225
+          },
+          {
+            "name": "resampler_basic_interpolate_single",
+            "seconds": 4.83417025
+          },
+          {
+            "name": "speex_resampler_process_float",
+            "seconds": 1.81909525
+          },
+          {
+            "name": "void MixerChannel::AddSamples<float, true, true, true>(int, float const*)",
+            "seconds": 1.070351625
+          },
+          {
+            "name": "OPL3_EnvelopeCalcSin3",
+            "seconds": 0.839195875
+          },
+          {
+            "name": "mixer_thread_loop()",
+            "seconds": 0.497487375
+          },
+          {
+            "name": "Compressor::Process(AudioFrame)",
+            "seconds": 0.417085375
+          },
+          {
+            "name": "OPL3_EnvelopeCalcSin1",
+            "seconds": 0.326633125
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.276381875
+          },
+          {
+            "name": "NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)",
+            "seconds": 0.276381875
+          },
+          {
+            "name": "NoiseGate::Process(AudioFrame)",
+            "seconds": 0.2613065
+          },
+          {
+            "name": "speex_resampler_process_interleaved_float",
+            "seconds": 0.236180875
+          },
+          {
+            "name": "Envelope::Process(bool, AudioFrame&)",
+            "seconds": 0.216080375
+          },
+          {
+            "name": "__logf_finite",
+            "seconds": 0.19095475
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.17085425
+          },
+          {
+            "name": "Opl::AudioCallback(int)",
+            "seconds": 0.155778875
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.15075375
+          },
+          {
+            "name": "OPL3_GenerateStream",
+            "seconds": 0.1407035
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.135678375
+          },
+          {
+            "name": "expf",
+            "seconds": 0.1005025
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.09045225
+          },
+          {
+            "name": "__memmove_aarch64_simd",
+            "seconds": 0.09045225
+          },
+          {
+            "name": "RWQueue<AudioFrame>::BulkEnqueue(std::__ndk1::vector<AudioFrame, std::__ndk1::allocator<AudioFrame>>&, unsigned long)",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "std::__ndk1::recursive_mutex::unlock()",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "std::__ndk1::recursive_mutex::lock()",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.040201
+          },
+          {
+            "name": "speex_resampler_get_ratio",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "memset",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "_raw_spin_unlock_irq",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "RWQueue<AudioFrame>::BulkDequeue(AudioFrame*, unsigned long)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "void kairo::OrderedWorker<Opl::WorkerState::Command, Opl::WorkerState::Result, 64ul, false>::drain<Opl::WorkerState::Drain()::'lambda'(Opl::WorkerState::Result)>(Opl::WorkerState::Drain()::'lambda'(Opl::WorkerState::Result)&&)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "Opl::WorkerState::Consume(Opl::WorkerState::Result)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "__kernel_clock_gettime",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "local_bh_enable",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "rcu_cblist_dequeue",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "std::__ndk1::deque<AudioFrame, std::__ndk1::allocator<AudioFrame>>::erase(std::__ndk1::__deque_iterator<AudioFrame, AudioFrame const*, AudioFrame const&, AudioFrame const* const*, long, 512l>, std::__ndk1::__deque_iterator<AudioFrame, AudioFrame const*, AudioFrame const&, AudioFrame const* const*, long, 512l>)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "pthread_cond_wait",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "std::__ndk1::mutex::lock()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__local_bh_enable_ip",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__arm64_sys_futex",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::__function::__func<std::__ndk1::__bind<void (SoundBlaster::*)(int), SoundBlaster*, std::__ndk1::placeholders::__ph<1> const&>, std::__ndk1::allocator<std::__ndk1::__bind<void (SoundBlaster::*)(int), SoundBlaster*, std::__ndk1::placeholders::__ph<1> const&>>, void (int)>::operator()(int&&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "MixerChannel::Sleeper::MaybeSleep()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "MixerChannel::Mix(int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "void MIXER_PullFromQueueCallback<SoundBlaster, AudioFrame, true, true, true>(int, SoundBlaster*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__futex_queue",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::deque<AudioFrame, std::__ndk1::allocator<AudioFrame>>::__add_back_capacity()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "MixerChannel::GetFramesPerBlock()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_unqueue",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::condition_variable::notify_all()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "preempt_schedule_common",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::refill(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::PerClass*, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "update_blocked_averages",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::chrono::steady_clock::now()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__list_add_valid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "RWQueue<AudioFrame>::BulkDequeue(std::__ndk1::vector<AudioFrame, std::__ndk1::allocator<AudioFrame>>&, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dw_mci_tasklet_func",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "mtree_range_walk",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_hash",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "wake_q_add_safe",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "invoke_syscall",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "get_futex_key",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocksImpl(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, scudo::SizeClassAllocator64<scudo::AndroidConfig>::RegionInfo*, unsigned int*, unsigned int, bool)::'lambda'(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int)::operator()(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo_malloc",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_setup_timer",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::deallocate(void*, scudo::Chunk::Origin, unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "cmpxchg_double_slab",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::pair<std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>, std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>> std::__ndk1::__move_backward_loop<std::__ndk1::_ClassicAlgPolicy>::operator()[abi:ne190000]<std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>, std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>, 0>(std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>, std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>, std::__ndk1::__deque_iterator<AudioFrame, AudioFrame*, AudioFrame&, AudioFrame**, long, 512l>) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::HybridMutex::tryLock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "kmem_cache_free",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_cond_broadcast",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "tasklet_action_common",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::popBatch(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_get_value_locked",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wait_setup",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25757,
+        "name": "KairoDos-emulat",
+        "seconds": 5.386934,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "OPL3_Generate4Ch",
+            "seconds": 4.145728125
+          },
+          {
+            "name": "OPL3_EnvelopeCalcSin3",
+            "seconds": 0.29145725
+          },
+          {
+            "name": "OPL3_EnvelopeCalcSin1",
+            "seconds": 0.080402
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.080402
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.080402
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "OPL3_GenerateStream",
+            "seconds": 0.065326625
+          },
+          {
+            "name": "__memmove_aarch64_simd",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.040201
+          },
+          {
+            "name": "kairo::OrderedWorker<Opl::WorkerState::Command, Opl::WorkerState::Result, 64ul, false>::run()",
+            "seconds": 0.040201
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "Opl::WorkerState::Process(Opl::WorkerState::Command const&)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "__arm64_sys_futex",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "get_futex_key",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_wait_setup",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__ndk1::condition_variable::notify_all()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "pthread_cond_broadcast",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "local_bh_enable",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "proc_free_inode",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "update_blocked_averages",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake_mark",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "OPL3_WriteReg",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "rcu_cblist_dequeue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "queued_spin_lock_slowpath",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::condition_variable::wait(std::__ndk1::unique_lock<std::__ndk1::mutex>&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_cond_wait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_get_value_locked",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "OPL3_WriteRegBuffered",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__local_bh_enable_ip",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "cmpxchg_double_slab",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "trace_begin_internal(char const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_unqueue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock_irq",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::mutex::lock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::mutex::unlock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25746,
+        "name": "KairoDos-emulat",
+        "seconds": 4.35175825,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "__memmove_aarch64_simd",
+            "seconds": 0.467336625
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.35175875
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.135678375
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.120603
+          },
+          {
+            "name": "dcache_clean_poc",
+            "seconds": 0.1005025
+          },
+          {
+            "name": "android::RefBase::incStrong(void const*) const",
+            "seconds": 0.095477375
+          },
+          {
+            "name": "dcache_inval_poc",
+            "seconds": 0.080402
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "__fget_files",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "android::RefBase::decStrong(void const*) const",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "android::BLASTBufferQueue::acquireNextBufferLocked(std::__1::optional<android::SurfaceComposerClient::Transaction*>)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "binder_thread_read",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "arm::mapper::GrallocMapper::get(void*, android::hardware::graphics::mapper::V4_0::IMapper::MetadataType const&, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, android::hardware::hidl_vec<unsigned char> const&)>)",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "android::ConsumerFrameEventHistory::addQueue(android::NewFrameEventsEntry const&)",
+            "seconds": 0.045226125
+          },
+          {
+            "name": "unknown",
+            "seconds": 0.040201
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.040201
+          },
+          {
+            "name": "ioctl_has_perm",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "scudo::HybridMutex::unlock()",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::apply(bool, bool)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "android::layer_state_t::write(android::Parcel&) const",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "android::BufferQueueProducer::dequeueBuffer(int*, android::sp<android::Fence>*, unsigned int, unsigned int, int, unsigned long, unsigned long*, android::FrameEventHistoryDelta*)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "get_format_info(unsigned int)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "binder_inc_ref_for_node",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "scudo::HybridMutex::tryLock()",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "binder_transaction",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&, android::IGraphicBufferProducer::QueueBufferOutput*)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "android::BpSurfaceComposer::setTransactionState(android::gui::FrameTimelineInfo const&, android::Vector<android::ComposerState>&, android::Vector<android::DisplayState>&, unsigned int, android::sp<android::IBinder> const&, android::InputWindowCommands, long, bool, std::__1::vector<android::client_cache_t, std::__1::allocator<android::client_cache_t>> const&, bool, std::__1::vector<android::ListenerCallbacks, std::__1::allocator<android::ListenerCallbacks>> const&, unsigned long, std::__1::vector<unsigned long, std::__1::allocator<unsigned long>> const&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "selinux_capable",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::ProcessState::init(char const*, bool)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::getLayerState(android::sp<android::SurfaceControl> const&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::IPCThreadState::talkWithDriver(bool)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "sync_file_poll",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<android::sp<android::IBinder>, android::ComposerState>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<android::sp<android::IBinder>, android::ComposerState>, std::__1::__unordered_map_hasher<android::sp<android::IBinder>, std::__1::__hash_value_type<android::sp<android::IBinder>, android::ComposerState>, android::SurfaceComposerClient::IBinderHash, true>, std::__1::__unordered_map_equal<android::sp<android::IBinder>, std::__1::__hash_value_type<android::sp<android::IBinder>, android::ComposerState>, std::__1::equal_to<android::sp<android::IBinder>>, true>, std::__1::allocator<std::__1::__hash_value_type<android::sp<android::IBinder>, android::ComposerState>>>::__emplace_unique_key_args<android::sp<android::IBinder>, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::IBinder> const&>, std::__1::tuple<>>(android::sp<android::IBinder> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::IBinder> const&>&&, std::__1::tuple<>&&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "binder_debug",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "systemTime",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::GraphicBuffer::needsReallocation(unsigned int, unsigned int, int, unsigned int, unsigned long)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "avc_has_extended_perms",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__local_bh_enable_ip",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "binder_ioctl_write_read",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::gralloc4::decodePlaneLayoutComponent(android::gralloc4::InputHidlVec*, aidl::android::hardware::graphics::common::PlaneLayoutComponent*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::Gralloc4Mapper::lock(native_handle const*, unsigned long, android::Rect const&, int, void**, int*, int*) const",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::gralloc4::decodeString(android::gralloc4::InputHidlVec*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::Surface::dequeueBuffer(ANativeWindowBuffer**, int*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::operator=(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::layer_state_t::layer_state_t(android::layer_state_t const&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "binder_translate_binder",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "do_sys_poll",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::gralloc4::OutputHidlVec::encode(unsigned char const*, unsigned long)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::BufferQueueProducer::waitForFreeSlotThenRelock(android::BufferQueueProducer::FreeSlotCaller, std::__1::unique_lock<std::__1::mutex>&, int*) const",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "dma_buf_ioctl",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__kernel_clock_gettime",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<unsigned int, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>>, std::__1::hash<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>>, std::__1::equal_to<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>>>>::__emplace_unique_key_args<unsigned int, std::__1::piecewise_construct_t const&, std::__1::tuple<unsigned int const&>, std::__1::tuple<>>(unsigned int const&, std::__1::piecewise_construct_t const&, std::__1::tuple<unsigned int const&>&&, std::__1::tuple<>&&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "binder_get_node_from_ref",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__arch_copy_from_user",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "avc_lookup",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::Parcel::validateReadData(unsigned long) const",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::gralloc4::encodeDataspace(aidl::android::hardware::graphics::common::Dataspace const&, android::hardware::hidl_vec<unsigned char>*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__list_del_entry_valid",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::hardware::details::return_status::~return_status()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::ConsumerBase::acquireBufferLocked(android::BufferItem*, long, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::details::return_status::operator=(android::hardware::details::return_status&&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "binder_insert_free_buffer",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "poll_select_finish",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::graphics::mapper::V4_0::BsMapper::unlock(void*, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, android::hardware::hidl_handle const&)>)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "arch_sync_dma_for_device",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gralloc4::decodeMetadataType(android::gralloc4::InputHidlVec*, android::hardware::graphics::mapper::V4_0::IMapper::MetadataType*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::registerSurfaceControlForCallback(android::sp<android::SurfaceControl> const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "malloc",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BufferQueue::ProxyConsumerListener::addAndGetFrameTimestamps(android::NewFrameEventsEntry const*, android::FrameEventHistoryDelta*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SurfaceControl::getLayerStateHandle() const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gralloc4::encodePlaneLayout(aidl::android::hardware::graphics::common::PlaneLayout const&, android::gralloc4::OutputHidlVec*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::details::return_status::assertOk() const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::deallocate(void*, scudo::Chunk::Origin, unsigned long, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "do_vfs_ioctl",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::__function::__func<arm::mapper::$_14, std::__1::allocator<arm::mapper::$_14>, arm::mapper::common::mapper_error (void const*, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>*)>::__clone(std::__1::__function::__base<arm::mapper::common::mapper_error (void const*, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>*)>*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::Transaction()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_unqueue",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gui::LayerMetadata::LayerMetadata(android::gui::LayerMetadata const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::__hash_table<std::__1::__hash_value_type<unsigned long, long>, std::__1::__unordered_map_hasher<unsigned long, std::__1::__hash_value_type<unsigned long, long>, std::__1::hash<unsigned long>, true>, std::__1::__unordered_map_equal<unsigned long, std::__1::__hash_value_type<unsigned long, long>, std::__1::equal_to<unsigned long>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned long, long>>>::__rehash(unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "alloc_fd",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Gralloc4Mapper::getPlaneLayouts(native_handle const*, std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayout, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayout>>*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::IPCThreadState::waitForResponse(android::Parcel*, int*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Region::boolean_operation(unsigned int, android::Region&, android::Region const&, android::Region const&, int, int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::hidl_string::c_str() const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::GraphicBufferMapper::lockAsync(native_handle const*, unsigned long, unsigned long, android::Rect const&, void**, int, int*, int*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "invoke_syscall",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "getpid",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "free",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SharedBuffer::release(unsigned int) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "memset",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "sg_next",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gralloc4::encodeMetadataType(android::hardware::graphics::mapper::V4_0::IMapper::MetadataType const&, android::gralloc4::OutputHidlVec*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::layer_state_t::~layer_state_t()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::layer_state_t::matrix22_t::write(android::Parcel&) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Parcel::continueWrite(unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "dma_direct_sync_sg_for_cpu",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gralloc4::decodePlaneLayouts(android::hardware::hidl_vec<unsigned char> const&, std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayout, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayout>>*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "drm_fourcc_from_handle(private_handle_t const*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Vector<android::ComposerState>::do_splat(void*, void const*, unsigned long) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Gralloc4Mapper::unlock(native_handle const*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::hidl_string::operator=(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::reallocate(void*, unsigned long, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_get_value_locked",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::RefBase::weakref_type::decWeak(void const*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "atrace_get_enabled_tags",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::Surface::lock(ANativeWindow_Buffer*, ARect*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::enable_if<__is_forward_iterator<android::ListenerCallbacks*>::value, void>::type std::__1::vector<android::ListenerCallbacks, std::__1::allocator<android::ListenerCallbacks>>::__construct_at_end<android::ListenerCallbacks*>(android::ListenerCallbacks*, android::ListenerCallbacks*, unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::gralloc4::validateMetadataType(android::gralloc4::InputHidlVec*, android::hardware::graphics::mapper::V4_0::IMapper::MetadataType const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::__unordered_map_hasher<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, android::CallbackIdHash, true>, std::__1::__unordered_map_equal<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::equal_to<android::CallbackId>, true>, std::__1::allocator<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>>>::__emplace_unique_key_args<android::CallbackId, std::__1::piecewise_construct_t const&, std::__1::tuple<android::CallbackId const&>, std::__1::tuple<>>(android::CallbackId const&, std::__1::piecewise_construct_t const&, std::__1::tuple<android::CallbackId const&>&&, std::__1::tuple<>&&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BufferData::writeToParcel(android::Parcel*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::OccupancyTracker::registerOccupancyChange(unsigned long)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__ioctl",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::hardware::graphics::mapper::V4_0::BsMapper::lock(void*, unsigned long, android::hardware::graphics::mapper::V4_0::IMapper::Rect const&, android::hardware::hidl_handle const&, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, void*)>)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::addTransactionCallback(std::__1::function<void (void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>, void*, android::CallbackId::Type)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::VectorImpl::editArrayImpl()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::~Transaction()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BpBinder::binderHandle() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "poll",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Region::orSelf(android::Region const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BBinder::getMinSchedulerPolicy()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "free_pages",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "selinux_binder_transaction",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::mutex::unlock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Region::flatten(void*, unsigned long) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::get_decode_function(arm::mapper::common::metadata_descriptor const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::GrallocMapper::lock(void*, unsigned long, android::hardware::graphics::mapper::V4_0::IMapper::Rect const&, android::hardware::hidl_handle const&, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, void*)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::internal::Stability::tryMarkCompilationUnit(android::IBinder*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::FlattenableHelper<android::Fence>::getFlattenedSize() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Rect::intersect(android::Rect const&, android::Rect*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_find_next_zero_bit",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::~RefBase()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::vector<android::Rect, android::InlineStdAllocator<android::Rect, 4ul>>::reserve(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferItem::operator=(android::BufferItem const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::hardware::Status::ok()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "system_heap_dma_buf_end_cpu_access",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Fence::~Fence()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::sp<android::Fence>::operator=(android::sp<android::Fence> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "sync_wait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__sched_setscheduler",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gralloc4::encodePlaneLayouts(std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayout, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayout>> const&, android::hardware::hidl_vec<unsigned char>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__check_object_size",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dma_direct_sync_sg_for_device",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "[linker]__libc_shared_globals()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "slab_pre_alloc_hook",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::forceIncStrong(void const*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BnInterface<android::gui::ISurfaceComposerClient>::onAsBinder()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::setBuffer(android::sp<android::SurfaceControl> const&, android::sp<android::GraphicBuffer> const&, std::__1::optional<android::sp<android::Fence>> const&, std::__1::optional<unsigned long> const&, unsigned int, std::__1::function<void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::pair<android::sp<android::ITransactionCompletedListener> const, android::SurfaceComposerClient::CallbackInfo>::~pair()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<android::sp<android::ITransactionCompletedListener>, android::SurfaceComposerClient::CallbackInfo>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<android::sp<android::ITransactionCompletedListener>, android::SurfaceComposerClient::CallbackInfo>, std::__1::__unordered_map_hasher<android::sp<android::ITransactionCompletedListener>, std::__1::__hash_value_type<android::sp<android::ITransactionCompletedListener>, android::SurfaceComposerClient::CallbackInfo>, android::SurfaceComposerClient::TCLHash, true>, std::__1::__unordered_map_equal<android::sp<android::ITransactionCompletedListener>, std::__1::__hash_value_type<android::sp<android::ITransactionCompletedListener>, android::SurfaceComposerClient::CallbackInfo>, std::__1::equal_to<android::sp<android::ITransactionCompletedListener>>, true>, std::__1::allocator<std::__1::__hash_value_type<android::sp<android::ITransactionCompletedListener>, android::SurfaceComposerClient::CallbackInfo>>>::__emplace_unique_key_args<android::sp<android::ITransactionCompletedListener>, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::ITransactionCompletedListener>&&>, std::__1::tuple<>>(android::sp<android::ITransactionCompletedListener> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::ITransactionCompletedListener>&&>&&, std::__1::tuple<>&&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferQueue::ProxyConsumerListener::onFrameDequeued(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::_shrink(unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ProcessState::getStrongProxyForHandle(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__func<void (*)(void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&), std::__1::allocator<void (*)(void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>, void (void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>::__clone(std::__1::__function::__base<void (void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::setBufferCrop(android::sp<android::SurfaceControl> const&, android::Rect const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ListenerCallbacks::ListenerCallbacks(android::ListenerCallbacks const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionCompletedListener::addSurfaceControlToCallbacks(android::SurfaceComposerClient::CallbackInfo&, android::sp<android::SurfaceControl> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BLASTBufferQueue::onFrameAvailable(android::BufferItem const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "schedule_hrtimeout_range_clock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__base<void (android::hardware::graphics::bufferqueue::V2_0::Status, android::hardware::graphics::common::V1_2::HardwareBuffer const&, unsigned int)>::~__base()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::setDataSize(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::hardware::details::return_status::onValueRetrieval() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gralloc4::decodePlaneLayout(android::gralloc4::InputHidlVec*, aidl::android::hardware::graphics::common::PlaneLayout*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pfn_is_map_memory",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "clock_gettime",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "queued_spin_lock_slowpath",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "remove_wait_queue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::insertAt(void const*, unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dma_resv_wait_timeout",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo_realloc",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<android::CallbackId, void*>*>, bool> std::__1::__hash_table<android::CallbackId, android::CallbackIdHash, std::__1::equal_to<android::CallbackId>, std::__1::allocator<android::CallbackId>>::__emplace_unique_key_args<android::CallbackId, android::CallbackId&>(android::CallbackId const&, android::CallbackId&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::dataSize() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "int android::Parcel::write<android::Rect>(android::LightFlattenable<android::Rect> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::hardware::graphics::mapper::V4_0::BsMapper::get(void*, android::hardware::graphics::mapper::V4_0::IMapper::MetadataType const&, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, android::hardware::hidl_vec<unsigned char> const&)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::FlattenableHelper<android::Fence>::flatten(void*, unsigned long, int*, unsigned long) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::HdrMetadata::getFlattenedSize() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_cond_broadcast",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo_malloc",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::add(void const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gralloc4::encodePlaneLayoutComponent(aidl::android::hardware::graphics::common::PlaneLayoutComponent const&, android::gralloc4::OutputHidlVec*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::ipcObjectsCount() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_thread_write",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::common::get_plane_layouts(private_handle_t const*, std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayout, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayout>>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_q_lock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "get_futex_key",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionCompletedListener::setReleaseBufferCallback(android::ReleaseCallbackId const&, std::__1::function<void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo_free",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "int android::Parcel::readAligned<int>(int*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferQueueConsumer::acquireBuffer(android::BufferItem*, long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::CallbackId::writeToParcel(android::Parcel*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Singleton<android::BufferCache>::getInstance()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionCompletedListener::addCallbackFunctionLocked(std::__1::function<void (long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)> const&, std::__1::unordered_set<android::sp<android::SurfaceControl>, android::SurfaceComposerClient::SCHash, std::__1::equal_to<android::sp<android::SurfaceControl>>, std::__1::allocator<android::sp<android::SurfaceControl>>> const&, android::CallbackId::Type)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Surface::hook_perform(ANativeWindow*, int, ...)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::IPCThreadState::transact(int, unsigned int, android::Parcel const&, android::Parcel*, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "expand_files",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "kfree",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::mutex::unlock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_get_object",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gui::FrameTimelineInfo::writeToParcel(android::Parcel*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "avc_has_perm",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::setApplyToken(android::sp<android::IBinder> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__ppoll",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wait_setup",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "fd_install",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__fdget",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<int, void*>*>, bool> std::__1::__hash_table<int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<int>>::__emplace_unique_key_args<int, int const&>(int const&, int const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "security_file_ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::common::set_dataspace(imported_handle const*, aidl::android::hardware::graphics::common::Dataspace const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "selinux_file_ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dma_resv_iter_walk_unlocked",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gui::WindowInfoHandle::WindowInfoHandle()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::RefBase()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__base<void (android::hardware::graphics::mapper::V4_0::Error, android::hardware::hidl_handle const&)>::~__base()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "unsigned long std::__1::__hash_table<int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<int>>::__erase_unique<int>(int const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferItem::BufferItem()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::getWeakRefs() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::GraphicBufferMapper::unlockAsync(native_handle const*, int*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::internal::Stability::getLocalLevel()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "[linker]__loader_shared_globals",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayoutComponent, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayoutComponent>>::__append(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::GrallocMapper::set(void*, android::hardware::graphics::mapper::V4_0::IMapper::MetadataType const&, android::hardware::hidl_vec<unsigned char> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::hardware::hidl_string::copyFrom(char const*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<android::sp<android::SurfaceControl>, void*>*>, bool> std::__1::__hash_table<android::sp<android::SurfaceControl>, android::SurfaceComposerClient::SCHash, std::__1::equal_to<android::sp<android::SurfaceControl>>, std::__1::allocator<android::sp<android::SurfaceControl>>>::__emplace_unique_key_args<android::sp<android::SurfaceControl>, android::sp<android::SurfaceControl> const&>(android::sp<android::SurfaceControl> const&, android::sp<android::SurfaceControl> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__func<arm::mapper::$_14, std::__1::allocator<arm::mapper::$_14>, arm::mapper::common::mapper_error (void const*, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>*)>::operator()(void const*&&, std::__1::vector<unsigned char, std::__1::allocator<unsigned char>>*&&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_dec_node_tmpref",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "int android::Parcel::writeAligned<float>(float)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "arm::mapper::GrallocMapper::unlock(void*, std::__1::function<void (android::hardware::graphics::mapper::V4_0::Error, android::hardware::hidl_handle const&)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Region::Region(android::Region const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "dma_sync_sg_for_device",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::ipcDataSize() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::writeInterfaceToken(android::String16 const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::write(android::Parcel::FlattenableHelperInterface const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_alloc_new_buf",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_do_deferred_txn_copies",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::editItemLocation(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_alloc_copy_from_buffer",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__system_property_serial",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ProcessState::lookupHandleLocked(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ui::Transform::Transform()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__func<std::__1::__bind<void (&)(android::wp<android::BLASTBufferQueue>, android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>), android::wp<android::BLASTBufferQueue>, std::__1::placeholders::__ph<1> const&, std::__1::placeholders::__ph<2> const&, std::__1::placeholders::__ph<3> const&>, std::__1::allocator<std::__1::__bind<void (&)(android::wp<android::BLASTBufferQueue>, android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>), android::wp<android::BLASTBufferQueue>, std::__1::placeholders::__ph<1> const&, std::__1::placeholders::__ph<2> const&, std::__1::placeholders::__ph<3> const&>>, void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>::__clone() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::region_operator<android::Rect>::operator()(android::region_operator<android::Rect>::region_rasterizer&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::gralloc4::decodePlaneLayoutComponents(android::gralloc4::InputHidlVec*, std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayoutComponent, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayoutComponent>>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BpBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::writeString16(char16_t const*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "internal_format_t::get_base_info() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_alloc_copy_user_to_buffer",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::setReleaseBufferCallback(android::BufferData*, std::__1::function<void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Surface::queueBuffer(ANativeWindowBuffer*, int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::enable_if<__is_forward_iterator<std::__1::__wrap_iter<android::Rect const*>>::value && is_constructible<android::Rect, std::__1::iterator_traits<std::__1::__wrap_iter<android::Rect const*>>::reference>::value, std::__1::__wrap_iter<android::Rect*>>::type std::__1::vector<android::Rect, android::InlineStdAllocator<android::Rect, 4ul>>::insert<std::__1::__wrap_iter<android::Rect const*>>(std::__1::__wrap_iter<android::Rect const*>, std::__1::__wrap_iter<android::Rect const*>, std::__1::__wrap_iter<android::Rect const*>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "operator delete[](void*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__close",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "operator new(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pl330_tasklet",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "video_profile::record(video_profile::Stage, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "kmalloc_trace",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::mutex::~mutex()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__func<arm::mapper::get_decode_function(arm::mapper::common::metadata_descriptor const&)::$_0, std::__1::allocator<arm::mapper::get_decode_function(arm::mapper::common::metadata_descriptor const&)::$_0>, arm::mapper::common::mapper_error (unsigned char const*, unsigned long, void*)>::__clone(std::__1::__function::__base<arm::mapper::common::mapper_error (unsigned char const*, unsigned long, void*)>*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SharedBuffer::attemptEdit() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__arch_copy_to_user",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_get_node_refs_for_txn",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::region_operator<android::Rect>::SpannerInner::prepare(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__arm64_sys_futex",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "locks_remove_posix",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_do_set_priority",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "int android::Parcel::writeAligned<int>(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::writeObject(flat_binder_object const&, bool)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "native_handle_init",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::popBatch(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "void std::__1::vector<aidl::android::hardware::graphics::common::PlaneLayout, std::__1::allocator<aidl::android::hardware::graphics::common::PlaneLayout>>::__emplace_back_slow_path<>()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Region::rasterizer::~rasterizer()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "FdTableImpl<128ul>::at(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::_grow(unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceComposerClient::Transaction::clear()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "imported_handle* handle_cast<imported_handle>(native_handle*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Surface::unlockAndPost()",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25759,
+        "name": "KairoDos-audio",
+        "seconds": 1.4271355,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.01005025,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.115577875
+          },
+          {
+            "name": "__memmove_aarch64_simd",
+            "seconds": 0.105527625
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.07035175
+          },
+          {
+            "name": "void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "android::ClientProxy::obtainBuffer(android::Proxy::Buffer*, timespec const*, timespec*)",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.040201
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.040201
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.040201
+          },
+          {
+            "name": "android::AudioTrack::releaseBuffer(android::AudioTrack::Buffer const*)",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "android::AudioTrack::obtainBuffer(android::AudioTrack::Buffer*, timespec const*, timespec*, unsigned long*)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "art::(anonymous namespace)::ScopedCheck::Check(art::ScopedObjectAccess&, bool, char const*, art::(anonymous namespace)::JniValueType*) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "art::GenericJniMethodEnd(art::Thread*, unsigned int, jvalue, unsigned long, art::ArtMethod*)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::sp<android::AudioTrackClientProxy>::operator=(android::sp<android::AudioTrackClientProxy> const&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::jit::Jit::PrepareForOsr(art::ArtMethod*, unsigned int, unsigned int*)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::(anonymous namespace)::CheckJNI::ReleasePrimitiveArrayElements(char const*, art::Primitive::Type, _JNIEnv*, _jarray*, void*, int) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::gc::space::ContinuousSpace::Contains(art::mirror::Object const*) const",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::jit::Jit::MaybeDoOnStackReplacement(art::Thread*, art::ArtMethod*, unsigned int, int, art::JValue*)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::RuntimeCallbacks::HaveLocalsChanged()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "art::ResolveFieldWithAccessChecks(art::Thread*, art::ClassLinker*, unsigned short, art::ArtMethod*, bool, bool, unsigned long)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "unknown",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "art::gc::Heap::IsNonDiscontinuousSpaceHeapAddress(void const*) const",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "ExecuteNterpImpl",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "art::gc::Heap::IsValidObjectAddress(void const*) const",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "get_futex_key",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "int android_media_AudioTrack_writeArray<_jshortArray*>(_JNIEnv*, _jobject*, _jshortArray*, int, int, int, unsigned char)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "futex_unqueue",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "kairo_staging_read_audio",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::(anonymous namespace)::ScopedCheck::CheckPossibleHeapValue(art::ScopedObjectAccess&, char, art::(anonymous namespace)::JniValueType) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::ArtMethod* art::FindMethodToCall<(art::InvokeType)1>(art::Thread*, art::ArtMethod*, art::ObjPtr<art::mirror::Object>*, art::Instruction const&, bool, bool*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_get_value_locked",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::jit::Jit::CanInvokeCompiledCode(art::ArtMethod*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::instrumentation::Instrumentation::NeedsDexPcEvents(art::ArtMethod*, art::Thread*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "memset",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::JNI<true>::GetShortArrayElements(_JNIEnv*, _jshortArray*, unsigned char*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::(anonymous namespace)::ScopedCheck::CheckInstance(art::ScopedObjectAccess&, art::(anonymous namespace)::ScopedCheck::InstanceKind, _jobject*, bool) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::(anonymous namespace)::ScopedCheck::CheckFieldAccess(art::ScopedObjectAccess&, _jobject*, _jfieldID*, bool, art::Primitive::Type) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::JNIEnvExt::CheckNoHeldMonitors()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::RefBase::decStrong(void const*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "artQuickToInterpreterBridge",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "artQuickGenericJniTrampoline",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::Thread::MaybePopDeoptimizedStackedShadowFrame()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::ObjPtr<art::mirror::PrimitiveArray<short>> art::JNI<false>::DecodeAndCheckArrayType<_jshortArray*, short, art::mirror::PrimitiveArray<short>>(art::ScopedObjectAccess&, _jshortArray*, char const*, char const*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "operator delete[](void*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "nterp_op_return",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "try_to_wake_up",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::(anonymous namespace)::ScopedCheck::CheckArray(art::ScopedObjectAccess&, _jarray*) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::mirror::FindFieldByNameAndType(art::DexFile const&, art::LengthPrefixedArray<art::ArtField>*, std::__1::basic_string_view<char, std::__1::char_traits<char>>, std::__1::basic_string_view<char, std::__1::char_traits<char>>) (.__uniq.320034727480641065492512782862364773732)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "free",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Mutex::ExclusiveLock(art::Thread*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::StackVisitor::GetCurrentQuickFrameInfo() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "void art::StackVisitor::WalkStack<(art::StackVisitor::CountTransitions)0>(bool)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Thread::ObserveAsyncException()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "Java_com_mrjackspade_kairodos_MainActivity_nativeStatus",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::EnsureInitialized(art::Thread*, art::ShadowFrame*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "NterpGetInstanceFieldOffset",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "wake_q_add_safe",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::ArtMethod* art::FindMethodToCall<(art::InvokeType)2>(art::Thread*, art::ArtMethod*, art::ObjPtr<art::mirror::Object>*, art::Instruction const&, bool, bool*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::(anonymous namespace)::CheckJNI::GetPrimitiveArrayElements(char const*, art::Primitive::Type, _JNIEnv*, _jarray*, unsigned char*) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::jit::Jit::MethodEntered(art::Thread*, art::ArtMethod*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::JniTransitionReferenceVisitor<true>::VisitFrame()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "malloc",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "nterp_op_move",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__cfi_slowpath",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::jit::JitCodeCache::LookupOsrMethodHeader(art::ArtMethod*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Monitor::MonitorExit(art::Thread*, art::ObjPtr<art::mirror::Object>)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "nterp_op_add_int",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::instrumentation::Instrumentation::ShouldDeoptimizeCaller(art::Thread*, art::ArtMethod**)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Thread::IsJniTransitionReference(_jobject*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::mutex::lock()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::JNI<true>::ReleaseShortArrayElements(_JNIEnv*, _jshortArray*, short*, int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "free_unref_page_prepare",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocksImpl(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, scudo::SizeClassAllocator64<scudo::AndroidConfig>::RegionInfo*, unsigned int*, unsigned int, bool)::'lambda'(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int)::operator()(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::verifier::ImpreciseConstHiType::IsImpreciseConstantHi() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "nterp_op_move_result",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__ndk1::__shared_mutex_base::lock_shared()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "plist_add",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "internal_get_user_pages_fast",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Runtime::IsActiveTransaction() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__list_add_valid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "nterp_op_if_nez",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::AudioTrack::write(void const*, unsigned long, bool)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Runtime::UseJitCompilation() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "operator new[](unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::releaseToOSMaybe(scudo::SizeClassAllocator64<scudo::AndroidConfig>::RegionInfo*, unsigned long, scudo::ReleaseToOS)",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25796,
+        "name": "binder:25696_4",
+        "seconds": 0.999999875,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "binder_thread_read",
+            "seconds": 0.055276375
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.05025125
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.03015075
+          },
+          {
+            "name": "android::BLASTBufferQueue::releaseBufferCallbackLocked(android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>, bool)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "android::TransactionCompletedListener::onTransactionCompleted(android::ListenerStats)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::BLASTBufferQueue::transactionCallback(long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android_fdsan_exchange_owner_tag",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__1::deque<std::__1::function<void ()>, std::__1::allocator<std::__1::function<void ()>>>::__add_back_capacity()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<android::sp<android::IBinder>, android::sp<android::SurfaceControl>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<android::sp<android::IBinder>, android::sp<android::SurfaceControl>>, std::__1::__unordered_map_hasher<android::sp<android::IBinder>, std::__1::__hash_value_type<android::sp<android::IBinder>, android::sp<android::SurfaceControl>>, android::SurfaceComposerClient::IBinderHash, true>, std::__1::__unordered_map_equal<android::sp<android::IBinder>, std::__1::__hash_value_type<android::sp<android::IBinder>, android::sp<android::SurfaceControl>>, std::__1::equal_to<android::sp<android::IBinder>>, true>, std::__1::allocator<std::__1::__hash_value_type<android::sp<android::IBinder>, android::sp<android::SurfaceControl>>>>::__emplace_unique_key_args<android::sp<android::IBinder>, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::IBinder> const&>, std::__1::tuple<>>(android::sp<android::IBinder> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<android::sp<android::IBinder> const&>&&, std::__1::tuple<>&&)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "void std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, void*>>>::__destroy<std::__1::pair<android::CallbackId const, android::TransactionCompletedListener::CallbackTranslation>>(std::__1::integral_constant<bool, false>, std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, void*>>&, std::__1::pair<android::CallbackId const, android::TransactionCompletedListener::CallbackTranslation>*)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "pthread_getspecific",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::IPCThreadState::executeCommand(int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "poll",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::IPCThreadState::processPendingDerefs()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "binder_alloc_copy_from_buffer",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "sync_file_poll",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "alloc_fd",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "binder_alloc_prepare_to_free",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::RefBase::incStrong(void const*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::allocator<android::SurfaceControlStats>::destroy(android::SurfaceControlStats*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "_find_next_zero_bit",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::ConsumerBase::addReleaseFenceLocked(int, android::sp<android::GraphicBuffer>, android::sp<android::Fence> const&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::RefBase::decStrong(void const*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::IPCThreadState::talkWithDriver(bool)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "binder_dec_node",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "cmpxchg_double_slab",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "std::__1::__function::__value_func<void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>::swap(std::__1::__function::__value_func<void (android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>)>&)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "scudo::HybridMutex::tryLock()",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "strlen",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__slab_free",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake_mark",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__tree<std::__1::__value_type<int, android::sp<android::JankDataListener>>, std::__1::__map_value_compare<int, std::__1::__value_type<int, android::sp<android::JankDataListener>>, std::__1::less<int>, true>, std::__1::allocator<std::__1::__value_type<int, android::sp<android::JankDataListener>>>>::destroy(std::__1::__tree_node<std::__1::__value_type<int, android::sp<android::JankDataListener>>, void*>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::findMatchingStat(std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&, android::sp<android::SurfaceControl> const&) (.__uniq.45450631312074835429881721991590974130)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::validateReadData(unsigned long) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::sp<android::Fence>::operator=(android::Fence*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ProcessState::getStrongProxyForHandle(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__ppoll",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocks(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, unsigned int*, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionCompletedListener::popReleaseBufferCallbackLocked(android::ReleaseCallbackId const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionStats::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "expand_files",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::transactionCallbackThunk(void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&) (.__uniq.45450631312074835429881721991590974130)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceStats::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__hash_table<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::__unordered_map_hasher<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, android::CallbackIdHash, true>, std::__1::__unordered_map_equal<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::equal_to<android::CallbackId>, true>, std::__1::allocator<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>>>::__node_insert_multi(std::__1::__hash_node<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, void*>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::truncateFileDescriptors(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__base<void (android::hardware::graphics::bufferqueue::V2_0::Status, android::hardware::graphics::common::V1_2::HardwareBuffer const&, unsigned int)>::~__base()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_free_buf_locked",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferItemConsumer::releaseBuffer(android::BufferItem const&, android::sp<android::Fence> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BufferQueueConsumer::releaseBuffer(int, unsigned long, android::sp<android::Fence> const&, void*, void*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "get_timespec64",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "atrace_get_enabled_tags",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_ioctl_write_read",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::VectorImpl::editItemLocation(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_delete_free_buffer",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__list_del_entry_valid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__function::__func<std::__1::__bind<std::__1::function<void (void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>&, void*&, std::__1::placeholders::__ph<1> const&, std::__1::placeholders::__ph<2> const&, std::__1::placeholders::__ph<3> const&>, std::__1::allocator<std::__1::__bind<std::__1::function<void (void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>&, void*&, std::__1::placeholders::__ph<1> const&, std::__1::placeholders::__ph<2> const&, std::__1::placeholders::__ph<3> const&>>, void (long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)>::__clone() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__close",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::enforceInterface(char16_t const*, unsigned long, android::IPCThreadState*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "operator delete(void*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::forceIncStrong(void const*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_update_ref_for_handle",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "FdTableImpl<128ul>::at(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_debug",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocksImpl(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, scudo::SizeClassAllocator64<scudo::AndroidConfig>::RegionInfo*, unsigned int*, unsigned int, bool)::'lambda'(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int)::operator()(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::weakref_type::decWeak(void const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "int android::Parcel::readAligned<long>(long*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::readObject(bool) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::readString16Inplace(unsigned long*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "void std::__1::allocator<android::SurfaceControlStats>::construct<android::SurfaceControlStats, android::sp<android::SurfaceControl>&, long const&, std::__1::variant<long, android::sp<android::Fence>> const&, android::sp<android::Fence> const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int> const&, android::FrameEventHistoryStats const&, unsigned int const&>(android::SurfaceControlStats*, android::sp<android::SurfaceControl>&, long const&, std::__1::variant<long, android::sp<android::Fence>> const&, android::sp<android::Fence> const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int> const&, android::FrameEventHistoryStats const&, unsigned int const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_alloc_free_buf",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__fcntl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::popBatch(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "free",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::releaseBufferCallbackThunk(android::wp<android::BLASTBufferQueue>, android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>) (.__uniq.45450631312074835429881721991590974130)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionStats::TransactionStats(android::TransactionStats const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__arm64_sys_fcntl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_futex",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "get_unused_fd_flags",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "wake_q_add_safe",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::readInt32(int*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BnInterface<android::ITransactionCompletedListener>::getInterfaceDescriptor() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ReleaseCallbackId::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::deallocate(void*, scudo::Chunk::Origin, unsigned long, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "local_bh_enable",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_transaction_priority",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::read(android::Parcel::FlattenableHelperInterface&) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Fence::getStatus()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_put_node_cmd",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__futex_unqueue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_ioctl",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25755,
+        "name": "SDLAudioP2",
+        "seconds": 0.638190875,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.115577875
+          },
+          {
+            "name": "nanosleep",
+            "seconds": 0.075376875
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.0603015
+          },
+          {
+            "name": "SDL_Delay",
+            "seconds": 0.040201
+          },
+          {
+            "name": "fpsimd_restore_current_state",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "__arm64_sys_nanosleep",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "do_nanosleep",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "__local_bh_enable_ip",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "invoke_syscall",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "el0_svc_common",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__schedule",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "SDL_RunAudio",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "hrtimer_try_to_cancel",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "__aarch64_ldset4_acq_rel",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "SDL_AtomicGet",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "memset",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "pthread_mutex_unlock",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "free_unref_page_prepare",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "hrtimer_start_range_ns",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "hrtimer_init_sleeper",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__errno",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "local_bh_enable",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__arch_copy_from_user",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25696,
+        "name": "com.loxifi.kairodos",
+        "seconds": 0.442211,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.145728625,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "unknown",
+            "seconds": 0.296482375
+          },
+          {
+            "name": "com.mrjackspade.kairodos.MainActivity.pollSession$lambda$0",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "memset",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "art::GenericJniMethodEnd(art::Thread*, unsigned int, jvalue, unsigned long, art::ArtMethod*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_epoll_wait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "artQuickGenericJniTrampoline",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "java.lang.StringBuilder.toString",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::PaintGlue::setTextScaleX(long, float) (.__uniq.295321301672566532533700490907482056561)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::ArtMethod* art::FindMethodToCall<(art::InvokeType)1>(art::Thread*, art::ArtMethod*, art::ObjPtr<art::mirror::Object>*, art::Instruction const&, bool, bool*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__epoll_pwait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::Thread::ObserveAsyncException()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::ComputeGenericJniFrameSize::WalkHeader(art::BuildNativeCallFrameStateMachine<art::ComputeNativeCallFrameSize>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_write_unlock_irq",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "NterpGetMethod",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "NterpGetShorty",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::(anonymous namespace)::CheckJNI::NewPrimitiveArray(char const*, _JNIEnv*, int, art::Primitive::Type) (.__uniq.99033978352804627313491551960229047428)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "getuid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::QuickArgumentVisitor::VisitArguments()",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "hrtimer_init_sleeper",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__lock_text_start",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_getspecific",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::jit::JitCodeCache::ContainsPc(void const*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "art::(anonymous namespace)::CheckJNI::NewLongArray(_JNIEnv*, int) (.__uniq.99033978352804627313491551960229047428.llvm.2502997565788906938)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__fget_files",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "com.mrjackspade.kairo.frontend.InputModeDecider.observe",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__kernel_clock_gettime",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25712,
+        "name": "binder:25696_3",
+        "seconds": 0.3819095,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::allocate(unsigned long, scudo::Chunk::Origin, unsigned long, bool)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "android::TransactionCompletedListener::onTransactionCompleted(android::ListenerStats)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "binder_thread_read",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "_raw_spin_lock",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "android::IPCThreadState::talkWithDriver(bool)",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BufferQueueConsumer::releaseBuffer(int, unsigned long, android::sp<android::Fence> const&, void*, void*)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "_raw_spin_unlock_irqrestore",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::BLASTBufferQueue::releaseBufferCallbackLocked(android::ReleaseCallbackId const&, android::sp<android::Fence> const&, std::__1::optional<unsigned int>, bool)",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "get_unused_fd_flags",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "poll_freewait",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::ListenerStats::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::transactionCallbackThunk(void*, long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&) (.__uniq.45450631312074835429881721991590974130)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::weakref_type::decWeak(void const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "ioctl_has_perm",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceControl::setTransformHint(unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_ioctl_write_read",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionStats::TransactionStats(android::TransactionStats const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "syscall",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__list_add_valid",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::IPCThreadState::executeCommand(int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_put_node_cmd",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "atrace_get_enabled_tags",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionStats::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_alloc_copy_to_buffer",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "_find_next_zero_bit",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::TransactionCompletedListener::popReleaseBufferCallbackLocked(android::ReleaseCallbackId const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::validateReadData(unsigned long) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BnInterface<android::ITransactionCompletedListener>::getInterfaceDescriptor() const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_wake",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__ioctl",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::ipcSetDataReference(unsigned char const*, unsigned long, unsigned long long const*, unsigned long, void (*)(unsigned char const*, unsigned long, unsigned long long const*, unsigned long))",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::continueWrite(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::Parcel::truncateFileDescriptors(unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_sys_poll",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "alloc_fd",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "timespec_from_ms",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "std::__1::__hash_table<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::__unordered_map_hasher<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, android::CallbackIdHash, true>, std::__1::__unordered_map_equal<android::CallbackId, std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, std::__1::equal_to<android::CallbackId>, true>, std::__1::allocator<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>>>::__node_insert_multi(std::__1::__hash_node<std::__1::__hash_value_type<android::CallbackId, android::TransactionCompletedListener::CallbackTranslation>, void*>*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_getspecific",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::BLASTBufferQueue::transactionCallback(long, android::sp<android::Fence> const&, std::__1::vector<android::SurfaceControlStats, std::__1::allocator<android::SurfaceControlStats>> const&)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::RefBase::incStrong(void const*) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "android::SurfaceStats::readFromParcel(android::Parcel const*)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "binder_update_ref_for_handle",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25749,
+        "name": "binder:25696_3",
+        "seconds": 0.226130625,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "syscall",
+            "seconds": 0.035175875
+          },
+          {
+            "name": "__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)",
+            "seconds": 0.025125625
+          },
+          {
+            "name": "@plt",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "android::AsyncWorker::run()",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "fpsimd_load_state",
+            "seconds": 0.0201005
+          },
+          {
+            "name": "std::__1::__function::__func<android::AsyncProducerListener::onBufferReleased()::'lambda'(), std::__1::allocator<android::AsyncProducerListener::onBufferReleased()::'lambda'()>, void ()>::destroy_deallocate()",
+            "seconds": 0.015075375
+          },
+          {
+            "name": "handle_softirqs",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "futex_wait",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "android::RefBase::incStrong(void const*) const",
+            "seconds": 0.01005025
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocks(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, unsigned int*, unsigned int)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "finish_task_switch",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "do_notify_resume",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocator64<scudo::AndroidConfig>::pushBlocksImpl(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>*, unsigned long, scudo::SizeClassAllocator64<scudo::AndroidConfig>::RegionInfo*, unsigned int*, unsigned int, bool)::'lambda'(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int)::operator()(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::BatchGroup*, unsigned int*, unsigned int) const",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::drain(scudo::SizeClassAllocatorLocalCache<scudo::SizeClassAllocator64<scudo::AndroidConfig>>::PerClass*, unsigned long)",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__futex_queue",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "futex_get_value_locked",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "pthread_mutex_lock",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "schedule",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "__local_bh_enable_ip",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "invoke_syscall",
+            "seconds": 0.005025125
+          },
+          {
+            "name": "scudo::Allocator<scudo::AndroidConfig, &scudo_malloc_postinit>::quarantineOrDeallocateChunk(scudo::Options, void*, scudo::Chunk::UnpackedHeader*, unsigned long)",
+            "seconds": 0.005025125
+          }
+        ]
+      },
+      {
+        "tid": 25705,
+        "name": "Jit thread pool",
+        "seconds": 0.005025125,
+        "normalObservedInclusiveSeconds": 0.0,
+        "emptyCallchainSeconds": 0.0,
+        "normalChildrenSeconds": {},
+        "functions": [
+          {
+            "name": "mspace_malloc",
+            "seconds": 0.005025125
+          }
+        ]
+      }
+    ],
+    "limits": [
+      "Sample locations are not individual instruction latency.",
+      "Frame-pointer ancestry may omit frames or tail calls; observed interpreter ancestry is not a strict bound.",
+      "Unknown anonymous samples are not automatically all proven JIT instructions.",
+      "Profile observation differs from light timing runs."
+    ]
+  },
+  "codeCache": {
+    "mainTid": 25739,
+    "mainSeconds": 104.49244925,
+    "codeCacheRegionSeconds": 50.76381275,
+    "otherUnknownSeconds": 0.73366825,
+    "regionBytes": 8429568,
+    "region": [
+      "0x72e8c5b000",
+      "0x72e9465000"
+    ],
+    "basis": "The sole contiguous anonymous executable region whose size exactly matches the Android dynrec cache allocation, including alignment and link-block space.",
+    "limits": "Region-level classification inferred from the captured maps and allocator size; it does not identify individual generated instructions or guest opcodes, and is not individual instruction latency."
+  },
+  "remainingFlags": {
+    "knownConditionSelfSeconds": 2.251256,
+    "zeroNonzeroConditionSelfSeconds": 0.417085375,
+    "getCfObservedCallersSeconds": {
+      "unknown": 1.894472125,
+      "CPU_Core_Dynrec_Run()": 0.015075375
+    },
+    "getCfSampledAddressesSeconds": {
+      "0x36fd84": 0.346733625,
+      "0x36fdc0": 0.23115575,
+      "0x36fd88": 0.2211055,
+      "0x36fd98": 0.206030125,
+      "0x36fda0": 0.1407035,
+      "0x36fd7c": 0.120603,
+      "0x36fdb0": 0.075376875,
+      "0x36fdb8": 0.075376875,
+      "0x36fda4": 0.07035175,
+      "0x36fdbc": 0.07035175,
+      "0x36fd90": 0.055276375,
+      "0x36fdac": 0.040201,
+      "0x36fe00": 0.03015075,
+      "0x36feb4": 0.03015075,
+      "0x36fd80": 0.03015075,
+      "0x36fdc8": 0.025125625,
+      "0x36fe0c": 0.0201005,
+      "0x36fd94": 0.0201005,
+      "0x36fea8": 0.015075375,
+      "0x36fe10": 0.015075375,
+      "0x36fdcc": 0.015075375,
+      "0x36fe04": 0.01005025,
+      "0x36ff5c": 0.01005025,
+      "0x36febc": 0.005025125,
+      "0x36ff68": 0.005025125,
+      "0x36fe24": 0.005025125,
+      "0x36feb0": 0.005025125,
+      "0x36ff38": 0.005025125,
+      "0x36ff64": 0.005025125,
+      "0x36fda8": 0.005025125
+    },
+    "limits": "Self samples exclude call-site setup and are not a strict upper bound on an optimization; frame-pointer callers can omit tail calls. No producer or instruction latency is inferred from these samples alone."
+  },
+  "codePlacement": {
+    "example": {
+      "symbol": "PCSPEAKER_PicCallback()",
+      "ip": "0x72f49049ec",
+      "elfAddress": "0x67a9ec",
+      "bias": "0x72f428a000"
+    },
+    "helpers": {
+      "_Z21mem_readb_checked_drcj": "0x72f45fd954",
+      "_Z21mem_readw_checked_drcj": "0x72f46022d8",
+      "_Z21mem_readd_checked_drcj": "0x72f4687ee4",
+      "_Z22mem_writeb_checked_drcjh": "0x72f461ba1c",
+      "_Z22mem_writew_checked_drcjt": "0x72f461b740",
+      "_Z22mem_writed_checked_drcjj": "0x72f46a0a5c"
+    },
+    "gaps": [
+      {
+        "start": "0x72f0fbc000",
+        "end": "0x72f1000000",
+        "bytes": 278528
+      },
+      {
+        "start": "0x72f4200000",
+        "end": "0x72f428a000",
+        "bytes": 565248
+      },
+      {
+        "start": "0x72f772a000",
+        "end": "0x72f7800000",
+        "bytes": 876544
+      }
+    ],
+    "maxGapBytes": 876544,
+    "requiredContiguousCacheBytes": 8429568,
+    "limits": "Read-only end-of-profile layout around the six exact checked-memory helpers; not a reservation or proof of startup/future layouts. Tests the union of their direct-BL ranges, a looser window than requiring the entire cache to reach all helpers."
+  },
+  "counters": "Performance counter statistics:\n\n#             count  event_name            # count / runtime\n    264,990,526,692  cpu-cycles            # 1.810632 GHz      \n    153,329,861,098  instructions          # 1.048 G/sec       \n  145460.247295(ms)  task-clock            # 1.212152 cpus used\n     41,071,631,981  cache-references      # 280.654 M/sec     \n        464,018,814  cache-misses          # 3.171 M/sec       \n     14,285,725,196  branch-instructions   # 97.623 M/sec      \n      1,253,615,058  branch-misses         # 8.567 M/sec       \n\nTotal test time: 120.001639 seconds.\n",
+  "recordLog": "simpleperf I cmd_record.cpp:826] Recorded for 119.927 seconds. Start post processing.\nsimpleperf I cmd_record.cpp:927] Samples recorded: 28,950. Samples lost: 0.\n",
+  "rawSha256": {
+    "perf.data": "298f23e1dfe6d9f28dba3e441004a03d99219089779c7bdd6e423df83dd4795f",
+    "maps.txt": "95f4a2f2031de211590b44bacffa7b03604a2a0713acb0ad52e7e127fbc9947e",
+    "samples.jsonl": "df494aec0edec824de6e4c9f241f17c899b0b283544c3209ce022e5e08a37fcc"
+  }
+}

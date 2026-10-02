@@ -1,0 +1,77 @@
+{
+  "device": "RG DS",
+  "package": "com.loxifi.kairodos",
+  "installedApk": "7bb57809dd2949a8c6ed7284352dd2f06633c9414d00a9c54b55d44df30427bc  /data/app/~~Po9useIdAwo9ZQLh9Xxm-Q==/com.loxifi.kairodos-Pwt_SfLVdsC6njS-TAmRBw==/base.apk",
+  "gameConfig": "1999e2a9be9ed2094649bd511d71c1217cd39fe33dc45dec6b5abafcb3a5fba5  /data/user/0/com.loxifi.kairodos/files/saves/bdf7b29bc62b029f479a843565195c61980979e581c2c59087c3e966cbd07118/staging/drive/Duke3D/DUKE3D/DUKE3D.CFG",
+  "fixtures": {
+    "doom": {
+      "appSha256": "7bb57809dd2949a8c6ed7284352dd2f06633c9414d00a9c54b55d44df30427bc",
+      "testApkSha256": "1d8d6bc454622fcd43960b34ebdd1852c306e314d0520919a03a70939c0a5217",
+      "command": "am instrument -w -e stagingArchive '/sdcard/Download/KairoDos-Installers/DOOM (1993) - Installed.zip' com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation",
+      "result": "Staging doom: frames=1093, PCM frames=3546112, peak=9335; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=9169, executed=23950271; reset: translated=9300, executed=25151731; second launch: translated=8793, executed=24450405; JIT mappings released"
+    },
+    "cannon": {
+      "appSha256": "7bb57809dd2949a8c6ed7284352dd2f06633c9414d00a9c54b55d44df30427bc",
+      "testApkSha256": "1d8d6bc454622fcd43960b34ebdd1852c306e314d0520919a03a70939c0a5217",
+      "command": "am instrument -w -e stagingArchive '/sdcard/Download/KairoDos-Installers/Cannon Fodder (1993).zip' com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation",
+      "result": "Staging cannfod: frames=813, PCM frames=1876992, peak=9199; pause, surface, reset, sequential launches and paused exit OK; ARM64 dynarec default: translated=275, executed=556600; reset: translated=273, executed=573454; second launch: translated=272, executed=539863; JIT mappings released"
+    }
+  },
+  "sourceVerification": {
+    "baseRevision": "99c4c7666bc2e09b1e9449e79c9be763fcfde716",
+    "sharedRevision": "56be86b8ae6590a9d4381c1f0e68cd17b36bf152",
+    "changedCoreSourceFiles": [
+      "third_party/dosbox-staging/src/cpu/lazyflags.h"
+    ],
+    "headerTextSha256": "5cc340756945607b75d36e22330ab7973f578fab64f16c200a4ff147e3d89bb5",
+    "apkBuild": "Full normal Gradle build from exact committed snapshot plus this now-adopted header; PGO on, diagnostics off",
+    "artifact": {
+      "apkSha256": "7bb57809dd2949a8c6ed7284352dd2f06633c9414d00a9c54b55d44df30427bc",
+      "elfSha256": "a4d801922a69bfd89b44013f63c75b05af868b4b95bca7d369f5f3336d0627a1",
+      "packagedCoreSha256": "5e7995bb04b1aabcce747df007064203d9703955eef4aada582dc5af5a09e238",
+      "source": {
+        "rootRevision": "99c4c7666bc2e09b1e9449e79c9be763fcfde716",
+        "sharedRevision": "56be86b8ae6590a9d4381c1f0e68cd17b36bf152",
+        "source": "Committed baseline plus the explicitly recorded experimental header change"
+      },
+      "options": {
+        "KAIRO_GUEST_PROFILE": "OFF",
+        "KAIRO_OPL_VERIFY": "OFF",
+        "KAIRO_OPL_STRESS": "OFF",
+        "KAIRO_OPL_WORKER": "ON",
+        "KAIRO_PGO": "ON"
+      },
+      "matchingSections": [
+        ".text",
+        ".rodata",
+        ".dynsym",
+        ".note.gnu.build-id"
+      ],
+      "experimentalSource": {
+        "base": {
+          "rootRevision": "99c4c7666bc2e09b1e9449e79c9be763fcfde716",
+          "sharedRevision": "56be86b8ae6590a9d4381c1f0e68cd17b36bf152",
+          "source": "Exact Git archive plus exact committed delta; uncommitted root/shared files excluded"
+        },
+        "modifiedFile": "third_party/dosbox-staging/src/cpu/lazyflags.h",
+        "modifiedTextSha256": "5cc340756945607b75d36e22330ab7973f578fab64f16c200a4ff147e3d89bb5",
+        "patchSha256": "0aa76c719f929d3023c7a44cf0fd91454e1f194d9a73b1d496dcacc526878765"
+      }
+    },
+    "abiAudit": {
+      "baseline": "product-combined",
+      "candidate": "product-lflags",
+      "removed": [
+        [
+          "B",
+          "lflags"
+        ]
+      ],
+      "added": [],
+      "changedApkPayloads": [
+        "lib/arm64-v8a/libdosbox_staging.so"
+      ]
+    }
+  },
+  "deployment": "Standard streamed adb install -r through InstallRgDs.ps1; same app package, no uninstall"
+}

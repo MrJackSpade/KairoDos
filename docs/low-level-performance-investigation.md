@@ -1,6 +1,8 @@
 # Low-level performance investigation
 
-Status: active. This investigation is not complete when its first experiment ends.
+Status: complete. All ledger targets have a measured result or evidence-based
+exclusion; the final normal-product result and deployment are recorded in the
+[integration report](low-level-final-integration.md).
 
 ## Completion gate
 
@@ -18,13 +20,13 @@ configuration fixed. Report surface submissions separately from unique FPS.
 | --- | --- | --- |
 | Checked-read return dependency | Time in cached lookup, helper, scratch store and generated reload; preserve exception and page-crossing paths | Register-return candidate rejected after normal-PGO A/B/A; [evidence](arm64-read-return-evaluation.md) |
 | Generated ARM64 register/instruction sequences | Time-valid sampled generated instructions, redundant moves/materialization or spills | Fixed-size literal calls rejected after normal-PGO A/B/A; [evidence](arm64-literal-call-evaluation.md). Adjacent register forwarding low priority at 0.191 sampled seconds |
-| Flag calculation | Current cost of lazy flags, repeated computation and flag helper calls; preserve partial flags | Runtime mask tables rejected; [evidence](arm64-flag-mask-evaluation.md). CMP/TEST Jcc specialization retained for integration after repeated +6.28% normal-PGO comparison and runtime producer verification; [evidence](arm64-known-flags-evaluation.md) |
+| Flag calculation | Current cost of lazy flags, repeated computation and flag helper calls; preserve partial flags | Runtime mask tables rejected; [evidence](arm64-flag-mask-evaluation.md). CMP/TEST Jcc specialization retained after isolated normal-PGO comparison, runtime producer verification and the final combined product gate; [evidence](arm64-known-flags-evaluation.md) |
 | Dispatcher and block linkage | Current dispatcher cost, link misses and exit causes; preserve invalidation and cycle accounting | Cached code-entry candidate rejected after normal-PGO A/B/A; [evidence](arm64-link-entry-evaluation.md) |
-| Remaining interpreter fallbacks | Recheck previously observed LAR, bit-test group and BSR fallbacks after SETcc adoption; test individual generic translations only if material | Current diagnostic: 0.337 self / 0.402 observed inclusive CPU seconds out of 104.829 main-thread seconds. Further translations are not justified by this current budget; recheck the final normal profile |
-| Data layout and memory access | Identify a specific dependent load/cache or TLB cost before restructuring anything | Paging-only local binding retained after repeated +3.12% normal-PGO comparison and Doom/Cannon lifecycle gates; [evidence](paging-storage-evaluation.md). Final normal-product integration gate remains open |
-| Lazy-flag state address dependency | Normal compiled flag helpers still use a GOT load before reading `lflags`; packaged host/runtime have no import of this core-owned object | Separate visibility-only prototype passes ABI/code inspection; no flag semantics or layout changes. Test against the combined known-producer/paging/audio build next, rather than the superseded unspecialized baseline |
-| Code layout and branch behavior | Hot code footprint and branches, reproducible across normal builds | Pending attribution; earlier compact-call gain failed final-build reproduction |
-| Other material current hotspots | Inspect whole-process profile, including audio worker, before excluding remaining reasonable targets | NEON interpolation retained for integration: repeated mixer CPU reduction of 10.68%, no demonstrated FPS gain; [evidence](resampler-neon-evaluation.md). Normal-recipe core passes exact float/integer comparison; final integration performance remains open. Palette conversion remains consistent with prior #65 exclusion |
+| Remaining interpreter fallbacks | Recheck previously observed LAR, bit-test group and BSR fallbacks after SETcc adoption; test individual generic translations only if material | Final normal profile: 0.251 self / 0.327 observed inclusive CPU seconds out of 104.492 main-thread seconds. No material fallback target established; [attribution and limits](low-level-final-profile.md) |
+| Data layout and memory access | Identify a specific dependent load/cache or TLB cost before restructuring anything | Paging-only local binding retained after repeated normal-PGO comparison and Doom/Cannon lifecycle gates; [evidence](paging-storage-evaluation.md). Final combined result is +5.77%, not the sum of isolated gains |
+| Lazy-flag state address dependency | Normal compiled flag helpers still use a GOT load before reading `lflags`; packaged host/runtime have no import of this core-owned object | Retained after B/C/C/B normal-product comparison: +4.17% over the combined build, with unchanged ABI except removal of the unused data export and passing representative lifecycle checks; [evidence](lazy-flag-storage-evaluation.md) |
+| Code layout and branch behavior | Hot code footprint and branches, reproducible across normal builds | Fixed-size literal calls regressed; earlier compact-call gain failed final-build reproduction. All 710,218 recognized diagnostic call sites are outside direct-BL reach; current normal address-space gaps are too small for the cache. Arbitrary code reordering has no identified target; [attribution and limits](low-level-final-profile.md) |
+| Other material current hotspots | Inspect whole-process profile, including audio worker, before excluding remaining reasonable targets | NEON interpolation retained: isolated mixer CPU reduction of 10.68%, no isolated FPS gain; [evidence](resampler-neon-evaluation.md). Normal-recipe exact float/integer comparison and final integration checks pass. Remaining OPL/palette/layout targets have [explicit dispositions](low-level-final-profile.md) |
 
 ## Prior experiments to retain
 

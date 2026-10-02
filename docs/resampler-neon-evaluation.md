@@ -1,6 +1,8 @@
 # ARM64 interpolating resampler evaluation
 
-Status: retained for the final normal-recipe integration gate, which remains open.
+Status: retained; the final normal-product gate is complete. See the
+[integration result](low-level-final-integration.md), which supersedes isolated
+percentages when describing the shipped combined result.
 
 The logging-disabled diagnostic attributes 8.06 sampled mixer CPU seconds to
 SpeexDSP's single-precision interpolating filter. Its existing NEON override
@@ -51,8 +53,8 @@ recipe successfully rebuilt that overlay, and a second unchanged bootstrap
 performed no rebuild. The resulting paging-plus-audio packaged core
 (`4ba37500e3b286a94e1d1f501eec6f53cbf935f48ad28439353d57060916e61b`)
 also passes both exact API comparisons against the original core, with the
-same case/sample counts. Combined normal-build performance and lifecycle checks
-remain required before the integration gate closes.
+same case/sample counts. Combined normal-build performance and lifecycle checks are complete; see the
+integration report above.
 
 See [captured evidence](benchmarks/resampler-neon-evaluation.json) and the
 [isolated experimental patch](benchmarks/resampler-neon-prototype.patch).

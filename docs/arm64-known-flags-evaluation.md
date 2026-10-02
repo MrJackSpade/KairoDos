@@ -1,6 +1,8 @@
 # Known-producer conditional branches
 
-Status: retained for the final combined normal-product gate, which remains open.
+Status: retained; the final normal-product gate is complete. See the
+[integration result](low-level-final-integration.md), which supersedes isolated
+percentages when describing the shipped combined result.
 
 The existing decoder queue tracks arithmetic producers whose flags remain live
 within one translated block. When it contains exactly one CMP or TEST producer,

@@ -1,5 +1,5 @@
 {
-  "status": "Retained for normal-recipe integration gate; lower mixer CPU, no demonstrated presentation-rate gain",
+  "status": "Retained; final normal-product integration complete; see low-level-final-comparison.json",
   "builds": {
     "normal-reference": {
       "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",

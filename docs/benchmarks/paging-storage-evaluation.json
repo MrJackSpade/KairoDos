@@ -1,5 +1,5 @@
 {
-  "decision": "Retain for final normal-product integration gate; repeated isolated normal-PGO gain and both runtime fixtures pass",
+  "decision": "Retained; final combined normal-product gate complete",
   "builds": {
     "normal-reference": {
       "baselineApkSha256": "c781b38dc3c8227b5491dfeaeb928bf990bbccf6377702585dd723d6ad2200f6",
@@ -1338,6 +1338,7 @@
     "Surface submissions are not necessarily unique guest frames.",
     "Sparse clocks and thermals cannot prove constant effective frequency.",
     "Cannon screenshot shows its animated opening, not gameplay.",
-    "Final normal-product integration/deployment gate remains open."
-  ]
+    "Isolated results are historical; the final combined comparison supersedes them for the shipped gain."
+  ],
+  "status": "Retained; final normal-product integration complete; see low-level-final-comparison.json"
 }
