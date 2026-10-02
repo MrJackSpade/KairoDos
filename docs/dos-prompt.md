@@ -44,9 +44,10 @@ navigation to a Duke executable while paused, invalid-path rejection, followed
 by the writable shell and normal-launch checks above.
 
 This is infrastructure for the executable picker, not the completed feature.
-Remaining work includes the shared asynchronous directory picker and its tests
-in both apps, DOS mounting/selection/launch integration, and FAT/ISO fixture
-coverage. The DOS host must use mounted guest paths, preserve normal startup
+The shared asynchronous directory picker now passes UI/controller tests in both
+apps on RGDS (see `shared/docs/directory-picker.md`). Remaining work includes DOS
+mounting/selection/launch integration and FAT/ISO fixture coverage. The DOS host
+must use mounted guest paths, preserve normal startup
 defaults, set the selected program's working directory, and handle cancellation
 and session teardown. Staging natively executes EXE/COM/BAT; DOS-compatible CMD
 scripts need explicit handling without claiming Windows command support.

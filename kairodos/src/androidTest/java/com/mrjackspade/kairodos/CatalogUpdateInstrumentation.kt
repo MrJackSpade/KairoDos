@@ -39,6 +39,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var catalogProgress = false
     private var snapshotActivation = false
     private var keyCycle = false
+    private var directoryPicker = false
     private var startup = false
     private var traceStartup = false
     private var exitDialog = false
@@ -93,6 +94,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         catalogProgress = arguments?.getString("catalogProgress") == "true"
         snapshotActivation = arguments?.getString("snapshotActivation") == "true"
         keyCycle = arguments?.getString("keyCycle") == "true"
+        directoryPicker = arguments?.getString("directoryPicker") == "true"
         startup = arguments?.getString("startup") == "true"
         traceStartup = arguments?.getString("traceStartup") == "true"
         start()
@@ -256,6 +258,12 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             if (dosPromptUri != null) {
                 DosPromptFixture.verify(this, dosPromptUri!!)
                 result.putString("stream", "DOS prompt: controller settings action, writable shell, normal relaunch: OK\n")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (directoryPicker) {
+                com.mrjackspade.kairo.frontend.DirectoryPickerFixture.verify(this)
+                result.putString("stream", "Shared directory picker: async load, retry, controller navigation/selection and cancellation: OK\n")
                 finish(Activity.RESULT_OK, result)
                 return
             }
