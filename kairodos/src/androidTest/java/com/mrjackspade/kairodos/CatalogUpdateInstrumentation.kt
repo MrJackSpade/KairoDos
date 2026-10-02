@@ -38,6 +38,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var endSessionUri: String? = null
     private var catalogProgress = false
     private var snapshotActivation = false
+    private var startup = false
+    private var traceStartup = false
     private var exitDialog = false
     private var traceSearch = false
     private var libraryKeyboard = false
@@ -87,11 +89,28 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         endSessionUri = arguments?.getString("endSessionUri")
         catalogProgress = arguments?.getString("catalogProgress") == "true"
         snapshotActivation = arguments?.getString("snapshotActivation") == "true"
+        startup = arguments?.getString("startup") == "true"
+        traceStartup = arguments?.getString("traceStartup") == "true"
         start()
     }
 
+    override fun callActivityOnCreate(activity: Activity, icicle: Bundle?) {
+        val before = android.os.SystemClock.elapsedRealtime()
+        super.callActivityOnCreate(activity, icicle)
+        com.mrjackspade.kairo.frontend.StartupFixture.created(activity, before)
+    }
     override fun onStart() {
         val result = Bundle()
+        if (startup) {
+            try {
+                result.putString("stream", com.mrjackspade.kairo.frontend.StartupFixture.measure(this, traceStartup))
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
         if (snapshotActivation) {
             try {
                 com.mrjackspade.kairo.frontend.SnapshotActivationFixture.verify(this)
