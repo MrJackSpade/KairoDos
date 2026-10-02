@@ -21,6 +21,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var hardwareRender = false
     private var hardwareGame: String? = null
     private var presentationArchive: String? = null
+    private var mouseAnalogHardware = false
+    private var mouseAnalogUri: String? = null
     private var presentationUri: String? = null
     private var presentationGame = "doom"
     private var presentationSeconds = 30
@@ -65,6 +67,8 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         hardwareRender = arguments?.getString("hardwareRender") == "true"
         hardwareGame = arguments?.getString("hardwareGame")
         presentationArchive = arguments?.getString("presentationArchive")
+        mouseAnalogHardware = arguments?.getString("mouseAnalogHardware") == "true"
+        mouseAnalogUri = arguments?.getString("mouseAnalogUri")
         presentationUri = arguments?.getString("presentationUri")
         presentationGame = arguments?.getString("presentationGame") ?: "doom"
         presentationSeconds = arguments?.getString("presentationSeconds")?.toInt() ?: 30
@@ -291,6 +295,11 @@ class CatalogUpdateInstrumentation : Instrumentation() {
                     "Staging storage migration, preserved saves, cancellation, path safety and launch configuration: OK"
                 } else StagingCoreFixture.verify(this, stagingArchive!!, stagingOplMode, stagingOplDcBias)
                 result.putString("stream", "$message\n")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (mouseAnalogUri != null) {
+                result.putString("stream", MouseAnalogFixture.verify(this, mouseAnalogUri!!, mouseAnalogHardware))
                 finish(Activity.RESULT_OK, result)
                 return
             }
