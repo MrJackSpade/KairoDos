@@ -21,5 +21,3 @@ local.properties
 # Generated Python bytecode
 __pycache__/
 *.py[cod]
-
-/catalog/optional/kairodos-art.nsfw.zip

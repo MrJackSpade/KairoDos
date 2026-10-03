@@ -96,10 +96,10 @@ jobs:
         run: |
           python3 tools/GenerateStagingNotices.py
           git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
-      - name: Generate separate artwork download
+      - name: Verify repository catalog generation
         run: |
           python3 tools/build_catalog_packages.py
-          git diff --exit-code -- catalog/parts catalog/optional/kairodos-art.nsfw.meta.json
+          git diff --exit-code -- catalog/parts catalog/optional/kairodos-art.nsfw.meta.json catalog/optional/kairodos-art.nsfw.zip
       - name: Build both release APKs and matching Play bundle
         env:
           KAIRO_RELEASE_PASSWORD: ${{ secrets.KAIRO_RELEASE_PASSWORD }}
@@ -183,16 +183,14 @@ jobs:
           bundle="$RUNNER_TEMP/KairoDos-$tag-play.aab"
           cp kairodos/build/outputs/apk/release/kairodos-release.apk "$apk"
           cp kairodos/build/outputs/bundle/release/kairodos-release.aab "$bundle"
-          optional="catalog/optional/kairodos-art.nsfw.zip"
-          optional_manifest="catalog/optional/kairodos-art.nsfw.meta.json"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" "$apk" "$bundle" "$images" "$optional" "$optional_manifest" --clobber
+            gh release upload "$tag" "$apk" "$bundle" "$images" --clobber
           else
             release_flags=()
             if [[ "$tag" == *-* ]]; then
               release_flags+=(--prerelease)
             fi
-            gh release create "$tag" "$apk" "$bundle" "$images" "$optional" "$optional_manifest" \
+            gh release create "$tag" "$apk" "$bundle" "$images" \
               --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
               --notes-file "docs/releases/$tag.md"
           fi
