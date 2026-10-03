@@ -174,11 +174,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
-            { libraryScreen.showEntries(games); controllerFlow.refresh(null) }, {
+            { libraryScreen.refreshCatalog(); controllerFlow.refresh(null) }, {
                 if (libraryScreen.visibility == View.VISIBLE)
-                    android.widget.Toast.makeText(this, "Game catalog updated",
+                    android.widget.Toast.makeText(this, "Catalogs updated",
                         android.widget.Toast.LENGTH_SHORT).show()
-            }, libraryScreen::showCatalogUpdate)
+            }, libraryScreen::showCatalogUpdate, catalog.installedCatalogs::update)
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
     private lateinit var firstRunScreen: FirstRunScreen
