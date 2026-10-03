@@ -1,9 +1,12 @@
 # Run a setup program or another executable
 
-Open a game's settings and choose **Run program**, then select a mounted drive,
+Open a game's detail page and press the command-prompt icon to the right of
+**Play**, then select a mounted drive,
 folder, and executable. The picker accepts DOS EXE, COM, BAT, and DOS-compatible
 CMD scripts. D-pad/confirm works throughout; Back/Up navigates to the parent.
-Cancel at the root leaves the game files mounted at a DOS prompt.
+**Prompt** is the first root-level option and resumes the mounted DOS session
+without executing a program. Cancel at the root also leaves the files mounted
+at the prompt. These launch options no longer appear in Game settings.
 
 This is a one-session launch choice. It uses the saved startup variant's hardware
 and drive mounts (or the default variant), but skips the catalog's game startup
@@ -58,3 +61,7 @@ program itself persist in the game's writable files, like ordinary DOS programs.
 Test component:
 `com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.
 The generated executables and disk images contain no proprietary game assets.
+
+## Combined command launch verification (2026-10-03)
+
+Both apps built and passed detail-page key/hat navigation on RGDS. DOS passed the command-button picker flow, root-only Prompt choice without restarting, cancellation, all four executable formats, working-directory checks, writable shell commands, and restoration of normal Play. Existing user preferences remained unchanged. Retroid was unreachable and not advertised by mDNS.

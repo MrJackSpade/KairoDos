@@ -74,16 +74,29 @@ internal object DosProgramFixture {
             File(folder, "IGNORE.TXT").writeText("not executable")
             val preferences = test.targetContext.getSharedPreferences("kairodos", 0).all.toMap()
             fun browse() {
-                ui { call("showGameDetails", game) }
-                key(KeyEvent.KEYCODE_DPAD_DOWN)
                 ui {
-                    var row: View = text("Run program") ?: error("Run program setting missing")
-                    while (!row.isClickable) row = row.parent as View
-                    check(row.requestFocus())
+                    call("endSessionForLibrary", {
+                        call("showLibrary")
+                        @Suppress("UNCHECKED_CAST")
+                        val screen = (field("libraryFlow") as com.mrjackspade.kairo.frontend.LibraryFlow<*>).screen as com.mrjackspade.kairo.frontend.LibraryScreen<DosLibrary.Game>
+                        screen.openDetail(game)
+                    })
                 }
+                await("Command launch button missing") {
+                    views().any { it.isShown && it.contentDescription == "DOS prompt or run program" }
+                }
+                key(KeyEvent.KEYCODE_DPAD_RIGHT)
+                ui { check(views().any { it.hasFocus() && it.contentDescription == "DOS prompt or run program" }) }
                 key(KeyEvent.KEYCODE_BUTTON_A)
                 await("Program picker did not open") { field("programPicker") != null }
             }
+            browse()
+            val promptGeneration = field("launchGeneration")
+            choose("Prompt")
+            await("Prompt did not resume") { field("programPicker") == null && call("getUserPaused") == false }
+            check(field("launchGeneration") == promptGeneration) { "Prompt restarted instead of resuming the mounted session" }
+            check(config.readText().substringAfter("[autoexec]").substringBefore("[sdl]")
+                .lineSequence().none { it.trim().lowercase().endsWith(".exe") || it.trim().lowercase().endsWith(".bat") })
             // Closing the browser leaves an ordinary, responsive prompt.
             browse()
             ui {
@@ -94,6 +107,9 @@ internal object DosProgramFixture {
             for (extension in listOf("BAT", "CMD", "COM", "EXE")) {
                 browse()
                 choose("C:/")
+                ui { check(views().filterIsInstance<ListView>().none { list ->
+                    (0 until list.count).any { list.getItemAtPosition(it).toString() == "Prompt" }
+                }) { "Prompt must only appear at the root" } }
                 choose("K25TEST/")
                 ui { check(text("IGNORE.TXT") == null) }
                 choose("RUN.$extension")

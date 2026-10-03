@@ -10,7 +10,7 @@ import android.view.inspector.WindowInspector
 import android.widget.TextView
 import java.io.File
 
-/** Exercises the real settings action, writable guest shell, and normal relaunch. */
+/** Exercises the detail-page command button, writable guest shell, and normal relaunch. */
 internal object DosPromptFixture {
     fun verify(test: Instrumentation, uri: String) {
         val intent = test.targetContext.packageManager.getLaunchIntentForPackage(test.targetContext.packageName)!!
@@ -46,20 +46,37 @@ internal object DosPromptFixture {
             check(!normal.substringAfter("[autoexec]").substringBefore("[sdl]").trim().endsWith("dir /w"))
             val preferences = test.targetContext.getSharedPreferences("kairodos", 0).all.toMap()
             val generation = field("launchGeneration")
-            ui { call("showGameDetails", game) }
-            test.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_DOWN)
             ui {
-                val label = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
-                    .filterIsInstance<TextView>().single { it.text.toString() == "Boot to DOS prompt" }
-                var row: View = label
-                while (!row.isClickable) row = row.parent as View
-                check(row.requestFocus()) { "Prompt row cannot receive controller focus" }
-                row.rootView.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BUTTON_A))
-                row.rootView.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BUTTON_A))
+                call("endSessionForLibrary", {
+                    call("showLibrary")
+                    @Suppress("UNCHECKED_CAST")
+                    val screen = (field("libraryFlow") as com.mrjackspade.kairo.frontend.LibraryFlow<*>).screen as com.mrjackspade.kairo.frontend.LibraryScreen<DosLibrary.Game>
+                    screen.openDetail(game)
+                })
             }
-            await("Prompt action did not launch") {
+            await("Command launch button missing") {
+                var ready = false
+                ui { ready = WindowInspector.getGlobalWindowViews().flatMap(::descendants).any {
+                    it.isShown && it.contentDescription == "DOS prompt or run program"
+                } }
+                ready
+            }
+            test.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
+            test.sendKeyDownUpSync(KeyEvent.KEYCODE_BUTTON_A)
+            await("Prompt picker did not open") {
+                var ready = false
+                ui { ready = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
+                    .filterIsInstance<android.widget.ListView>().any { it.count > 0 && it.getItemAtPosition(0) == "Prompt" } }
+                ready
+            }
+            ui {
+                val list = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
+                    .filterIsInstance<android.widget.ListView>().single { it.count > 0 && it.getItemAtPosition(0) == "Prompt" }
+                list.performItemClick(list.getChildAt(0), 0, list.getItemIdAtPosition(0))
+            }
+            await("Prompt action did not resume") {
                 field("launchGeneration") != generation && call("nativeStatus") == 2 &&
-                    config.readText().substringAfter("[autoexec]").substringBefore("[sdl]").trim().endsWith("dir /w")
+                    field("programPicker") == null && call("getUserPaused") == false
             }
             val prompt = config.readText()
             val path = Regex("(?m)^mount C \"([^\"]+)\"").find(prompt)!!.groupValues[1]

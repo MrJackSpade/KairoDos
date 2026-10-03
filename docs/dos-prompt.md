@@ -1,19 +1,20 @@
 # Boot to DOS prompt
 
-Game settings contains **Boot to DOS prompt** for playable DOS entries. It opens
-the game's existing writable directory as `C:` and lists its files. Commands and
-file changes operate on the same persistent drive used by normal Play.
+On a playable game's detail page, press the command-prompt icon beside **Play**,
+then choose **Prompt** at the top of the browser. This resumes the mounted session
+without executing an EXE, COM, BAT, or CMD. The same browser can navigate drives
+and folders to launch a chosen program instead.
 
-This is a one-session choice. It retains the selected startup variant's hardware
-settings, or the default variant when none is saved, without changing that saved
-selection. It skips catalog autoexec commands, player-name setup scripts,
-dependency archives, automatic executable selection, and image boot commands.
-Image files remain accessible from the mounted directory for manual mounting.
-Normal Play regenerates its usual startup commands.
+The browser retains the selected startup variant's hardware and drive mounts,
+including mounted images, but skips game startup commands and player setup scripts.
+This is a one-session choice; ordinary Play restores its usual startup commands.
+User settings and writable game files are preserved. See [program picker](dos-program-picker.md).
 
-The DOS host supplies this emulator-specific action to the existing shared
-`GameSettingsSheet`; the shared dialog supplies layout and controller navigation.
-No Kairo98 or shared implementation change is required.
+The shared detail page supplies an optional command button and controller navigation;
+the DOS host supplies the launch action. Kairo98 retains its full-width Play button.
+
+The historical checks below describe the former standalone prompt settings action.
+Current UI regression fixtures exercise the combined detail-page browser.
 
 ## RGDS validation (2026-10-02)
 

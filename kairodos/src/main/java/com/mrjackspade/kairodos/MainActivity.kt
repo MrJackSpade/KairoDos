@@ -350,7 +350,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { catalogUpdates.check(false) },
             { artworkDownloads.start() }, { artworkDownloads.cancel() }, settingsEntries(),
             { preferences.getString("last_played_entry", null) }, ::launch,
-            ::previewGame, ::showGameDetails, ::showLibrarySelection)
+            ::previewGame, ::showGameDetails, ::showLibrarySelection,
+            commandLaunch = { startGame(it, manualConfig(it), target = DosLaunchTarget.Browse) })
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
             dosLibrary::cached, dosLibrary::scan,
             { uri -> uri.lastPathSegment ?: "DOS folder" },
@@ -537,12 +538,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 "DOS player name", id?.let(dosGameSettings::playerName)
                     ?: "Choose on first play", false) {
                 choosePlayerName(entry, null)
-            }) else emptyList()) +
-            (if (entry.playable) listOf(GameSettingsRow("Boot to DOS prompt",
-                "Open this game's writable C: drive without startup commands", false) {
-                startGame(entry, manualConfig(entry), target = DosLaunchTarget.Prompt)
-            }, GameSettingsRow("Run program", "Browse game files for a setup program or another executable", false) {
-                startGame(entry, manualConfig(entry), target = DosLaunchTarget.Browse)
             }) else emptyList())
         GameSettingsCoordinator.show(this, common, entry.playable, machineRows,
             CommonGameSettingsActions(
@@ -647,7 +642,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         userPaused = true
         refreshControllerUi()
         val mountedDrives = java.util.concurrent.atomic.AtomicReference<Set<Char>>(emptySet())
-        programPicker = DirectoryPicker.show(this, "Run program", DirectoryPicker.Location("", "Drives"), { path ->
+        programPicker = DirectoryPicker.show(this, "DOS prompt or run program", DirectoryPicker.Location("", "Launch"), { path ->
             check(generation == launchGeneration) { "Game session ended" }
             val response = nativeListDirectory(path)
             check(response.startsWith("OK\n")) { response.substringAfter('\n') }
@@ -661,15 +656,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }.toList()
         }, { entry ->
             programPicker = null
-            if (generation == launchGeneration)
-                startGame(game, configName, target = DosLaunchTarget.Program(entry.id, mountedDrives.get()))
+            if (generation == launchGeneration) {
+                if (entry.id.isEmpty()) {
+                    // Browse has already mounted the media without executing a program.
+                    userPaused = false
+                    refreshControllerUi()
+                } else startGame(game, configName,
+                    target = DosLaunchTarget.Program(entry.id, mountedDrives.get()))
+            }
         }, {
             if (generation == launchGeneration && programPicker != null) {
                 programPicker = null
                 userPaused = false
                 refreshControllerUi()
             }
-        })
+        }, rootEntries = listOf(DirectoryPicker.Entry("", "Prompt", false)))
     }
 
     private fun startGame(game: DosLibrary.Game, configName: String,

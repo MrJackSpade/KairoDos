@@ -314,13 +314,13 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             }
             if (dosProgramUri != null) {
                 DosProgramFixture.verify(this, dosProgramUri!!)
-                result.putString("stream", "DOS Run program: cancel, BAT/CMD/COM/EXE launch, working directory and normal Play: OK\n")
+                result.putString("stream", "DOS command button: Prompt, cancel, BAT/CMD/COM/EXE launch, working directory and normal Play: OK\n")
                 finish(Activity.RESULT_OK, result)
                 return
             }
             if (dosPromptUri != null) {
                 DosPromptFixture.verify(this, dosPromptUri!!)
-                result.putString("stream", "DOS prompt: controller settings action, writable shell, normal relaunch: OK\n")
+                result.putString("stream", "DOS prompt: detail command button, writable shell, normal relaunch: OK\n")
                 finish(Activity.RESULT_OK, result)
                 return
             }
