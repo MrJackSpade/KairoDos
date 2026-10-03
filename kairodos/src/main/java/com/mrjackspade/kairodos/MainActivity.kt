@@ -1373,7 +1373,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 surface = null
                 videoFrame = null
                 keyboard = null
-                onScreenControls = null
+                // Controls are attached to appRoot and live for the activity, across games.
                 statusLabel = null
                 endingSessionForLibrary = false
                 done()
