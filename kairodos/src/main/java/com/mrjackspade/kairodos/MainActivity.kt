@@ -364,7 +364,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         firstRunScreen = FirstRunScreen(this)
         appRoot.addView(firstRunScreen, FrameLayout.LayoutParams(-1, -1))
         onScreenControls = OnScreenControls(this, appRoot, gamepad, preferences,
-            ::refreshControllerUi)
+            ::refreshControllerUi, { controllerProfiles.configuration.layout })
         controllerEditor = ControllerEditor(this, appRoot,
             controllerFlow::load, controllerFlow::save, controllerFlow::reset,
             controllerFlow::physical, controllerFlow::savePhysical,
