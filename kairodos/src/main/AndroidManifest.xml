@@ -14,12 +14,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="content" android:mimeType="*/*" />
-                <data android:scheme="file" android:mimeType="*/*" />
-            </intent-filter>
+            <!-- External frontends launch this exported activity explicitly; do not claim arbitrary files. -->
         </activity>
         <activity-alias
             android:name="${applicationId}.Launch"

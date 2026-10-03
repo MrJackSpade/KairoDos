@@ -42,3 +42,5 @@ See the [ES-DE Android configuration guide](https://gitlab.com/es-de/emulationst
 ## eXoDOS installer archives
 
 When a frontend grants access to a single eXoDOS source ZIP, KairoDos saves the installed copy in private app storage and cannot remove the frontend's source file. Selecting a writable folder within KairoDos instead lets it create the installed ZIP beside the source and offer to remove the source after play.
+
+The app does not register a generic Android “Open with” file handler. Select games inside the app or use the explicit component configured above; APKs and unrelated documents should not offer the emulator as a handler.
