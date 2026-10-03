@@ -9,3 +9,9 @@ Download `kairodos-art.nsfw.zip` from the GitHub release outside the app, then c
 Regenerate with `python tools/build_catalog_packages.py` and `pwsh -File tools/BuildPublicDosCatalog.ps1`.
 
 Small `.idx` files hold byte ranges for lazy shard loading; they follow their parent catalog distribution. The app does not parse the entire DOS catalog at startup.
+
+Runtime installation reads the JSON and checks the product, catalog identity and supported format. It does not audit every record, controller mapping, artwork reference, image checksum or image dimensions. Those first-party content checks belong to generation and CI. Individual content is interpreted when used; a bad image does not reject an otherwise usable catalog.
+
+Update checksums are calculated during transfer. A failed download or format check retains the previous catalog. Imported ZIPs stay intact in private app storage and activate by atomic rename, without extracting images or copying the archive again.
+
+Artwork packages published with 0.9.10 also contain `runtime.json` (the small catalog header) and `artwork.idx` (one archive artwork path per line). Runtime reads these directly instead of parsing the publishing inventory or enumerating every ZIP entry again. CI verifies both against `catalog.json` and the complete archive contents. Update the app before importing these packages; 0.9.10 still reads older downloaded packages through their original header.

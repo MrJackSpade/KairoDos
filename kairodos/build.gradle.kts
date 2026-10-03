@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.loxifi.kairodos"
-        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 909
-        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.9"
+        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 910
+        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.10"
         testInstrumentationRunner = "com.mrjackspade.kairodos.CatalogUpdateInstrumentation"
         externalNativeBuild {
             cmake {

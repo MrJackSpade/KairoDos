@@ -37,31 +37,11 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             synchronized(this) { cache.evictAll(); folderIndex = null; combinedControllerProfiles = null }
         }
     }
-    private fun validateInstalled(root: JSONObject): Set<String> {
-        require(root.optInt("schemaVersion") == 1 && root.keys().asSequence().toSet() ==
-            setOf("schemaVersion", "games", "folders", "controllers"))
-        val games = root.getJSONObject("games")
-        val images = HashSet<String>()
-        fun artwork(record: JSONObject) {
-            val expanded = DosArtworkReferences.record(record)!!
-            val art = expanded.optJSONObject("artwork")
-            for (kind in listOf("boxArt", "preview")) art?.optString(kind)?.takeIf { it.isNotEmpty() }?.let(images::add)
-            expanded.optJSONObject("variants")?.let { variants ->
-                for (name in variants.keys()) artwork(variants.getJSONObject(name))
-            }
-        }
-        for (key in games.keys()) {
-            require(id.matches(key) && DosCatalogFields.invalidPath(games.getJSONObject(key)) == null)
-            artwork(games.getJSONObject(key))
-        }
-        val folders = root.getJSONObject("folders")
-        for (folder in folders.keys()) {
-            require(folder.length in 1..128 && !folder.contains("..") && !folder.contains('/') && !folder.contains('\\'))
-            val ids = folders.getJSONArray(folder)
-            require(ids.length() <= 128 && (0 until ids.length()).all { games.has(ids.getString(it)) })
-        }
-        DosCatalogUpdate.validateControllers(root.getJSONObject("controllers"), games.keys().asSequence().toSet())
-        return images
+    private fun validateInstalled(root: JSONObject) {
+        require(root.optInt("schemaVersion") == 1)
+        root.getJSONObject("games")
+        root.getJSONObject("folders")
+        root.getJSONObject("controllers")
     }
     private val online = DosCatalogUpdate(context)
     private val bundledHidden = readAssetCatalog("hidden-index-v1.json")

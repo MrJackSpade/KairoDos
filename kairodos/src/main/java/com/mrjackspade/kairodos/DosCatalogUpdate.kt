@@ -28,88 +28,8 @@ internal class DosCatalogUpdate(context: Context) {
     internal fun validateFile(file: File) { ZipFile(file).use(::validate) }
 
     private fun validate(zip: ZipFile) {
+        // CI audits the contents. Shards are parsed only when a game needs them.
         require(readEntry(zip, "core-v2.json").optInt("schemaVersion") == 2)
-        require(zip.size() == 260) { "Invalid catalog file count" }
-        val expected = (0..255).map { "%02x.json".format(it) } +
-            listOf("folders.json", "controller-profiles-v1.json", "hidden-index-v1.json", "core-v2.json")
-        val actual = zip.entries().asSequence().map { it.name }.toList()
-        require(actual.size == actual.distinct().size && actual.toSet() == expected.toSet()) {
-            "Invalid catalog file names"
-        }
-        val contentId = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
-        val visibility = readEntry(zip, "hidden-index-v1.json")
-        require(visibility.optInt("schemaVersion") == 1)
-        val hidden = visibility.getJSONObject("hidden")
-        val seenHidden = HashSet<String>()
-        for (name in expected) {
-            val root = readEntry(zip, name)
-            when (name) {
-                "folders.json" -> for (folder in root.keys()) {
-                    require(folder.length in 1..128 && root.optJSONArray(folder) != null) {
-                        "Invalid catalog folder index"
-                    }
-                    val ids = root.getJSONArray(folder)
-                    require(ids.length() <= 128 && (0 until ids.length()).all {
-                        contentId.matches(ids.optString(it))
-                    }) { "Invalid catalog folder IDs" }
-                }
-                "controller-profiles-v1.json" -> {
-                    require(root.optInt("schemaVersion") == 1)
-                    val profiles = root.getJSONObject("profiles")
-                    for (profile in profiles.keys()) {
-                        require(profile.matches(Regex("[a-z0-9-]{1,40}")))
-                        val ids = profiles.getJSONArray(profile)
-                        require(ids.length() <= 2000 && (0 until ids.length()).all {
-                            contentId.matches(ids.optString(it))
-                        }) { "Invalid controller profile IDs" }
-                    }
-                    root.optJSONObject("presets")?.let { presets ->
-                        for (profile in presets.keys()) {
-                            val preset = presets.getJSONObject(profile)
-                            preset.optJSONArray("bindings")?.let {
-                                require(DosControllerBindings.valid(it)) { "Invalid controller bindings: $profile" }
-                            }
-                            if (preset.has("defaults")) {
-                                val defaults = preset.getJSONObject("defaults")
-                                require(defaults.has("withoutSticks") && defaults.keys().asSequence().all {
-                                    it in setOf("withoutSticks", "withSticks") &&
-                                        defaults.optJSONArray(it)?.let(DosControllerBindings::valid) == true
-                                }) { "Invalid controller defaults: $profile" }
-                            }
-                            require(preset.has("bindings") || preset.has("defaults"))
-                        }
-                        root.optJSONObject("assignments")?.let { assignments ->
-                            require(assignments.keys().asSequence().all {
-                                contentId.matches(it) && assignments.opt(it) is String && presets.has(assignments.optString(it))
-                            }) { "Invalid controller assignments" }
-                        }
-                    }
-                }
-                "hidden-index-v1.json", "core-v2.json" -> Unit
-                else -> {
-                    require(root.optInt("schemaVersion") == 1)
-                    val games = root.getJSONObject("games")
-                    val prefix = name.take(2)
-                    for (id in games.keys()) {
-                        require(contentId.matches(id) && id.substringAfter(':').startsWith(prefix) &&
-                            games.optJSONObject(id) != null) { "Invalid catalog game record" }
-                        val record = games.getJSONObject(id)
-                        val invalid = DosCatalogFields.invalidPath(record)
-                        require(invalid == null) {
-                            "Invalid catalog field $id:$invalid"
-                        }
-                        val flag = record.opt("hidden")
-                        if (flag is Boolean) {
-                            require(hidden.opt(id) == flag) { "Catalog hidden index differs from $id" }
-                            seenHidden += id
-                        }
-                    }
-                }
-            }
-        }
-        require(hidden.keys().asSequence().toSet() == seenHidden) {
-            "Catalog hidden index contains unknown entries"
-        }
     }
 
     private fun readEntry(zip: ZipFile, name: String): JSONObject {
@@ -133,33 +53,6 @@ internal class DosCatalogUpdate(context: Context) {
     }
 
     companion object {
-        internal fun validateControllers(root: JSONObject, ids: Set<String>) {
-            require(root.optInt("schemaVersion") == 1 && root.keys().asSequence().all {
-                it in setOf("schemaVersion", "profiles", "assignments", "presets")
-            })
-            val presets = root.getJSONObject("presets")
-            for (key in presets.keys()) {
-                require(key.matches(Regex("[a-z0-9-]{1,40}")))
-                val value = presets.getJSONObject(key)
-                require(value.keys().asSequence().all { it in setOf("bindings", "defaults", "description") })
-                require(!value.has("description") || value.opt("description") is String && value.getString("description").length <= 8000)
-                value.optJSONArray("bindings")?.let { require(DosControllerBindings.valid(it)) }
-                val defaults = value.optJSONObject("defaults")
-                require(defaults != null || value.has("bindings"))
-                defaults?.let { require(it.has("withoutSticks") && it.keys().asSequence().all { key ->
-                    key in setOf("withoutSticks", "withSticks") && it.optJSONArray(key)?.let(DosControllerBindings::valid) == true
-                }) }
-            }
-            val assignments = root.getJSONObject("assignments")
-            for (id in assignments.keys()) require(id in ids && presets.has(assignments.getString(id)))
-            val profiles = root.getJSONObject("profiles")
-            for (key in profiles.keys()) {
-                require(presets.has(key))
-                val values = profiles.getJSONArray(key)
-                require(values.length() <= 20000 && (0 until values.length()).all { values.getString(it) in ids })
-            }
-        }
-
         private const val MAX_ARCHIVE_BYTES = 32L * 1024 * 1024
         private const val MAX_ENTRY_BYTES = 2L * 1024 * 1024
         private const val UPDATE_URL =

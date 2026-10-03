@@ -111,6 +111,15 @@ function Get-PublicBytes([string] $name) {
     } finally { $stream.Dispose(); $document.Dispose() }
 }
 
+function Test-JsonBytes([byte[]] $left, [byte[]] $right) {
+    # Python and PowerShell generators use different whitespace/property order.
+    # Audit JSON values, while archive transfer checksums still cover exact bytes.
+    $options = [System.Text.Json.JsonDocumentOptions]::new()
+    $first = [System.Text.Json.Nodes.JsonNode]::Parse([Text.Encoding]::UTF8.GetString($left), $null, $options)
+    $second = [System.Text.Json.Nodes.JsonNode]::Parse([Text.Encoding]::UTF8.GetString($right), $null, $options)
+    return [System.Text.Json.Nodes.JsonNode]::DeepEquals($first, $second)
+}
+
 function Test-Archive([string] $path) {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($path)
     try {
@@ -123,7 +132,7 @@ function Test-Archive([string] $path) {
             try { $stream.CopyTo($copy) }
             finally { $stream.Dispose() }
             $expected = Get-PublicBytes $name
-            if (-not [System.Linq.Enumerable]::SequenceEqual[byte]($copy.ToArray(), $expected)) {
+            if (-not (Test-JsonBytes $copy.ToArray() $expected)) {
                 throw "Public catalog differs from sanitized source: $path / $name"
             }
             $copy.Dispose()
@@ -169,8 +178,7 @@ if (-not $Check) {
 }
 
 $hiddenPath = Join-Path $source 'hidden-index-v1.json'
-if (-not [System.Linq.Enumerable]::SequenceEqual[byte](
-    [IO.File]::ReadAllBytes($hiddenPath), (Get-HiddenIndexBytes))) {
+if (-not (Test-JsonBytes ([IO.File]::ReadAllBytes($hiddenPath)) (Get-HiddenIndexBytes))) {
     throw "DOS hidden index differs from catalog shards: $hiddenPath"
 }
 
