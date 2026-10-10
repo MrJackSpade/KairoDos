@@ -6,6 +6,8 @@ KairoDos can open a DOS game file or ZIP sent by another Android frontend. You d
 
 - [LaunchBox for Android](#launchbox-for-android)
 - [ES-DE](#es-de)
+- [iiSU](#iisu)
+- [Beacon](#beacon)
 
 ## LaunchBox for Android
 
@@ -38,6 +40,61 @@ In the MS-DOS system's custom `es_systems.xml` configuration, add this command a
 ```
 
 See the [ES-DE Android configuration guide](https://gitlab.com/es-de/emulationstation-de/-/blob/master/INSTALL.md) for custom file locations and system override syntax. Pass the original game file or ZIP to KairoDos.
+
+## iiSU
+
+iiSU reads its emulator list from two files in `Android/media/com.iisulauncher/iiSULauncher/Emuladores/` on shared storage. If your file manager cannot open `Android/media`, use Android's built-in Files app. Back up both files before editing them.
+
+In `emuladores.json`, find the console whose `shortName` is `dos` and add this object to its `emulators` array:
+
+```json
+{
+  "id": "KAIRODOS",
+  "name": "KairoDos (Standalone)",
+  "routeType": "uri",
+  "commands": [
+    {
+      "description": "KairoDos",
+      "command": "com.loxifi.kairodos/com.loxifi.kairodos.Launch -a android.intent.action.VIEW -d %ROM_URI%"
+    }
+  ],
+  "packages": [
+    "com.loxifi.kairodos"
+  ]
+}
+```
+
+Add this object to the array in `supported_emulators.json`:
+
+```json
+{
+  "name": "KAIRODOS",
+  "packages": [
+    "com.loxifi.kairodos"
+  ]
+}
+```
+
+Put your games in the `dos` folder of your iiSU ROM folder. Select the DOS (PC) console, open **Quick Settings → Console Settings → Edit Console Settings**, and choose **KairoDos (Standalone)** as the emulator. An iiSU update can replace these files; add the entries again if KairoDos disappears from the list.
+
+## Beacon
+
+Open **Settings** and add a platform:
+
+| Setting | Value |
+| --- | --- |
+| Platform type | **Custom** |
+| Name / Short name | Any, for example `MS-DOS` / `DOS` |
+| Player app | **KairoDos** |
+| ROMs folder | Your DOS game folder |
+
+Scroll down, open **Advanced**, turn on **Use custom launch**, accept the warning, and enter this **am start command**:
+
+```text
+am start -n com.loxifi.kairodos/com.loxifi.kairodos.Launch -a android.intent.action.VIEW -d {file_uri}
+```
+
+Leave **File handling** at **Default** and save. Without the custom launch command, Beacon opens KairoDos's library instead of the game.
 
 ## eXoDOS installer archives
 

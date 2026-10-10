@@ -28,6 +28,8 @@ Use the [external frontend setup guide](docs/frontends.md) to launch KairoDos ga
 
 - [LaunchBox for Android](docs/frontends.md#launchbox-for-android)
 - [ES-DE](docs/frontends.md#es-de)
+- [iiSU](docs/frontends.md#iisu)
+- [Beacon](docs/frontends.md#beacon)
 
 ## Build and source
 
