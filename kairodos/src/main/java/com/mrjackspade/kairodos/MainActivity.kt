@@ -131,6 +131,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
         }, { path ->
             nativeSetShaderPreset(path)
+            recreateShaderSurface()
             sessionDrawer?.refreshValues()
             libraryScreen.refreshSettingValues()
         }, { message -> Ui.message(this, message) })
@@ -1091,6 +1092,21 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 topMargin = viewport.topMargin
             }
         }
+    }
+
+    private fun recreateShaderSurface() {
+        val frame = videoFrame ?: return
+        val old = surface ?: return
+        val params = old.layoutParams as FrameLayout.LayoutParams
+        nativeSetSurface(null)
+        old.holder.removeCallback(this)
+        frame.removeView(old)
+        val display = SurfaceView(this)
+        surface = display
+        frame.addView(display, 0, params)
+        display.holder.addCallback(this)
+        display.setOnTouchListener(::handleGameTouch)
+        updateSurfaceLayout()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
