@@ -1,5 +1,7 @@
 # Licensing and third-party credits
 
+The shared frontend bundles three individually reviewed RetroArch presets: CRT EasyMode (version-unspecified GPL, used under GPLv3), Sharp Bilinear (public domain), and Sharp Bilinear + Scanlines (public domain). Their pinned source and per-file notices are in [shared/third_party/slang-shaders](../shared/third_party/slang-shaders/README.md). About -> Licenses includes their attribution. Other upstream shaders are not covered by this review.
+
 First-party KairoDos and pinned Kairo code remain GPL-2.0-or-later; see [COPYING](../COPYING). Spleen is BSD-2-Clause with source/notice under `shared/third_party/spleen/`.
 
 The shared RetroArch Slang integration uses librashader 0.11.0 under its GPL-3.0-only option. Its pinned source and Rust crate archives are recorded in [shared licensing](../shared/docs/licensing.md), and both apps append the shared runtime notice to **About → Licenses**. The combined build remains under GPLv3 terms. Review the exact combined binary and transitive notices before claiming a release is license-audited.
