@@ -2,6 +2,8 @@
 
 The pinned first-party frontend is at `shared/`. Emulator sources are copied, without upstream remotes, submodules or automated merges.
 
+The shared frontend also supplies RetroArch Slang support from a pinned librashader v0.11.0 snapshot. Its `Cargo.lock`, 129 checked Rust source archives, provenance, and notices are under `shared/third_party/` and `shared/docs/`. The Android OpenGL runtime is built from source for arm64. No shader preset packs are bundled.
+
 ## DOSBox Staging
 
 - Stable release **0.83.0**, August 27, 2026.

@@ -15,6 +15,7 @@ endif()
 target_compile_features(kairodos_host PRIVATE cxx_std_17)
 target_include_directories(kairodos_host PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../../shared/frontend/src/main/cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../shared/third_party/librashader/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../../backend-dos/src/main/cpp)
 # Preserve this host's existing non-Debug optimization level.
 target_compile_options(kairodos_host PRIVATE $<$<NOT:$<CONFIG:Debug>>:-O2>)

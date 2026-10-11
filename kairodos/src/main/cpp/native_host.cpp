@@ -21,11 +21,13 @@
 #include "staging_bridge.h"
 #include "video_profile.h"
 #include "frame_copy_profile.h"
+#include "kairo/slang_surface_presenter.h"
 
 namespace {
 std::mutex surface_mutex, frame_mutex, input_mutex, control_mutex, error_mutex;
 ANativeWindow* surface = nullptr;
 int surface_width = 0, surface_height = 0;
+std::string shader_preset;
 std::condition_variable frame_ready, control_changed;
 struct DirectoryRequest {
     std::string path, result;
@@ -136,6 +138,7 @@ void video(const uint32_t* data, int width, int height, int pitch, double ratio)
 }
 void render_frames() {
     std::vector<uint8_t> frame;
+    kairo::SlangSurfacePresenter shader_renderer;
     while (true) {
         unsigned width, height;
         uint64_t arrival;
@@ -150,7 +153,23 @@ void render_frames() {
         const auto wait = video_profile::now();
         std::lock_guard lock(surface_mutex);
         video_profile::elapsed(video_profile::WindowMutex, wait);
-        if (!surface) { video_profile::record(video_profile::NoSurface); continue; }
+        if (!surface) {
+            shader_renderer.destroy();
+            video_profile::record(video_profile::NoSurface);
+            continue;
+        }
+        shader_renderer.setPreset(shader_preset);
+        if (!shader_preset.empty()) {
+            const auto shader_start = video_profile::now();
+            const bool shown = shader_renderer.render(surface, frame.data(), width, height);
+            surface_width = surface_height = 0;
+            if (shown) {
+                video_profile::record(video_profile::Presented);
+                video_profile::elapsed(video_profile::AgeAtPost, arrival);
+                video_profile::elapsed(video_profile::WindowPost, shader_start);
+                continue;
+            }
+        }
         if (surface_width != int(width) || surface_height != int(height)) {
             if (ANativeWindow_setBuffersGeometry(surface, width, height, WINDOW_FORMAT_RGBA_8888) != 0) continue;
             surface_width = width; surface_height = height;
@@ -329,6 +348,12 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeSetSurface(JNIEnv* env, jobject
     ANativeWindow* next = value ? ANativeWindow_fromSurface(env, value) : nullptr;
     std::lock_guard lock(surface_mutex); if (surface) ANativeWindow_release(surface);
     surface = next; surface_width = surface_height = 0;
+}
+extern "C" JNIEXPORT void JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeSetShaderPreset(JNIEnv* env, jobject,
+                                                                 jstring value) {
+    std::lock_guard lock(surface_mutex);
+    shader_preset = string(env, value);
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeKey(JNIEnv*, jobject, jint code, jboolean down) {

@@ -14,6 +14,8 @@
 
 # Local Windows build
 
+- GitHub CLI is installed and already authenticated on this workstation. A sandboxed `gh` call may fail to read `C:\Users\Service Account\AppData\Roaming\GitHub CLI\config.yml` with `Access is denied`; pointing `GH_CONFIG_DIR` at a new directory then reports a misleading login failure. For a read-only GitHub lookup, retry `gh` with the existing config through an escalated command before concluding that authentication is unavailable or asking the user for an issue link.
+
 - Android toolchain versions, Gradle conventions, wrapper distribution and CI setup live in pinned `shared/` (see `shared/docs/android-build.md`). Initialize that submodule before building. Product wrappers delegate to it; do not restore duplicate plugin versions or CI setup in either app.
 
 - This workstation has the Android SDK at `D:\android-sdk` (platform 36, NDK `28.2.13676358`, CMake `3.22.1`) and a populated Gradle cache at `C:\Users\Service Account\.gradle`. Environment variables may be unset; check these locations before claiming the toolchain is unavailable.

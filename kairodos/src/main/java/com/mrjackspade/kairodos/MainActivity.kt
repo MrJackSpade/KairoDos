@@ -77,6 +77,7 @@ import com.mrjackspade.kairo.frontend.ControllerEditorFlow
 import com.mrjackspade.kairo.frontend.CatalogUpdateController
 import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
+import com.mrjackspade.kairo.frontend.ShaderOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
 import android.widget.EditText
 import java.util.concurrent.atomic.AtomicBoolean
@@ -100,6 +101,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeVideoHeight(): Int
     private external fun nativeLastError(): String
     private external fun nativeSetSurface(surface: Surface?)
+    private external fun nativeSetShaderPreset(path: String?)
     private external fun nativeKey(code: Int, down: Boolean)
     private external fun nativeJoypad(id: Int, down: Boolean)
     private external fun nativeMouseMove(dx: Int, dy: Int)
@@ -120,6 +122,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
         }, {
             updateSurfaceLayout()
+            sessionDrawer?.refreshValues()
+            libraryScreen.refreshSettingValues()
+        }, { message -> Ui.message(this, message) })
+    }
+    private val shaderOptions by lazy {
+        ShaderOptions(this, preferences, { builder ->
+            builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
+        }, { path ->
+            nativeSetShaderPreset(path)
             sessionDrawer?.refreshValues()
             libraryScreen.refreshSettingValues()
         }, { message -> Ui.message(this, message) })
@@ -329,6 +340,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         graphics.load()
+        nativeSetShaderPreset(shaderOptions.selectedPath())
         ImmersiveWindow.apply(this)
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
@@ -475,6 +487,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     @Deprecated("The platform Activity uses onActivityResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (shaderOptions.handleActivityResult(requestCode, resultCode, data)) return
         if (libraryScreen.handleCatalogResult(requestCode, resultCode, data)) return
         if (artwork.handleActivityResult(requestCode, resultCode, data)) return
         libraryFlow.handleActivityResult(requestCode, resultCode, data)
@@ -1158,6 +1171,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (gameSettings.has(game.contentId, DosVideoHardware.setting)) "Game" else "Global"
 
     private fun showGraphicsSettings(game: DosLibrary.Game?) = graphics.show(listOf(
+        shaderOptions.entry(),
         SettingsEntry("Emulated video card", {
             if (game == null) DosVideoHardware.label(dosGameSettings.videoHardware()) else videoHardwareLabel(game)
         }, { showVideoHardwareSettings(game) }),

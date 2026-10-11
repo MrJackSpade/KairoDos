@@ -2,6 +2,8 @@
 
 First-party KairoDos and pinned Kairo code remain GPL-2.0-or-later; see [COPYING](../COPYING). Spleen is BSD-2-Clause with source/notice under `shared/third_party/spleen/`.
 
+The shared RetroArch Slang integration uses librashader 0.11.0 under its GPL-3.0-only option. Its pinned source and Rust crate archives are recorded in [shared licensing](../shared/docs/licensing.md), and both apps append the shared runtime notice to **About → Licenses**. The combined build remains under GPLv3 terms. Review the exact combined binary and transitive notices before claiming a release is license-audited.
+
 Staging is predominantly GPL-2.0-or-later. The mixer includes MVerb under GPL-3.0-or-later; GCEM is Apache-2.0. **Distribute the combined APK under GPLv3 terms**, using first-party "or later" permission. Per-file licenses are preserved. GPL-2.0-only FreeDOS resources/utilities are separate works in the aggregate; source snapshots are supplied in `extras/dos-programs/`.
 
 Preserve Staging's LICENSE, licenses directory and per-file notices. These cover DOSBox/Staging authors, MAME emulators, NE2000, Nuked OPL3, ESFMu, MVerb, TAL chorus, reSID, decoders, SIMD helpers, Unicode mappings and freely licensed DOS utilities. [Source provenance](source-import.md) records external dependency versions and complete sources.
