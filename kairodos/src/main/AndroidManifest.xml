@@ -7,9 +7,12 @@
         android:label="KairoDos"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.KairoDos">
+        <!-- Recreating MainActivity stops the running machine. The app has no
+             configuration-specific resources, so it handles every declarable change in place
+             and rebuilds density- and font-sized views itself once no machine is running. -->
         <activity android:name=".MainActivity" android:exported="true"
             android:launchMode="singleTop"
-            android:configChanges="orientation|screenSize|smallestScreenSize|keyboardHidden">
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize|layoutDirection|colorMode|fontWeightAdjustment|grammaticalGender">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -39,6 +39,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
     private var deadZone = false
     private var librarySearch = false
     private var endSessionUri: String? = null
+    private var configChangeUri: String? = null
     private var touchSticks = false
     private var nextSessionUri: String? = null
     private var catalogProgress = false
@@ -107,6 +108,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         resolutionNoDouble = arguments?.getString("resolutionNoDouble") == "true"
         exitDialog = arguments?.getString("exitDialog") == "true"
         endSessionUri = arguments?.getString("endSessionUri")
+        configChangeUri = arguments?.getString("configChangeUri")
         touchSticks = arguments?.getString("touchSticks") == "true"
         nextSessionUri = arguments?.getString("nextSessionUri")
         catalogPackageFile = arguments?.getString("catalogPackageFile")
@@ -205,6 +207,16 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             try {
                 com.mrjackspade.kairo.frontend.EndSessionFixture.verify(this, uri, nextSessionUri)
                 result.putString("stream", "Library cancellation, teardown and relaunch: OK\n")
+                finish(Activity.RESULT_OK, result)
+            } catch (failure: Throwable) {
+                result.putString("stream", failure.stackTraceToString())
+                finish(Activity.RESULT_CANCELED, result)
+            }
+            return
+        }
+        configChangeUri?.let { uri ->
+            try {
+                result.putString("stream", com.mrjackspade.kairo.frontend.ConfigurationChangeFixture.verify(this, uri))
                 finish(Activity.RESULT_OK, result)
             } catch (failure: Throwable) {
                 result.putString("stream", failure.stackTraceToString())

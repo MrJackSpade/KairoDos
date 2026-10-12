@@ -50,6 +50,7 @@ import com.mrjackspade.kairo.frontend.FrontendInputScreens
 import com.mrjackspade.kairo.frontend.SecondaryDisplayCoordinator
 import com.mrjackspade.kairo.frontend.RgDsDisplayRouter
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
+import com.mrjackspade.kairo.frontend.ViewScale
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
 import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
@@ -332,6 +333,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var twoFingers = false
     private var directPointerPressed = false
     private var relocating = false
+    private lateinit var viewScale: ViewScale
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -343,6 +345,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         graphics.load()
         nativeSetShaderPreset(shaderOptions.selectedPath())
         ImmersiveWindow.apply(this)
+        viewScale = ViewScale(this)
         appRoot = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
         setContentView(appRoot)
         secondaryDisplay = SecondaryDisplayCoordinator(this, keys, mouse,
@@ -813,7 +816,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (generation == launchGeneration && currentGame?.id == game.id) {
                     leaveGame(success)
                     if (!success) AlertDialog.Builder(this).setMessage(message)
-                        .setPositiveButton("OK", null).show().also(Ui::styleDialog)
+                        .setPositiveButton("OK", null)
+                        .setOnDismissListener { rebuildIfRescaled() }.show().also(Ui::styleDialog)
+                    else rebuildIfRescaled()
                 }
             }
         }.apply { name = "KairoDos-emulation"; start() }
@@ -1104,8 +1109,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        if (relocating || rebuildIfRescaled()) return
+        restoreGameFullscreen()
         graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
+    }
+
+    /** Rebuilds views sized for earlier density or font settings once no machine is running or starting. */
+    private fun rebuildIfRescaled(): Boolean {
+        if (isFinishing || currentGame != null || endingSessionForLibrary || installerPromptOpen ||
+            !viewScale.changed) return false
+        recreate()
+        return true
     }
 
     private fun handleGameTouch(view: View, event: MotionEvent): Boolean =
@@ -1401,6 +1416,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 statusLabel = null
                 endingSessionForLibrary = false
                 done()
+                rebuildIfRescaled()
             }
         }.apply { name = "KairoDos-end-session"; start() }
     }
