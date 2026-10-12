@@ -541,7 +541,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (entry.folder) "game folder" else "game file" else null)
         val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
             true) { showGameCpuSettings(entry) },
-            GameSettingsRow("Graphics", videoHardwareLabel(entry), true) {
+            GameSettingsRow("Graphics", "", true) {
                 showGraphicsSettings(entry)
             }) +
             (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",

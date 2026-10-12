@@ -37,7 +37,7 @@ std::shared_ptr<DirectoryRequest> directory_request;
 std::vector<uint8_t> pending_frame;
 unsigned pending_width = 0, pending_height = 0;
 uint64_t pending_frame_time = 0;
-bool has_pending_frame = false, renderer_stopping = false;
+bool has_pending_frame = false, redraw_requested = false, renderer_stopping = false;
 struct KeyChange { int code; bool down; };
 std::deque<KeyChange> key_changes;
 // Stable frontend key codes; SDL2 translation belongs to the core adapter.
@@ -139,17 +139,21 @@ void video(const uint32_t* data, int width, int height, int pitch, double ratio)
 void render_frames() {
     std::vector<uint8_t> frame;
     kairo::SlangSurfacePresenter shader_renderer;
+    unsigned width = 0, height = 0;
+    uint64_t arrival = 0;
     while (true) {
-        unsigned width, height;
-        uint64_t arrival;
         {
             std::unique_lock lock(frame_mutex);
-            frame_ready.wait(lock, [] { return renderer_stopping || has_pending_frame; });
+            frame_ready.wait(lock, [] { return renderer_stopping || has_pending_frame || redraw_requested; });
             if (renderer_stopping) return;
-            frame.swap(pending_frame);
-            width = pending_width; height = pending_height; arrival = pending_frame_time;
-            has_pending_frame = false;
+            redraw_requested = false;
+            if (has_pending_frame) {
+                frame.swap(pending_frame);
+                width = pending_width; height = pending_height; arrival = pending_frame_time;
+                has_pending_frame = false;
+            }
         }
+        if (frame.empty()) continue;
         const auto wait = video_profile::now();
         std::lock_guard lock(surface_mutex);
         video_profile::elapsed(video_profile::WindowMutex, wait);
@@ -254,7 +258,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     { std::lock_guard lock(error_mutex); last_error.clear(); }
     { std::lock_guard lock(control_mutex); stop_requested = false; paused = false; reset_requested = false; }
     mouse_x = 0; mouse_y = 0; mouse_left = false; mouse_right = false; pointer_pressed = false;
-    { std::lock_guard lock(frame_mutex); renderer_stopping = false; has_pending_frame = false; }
+    { std::lock_guard lock(frame_mutex); renderer_stopping = false; has_pending_frame = false; redraw_requested = false; }
     std::thread renderer(render_frames);
     int result = 0;
     do {
@@ -346,14 +350,19 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeCpuTelemetry(JNIEnv* env, jobje
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeSetSurface(JNIEnv* env, jobject, jobject value) {
     ANativeWindow* next = value ? ANativeWindow_fromSurface(env, value) : nullptr;
-    std::lock_guard lock(surface_mutex); if (surface) ANativeWindow_release(surface);
-    surface = next; surface_width = surface_height = 0;
+    {
+        std::lock_guard lock(surface_mutex); if (surface) ANativeWindow_release(surface);
+        surface = next; surface_width = surface_height = 0;
+    }
+    { std::lock_guard lock(frame_mutex); redraw_requested = true; }
+    frame_ready.notify_one();
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeSetShaderPreset(JNIEnv* env, jobject,
                                                                  jstring value) {
-    std::lock_guard lock(surface_mutex);
-    shader_preset = string(env, value);
+    { std::lock_guard lock(surface_mutex); shader_preset = string(env, value); }
+    { std::lock_guard lock(frame_mutex); redraw_requested = true; }
+    frame_ready.notify_one();
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeKey(JNIEnv*, jobject, jint code, jboolean down) {
