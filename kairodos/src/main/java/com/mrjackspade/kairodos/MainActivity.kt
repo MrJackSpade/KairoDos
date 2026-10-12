@@ -68,6 +68,10 @@ import com.mrjackspade.kairo.frontend.ShaderOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
 import com.mrjackspade.kairo.frontend.PageStack
 import com.mrjackspade.kairo.frontend.GroupsPage
+import com.mrjackspade.kairo.frontend.SaveUnit
+import com.mrjackspade.kairo.frontend.SaveLocation
+import com.mrjackspade.kairo.frontend.SaveFolderSettings
+import com.mrjackspade.kairo.frontend.AppSaveLocation
 import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.SetupPage
 import com.mrjackspade.kairo.frontend.FooterButton
@@ -119,6 +123,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private external fun nativeReadAudio(buffer: ShortArray, maxFrames: Int): Int
 
     companion object {
+        private const val OVERLAY_UNIT = "overlay"
+        private const val WORKING_OVERLAY = "staging/overlay-working"
+        private const val UNSAVED_OVERLAY = "staging/overlay-working.unsaved"
         private const val PICK_FOLDER = 1001
         private val CPU_OPTIONS = listOf(ChoiceOption("0", "Auto"), ChoiceOption("1", "Maximum"))
         private val VOODOO_OPTIONS = listOf(ChoiceOption("0", "Automatic CPU threads"),
@@ -168,6 +175,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private var onScreenControls: OnScreenControls? = null
     private val dosLibrary by lazy { DosLibrary(this) }
+    private val saveFolder by lazy {
+        SaveFolderSettings(this, pages, preferences, AppSaveLocation(File(filesDir, "dos-saves")), setOf(OVERLAY_UNIT),
+            ::saveTitle, { "Saved files" },
+            { if (currentGame != null) "Return to the library to change the save folder." else null },
+            ::prepareSaveMove)
+    }
     private val externalDispatcher by lazy {
         ExternalGameDispatcher(this, contentResolver, { games },
             { game: DosLibrary.Game -> Uri.parse(game.uri) },
@@ -500,6 +513,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (shaderOptions.handleActivityResult(requestCode, resultCode, data)) return
         if (libraryMenu.handleActivityResult(requestCode, resultCode, data)) return
         if (artwork.handleActivityResult(requestCode, resultCode, data)) return
+        if (saveFolder.handleActivityResult(requestCode, resultCode, data)) return
         libraryFlow.handleActivityResult(requestCode, resultCode, data)
     }
 
@@ -726,6 +740,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun startGame(game: DosLibrary.Game, configName: String,
                           fromFrontend: Boolean = false, target: DosLaunchTarget = DosLaunchTarget.Normal) {
+        if (saveFolder.busy) {
+            Ui.message(this, "Wait for the saves to finish moving.")
+            return
+        }
         val selected = tree
         if (!game.external && selected == null) {
             libraryScreen.showStatus("Choose a DOS folder for this game")
@@ -792,6 +810,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                 }
                 require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
+                // Each mounted game drive writes to its own overlay. Folder sessions are stored after the run.
+                val overlays = LinkedHashMap<File, File>()
+                val sessions = ArrayList<File>()
+                fun overlayFor(dir: File, contentId: String) = beginOverlay(dir, contentId).also {
+                    if (saveFolder.folder != null) sessions += dir
+                }
                 val dependencies = (if (target == DosLaunchTarget.Prompt) emptySet() else
                     DosLaunchConfig.requiredFolders(launch, configName))
                     .associateWith { folder ->
@@ -799,8 +823,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         val dependency = availableGames.firstOrNull { it.contentId in ids }
                             ?: error("This game also needs the $folder archive in your DOS library")
                         val dependencyFile = dosLibrary.prepare(dependency, selected, cancelled)
-                        val stored = DosStagingStorage.prepare(dependencyFile,
-                            File(filesDir, "saves/${dependency.id}"), dependency.contentId!!, cancelled, folder)
+                        val dependencyDir = File(filesDir, "saves/${dependency.id}")
+                        val stored = DosStagingStorage.prepare(dependencyFile, dependencyDir, dependency.contentId!!,
+                            overlayFor(dependencyDir, dependency.contentId), cancelled, folder)
+                        overlays[stored.directory] = stored.overlay
                         stored.directory.listFiles().orEmpty().firstOrNull {
                             it.isDirectory && it.name.equals(folder, true)
                         } ?: stored.directory
@@ -811,12 +837,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     if (generation == launchGeneration) overlay.showProgress("Starting DOSBox Staging\u2026")
                 }
                 val drive = DosStagingStorage.prepare(file, saveDir, playableGame.contentId!!,
-                    cancelled, launch?.folder) { progress -> runOnUiThread {
+                    overlayFor(saveDir, playableGame.contentId), cancelled, launch?.folder) { progress -> runOnUiThread {
                         if (generation == launchGeneration) overlay.showProgress(progress)
                     } }
+                overlays[drive.directory] = drive.overlay
                 val resources = DosStagingResources.prepare(this, cancelled)
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
-                    drive, launch, configName, dependencies, playerName,
+                    drive, launch, configName, dependencies, overlays, playerName,
                     effectiveVoodoo() == 1, effectiveDirectTouch(),
                     dosGameSettings.videoHardware(playableGame.contentId), target)
                 if (target == DosLaunchTarget.Browse) runOnUiThread {
@@ -835,6 +862,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 if (cancelled.get() || generation != launchGeneration) return@Thread
                 val started = nativeRun(configuration.absolutePath, saveDir.absolutePath,
                     resources.absolutePath)
+                sessions.forEach(::publishOverlay)
                 if (!started) message = nativeLastError().ifBlank {
                     "DOSBox Staging could not start this game."
                 }
@@ -886,6 +914,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 it.contentId != null && libraryScreen.visibility != View.VISIBLE }))
         },
         SettingsRow.nav("f-machine", "Machine") { pages.push(machinePage()) },
+        SettingsRow.nav("f-configurations", "Configurations") { pages.push(configurationsPage()) },
         SettingsRow.switch("f-sound", "Sound", { !preferences.getBoolean("muted", false) }) { on ->
             preferences.edit().putBoolean("muted", !on).apply()
             audio?.setVolume(if (on) 1f else 0f)
@@ -902,6 +931,74 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1).toString() },
             select = { preferences.edit().putInt("staging_voodoo_threads", it.toInt()).apply(); configureGuest() }))),
         "Changes apply the next time a game starts. Games with their own setting keep it.")
+
+    /** Configurations: where KairoDos keeps the user's files, for all games. */
+    private fun configurationsPage() = GroupsPage("Configurations", { GameSource.ALL_GAMES }, {
+        listOf(RowGroup("SAVED GAMES", listOf(saveFolder.row())))
+    })
+
+    /** A save folder's game name, as a library title when the game is still in the library. */
+    private fun saveTitle(game: String): String =
+        games.firstOrNull { it.contentId?.let(SaveLocation::gameName) == game }?.let(::titleOf) ?: game
+
+    /**
+     * Where a game's overlay lives while it runs: in app storage, or a working copy of the
+     * save folder's. [publishOverlay] stores the working copy back when the session ends.
+     */
+    private fun beginOverlay(saveDir: File, contentId: String): File {
+        val unit = SaveUnit(SaveLocation.gameName(contentId), OVERLAY_UNIT)
+        val folder = saveFolder.folder
+        if (folder == null) {
+            require(!File(saveDir, UNSAVED_OVERLAY).isFile) {
+                "This game has saved files that were not stored in the save folder. Choose the folder again."
+            }
+            return saveFolder.app.directory(unit)
+        }
+        require(!DosStagingStorage.hasLegacyDrive(saveDir)) {
+            "This game's saved files use an older format. Choose Private app storage in " +
+                "Configurations › Save folder, then choose the folder again to move them."
+        }
+        publishOverlay(saveDir)
+        val working = File(saveDir, WORKING_OVERLAY)
+        require(!working.exists() || working.deleteRecursively()) { "Could not clear the game's working save folder" }
+        if (folder.exists(unit)) folder.export(unit, working)
+        else require(working.mkdirs()) { "Could not create the game's working save folder" }
+        File(saveDir, UNSAVED_OVERLAY).writeText("${folder.tree}\n$contentId")
+        return working
+    }
+
+    /** Stores a session's working overlay in the save folder. */
+    private fun publishOverlay(saveDir: File) {
+        val unsaved = File(saveDir, UNSAVED_OVERLAY)
+        if (!unsaved.isFile) return
+        val (tree, contentId) = unsaved.readLines()
+        val folder = checkNotNull(saveFolder.folder) { "The save folder for these saved files is no longer selected" }
+        require(folder.tree.toString() == tree) { "These saved files belong to a different save folder" }
+        folder.import(SaveUnit(SaveLocation.gameName(contentId), OVERLAY_UNIT), File(saveDir, WORKING_OVERLAY))
+        check(unsaved.delete()) { "Could not finish storing the game's saved files" }
+    }
+
+    /** Before saves move: store unfinished sessions and convert drives from before overlays. */
+    private fun prepareSaveMove(progress: (String) -> Unit) {
+        val saveDirs = File(filesDir, "saves").listFiles().orEmpty().filter { it.isDirectory }
+        saveDirs.forEach(::publishOverlay)
+        val library = games.toList()
+        val legacy = saveDirs.filter(DosStagingStorage::hasLegacyDrive).map { it to DosStagingStorage.legacyContentId(it) }
+        val missing = legacy.filter { (_, id) -> library.none { it.contentId == id } }
+        require(missing.isEmpty()) {
+            "These games' saved files use an older format, and moving them needs their game files in the " +
+                "library: " + missing.joinToString { (_, id) -> catalog.resolve(id, id).title }
+        }
+        for ((index, entry) in legacy.withIndex()) {
+            val (saveDir, id) = entry
+            val game = library.first { it.contentId == id }
+            progress("Converting ${index + 1} of ${legacy.size}…")
+            val archive = dosLibrary.prepare(game, tree, AtomicBoolean(false))
+            DosStagingStorage.prepare(archive, saveDir, id,
+                saveFolder.app.directory(SaveUnit(SaveLocation.gameName(id), OVERLAY_UNIT)), AtomicBoolean(false),
+                catalog.resolve(id, game.displayName).launch?.folder)
+        }
+    }
 
     /** Machine: the DOS CPU speed for all games. */
     private fun machinePage() = GroupsPage("Machine", { GameSource.ALL_GAMES }, {

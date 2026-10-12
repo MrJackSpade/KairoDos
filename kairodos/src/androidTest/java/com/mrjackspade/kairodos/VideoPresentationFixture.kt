@@ -119,9 +119,9 @@ internal object VideoPresentationFixture {
                 call("nativeConfigure", 0, 0, mode)
                 call("nativeSetSurface", screen.holder.surface)
                 val saves = File(root, "saves-$index").apply { mkdirs() }
-                val drive = DosStagingStorage.prepare(archive, saves, contentId, cancelled, launch?.folder)
+                val drive = DosStagingStorage.prepare(archive, saves, contentId, File(saves, "overlay"), cancelled, launch?.folder)
                 val config = DosStagingLaunchConfig.write(File(saves, "game.conf"), drive,
-                    launch, "dosbox.conf", emptyMap(), null, false, false)
+                    launch, "dosbox.conf", emptyMap(), mapOf(drive.directory to drive.overlay), null, false, false)
                 val core = worker.submit<Boolean> { call("nativeRun", config.absolutePath,
                     saves.absolutePath, resources.absolutePath) as Boolean }
                 val sound = Thread {

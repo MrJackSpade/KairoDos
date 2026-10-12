@@ -10,6 +10,7 @@ internal object DosStagingLaunchConfig {
     private val mount = Regex("(?i)^(\\s*@?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
     private val mountC = Regex("(?i)^@?mount\\s+c\\s+.+$")
     private val imgC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
+    private val WRITABLE_IMAGES = setOf("img", "ima")
 
     private fun cpuCore(source: String?): String {
         var inCpu = false
@@ -33,7 +34,7 @@ internal object DosStagingLaunchConfig {
     }
 
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
-              name: String, dependencies: Map<String, File>, player: String?,
+              name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
               target: DosLaunchTarget = DosLaunchTarget.Normal): File {
         val manualProgram = target == DosLaunchTarget.Browse || target is DosLaunchTarget.Program
@@ -75,6 +76,39 @@ internal object DosStagingLaunchConfig {
             if (normalized == ".") return mountedRoot.absolutePath
             return path
         }
+        val layers = overlays.map { (base, layer) -> base.canonicalFile to layer }
+        // A path inside a game's base drive, mapped to the same place in its overlay.
+        fun layerOf(path: String): File? {
+            val file = File(path).canonicalFile
+            return layers.firstNotNullOfOrNull { (base, layer) ->
+                when {
+                    file == base -> layer
+                    file.path.startsWith(base.path + File.separator) ->
+                        File(layer, file.path.substring(base.path.length + 1))
+                    else -> null
+                }
+            }
+        }
+        // Staging sends every write to a mounted game folder into its overlay.
+        fun overlayMount(letter: String, path: String, options: String): String? {
+            if (!File(path).isDirectory) return null
+            val layer = layerOf(path) ?: return null
+            val type = Regex("(?i)-t\\s+(\\S+)").find(options)?.groupValues?.get(1)?.lowercase()
+            if (type != null && type !in setOf("dir", "floppy")) return null // CD-ROM folders are read-only.
+            require(layer.isDirectory || layer.mkdirs()) { "Could not create the game's save folder" }
+            return "mount $letter \"${layer.absolutePath}\" -t overlay" + options.replace(Regex("(?i)\\s*-t\\s+\\S+"), "")
+        }
+        // Disk images are written in place, so the game uses its overlay's copy of each one.
+        fun writableImage(path: String): String {
+            if (File(path).extension.lowercase() !in WRITABLE_IMAGES) return path
+            val layer = layerOf(path) ?: return path
+            if (!layer.isFile) {
+                require(layer.parentFile!!.isDirectory || layer.parentFile!!.mkdirs()) { "Could not create the game's save folder" }
+                File(path).copyTo(layer)
+                layer.setLastModified(File(path).lastModified())
+            }
+            return layer.absolutePath
+        }
         val lines = ArrayList<String>()
         if (marker != null) lines += source!!.substring(0, marker.range.first).trimEnd()
         lines += "[autoexec]"
@@ -83,6 +117,7 @@ internal object DosStagingLaunchConfig {
         // Do not execute catalog setup scripts, BOOT, or a lone executable.
         if (target == DosLaunchTarget.Prompt) {
             lines += "mount C \"${gameRoot.absolutePath}\""
+            overlayMount("C", gameRoot.absolutePath, "")?.let(lines::add)
             lines += "C:"
             lines += "dir /w"
         } else {
@@ -90,7 +125,9 @@ internal object DosStagingLaunchConfig {
                 .firstOrNull { it.groupValues[2].equals("C", true) }
             val initialRoot = initialMount?.let { nativePath(it.groupValues[4].trim('"')) }
                 ?: mountedRoot.absolutePath
-            lines += "mount $contentDrive \"$initialRoot\"" + (initialMount?.groupValues?.get(5) ?: "")
+            val initialOptions = initialMount?.groupValues?.get(5) ?: ""
+            lines += "mount $contentDrive \"$initialRoot\"" + initialOptions
+            overlayMount(contentDrive, initialRoot, initialOptions)?.let(lines::add)
             lines += "$contentDrive:"
             if (!manualProgram) lines += DosLaunchConfig.setupLines(folder, player)
             if (source == null) {
@@ -99,8 +136,8 @@ internal object DosStagingLaunchConfig {
                         "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
                         "img", "ima" -> if (manualProgram) {
                             val floppy = drive.media.length() <= 2_949_120
-                            lines += "imgmount ${if (floppy) "A" else "D"} \"${drive.media.absolutePath}\" -t ${if (floppy) "floppy" else "hdd"}"
-                        } else lines += "boot \"${drive.media.absolutePath}\""
+                            lines += "imgmount ${if (floppy) "A" else "D"} \"${writableImage(drive.media.absolutePath)}\" -t ${if (floppy) "floppy" else "hdd"}"
+                        } else lines += "boot \"${writableImage(drive.media.absolutePath)}\""
                         else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
                     }
                 } else {
@@ -118,10 +155,11 @@ internal object DosStagingLaunchConfig {
                 if (mounted != null) {
                     val originalPath = mounted.groupValues[4].trim('"')
                     val path = nativePath(originalPath)
-                    val prefix = if (File(path).isFile && File(path).extension.lowercase() in
-                        setOf("iso", "cue", "img", "ima")) mounted.groupValues[1].replace("mount", "imgmount", true)
+                    val image = File(path).isFile && File(path).extension.lowercase() in setOf("iso", "cue", "img", "ima")
+                    val prefix = if (image) mounted.groupValues[1].replace("mount", "imgmount", true)
                         else mounted.groupValues[1]
-                    lines += "$prefix${mounted.groupValues[2]} \"$path\"${mounted.groupValues[5]}"
+                    lines += "$prefix${mounted.groupValues[2]} \"${if (image) writableImage(path) else path}\"${mounted.groupValues[5]}"
+                    if (!image) overlayMount(mounted.groupValues[2], path, mounted.groupValues[5])?.let(lines::add)
                     continue
                 }
                 if (trimmed.startsWith("imgmount ", true) || trimmed.startsWith("@imgmount ", true)) {
@@ -133,7 +171,7 @@ internal object DosStagingLaunchConfig {
                     }
                     lines += tokens.mapIndexed { index, token ->
                         if (index < 2 || token.startsWith('-')) token else {
-                            val path = nativePath(token.trim('"'))
+                            val path = writableImage(nativePath(token.trim('"')))
                             if (path != token.trim('"')) "\"$path\"" else token
                         }
                     }.joinToString(" ")

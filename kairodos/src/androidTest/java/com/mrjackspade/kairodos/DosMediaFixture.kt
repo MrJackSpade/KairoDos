@@ -36,9 +36,9 @@ internal object DosMediaFixture {
                 "[autoexec]\nmount c .\nimgmount a \"${fat.absolutePath}\" -t floppy\n" +
                 "imgmount d \"${iso.absolutePath}\" -t iso\nSHOULDNOT.EXE\n"), false)
             fun run(drive: DosStagingStorage.Drive, profile: DosGameCatalog.Launch?,
-                    target: DosLaunchTarget, inspect: () -> Unit) {
+                    target: DosLaunchTarget, overlays: Map<File, File> = emptyMap(), inspect: () -> Unit) {
                 val config = DosStagingLaunchConfig.write(File(root, "launch.conf"), drive, profile,
-                    "dosbox.conf", emptyMap(), null, false, false, target = target)
+                    "dosbox.conf", emptyMap(), overlays, null, false, false, target = target)
                 val future = worker.submit<Boolean> {
                     call("nativeRun", config.absolutePath, root.absolutePath, resources.absolutePath) as Boolean
                 }
@@ -52,7 +52,7 @@ internal object DosMediaFixture {
                     check(future.get(15, TimeUnit.SECONDS))
                 }
             }
-            val drive = DosStagingStorage.Drive(directory)
+            val drive = DosStagingStorage.Drive(directory, null, File(root, "overlay"))
             run(drive, launch, DosLaunchTarget.Browse) {
                 call("nativePause", true)
                 val roots = call("nativeListDirectory", "") as String
@@ -75,7 +75,7 @@ internal object DosMediaFixture {
             for ((original, letter, kind) in listOf(Triple(fat, "A", "FAT"), Triple(iso, "D", "ISO"))) {
                 val standalone = File(root, kind).apply { mkdirs() }
                 val image = original.copyTo(File(standalone, original.name))
-                run(DosStagingStorage.Drive(standalone, image), null,
+                run(DosStagingStorage.Drive(standalone, image, File(root, "overlay")), null,
                     DosLaunchTarget.Program("$letter:\\SETUP\\RUN.BAT")) {
                     val marker = File(standalone, "${kind}PASS.TXT")
                     await("Standalone $kind program did not execute") { marker.isFile }
@@ -84,6 +84,24 @@ internal object DosMediaFixture {
                 }
             }
             check(fat.readBytes().contentEquals(fatBytes) && iso.readBytes().contentEquals(isoBytes))
+            // A game drive's writes land in its overlay, and converted deletion markers hide base files.
+            val base = File(root, "base").apply { mkdirs() }
+            File(base, "GONE.DAT").writeText("original")
+            File(base, "KEEP.DAT").writeText("original")
+            File(base, "RUN.BAT").writeText("@echo off\r\necho saved>SAVE.DAT\r\necho changed>KEEP.DAT\r\n" +
+                "if exist GONE.DAT echo visible>GONE.TXT\r\nif not exist GONE.DAT echo hidden>GONE.TXT\r\n")
+            val layer = File(root, "layer").apply { mkdirs() }
+            File(layer, "DBOVERLAY_DEL_GONE.DAT").writeText("empty")
+            run(DosStagingStorage.Drive(base, null, layer), null, DosLaunchTarget.Program("C:\\RUN.BAT"),
+                mapOf(base to layer)) {
+                val result = File(layer, "GONE.TXT")
+                await("Program on the overlaid drive did not finish") { result.isFile && result.length() > 0 }
+                check(result.readText().trim() == "hidden") { "Deletion marker ignored: ${result.readText()}" }
+                check(File(layer, "SAVE.DAT").readText().trim() == "saved")
+                check(File(layer, "KEEP.DAT").readText().trim() == "changed")
+                check(!File(base, "SAVE.DAT").exists() && !File(base, "GONE.TXT").exists())
+                check(File(base, "KEEP.DAT").readText() == "original" && File(base, "GONE.DAT").readText() == "original")
+            }
         } finally {
             call("nativeStop")
             worker.shutdown()

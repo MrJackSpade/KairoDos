@@ -40,9 +40,9 @@ internal object StagingCoreFixture {
             val contentId = DosContentHash.zip(archive, cancelled)
             val launch = DosGameCatalog(context).resolve(contentId, archive.name).launch
             val saves = File(root, "saves").apply { mkdirs() }
-            val drive = DosStagingStorage.prepare(archive, saves, contentId, cancelled, launch?.folder)
+            val drive = DosStagingStorage.prepare(archive, saves, contentId, File(saves, "overlay"), cancelled, launch?.folder)
             val config = DosStagingLaunchConfig.write(File(root, "game.conf"), drive, launch,
-                "dosbox.conf", emptyMap(), null, false, false)
+                "dosbox.conf", emptyMap(), mapOf(drive.directory to drive.overlay), null, false, false)
             if (oplMode != null) config.appendText(
                 "\n[sblaster]\noplmode = $oplMode\nopl_remove_dc_bias = $oplDcBias\n")
             File(report, "launch.conf").writeText(config.readText())
