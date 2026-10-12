@@ -842,14 +842,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun settingsEntries() = listOf(
-        SettingsEntry("Touch input", {
-            when (preferences.getInt("touch_mode", 2)) {
-                2 -> "Auto"
-                1 -> "Keyboard"
-                else -> if (preferences.getBoolean("direct_touch", false))
-                    "Mouse · direct tap" else "Mouse · touchpad"
-            }
-        }, ::showSettings),
+        SettingsEntry("Touch input", { "" }, ::showSettings),
         SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
             "Auto" else "Maximum" }, ::showCpuSettings),
         SettingsEntry("Graphics", graphics::settingsLabel, { showGraphicsSettings(null) }),
