@@ -63,16 +63,18 @@ internal object DosPromptFixture {
             }
             test.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
             test.sendKeyDownUpSync(KeyEvent.KEYCODE_BUTTON_A)
+            val pages = MainActivity::class.java.getDeclaredField("pages").apply { isAccessible = true }
+                .get(activity) as com.mrjackspade.kairo.frontend.PageStack
+            fun picker() = pages.top as? com.mrjackspade.kairo.frontend.DirectoryPicker
             await("Prompt picker did not open") {
                 var ready = false
-                ui { ready = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
-                    .filterIsInstance<android.widget.ListView>().any { it.count > 0 && it.getItemAtPosition(0) == "Prompt" } }
+                ui { ready = picker()?.itemIds()?.firstOrNull() == "entry0:" }
                 ready
             }
             ui {
-                val list = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
-                    .filterIsInstance<android.widget.ListView>().single { it.count > 0 && it.getItemAtPosition(0) == "Prompt" }
-                list.performItemClick(list.getChildAt(0), 0, list.getItemIdAtPosition(0))
+                val prompt = picker()!!.itemView("entry0:")!!
+                check(descendants(prompt).filterIsInstance<android.widget.TextView>().first().text.toString() == "Prompt")
+                prompt.performClick()
             }
             await("Prompt action did not resume") {
                 field("launchGeneration") != generation && call("nativeStatus") == 2 &&

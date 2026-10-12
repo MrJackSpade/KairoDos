@@ -8,7 +8,7 @@ KairoDos is an independent Android DOS emulator using [DOSBox Staging](https://w
 
 ## Add games
 
-Choose a DOS game folder from the library menu, then select a game and tap **Play**. KairoDos prepares a persistent writable DOS drive in private app storage, leaving your original archives intact. Games and proprietary operating system files are not bundled. ZIP/DOSZ archives, programs and game folders are supported; standalone media support follows Staging (ISO/CUE and IMG/IMA, rather than Pure's CHD/JRC formats).
+Choose a DOS game folder when KairoDos first opens, or later in Menu › Manage library, then select a game and tap **Play**. KairoDos prepares a persistent writable DOS drive in private app storage, leaving your original archives intact. Games and proprietary operating system files are not bundled. ZIP/DOSZ archives, programs and game folders are supported; standalone media support follows Staging (ISO/CUE and IMG/IMA, rather than Pure's CHD/JRC formats).
 
 Known games receive a title, description, tags, and artwork from a hash-keyed catalog seeded from eXoDOS metadata. Your games do not need to be in an eXoDOS directory. An unknown game appears by filename and can still launch. See [catalog behavior](docs/catalog.md).
 

@@ -42,7 +42,7 @@ internal object DosControllerBindings {
         joystickTargets,
         "D-pad: arrows; A: Enter; game-specific profiles can map the D-pad and buttons to DOS joystick controls.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
-            "restart" to "Restart", "exit" to "Exit"))
+            "restart" to "Restart", "exit" to "Exit"), DosKeyboardLayout.value)
     private val codec = ControllerBindingsCodec(::defaults, { it in keyCodes }, joystick,
         spec.actions.map { it.first })
 

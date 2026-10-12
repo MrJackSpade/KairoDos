@@ -1,12 +1,12 @@
 # Run a setup program or another executable
 
-Open a game's detail page and press the command-prompt icon to the right of
-**Play**, then select a mounted drive,
-folder, and executable. The picker accepts DOS EXE, COM, BAT, and DOS-compatible
-CMD scripts. D-pad/confirm works throughout; Back/Up navigates to the parent.
-**Prompt** is the first root-level option and resumes the mounted DOS session
-without executing a program. Cancel at the root also leaves the files mounted
-at the prompt. These launch options no longer appear in Game settings.
+Open a game's page and press the command-prompt icon to the right of **Play**,
+then select a mounted drive, folder, and executable on the **DOS prompt or run
+program** page. The scope chip shows the current path. The picker accepts DOS EXE,
+COM, BAT, and DOS-compatible CMD scripts. D-pad/confirm works throughout; Back goes
+to the parent folder. **Prompt** is the first root-level row and resumes the
+mounted DOS session without executing a program. Back at the root also leaves the
+files mounted at the prompt. These launch options no longer appear in Game settings.
 
 This is a one-session launch choice. It uses the saved startup variant's hardware
 and drive mounts (or the default variant), but skips the catalog's game startup
@@ -30,8 +30,8 @@ program itself persist in the game's writable files, like ordinary DOS programs.
 
 ## Ownership
 
-- Shared frontend: asynchronous `DirectoryPicker`, history, controller navigation,
-  Android system Back, loading/error/empty states, retry, and cancellation.
+- Shared frontend: the asynchronous `DirectoryPicker` page, history, controller
+  navigation, Android system Back, loading/error/empty states, retry, and cancellation.
 - DOS host: game preparation, launch targets, mounts and program commands.
 - DOS backend: filesystem enumeration on the emulation thread, including while
   paused, with DOS search state preserved.
@@ -42,7 +42,9 @@ program itself persist in the game's writable files, like ordinary DOS programs.
 
 - Shared picker and existing exit-dialog tests passed in both apps, including
   companion-screen keys/hats/Back and returning from touch to controller selection.
-  Both applications were updated on the RGDS with the same shared source.
+  Both applications were updated on the RGDS with the same shared source. That run
+  used the earlier dialog picker; `DosProgramFixture` and `DosPromptFixture` now
+  drive the page with the D-pad.
 - `dosProgramUri=<installed Duke URI>` exercised the actual game settings row and
   controller-driven picker with generated BAT/CMD/COM/MZ-EXE programs. Each wrote
   a verified marker in its own working directory. Cancellation resumed the prompt;

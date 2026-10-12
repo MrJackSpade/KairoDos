@@ -40,7 +40,7 @@ internal object DosKeyboardLayout {
                     KeyboardKey("/", 47)),
                 listOf(KeyboardKey("Tab", 9), KeyboardKey("Space", 32, 5f),
                     KeyboardKey("Enter", 13))
-            )),
+            ), pickerLabel = "Symbols"),
             GuestKeyboardPage("FN", listOf(
                 (1..6).map { KeyboardKey("F$it", 281 + it) },
                 (7..12).map { KeyboardKey("F$it", 281 + it) },
@@ -52,7 +52,7 @@ internal object DosKeyboardLayout {
                     KeyboardKey("PgDn", 281), KeyboardKey("Del", 127)),
                 listOf(KeyboardKey("Ctrl", 306), KeyboardKey("Alt", 308),
                     KeyboardKey("Space", 32, 3f), KeyboardKey("Enter", 13))
-            ))
+            ), pickerLabel = "Function")
         ),
         modifiers = setOf(301, 303, 304, 305, 306, 307, 308),
         shiftCodes = setOf(303, 304),

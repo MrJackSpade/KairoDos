@@ -28,13 +28,13 @@ Library restoration can establish a highlighted row before the first-run overlay
 is shown. Previously, that row's selection/artwork callbacks published its preview
 on the second display, including while controller setup used a separate dialog.
 
-`FirstRunVisibility` now tracks all setup views within the owning activity, including
-dialog attachment/detachment. The shared secondary-display coordinator suppresses
+`FirstRunVisibility` now tracks all setup pages within the owning activity, including
+the required controller layout page. The shared secondary-display coordinator suppresses
 library previews, keyboard and swapped guest output while any setup view is active.
 It retains the latest library selection so finishing setup restores the correct
-preview. Asynchronous artwork updates use the same visibility gate. Setup state
-also routes secondary-display key/hat input to the active page rather than the
-underlying library, and its observer is removed when the coordinator stops.
+preview. Asynchronous artwork updates use the same visibility gate. Secondary-display key/hat input reaches the active setup page through the activity's
+page stack rather than the underlying library, and the observer is removed when the
+coordinator stops.
 
 RGDS checks cover both physical displays through setup and after completion,
 including D-pad/Enter sent to the lower display. Kairo98's controller, folder and

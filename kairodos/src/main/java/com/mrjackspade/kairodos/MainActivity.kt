@@ -1,7 +1,6 @@
 package com.mrjackspade.kairodos
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.res.Configuration
 import android.content.Intent
 import android.graphics.Color
@@ -12,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.DocumentsContract
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -21,7 +21,6 @@ import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.TextView
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
 import com.mrjackspade.kairo.frontend.AboutDocuments
 import com.mrjackspade.kairo.frontend.InputRouter
@@ -39,9 +38,9 @@ import com.mrjackspade.kairo.frontend.DirectoryPicker
 import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryScanSummary
 import com.mrjackspade.kairo.frontend.LibraryFlow
+import com.mrjackspade.kairo.frontend.LibraryMenu
 import com.mrjackspade.kairo.frontend.ExternalGameIntent
 import com.mrjackspade.kairo.frontend.ExternalGameDispatcher
-import com.mrjackspade.kairo.frontend.FirstRunScreen
 import com.mrjackspade.kairo.frontend.FrontendBackCoordinator
 import com.mrjackspade.kairo.frontend.GuestLifecycleCoordinator
 import com.mrjackspade.kairo.frontend.ControllerDeviceMonitor
@@ -54,33 +53,41 @@ import com.mrjackspade.kairo.frontend.ViewScale
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
 import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
-import com.mrjackspade.kairo.frontend.SettingsEntry
-import com.mrjackspade.kairo.frontend.SessionAction
-import com.mrjackspade.kairo.frontend.SessionDrawer
 import com.mrjackspade.kairo.frontend.SessionFlow
 import com.mrjackspade.kairo.frontend.SessionNavigationCoordinator
 import com.mrjackspade.kairo.frontend.SessionNavigationState
-import com.mrjackspade.kairo.frontend.SessionStatusDialog
-
-
-import com.mrjackspade.kairo.frontend.GameSettingsRow
-import com.mrjackspade.kairo.frontend.GameSettingsCoordinator
-import com.mrjackspade.kairo.frontend.CommonGameSettings
-import com.mrjackspade.kairo.frontend.CommonGameSettingsActions
-import com.mrjackspade.kairo.frontend.GameSettingsValue
-import com.mrjackspade.kairo.frontend.GameTitleEditor
 import com.mrjackspade.kairo.frontend.JoystickInputRouter
 import com.mrjackspade.kairo.frontend.GamepadMapper
-import com.mrjackspade.kairo.frontend.ControllerEditor
+import com.mrjackspade.kairo.frontend.ControllerPages
 import com.mrjackspade.kairo.frontend.ControllerProfileStore
 import com.mrjackspade.kairo.frontend.ControllerProfileCoordinator
-import com.mrjackspade.kairo.frontend.ControllerEditorFlow
 import com.mrjackspade.kairo.frontend.CatalogUpdateController
 import com.mrjackspade.kairo.frontend.OnScreenControls
 import com.mrjackspade.kairo.frontend.GraphicsOptions
 import com.mrjackspade.kairo.frontend.ShaderOptions
 import com.mrjackspade.kairo.frontend.GameDeletionFlow
-import android.widget.EditText
+import com.mrjackspade.kairo.frontend.PageStack
+import com.mrjackspade.kairo.frontend.GroupsPage
+import com.mrjackspade.kairo.frontend.ChoicePage
+import com.mrjackspade.kairo.frontend.SetupPage
+import com.mrjackspade.kairo.frontend.FooterButton
+import com.mrjackspade.kairo.frontend.FlyoutModel
+import com.mrjackspade.kairo.frontend.FlyoutButton
+import com.mrjackspade.kairo.frontend.SettingsRow
+import com.mrjackspade.kairo.frontend.RowGroup
+import com.mrjackspade.kairo.frontend.ChoiceSpec
+import com.mrjackspade.kairo.frontend.ChoiceGroup
+import com.mrjackspade.kairo.frontend.ChoiceOption
+import com.mrjackspade.kairo.frontend.Confirm
+import com.mrjackspade.kairo.frontend.TrayButton
+import com.mrjackspade.kairo.frontend.ButtonTone
+import com.mrjackspade.kairo.frontend.ValueTone
+import com.mrjackspade.kairo.frontend.GameOverlay
+import com.mrjackspade.kairo.frontend.GameNotice
+import com.mrjackspade.kairo.frontend.GameValue
+import com.mrjackspade.kairo.frontend.GameSource
+import com.mrjackspade.kairo.frontend.GameSettingsRows
+import com.mrjackspade.kairo.frontend.gameSettingsPage
 import java.util.concurrent.atomic.AtomicBoolean
 import java.io.File
 import kotlin.math.abs
@@ -113,28 +120,25 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     companion object {
         private const val PICK_FOLDER = 1001
+        private val CPU_OPTIONS = listOf(ChoiceOption("0", "Auto"), ChoiceOption("1", "Maximum"))
+        private val VOODOO_OPTIONS = listOf(ChoiceOption("0", "Automatic CPU threads"),
+            ChoiceOption("1", "Single CPU thread"))
         init { System.loadLibrary("kairodos_host") }
     }
 
     private val handler = Handler(Looper.getMainLooper())
     private val preferences by lazy { getSharedPreferences("kairodos", MODE_PRIVATE) }
     private val graphics by lazy {
-        GraphicsOptions(this, preferences, { builder ->
-            builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
-        }, {
+        GraphicsOptions(this, preferences) {
             updateSurfaceLayout()
-            sessionDrawer?.refreshValues()
-            libraryScreen.refreshSettingValues()
-        }, { message -> Ui.message(this, message) })
+            refreshPages()
+        }
     }
     private val shaderOptions by lazy {
-        ShaderOptions(this, preferences, { builder ->
-            builder.create().also { dialog -> dialog.show(); Ui.styleDialog(dialog) }
-        }, { path ->
+        ShaderOptions(this, preferences, { if (::pages.isInitialized) pages else null }, { path ->
             nativeSetShaderPreset(path)
             recreateShaderSurface()
-            sessionDrawer?.refreshValues()
-            libraryScreen.refreshSettingValues()
+            refreshPages()
         }, { message -> Ui.message(this, message) })
     }
     private val gameSettings by lazy { GameSettingScope(preferences) }
@@ -174,34 +178,35 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val catalog by lazy { DosGameCatalog(this) }
     private val artworkDownloads by lazy {
         com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController(
-            this, libraryScreen, { games }, catalog::missingArtworkFor, catalog::downloadArtwork)
+            this, libraryScreen, { games }, catalog::missingArtworkFor, catalog::downloadArtwork) { refreshPages() }
     }
     private val artwork by lazy {
-        ArtworkCoordinator(this, catalog.artworkStore, { game: DosLibrary.Game -> game.contentId },
+        ArtworkCoordinator(this, pages, catalog.artworkStore, { game: DosLibrary.Game -> game.contentId },
             { game, kind ->
                 val record = catalog.resolve(game.contentId ?: "", game.displayName)
-                ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt)
+                ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt, null,
+                    game.contentId?.let { catalog.sourceOf(it, game.displayName, "artwork", kind) })
             }, { DosCatalogFields.safeArtPath(it) != null }, catalog::setArtworkOverride,
-            { libraryScreen.showEntries(games) },
-            ::showGameDetails, { Ui.message(this, it) })
+            { libraryScreen.showEntries(games) }, ::titleOf, { Ui.message(this, it) })
     }
     private val catalogUpdates by lazy {
-        CatalogUpdateController(this, catalog::downloadUpdate, libraryScreen::showStatus,
+        CatalogUpdateController(this, catalog::downloadUpdate,
+            { message -> if (!message.endsWith("\u2026")) Ui.message(this, message) },
             { libraryScreen.refreshCatalog(); controllerFlow.refresh(null) }, {
-                if (libraryScreen.visibility == View.VISIBLE)
-                    android.widget.Toast.makeText(this, "Catalogs updated",
-                        android.widget.Toast.LENGTH_SHORT).show()
-            }, libraryScreen::showCatalogUpdate, catalog.installedCatalogs::update)
+                if (libraryScreen.visibility == View.VISIBLE) Ui.message(this, "Catalogs updated")
+            }, { libraryMenu.showCatalogProgress(it) }, catalog.installedCatalogs::update)
     }
     private lateinit var libraryFlow: LibraryFlow<DosLibrary.Game>
-    private lateinit var firstRunScreen: FirstRunScreen
+    private lateinit var libraryMenu: LibraryMenu<DosLibrary.Game>
+    private lateinit var pages: PageStack
+    private lateinit var overlay: GameOverlay
+    private var firstRun: SetupPage? = null
     private val inputDispatch: InputDispatchCoordinator by lazy {
         InputDispatchCoordinator(FrontendInputScreens(
-            { if (::firstRunScreen.isInitialized) firstRunScreen else null },
-            { onScreenControls },
-            { if (::controllerEditor.isInitialized) controllerEditor else null },
+            { if (::pages.isInitialized) pages else null },
             { if (::libraryFlow.isInitialized) libraryScreen else null },
-            { sessionDrawer }, { currentGame != null }, backCoordinator::handle, ::closeMenu),
+            { if (::overlay.isInitialized) overlay else null },
+            { currentGame != null }, { false }, backCoordinator::handle),
             gamepad, keys, ::mapKey, backCoordinator::handle,
             { if (sessionFlow?.isOpen == true) closeMenu() else openMenu() },
             {
@@ -222,11 +227,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             resetGestures = edgeSwipes::reset)
     }
     private val backCoordinator: FrontendBackCoordinator by lazy {
-        FrontendBackCoordinator(this, firstRunScreen, { onScreenControls },
-            controllerEditor, libraryScreen,
-            { if (!sessionNavigation.resumeGame()) finish() },
-            { sessionFlow }, ::closeMenu, { keyboard },
-            { if (currentGame != null) openMenu() else finish() },
+        FrontendBackCoordinator(this, { if (::pages.isInitialized) pages else null }, libraryScreen,
+            { if (!sessionNavigation.resumeGame()) finish() }, { keyboard },
+            { if (currentGame != null) openMenu() else finish() }, { false },
             { touchUi.hideKeyboard() })
     }
     private val sessionState = SessionNavigationState()
@@ -251,54 +254,49 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             ::updateSurfaceLayout, ::refreshControllerUi)
     }
     private val touchSettingsCoordinator by lazy {
-        TouchSettingsCoordinator(this, object : TouchSettingsStore<DosLibrary.Game> {
+        TouchSettingsCoordinator(object : TouchSettingsStore<DosLibrary.Game> {
             override fun global() = TouchInputSelection(
                 touchMode(preferences.getInt("touch_mode", 2)),
                 preferences.getBoolean("direct_touch", false))
-            override fun game(game: DosLibrary.Game) = touchSelection(game).selection
             override fun saveGlobal(value: TouchInputSelection) {
                 preferences.edit().putInt("touch_mode", touchModeIndex(value.mode))
                     .putBoolean("direct_touch", value.directTouch).apply()
                 configureGuest()
             }
-            override fun saveGame(game: DosLibrary.Game, value: TouchInputSelection,
-                                  secondaryTouchpad: Boolean?) {
-                val id = game.contentId ?: return
-                gameSettings.setInt(id, "touch_mode", touchModeIndex(value.mode))
-                gameSettings.setBoolean(id, "direct_touch", value.directTouch)
-                if (currentGame?.contentId == id) {
-                    inputModeDecider.reset()
-                    configureGuest()
-                }
+            override fun mode(game: DosLibrary.Game) = gameInt(game, "touch_mode", ::touchMode, ::touchModeIndex) {
+                touchMode(preferences.getInt("touch_mode", 2))
             }
-            override fun resetGame(game: DosLibrary.Game) {
-                val id = game.contentId ?: return
-                gameSettings.clear(id, "touch_mode", "direct_touch")
-                if (currentGame?.contentId == id) {
-                    inputModeDecider.reset()
-                    configureGuest()
-                }
+            override fun directTouch(game: DosLibrary.Game): GameValue<Boolean> {
+                val id = game.contentId!!
+                return GameValue({ if (gameSettings.has(id, "direct_touch")) gameSettings.boolean(id, "direct_touch", false) else null },
+                    { preferences.getBoolean("direct_touch", false) }, { GameSource.ALL_GAMES },
+                    { value -> if (value == null) gameSettings.clear(id, "direct_touch")
+                        else gameSettings.setBoolean(id, "direct_touch", value) })
             }
-        }, DosLibrary.Game::contentId,
-            listOf(InputModeDecider.Mode.MOUSE, InputModeDecider.Mode.KEYBOARD,
-                InputModeDecider.Mode.AUTO),
-            listOf("Mouse", "Keyboard (tap opens DOS keyboard)",
-                "Auto (follows what the game reads)"),
-            "DOS touch input", { game ->
-                "Touch input · ${catalog.resolve(game.contentId ?: "", game.displayName).title}"
-            }, "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your " +
-                "finger; some games require relative movement.",
-            resetLabel = "Use global settings",
-            noHash = { Ui.message(this, "Hash this game before saving settings") })
+        }, listOf(
+            InputModeDecider.Mode.AUTO to ChoiceOption("auto", "Auto", "Follows what the game reads"),
+            InputModeDecider.Mode.KEYBOARD to ChoiceOption("keyboard", "Keyboard", "Tap opens the DOS keyboard"),
+            InputModeDecider.Mode.MOUSE to ChoiceOption("mouse", "Mouse")),
+            "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your " +
+                "finger; some games require relative movement.") { game ->
+            if (game == null || currentGame?.contentId == game.contentId) {
+                inputModeDecider.reset()
+                configureGuest()
+            }
+        }
+    }
+
+    /** A per-game value stored as an int beside the all-games preference. */
+    private fun <V> gameInt(game: DosLibrary.Game, key: String, read: (Int) -> V, write: (V) -> Int,
+                            global: () -> V): GameValue<V> {
+        val id = game.contentId!!
+        return GameValue({ if (gameSettings.has(id, key)) read(gameSettings.int(id, key, 0)) else null },
+            global, { GameSource.ALL_GAMES },
+            { value -> if (value == null) gameSettings.clear(id, key) else gameSettings.setInt(id, key, write(value)) })
     }
     private lateinit var appRoot: FrameLayout
     private var gameRoot: FrameLayout? = null
-    private lateinit var controllerEditor: ControllerEditor<DosLibrary.Game>
-    private val controllerEditorFlow by lazy {
-        ControllerEditorFlow(controllerEditor, DosLibrary.Game::contentId, ::closeMenu,
-            ::releaseGuestInputs, { keyboard?.close() },
-            { onReturn -> onScreenControls?.show(onReturn) }, { Ui.message(this, it) })
-    }
+    private lateinit var controllerPages: ControllerPages<DosLibrary.Game>
     private val tree: Uri? get() = libraryFlow.tree
     private var prepareCancelled = AtomicBoolean(false)
     private val games: List<DosLibrary.Game> get() = libraryFlow.entries
@@ -308,6 +306,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var finishAfterInstallerPrompt = false
     private var gameThread: Thread? = null
     private var programPicker: DirectoryPicker? = null
+    private var installerNotice: GameNotice? = null
     private var pendingProgramPicker: (() -> Unit)? = null
     @Volatile private var launchGeneration = 0
     private var audioThread: Thread? = null
@@ -318,10 +317,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var keyboard: GuestKeyboardPanel? = null
     private var swappedKeyboard: GuestKeyboardPanel? = null
     private lateinit var secondaryDisplay: SecondaryDisplayCoordinator
-    private var statusLabel: TextView? = null
-    private var loadingStatus: TextView? = null
     private var sessionGameTitle: String? = null
-    private var sessionDrawer: SessionDrawer? = null
     private var sessionFlow: SessionFlow? = null
     private var userPaused: Boolean
         get() = sessionState.userPaused
@@ -337,7 +333,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        artwork.restoreInstanceState(savedInstanceState)
         if (RgDsDisplayRouter.routeToUpper(this)) {
             relocating = true
             return
@@ -359,40 +354,46 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { event, width, height -> handleGameTouchAt(event, width, height) },
             ::onSecondarySwapChanged,
             { nativeAspect().takeIf { it in 0.5..3.0 } ?: 4.0 / 3.0 })
-        val libraryPage = LibraryScreen(this, catalog, LibraryStrings("KAIRODOS",
-            "Select DOS folder", "Choose a writable folder for DOS games and ZIP archives",
-            "No DOS folder selected"), ::chooseFolder, { refreshLibrary(false) },
-            { refreshLibrary(true) },
-            { catalogUpdates.check(false) },
-            { artworkDownloads.start() }, { artworkDownloads.cancel() }, settingsEntries(),
+        pages = PageStack(this, appRoot)
+        artwork.restoreInstanceState(savedInstanceState)
+        val strings = LibraryStrings("KAIRODOS", "KairoDos", "DOS folder", "No DOS folder selected")
+        val libraryPage = LibraryScreen(this, catalog, strings, pages, ::chooseFolder,
             { preferences.getString("last_played_entry", null) }, ::launch,
             ::previewGame, ::showGameDetails, ::showLibrarySelection,
             commandLaunch = { startGame(it, manualConfig(it), target = DosLaunchTarget.Browse) })
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
-            dosLibrary::cached, dosLibrary::scan,
-            { uri -> uri.lastPathSegment ?: "DOS folder" },
+            dosLibrary::cached, dosLibrary::scan, ::folderName,
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
             { found -> LibraryScanSummary.format(found, dosLibrary.hashCount) },
             onFolderSelected = { finishFirstRun() },
-            onFolderError = { message -> if (firstRunScreen.isOpen) Ui.message(this, message) },
+            onFolderError = { message -> if (firstRun?.inStack == true) Ui.message(this, message) },
             writable = true)
-        appRoot.addView(libraryPage, FrameLayout.LayoutParams(-1, -1))
-        firstRunScreen = FirstRunScreen(this)
-        appRoot.addView(firstRunScreen, FrameLayout.LayoutParams(-1, -1))
+        libraryMenu = LibraryMenu(this, pages, libraryFlow, catalog, strings,
+            { catalogUpdates.check(false) }, { artworkDownloads }, ::settingsRows, ::finish)
+        libraryPage.openMenuAction = libraryMenu::open
+        appRoot.addView(libraryPage, 0, FrameLayout.LayoutParams(-1, -1))
         onScreenControls = OnScreenControls(this, appRoot, gamepad, preferences,
-            ::refreshControllerUi, { controllerProfiles.configuration.layout })
-        controllerEditor = ControllerEditor(this, appRoot,
+            ::refreshControllerUi, { controllerProfiles.configuration.layout }).also { it.pages = pages }
+        overlay = GameOverlay(this)
+        appRoot.addView(overlay, FrameLayout.LayoutParams(-1, -1))
+        pages.menuKey = { if (libraryScreen.visibility == View.VISIBLE) libraryScreen.menuKey() else closeMenu() }
+        pages.base = { libraryScreen.takeIf { it.visibility == View.VISIBLE } }
+        sessionFlow = SessionFlow(pages, ::gameFlyout,
+            { currentGame != null && libraryScreen.visibility != View.VISIBLE },
+            {
+                keyboard?.close()
+                releaseGuestInputs()
+            }, { refreshControllerUi() }, { surface?.requestFocus() })
+        controllerPages = ControllerPages(this, pages,
             controllerFlow::load, controllerFlow::save, controllerFlow::reset,
-            controllerFlow::physical, controllerFlow::savePhysical,
-            controllerFlow::resetPhysical,
+            { controllerProfiles.globalCustom },
+            controllerFlow::physical, controllerFlow::savePhysical, controllerFlow::resetPhysical,
+            { controllerProfiles.physicalCustom },
             { controllerFlow.deadZone }, { controllerFlow.deadZone = it },
-            ::refreshControllerUi, ::showOnScreenControls,
-            { onScreenControls?.eightWayDpad ?: false },
-            { onScreenControls?.eightWayDpad = it },
-            DosLibrary.Game::id, DosControllerBindings.spec,
-            { DosControllerBindings.toJson(it) }, controllerProfiles.configuration,
-            { releaseGuestInputs(); controllerFlow.refresh(null) }, ::controllerMappingStatus)
+            DosControllerBindings.spec, { DosControllerBindings.toJson(it) }, controllerProfiles.configuration,
+            { releaseGuestInputs(); controllerFlow.refresh(null) }, ::controllerMappingStatus, ::titleOf,
+            onScreenControls!!, touchSettingsCoordinator) { releaseGuestInputs() }
         controllerFlow.initialize()
         controllerDevices.register(handler)
         backCoordinator.register()
@@ -402,11 +403,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         appRoot.post {
             if (isFinishing || isDestroyed) return@post
             if (controllerSetupPending) {
-                controllerProfiles.configuration.show(this, required = true, product = "KAIRODOS") {
+                pages.push(controllerProfiles.configuration.setupPage("KAIRODOS", ::finish) {
                     controllerSetupPending = false
                     controllerFlow.initialize()
+                    pages.closeAll()
                     continueStartup(savedInstanceState)
-                }
+                })
             } else continueStartup(savedInstanceState)
         }
     }
@@ -443,7 +445,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun dispatchExternalGame(intent: Intent) {
-        if (::firstRunScreen.isInitialized) closeFirstRun()
+        closeFirstRun()
         externalDispatcher.dispatch(intent)
     }
 
@@ -455,34 +457,38 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionNavigation.showLibrary()
     }
 
-    private fun openLibraryOverGame() {
-        sessionNavigation.requestLibrary()
-    }
-
     private fun resumeGameFromLibrary() { sessionNavigation.resumeGame() }
 
     private fun chooseFolder() = libraryFlow.chooseFolder()
 
+    private fun folderName(uri: Uri): String = try {
+        DocumentsContract.getTreeDocumentId(uri).substringAfterLast('/').substringAfterLast(':')
+            .ifEmpty { "DOS folder" }
+    } catch (_: Exception) { uri.lastPathSegment ?: "DOS folder" }
+
+    /** The single setup step. Back and Skip for now both open the library. */
     private fun showFirstRun() {
-        firstRunScreen.show(FirstRunScreen.Page("KAIRODOS", "SETUP  ·  1 OF 1",
-            "Choose a DOS folder",
-            "Select a writable folder containing your DOS games and ZIP archives. You can add one later from the library.",
-            listOf(
-                FirstRunScreen.Action("Select DOS folder", "Find games on this device",
-                    primary = true, onClick = ::chooseFolder),
-                FirstRunScreen.Action("Skip for now", "Open the game library",
-                    onClick = ::finishFirstRun)
-            )), ::finishFirstRun)
+        val page = SetupPage("KAIRODOS", null, "Choose a DOS folder",
+            "Select a writable folder containing your DOS games and ZIP archives.",
+            "You can choose or change it later in Menu \u203a Manage library.",
+            footerButtons = {
+                listOf(FooterButton("skip", { "Skip for now" }, run = ::finishFirstRun),
+                    FooterButton("choose", { "Choose DOS folder\u2026" }, ButtonTone.PRIMARY, run = ::chooseFolder))
+            }, onBack = ::finishFirstRun, startFocus = "choose")
+        firstRun = page
+        pages.push(page)
     }
 
     private fun finishFirstRun() {
         preferences.edit().putBoolean("onboarding_complete_v1", true).apply()
         closeFirstRun()
         if (tree != null) refreshLibrary(false)
+        else libraryScreen.showStatus("Choose a DOS folder from the library menu when you\u2019re ready")
     }
 
     private fun closeFirstRun() {
-        firstRunScreen.close()
+        if (firstRun?.inStack == true) pages.closeAll()
+        firstRun = null
     }
 
     @Deprecated("Legacy Back path; API 33+ uses OnBackInvokedDispatcher")
@@ -492,7 +498,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (shaderOptions.handleActivityResult(requestCode, resultCode, data)) return
-        if (libraryScreen.handleCatalogResult(requestCode, resultCode, data)) return
+        if (libraryMenu.handleActivityResult(requestCode, resultCode, data)) return
         if (artwork.handleActivityResult(requestCode, resultCode, data)) return
         libraryFlow.handleActivityResult(requestCode, resultCode, data)
     }
@@ -514,89 +520,131 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun previewGame(game: DosLibrary.Game) = artwork.view(game)
 
-    private fun editGameArtwork(game: DosLibrary.Game, kind: String) = artwork.edit(game, kind)
+    private fun titleOf(game: DosLibrary.Game) = catalog.resolve(game.contentId ?: "", game.displayName).title
 
+    /** Game settings over the game page, or over the game flyout while the game runs. */
     private fun showGameDetails(entry: DosLibrary.Game) {
-        val id = entry.contentId
-        val record = catalog.resolve(id ?: "", entry.displayName)
-        val variants = record.launch?.configs?.keys.orEmpty()
-        val controllerSource = when {
-            id == null -> "Global"
-            dosGameSettings.controllerBindings(id) != null -> "User override"
-            record.controllerProfile != null -> "Catalog"
-            else -> "Global"
-        }
-        val common = CommonGameSettings(
-            title = GameSettingsValue(record.title,
-                id?.let { catalog.sourceOf(it, entry.displayName, "title") } ?: "Filename"),
-            touch = GameSettingsValue(touchSettingsLabel(entry)),
-            controller = GameSettingsValue("${controllerFlow.load(entry).size} bindings",
-                controllerSource),
-            boxArt = GameSettingsValue(if (record.boxArt == null) "None" else "Available",
-                catalog.sourceOf(id ?: "", entry.displayName, "artwork", "boxArt")),
-            screenshot = GameSettingsValue(if (record.preview == null) "None" else "Available",
-                catalog.sourceOf(id ?: "", entry.displayName, "artwork", "preview")),
-            filePath = entry.path,
-            zipEntry = null,
-            contentId = id,
-            error = entry.error,
-            deleteKind = if (!entry.external && !entry.rootFolder)
-                if (entry.folder) "game folder" else "game file" else null)
-        val machineRows = listOf(GameSettingsRow("DOS CPU speed", cpuSettingsLabel(entry),
-            true) { showGameCpuSettings(entry) },
-            GameSettingsRow("Graphics", "", true) {
-                showGraphicsSettings(entry)
-            }) +
-            (if (variants.size > 1) listOf(GameSettingsRow("Startup variant",
-                id?.let(dosGameSettings::startupVariant) ?: "Choose on first play", false) {
-                chooseLaunchVariant(entry, false)
-            }) else emptyList()) +
-            (if (DosLaunchConfig.needsPlayer(record.launch)) listOf(GameSettingsRow(
-                "DOS player name", id?.let(dosGameSettings::playerName)
-                    ?: "Choose on first play", false) {
-                choosePlayerName(entry, null)
-            }) else emptyList())
-        GameSettingsCoordinator.show(this, common, entry.playable, machineRows,
-            CommonGameSettingsActions(
-                play = { launch(entry) },
-                editTouch = { showGameTouchSettings(entry) },
-                editController = { showControllerScope(entry) },
-                editTitle = { editGameTitle(entry, record.title) },
-                editBoxArt = { editGameArtwork(entry, "boxArt") },
-                editScreenshot = { editGameArtwork(entry, "preview") },
-                viewScreenshot = { artwork.view(entry, returnToSettings = true) },
-                delete = if (common.deleteKind == null) null else {{ confirmDeleteGame(entry) }},
-                reset = id?.let { { resetGameSettings(entry, it) } },
-                resetFailed = { failure -> Ui.message(this,
-                    failure.message ?: "Could not reset game settings") },
-                resetCancelled = { showGameDetails(entry) },
-                noHash = { Ui.message(this, "Hash this game before saving settings") }))
+        pages.push(gameSettingsPage({ titleOf(entry) }) { gameSettings(entry) })
     }
 
-    private fun editGameTitle(entry: DosLibrary.Game, current: String) {
-        val id = entry.contentId ?: return
-        fun update(value: String?) {
-            runCatching { catalog.setTitle(id, value) }
-                .onSuccess {
-                    libraryScreen.showEntries(games)
-                    showGameDetails(entry)
-                }
-                .onFailure { Ui.message(this, it.message ?: "Could not save title") }
+    private fun gameSettings(entry: DosLibrary.Game): List<RowGroup> {
+        val id = entry.contentId
+        val hashed = { id != null }
+        val noHash = { GameSettingsRows.NO_HASH }
+        val scope = { titleOf(entry) }
+        val record = catalog.resolve(id ?: "", entry.displayName)
+        val variants = record.launch?.configs?.keys.orEmpty()
+            .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
+        fun applyLive() { if (currentGame?.contentId == id) configureGuest() }
+        fun intValue(key: String, global: () -> Int) = if (id == null) GameValue({ null }, { global().toString() },
+            { GameSource.ALL_GAMES }, { }) else GameValue(
+            { if (gameSettings.has(id, key)) gameSettings.int(id, key, 0).toString() else null },
+            { global().toString() }, { GameSource.ALL_GAMES },
+            { value ->
+                if (value == null) gameSettings.clear(id, key) else gameSettings.setInt(id, key, value.toInt())
+                applyLive()
+            })
+        val controllerSource = {
+            when {
+                id == null -> GameSource.ALL_GAMES
+                dosGameSettings.controllerBindings(id) != null -> GameSource.CUSTOM
+                // Controller profiles come from the bundled profile catalog.
+                catalog.resolve(id, entry.displayName).controllerProfile != null -> "Shipped catalog"
+                else -> GameSource.ALL_GAMES
+            }
         }
-        GameTitleEditor.show(this, current, { update(it) }, { update(null) },
-            { showGameDetails(entry) })
+        val deleteKind = if (entry.external || entry.rootFolder) null else if (entry.folder) "folder" else "file"
+        return listOfNotNull(
+            RowGroup("CONTROLS", listOf(controllerPages.gameRow(entry, hashed, controllerSource)) +
+                (if (id != null) touchSettingsCoordinator.gameRows(entry, scope, hashed) else emptyList())),
+            RowGroup("MACHINE", listOfNotNull(
+                GameSettingsRows.choice("cpu", "DOS CPU speed", scope, CPU_OPTIONS,
+                    intValue("cycles_mode") { preferences.getInt("cycles_mode", 0).coerceIn(0, 1) }, hashed, noHash),
+                GameSettingsRows.choice("video", "Emulated video card", scope, videoOptions(),
+                    intValue(DosVideoHardware.setting) { dosGameSettings.videoHardware() }, hashed, noHash),
+                GameSettingsRows.choice("voodoo", "3dfx rendering", scope, VOODOO_OPTIONS,
+                    intValue("staging_voodoo_threads") { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1) },
+                    hashed, noHash),
+                if (variants.size > 1) SettingsRow.choice("variant", "Startup variant",
+                    ChoiceSpec("Startup variant", scope, {
+                        listOf(ChoiceGroup(null, variants.map { ChoiceOption(it, variantLabel(it)) }))
+                    }, { id?.let(dosGameSettings::startupVariant) },
+                        select = { picked -> id?.let { dosGameSettings.setStartupVariant(it, picked) } }, cycles = false),
+                    value = { id?.let(dosGameSettings::startupVariant)?.let(::variantLabel) ?: "Choose on first play" },
+                    tone = { if (id?.let(dosGameSettings::startupVariant) == null) ValueTone.EMPTY else ValueTone.CURRENT },
+                    enabled = hashed, disabledReason = noHash) else null,
+                if (DosLaunchConfig.needsPlayer(record.launch)) playerNameRow(entry, hashed) else null),
+                "Video changes apply the next time the game starts."),
+            RowGroup("LIBRARY", listOf(
+                GameSettingsRows.text("title", "Title", "Game title", { titleOf(entry) },
+                    { id != null && catalog.sourceOf(id, entry.displayName, "title") == "User override" },
+                    { id?.let { GameSource.label(catalog.sourceOf(it, entry.displayName, "title")) } ?: "Filename" },
+                    { value -> updateTitle(id, value) }, { updateTitle(id, null) },
+                    enabled = hashed, disabledReason = noHash),
+                artwork.row(entry, "boxArt", hashed),
+                artwork.row(entry, "preview", hashed)),
+                "Chosen images are copied into your library."),
+            RowGroup("FILE", GameSettingsRows.file(entry.path, null, id, entry.error) + listOfNotNull(
+                deleteKind?.let { kind ->
+                    GameDeletionFlow.row(this, libraryScreen, GameDeletionFlow.Prompt(entry.path, kind,
+                        if (entry.folder) "This removes the folder and everything inside it. " else ""),
+                        "DOS folder", { true }, ::chooseFolder, { currentGame?.id == entry.id },
+                        "KairoDos-delete-game", { dosLibrary.deleteSource(entry) }, { refreshLibrary(false) })
+                })),
+            RowGroup(null, listOf(GameSettingsRows.reset(hashed) { resetGameSettings(entry, id!!) })))
+    }
+
+    private fun variantLabel(name: String) = if (name == "dosbox.conf") "Default" else name
+
+    private fun videoOptions() = DosVideoHardware.choices.mapIndexed { index, (_, label) ->
+        ChoiceOption(index.toString(), label)
+    }
+
+    private fun updateTitle(id: String?, value: String?) {
+        id ?: return
+        runCatching { catalog.setTitle(id, value) }
+            .onSuccess { libraryScreen.showEntries(games) }
+            .onFailure { Ui.message(this, it.message ?: "Could not save title") }
+        refreshPages()
+    }
+
+    /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */
+    private fun playerNameRow(entry: DosLibrary.Game, enabled: () -> Boolean): SettingsRow {
+        val id = entry.contentId
+        return GameSettingsRows.text("player", "DOS player name", "1\u20138 letters, digits, or underscores",
+            { id?.let(dosGameSettings::playerName) }, { false }, { null },
+            { value -> savePlayerName(id, value) }, {}, empty = "Choose on first play",
+            enabled = enabled, disabledReason = { GameSettingsRows.NO_HASH })
+    }
+
+    private fun savePlayerName(id: String?, value: String): Boolean {
+        id ?: return false
+        val name = value.trim().uppercase(java.util.Locale.ROOT)
+        if (!name.matches(Regex("[A-Z0-9_]{1,8}"))) {
+            Ui.message(this, "Use 1\u20138 letters, digits, or underscores")
+            return false
+        }
+        dosGameSettings.setPlayerName(id, name)
+        refreshPages()
+        return true
     }
 
     private fun resetGameSettings(entry: DosLibrary.Game, id: String) {
-        catalog.resetOverrides(id)
-        dosGameSettings.reset(id)
+        try {
+            catalog.resetOverrides(id)
+            dosGameSettings.reset(id)
+        } catch (failure: Exception) {
+            Ui.message(this, failure.message ?: "Could not reset game settings")
+            return
+        }
         if (currentGame?.contentId == id) {
             gamepad.bindings = controllerFlow.load(currentGame)
             inputModeDecider.reset()
             configureGuest()
         }
         libraryScreen.showEntries(games)
-        showGameDetails(entry)
+        Ui.message(this, "Game settings reset. Video changes apply the next time the game starts.")
+        refreshPages()
     }
 
     private fun launch(game: DosLibrary.Game, fromFrontend: Boolean = false) {
@@ -612,32 +660,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         } else startGame(game, "dosbox.conf", fromFrontend)
     }
 
-    private fun confirmDeleteGame(entry: DosLibrary.Game) {
-        if (currentGame?.id == entry.id) {
-            Ui.message(this, "Exit this game before deleting its source")
-            return
-        }
-        val kind = if (entry.folder) "folder and everything inside it" else "file"
-        GameDeletionFlow.show(this, libraryScreen,
-            GameDeletionFlow.Prompt(entry.path, kind,
-                "This permanently removes the $kind. "),
-            "KairoDos-delete-game", { dosLibrary.deleteSource(entry) },
-            { refreshLibrary(false) }, { Ui.message(this, it) })
-    }
-
+    /** Choose a configuration the first time a game with several is played. Back cancels. */
     private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean,
                                     fromFrontend: Boolean = false) {
         val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch ?: return
         val names = launch.configs.keys.sortedWith(compareBy<String> { it != "dosbox.conf" }
             .thenBy { it })
-        AlertDialog.Builder(this).setTitle("Startup variant")
-            .setItems(names.map { if (it == "dosbox.conf") "Default" else it }.toTypedArray())
-            { _, index ->
-                val selected = names[index]
-                game.contentId?.let { dosGameSettings.setStartupVariant(it, selected) }
-                if (play) startGame(game, selected, fromFrontend)
-                else showGameDetails(game)
-            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
+        pages.push(ChoicePage(ChoiceSpec("Startup variant", { titleOf(game) }, {
+            listOf(ChoiceGroup(null, names.map { ChoiceOption(it, variantLabel(it)) }))
+        }, { game.contentId?.let(dosGameSettings::startupVariant) }, select = { selected ->
+            game.contentId?.let { dosGameSettings.setStartupVariant(it, selected) }
+            if (play) startGame(game, selected, fromFrontend)
+        }, stay = play, cycles = false)))
     }
 
     private fun manualConfig(game: DosLibrary.Game): String {
@@ -659,7 +693,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         userPaused = true
         refreshControllerUi()
         val mountedDrives = java.util.concurrent.atomic.AtomicReference<Set<Char>>(emptySet())
-        programPicker = DirectoryPicker.show(this, "DOS prompt or run program", DirectoryPicker.Location("", "Launch"), { path ->
+        programPicker = DirectoryPicker.show(pages, "DOS prompt or run program", DirectoryPicker.Location("", "Launch"), { path ->
             check(generation == launchGeneration) { "Game session ended" }
             val response = nativeListDirectory(path)
             check(response.startsWith("OK\n")) { response.substringAfter('\n') }
@@ -721,14 +755,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             releaseGuestInputs()
             keyboard?.close()
             sessionFlow?.reset()
-            onScreenControls?.close()
             gameRoot?.let(appRoot::removeView)
             gameRoot = null
             nativeSetSurface(null)
             surface = null
             videoFrame = null
-            sessionFlow = null
-            sessionDrawer = null
         }
         inputModeDecider.reset()
         userPaused = false
@@ -746,7 +777,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val playableGame = if (game.installer) {
                     val progress: (String) -> Unit = { status ->
                         runOnUiThread {
-                            if (generation == launchGeneration) loadingStatus?.text = status
+                            if (generation == launchGeneration) overlay.showProgress(status)
                         }
                     }
                     if (game.external) dosLibrary.installExternal(game, cancelled, progress)
@@ -777,11 +808,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val file = dosLibrary.prepare(playableGame, selected, cancelled)
                 if (generation != launchGeneration) return@Thread
                 runOnUiThread {
-                    if (generation == launchGeneration) loadingStatus?.text = "Starting DOSBox Staging…"
+                    if (generation == launchGeneration) overlay.showProgress("Starting DOSBox Staging\u2026")
                 }
                 val drive = DosStagingStorage.prepare(file, saveDir, playableGame.contentId!!,
                     cancelled, launch?.folder) { progress -> runOnUiThread {
-                        if (generation == launchGeneration) loadingStatus?.text = progress
+                        if (generation == launchGeneration) overlay.showProgress(progress)
                     } }
                 val resources = DosStagingResources.prepare(this, cancelled)
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
@@ -815,54 +846,117 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             runOnUiThread {
                 if (generation == launchGeneration && currentGame?.id == game.id) {
                     leaveGame(success)
-                    if (!success) AlertDialog.Builder(this).setMessage(message)
-                        .setPositiveButton("OK", null)
-                        .setOnDismissListener { rebuildIfRescaled() }.show().also(Ui::styleDialog)
-                    else rebuildIfRescaled()
+                    if (!success) {
+                        Ui.message(this, message ?: "Could not prepare this game", long = true)
+                        // Let the message finish before rebuilding views for new display settings.
+                        handler.postDelayed({ rebuildIfRescaled() }, 3800)
+                    } else rebuildIfRescaled()
                 }
             }
         }.apply { name = "KairoDos-emulation"; start() }
         pollSession(game.id)
     }
 
-    private fun choosePlayerName(game: DosLibrary.Game, playConfig: String?,
+    /** Games that ask for a DOS player name get one before their first launch. */
+    private fun choosePlayerName(game: DosLibrary.Game, playConfig: String,
                                  fromFrontend: Boolean = false) {
         val id = game.contentId ?: return
-        val input = EditText(this).apply {
-            hint = "1–8 letters, digits, or underscores"
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-            setText(dosGameSettings.playerName(id) ?: "PLAYER")
-            selectAll()
-        }
-        AlertDialog.Builder(this).setTitle("DOS player name").setView(input)
-            .setPositiveButton(if (playConfig == null) "Save" else "Play") { _, _ ->
-                val name = input.text.toString().trim().uppercase(java.util.Locale.ROOT)
-                if (name.matches(Regex("[A-Z0-9_]{1,8}"))) {
-                    dosGameSettings.setPlayerName(id, name)
-                    if (playConfig == null) showGameDetails(game)
-                    else startGame(game, playConfig, fromFrontend)
-                } else Ui.message(this, "Use 1–8 letters, digits, or underscores")
-            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
+        var name = dosGameSettings.playerName(id) ?: "PLAYER"
+        lateinit var page: GroupsPage
+        page = GroupsPage("DOS player name", { titleOf(game) }, {
+            listOf(RowGroup(null, listOf(GameSettingsRows.text("player", "Player name",
+                "1\u20138 letters, digits, or underscores", { name }, { false }, { null },
+                { value -> if (savePlayerName(id, value)) name = dosGameSettings.playerName(id) ?: name },
+                {})), "The game uses this name for its saves."))
+        }, {
+            listOf(FooterButton("play", { "Play" }, ButtonTone.PRIMARY) {
+                if (savePlayerName(id, name)) startGame(game, playConfig, fromFrontend)
+            })
+        })
+        pages.push(page)
     }
 
-    private fun settingsEntries() = listOf(
-        SettingsEntry("Touch input", { "" }, ::showSettings),
-        SettingsEntry("DOS CPU speed", { if (preferences.getInt("cycles_mode", 0) == 0)
-            "Auto" else "Maximum" }, ::showCpuSettings),
-        SettingsEntry("Graphics", graphics::settingsLabel, { showGraphicsSettings(null) }),
-        SettingsEntry("Controller", { "Gamepad and on-screen controls" }) {
-            showControllerScope(currentGame?.takeIf { it.contentId != null })
+    /** One settings list, shown the same way in the game flyout and the library flyout. */
+    private fun settingsRows() = listOf(
+        SettingsRow.nav("f-graphics", "Graphics") {
+            pages.push(graphics.page(shaderOptions) { listOf(videoGroup()) })
         },
-        SettingsEntry.sound({ preferences.getBoolean("muted", false) }) {
-            val muted = !preferences.getBoolean("muted", false)
-            preferences.edit().putBoolean("muted", muted).apply()
-            audio?.setVolume(if (muted) 0f else 1f)
-            sessionDrawer?.refreshValues()
-            libraryScreen.refreshSettingValues()
+        SettingsRow.nav("f-controls", "Controls") {
+            pages.push(controllerPages.controlsPage(currentGame?.takeIf {
+                it.contentId != null && libraryScreen.visibility != View.VISIBLE }))
         },
-        SettingsEntry("About", { "Version, shortcuts, and licenses" }, ::showAbout)
-    )
+        SettingsRow.nav("f-machine", "Machine") { pages.push(machinePage()) },
+        SettingsRow.switch("f-sound", "Sound", { !preferences.getBoolean("muted", false) }) { on ->
+            preferences.edit().putBoolean("muted", !on).apply()
+            audio?.setVolume(if (on) 1f else 0f)
+        },
+        SettingsRow.nav("f-about", "About") { pages.push(aboutPage()) })
+
+    /** Graphics › VIDEO, for all games. */
+    private fun videoGroup() = RowGroup("VIDEO", listOf(
+        SettingsRow.choice("video", "Emulated video card", ChoiceSpec("Emulated video card", { GameSource.ALL_GAMES },
+            { listOf(ChoiceGroup(null, videoOptions())) }, { dosGameSettings.videoHardware().toString() },
+            select = { preferences.edit().putInt(DosVideoHardware.setting, it.toInt()).apply() })),
+        SettingsRow.choice("voodoo", "3dfx rendering", ChoiceSpec("3dfx rendering", { GameSource.ALL_GAMES },
+            { listOf(ChoiceGroup(null, VOODOO_OPTIONS)) },
+            { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1).toString() },
+            select = { preferences.edit().putInt("staging_voodoo_threads", it.toInt()).apply(); configureGuest() }))),
+        "Changes apply the next time a game starts. Games with their own setting keep it.")
+
+    /** Machine: the DOS CPU speed for all games. */
+    private fun machinePage() = GroupsPage("Machine", { GameSource.ALL_GAMES }, {
+        listOf(RowGroup("CPU", listOf(SettingsRow.choice("cpu", "DOS CPU speed", ChoiceSpec("DOS CPU speed",
+            { GameSource.ALL_GAMES }, { listOf(ChoiceGroup(null, CPU_OPTIONS)) },
+            { preferences.getInt("cycles_mode", 0).coerceIn(0, 1).toString() },
+            select = { preferences.edit().putInt("cycles_mode", it.toInt()).apply(); configureGuest() }))),
+            "Games with their own speed keep it."))
+    })
+
+    /** The game flyout: Resume and Keep paused, Game settings, settings, then leaving. */
+    private fun gameFlyout() = FlyoutModel("KAIRODOS", { sessionGameTitle ?: currentGame?.displayName ?: "" },
+        ::sessionStatusText, buttons = listOf(
+            FlyoutButton("f-resume", "Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play, ButtonTone.PRIMARY) {
+                userPaused = false
+                closeMenu()
+            },
+            FlyoutButton("f-pause", "Keep paused", com.mrjackspade.kairo.frontend.R.drawable.ic_pause,
+                ButtonTone.SECONDARY) {
+                userPaused = true
+                closeMenu()
+                Ui.message(this, "Paused")
+            })) {
+        listOf(
+            RowGroup("GAME", listOf(SettingsRow.nav("f-game", "Game settings") {
+                currentGame?.let(::showGameDetails)
+            })),
+            RowGroup("SETTINGS", settingsRows()),
+            RowGroup(null, listOf(
+                SettingsRow.action("f-restart", "Restart game",
+                    confirm = Confirm("Progress since your last save is lost.", "Restart") {
+                        userPaused = false
+                        nativeReset()
+                        closeMenu()
+                    }),
+                sessionNavigation.returnRow("KairoDos"),
+                SettingsRow.action("f-exit", "Exit KairoDos",
+                    confirm = Confirm("The machine stops. Progress since your last save is lost.", "Exit") {
+                        leaveGame()
+                        if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
+                    }))))
+    }
+
+    private fun sessionStatusText(): String {
+        val state = when (nativeStatus()) {
+            1 -> "Loading"
+            2 -> if (userPaused) "Paused" else "Running"
+            3 -> "Failed"
+            else -> "Stopped"
+        }
+        return listOfNotNull(state, if (preferences.getBoolean("muted", false)) "Muted" else null)
+            .joinToString(" \u00b7 ")
+    }
+
+    private fun refreshPages() { if (::pages.isInitialized) pages.refresh() }
 
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -876,20 +970,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
         frame.setOnTouchListener { _, event ->
-            sessionFlow?.isOpen != true && !controllerEditor.isOpen &&
-                onScreenControls?.isOpen != true && touchUi.handleKeyboardTouch(event,
-                    inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD)
+            sessionFlow?.isOpen != true && touchUi.handleKeyboardTouch(event,
+                inputModeDecider.resolve(configuredTouchMode()) == InputModeDecider.Mode.KEYBOARD)
         }
         root.addView(frame, FrameLayout.LayoutParams(-1, -1))
-        loadingStatus = TextView(this).apply {
-            text = if (game.installer) "Preparing installer archive…" else "Preparing DOS game…"
-            setTextColor(Color.WHITE)
-            textSize = 16f
-            gravity = Gravity.CENTER
-            setPadding(Ui.dp(this@MainActivity, 24), Ui.dp(this@MainActivity, 16),
-                Ui.dp(this@MainActivity, 24), Ui.dp(this@MainActivity, 16))
-            setBackgroundColor(0xCC101820.toInt())
-        }.also { root.addView(it, FrameLayout.LayoutParams(-1, -2, Gravity.CENTER)) }
+        overlay.showProgress(if (game.installer) "Preparing installer archive\u2026"
+            else "Preparing ${sessionGameTitle ?: game.displayName}\u2026")
         val display = SurfaceView(this)
         surface = display
         frame.addView(display, FrameLayout.LayoutParams(-1, -1, Gravity.CENTER))
@@ -907,71 +993,36 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         swappedKeyboard = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, {},
             showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse)
             .also { root.addView(it, FrameLayout.LayoutParams(-1, -1)) }
-        sessionDrawer = SessionDrawer(this, root, "KAIRODOS", ::closeMenu,
-            ::showSessionStatus, listOf(
-            SessionAction("Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play) {
-                userPaused = false
-                closeMenu()
-            },
-            SessionAction("Restart", com.mrjackspade.kairo.frontend.R.drawable.ic_restart) {
-                confirmRestart()
-            },
-            SessionAction("Library", com.mrjackspade.kairo.frontend.R.drawable.ic_library) {
-                openLibraryOverGame()
-            }
-        ), listOf(
-            SettingsEntry("Pause", { if (userPaused) "On · tap to let the game run again"
-                else "Close the menu with the game stopped" }) {
-                userPaused = !userPaused
-                closeMenu()
-            },
-            SettingsEntry("Exit", { "Stop the game and close KairoDos" }) {
-                confirmExit()
-            }
-        ), settingsEntries())
-        sessionFlow = SessionFlow(sessionDrawer!!,
-            { sessionGameTitle ?: game.displayName },
-            { statusLabel?.text?.toString() ?: "DOS game" },
-            {
-                keyboard?.close()
-                releaseGuestInputs()
-            },
-            { open ->
-                refreshControllerUi()
-            },
-            { surface?.requestFocus() })
-        statusLabel = sessionDrawer?.status
-        statusLabel?.text = "Starting ${sessionGameTitle}…"
         onScreenControls?.refreshVisibility(true)
         refreshControllerUi()
     }
 
-    private fun openMenu() {
-        if (currentGame != null && libraryScreen.visibility != View.VISIBLE) sessionFlow?.open()
+    private fun openMenu(start: String? = null, confirm: Boolean = false) {
+        if (currentGame != null && libraryScreen.visibility != View.VISIBLE) sessionFlow?.open(start, confirm)
     }
 
     private fun closeMenu() { sessionFlow?.close() }
 
-    private fun showSessionStatus() {
-        val state = when (nativeStatus()) {
-            1 -> "Loading"
-            2 -> if (userPaused || sessionFlow?.isOpen == true ||
-                libraryScreen.visibility == View.VISIBLE) "Paused" else "Running"
-            3 -> "Failed"
-            else -> "Stopped"
+    /** About › Diagnostics: the running session, updated four times a second. */
+    private fun diagnosticsPage() = object : GroupsPage("Diagnostics", { sessionGameTitle }, {
+        val running = currentGame != null
+        val rows = mutableListOf(
+            SettingsRow.info("core", "Core") { "DOSBox Staging" },
+            SettingsRow.info("state", "State") { if (running) sessionStatusText().substringBefore(" \u00b7") else "Stopped" })
+        if (running) {
+            rows += SettingsRow.info("cpu", "DOS CPU speed") { if (effectiveCycles() == 0) "Auto" else "Maximum" }
+            rows += SettingsRow.info("touch", "Touch input") {
+                configuredTouchMode().name.lowercase().replaceFirstChar(Char::uppercase)
+            }
+            if (nativeStatus() == 2) {
+                rows += SettingsRow.info("video", "Video") { "${nativeVideoWidth()} \u00d7 ${nativeVideoHeight()}" }
+                rows += SettingsRow.info("audio", "Audio") { "${nativeAudioRate()} Hz" }
+            }
         }
-        val details = mutableListOf(
-            "Game" to (sessionGameTitle ?: "Unknown"),
-            "Core" to "DOSBox Staging",
-            "State" to state,
-            "DOS CPU speed" to if (effectiveCycles() == 0) "Auto" else "Maximum",
-            "Touch input" to configuredTouchMode().name.lowercase()
-        )
-        if (nativeStatus() == 2) {
-            details += "Video" to "${nativeVideoWidth()} × ${nativeVideoHeight()}"
-            details += "Audio" to "${nativeAudioRate()} Hz"
-        }
-        SessionStatusDialog.show(this, "Session details", details)
+        listOf(RowGroup("SESSION", rows,
+            if (running) "Live values from the emulator, updated four times a second." else "Start a game to see live values."))
+    }) {
+        override fun tick() = refresh()
     }
 
     private fun controllerAction(action: String) {
@@ -980,18 +1031,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "pause" -> {
                 userPaused = !userPaused
                 refreshControllerUi()
+                Ui.message(this, if (userPaused) "Paused" else "Resumed")
             }
-            "restart" -> confirmRestart()
-            "exit" -> confirmExit()
+            "restart" -> if (sessionFlow?.isOpen != true) openMenu("f-restart", confirm = true)
+            "exit" -> if (sessionFlow?.isOpen != true) openMenu("f-exit", confirm = true)
         }
-    }
-
-    private fun showControllerScope(game: DosLibrary.Game? = null) {
-        controllerEditorFlow.showScope(game)
-    }
-
-    private fun showOnScreenControls() {
-        controllerEditorFlow.showOnScreenControls()
     }
 
     private fun controllerMappingStatus(game: DosLibrary.Game?): String? {
@@ -1008,10 +1052,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun refreshControllerUi() {
         if (relocating || !::secondaryDisplay.isInitialized ||
-            !::libraryFlow.isInitialized || !::controllerEditor.isInitialized) return
-        val presentation = sessionState.presentation(guestLifecycle.isVisible,
-            sessionFlow?.isOpen == true, controllerEditor.isOpen || onScreenControls?.isOpen == true,
+            !::libraryFlow.isInitialized || !::controllerPages.isInitialized) return
+        val menuOpen = sessionFlow?.isOpen == true
+        val presentation = sessionState.presentation(guestLifecycle.isVisible, menuOpen, false,
             preparing = false)
+        overlay.setPaused(userPaused && currentGame != null && !menuOpen &&
+            libraryScreen.visibility != View.VISIBLE)
         val showingGuest = currentGame != null && presentation.showGuest
         if (libraryScreen.visibility != View.VISIBLE) {
             secondaryDisplay.setLibraryInfo(null)
@@ -1053,11 +1099,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     inputModeDecider.observe(it, android.os.SystemClock.elapsedRealtime())
                 }
             }
+            if (sessionFlow?.isOpen == true) pages.tick()
             when (nativeStatus()) {
-                1 -> statusLabel?.text = "Loading DOSBox Staging…"
                 2 -> {
-                    loadingStatus?.visibility = View.GONE
-                    statusLabel?.text = "${sessionGameTitle ?: "Game"} · running"
+                    overlay.hideProgress()
                     if (audioThread == null || audioThread?.isAlive != true) startAudio()
                     updateSurfaceLayout()
                     // Wait until autoexec mounts have completed and the shell is
@@ -1170,138 +1215,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         return true
     }
 
-    private fun showSettings() {
-        val dialog = touchSettingsCoordinator.builder()
-            ?.setNeutralButton("CPU speed") { _, _ -> showCpuSettings() }?.create()
-            ?: return
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showCpuSettings() {
-        val selected = preferences.getInt("cycles_mode", 0).coerceIn(0, 1)
-        AlertDialog.Builder(this).setTitle("DOS CPU performance")
-            .setSingleChoiceItems(arrayOf("Auto", "Maximum"), selected) { dialog, value ->
-                preferences.edit().putInt("cycles_mode", value).apply()
-                configureGuest()
-                dialog.dismiss()
-            }.setNegativeButton("Cancel", null).show().also(Ui::styleDialog)
-    }
-
-    private val voodooLabels = arrayOf("Automatic CPU threads", "Single CPU thread")
-
-    private fun videoHardwareLabel(game: DosLibrary.Game): String =
-        DosVideoHardware.label(dosGameSettings.videoHardware(game.contentId)) + " · " +
-            if (gameSettings.has(game.contentId, DosVideoHardware.setting)) "Game" else "Global"
-
-    private fun showGraphicsSettings(game: DosLibrary.Game?) = graphics.show(listOf(
-        shaderOptions.entry(),
-        SettingsEntry("Emulated video card", {
-            if (game == null) DosVideoHardware.label(dosGameSettings.videoHardware()) else videoHardwareLabel(game)
-        }, { showVideoHardwareSettings(game) }),
-        SettingsEntry("3dfx rendering", { voodooLabels[effectiveVoodoo(game)] }, { showVoodooSettings(game) })
-    ), includeDisplaySettings = game == null)
-
-    private fun showVideoHardwareSettings(game: DosLibrary.Game?) {
-        val id = game?.contentId
-        val labels = DosVideoHardware.choices.map { it.second }
-        val options = (if (id != null) listOf("Use global setting") + labels else labels).toTypedArray()
-        val selected = if (id == null) dosGameSettings.videoHardware()
-            else if (gameSettings.has(id, DosVideoHardware.setting)) dosGameSettings.videoHardware(id) + 1 else 0
-        val dialog = AlertDialog.Builder(this).setTitle("Emulated video card · relaunch to apply")
-            .setSingleChoiceItems(options, selected) { current, choice ->
-                if (id == null) preferences.edit().putInt(DosVideoHardware.setting, choice).apply()
-                else if (choice == 0) gameSettings.clear(id, DosVideoHardware.setting)
-                else gameSettings.setInt(id, DosVideoHardware.setting, choice - 1)
-                current.dismiss()
-                sessionDrawer?.refreshValues()
-                libraryScreen.refreshSettingValues()
-                if (game != null) showGameDetails(game)
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showVoodooSettings(game: DosLibrary.Game?) {
-        val id = game?.contentId
-        val perGame = id != null
-        val options = if (perGame) arrayOf("Use global setting", *voodooLabels) else voodooLabels
-        val selected = if (perGame) {
-            if (gameSettings.has(id, "staging_voodoo_threads")) effectiveVoodoo(game) + 1 else 0
-        } else preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1)
-        val dialog = AlertDialog.Builder(this).setTitle("3dfx rendering · relaunch to apply")
-            .setSingleChoiceItems(options, selected) { current, choice ->
-                if (id != null) {
-                    if (choice == 0) gameSettings.clear(id, "staging_voodoo_threads")
-                    else gameSettings.setInt(id, "staging_voodoo_threads", choice - 1)
-                } else preferences.edit().putInt("staging_voodoo_threads", choice).apply()
-                configureGuest()
-                sessionDrawer?.refreshValues()
-                current.dismiss()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun confirmRestart() {
-        val title = sessionGameTitle ?: "the DOS game"
-        val dialog = AlertDialog.Builder(this).setTitle("Restart $title?")
-            .setMessage("Progress since your last in-game save is lost.")
-            .setPositiveButton("Restart") { _, _ ->
-                userPaused = false
-                nativeReset()
-                closeMenu()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun touchSettingsLabel(game: DosLibrary.Game) = touchSelection(game).label()
-
-    private fun cpuSettingsLabel(game: DosLibrary.Game): String {
-        val mode = if (effectiveCycles(game) == 0) "Auto" else "Maximum"
-        val source = if (gameSettings.has(game.contentId, "cycles_mode")) "Game" else "Global"
-        return "$mode · $source"
-    }
-
-    private fun showGameTouchSettings(game: DosLibrary.Game) {
-        val dialog = touchSettingsCoordinator.builder(game)?.create() ?: return
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showGameCpuSettings(game: DosLibrary.Game) {
-        val id = game.contentId ?: return
-        val selected = if (gameSettings.has(id, "cycles_mode"))
-            effectiveCycles(game) + 1 else 0
-        val dialog = AlertDialog.Builder(this).setTitle("DOS CPU performance · ${game.displayName}")
-            .setSingleChoiceItems(arrayOf("Use global setting", "Auto", "Maximum"), selected) {
-                    current, choice ->
-                if (choice == 0) gameSettings.clear(id, "cycles_mode")
-                else gameSettings.setInt(id, "cycles_mode", choice - 1)
-                if (currentGame?.contentId == id) configureGuest()
-                current.dismiss()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun confirmExit() {
-        val dialog = AlertDialog.Builder(this).setTitle("Exit KairoDos?")
-            .setMessage("The DOS game stops. Progress since your last in-game save is lost.")
-            .setPositiveButton("Exit") { _, _ ->
-                leaveGame()
-                if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
-            }.setNegativeButton("Cancel", null).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
-    }
-
-    private fun showAbout() {
-        AboutDocuments.show(this, "KairoDos",
-            "Open the game menu with Back, a controller Mode/Home button when Android delivers it, or a swipe from the left edge. Open the DOS keyboard by tapping a keyboard prompt or swiping inward from the right edge. On dual-screen devices, the keyboard appears on the other screen.\n\nKairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
-            "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt")
-    }
+    private fun aboutPage() = AboutDocuments.page(this, pages, listOf(
+        "Open the menu" to "Back, Mode or Home button, or a swipe from the left edge",
+        "Open the keyboard" to "Tap a keyboard prompt or swipe in from the right edge",
+        "Second screen" to "On dual-screen devices, the keyboard appears on the other screen"),
+        "Android reserves the system Home key.",
+        "KairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
+        "PRIVACY_POLICY.txt", "THIRD_PARTY_NOTICES.txt", ::diagnosticsPage)
 
     private fun startAudio() {
         val generation = ++audioGeneration
@@ -1343,12 +1263,23 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         }.apply { name = "KairoDos-audio"; start() }
     }
 
+    /** Offered while the installed game starts; Keep is the same as dismissing it. */
     private fun showInstallerRemovalPrompt(installer: DosLibrary.Game,
                                            installed: DosLibrary.Game) {
         installerPromptOpen = true
-        val dialog = AlertDialog.Builder(this).setTitle("Remove installer ZIP?")
-            .setMessage("The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?")
-            .setPositiveButton("Remove") { _, _ ->
+        fun keep() {
+            installerPromptOpen = false
+            installerNotice = null
+            refreshLibrary(false)
+            if (finishAfterInstallerPrompt) {
+                finishAfterInstallerPrompt = false
+                finish()
+            }
+        }
+        val notice = GameNotice("Remove installer ZIP?",
+            "The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?",
+            listOf(TrayButton("Keep") { keep() }, TrayButton("Remove", ButtonTone.DANGER) {
+                installerNotice = null
                 Thread {
                     runCatching { dosLibrary.deleteInstaller(installer, installed) }
                         .onSuccess { runOnUiThread {
@@ -1361,24 +1292,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         } }
                         .onFailure { failure -> runOnUiThread {
                             installerPromptOpen = false
+                            Ui.message(this, failure.message ?: "Could not remove installer", long = true)
                             if (finishAfterInstallerPrompt) {
                                 finishAfterInstallerPrompt = false
-                                AlertDialog.Builder(this)
-                                    .setMessage(failure.message ?: "Could not remove installer")
-                                    .setPositiveButton("Close") { _, _ -> finish() }.show().also(Ui::styleDialog)
-                            } else Ui.message(this, failure.message ?: "Could not remove installer")
+                                handler.postDelayed({ finish() }, 3500)
+                            }
                         } }
                 }.apply { name = "KairoDos-remove-installer"; start() }
-            }.setNegativeButton("Keep") { _, _ ->
-                installerPromptOpen = false
-                refreshLibrary(false)
-                if (finishAfterInstallerPrompt) {
-                    finishAfterInstallerPrompt = false
-                    finish()
-                }
-            }.setCancelable(false).create()
-        dialog.show()
-        Ui.styleDialog(dialog)
+            }), ::keep)
+        installerNotice = notice
+        overlay.showNotice(notice)
     }
 
     private var endingSessionForLibrary = false
@@ -1413,7 +1336,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 videoFrame = null
                 keyboard = null
                 // Controls are attached to appRoot and live for the activity, across games.
-                statusLabel = null
                 endingSessionForLibrary = false
                 done()
                 rebuildIfRescaled()
@@ -1432,17 +1354,16 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gamepad.releaseAll()
         keys.releaseAll()
         mouse.releasePrefix("touch-")
-        onScreenControls?.close()
         keyboard?.close()
         onScreenControls?.bindGuestKeyboard(null)
         swappedKeyboard?.close()
         onScreenControls?.refreshVisibility(false)
         sessionFlow?.reset()
-        sessionFlow = null
-        sessionDrawer = null
         userPaused = false
         nativeSetSurface(null)
-        loadingStatus = null
+        overlay.hideProgress()
+        // The installer prompt outlives the game; it still decides whether the app closes.
+        if (installerNotice?.let(overlay::showing) != true) overlay.hideNotice()
         sessionGameTitle = null
         swappedKeyboard = null
         currentGame = null
@@ -1507,8 +1428,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun dispatchGuestTouch(event: MotionEvent) = super.dispatchTouchEvent(event)
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (!::appRoot.isInitialized || !::firstRunScreen.isInitialized || firstRunScreen.isOpen ||
-            onScreenControls?.isOpen == true || controllerEditor.isOpen ||
+        // Edge gestures work over the game and its flyout, not over pages above the flyout.
+        if (!::appRoot.isInitialized || !::pages.isInitialized ||
+            (pages.isActive && pages.top?.isFlyout != true) ||
             currentGame == null || libraryScreen.visibility == View.VISIBLE)
             return super.dispatchTouchEvent(event)
         return when (edgeSwipes.handle(event, appRoot.width, sessionFlow?.isOpen == true,

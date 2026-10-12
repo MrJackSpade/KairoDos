@@ -4,6 +4,6 @@ The DOS library-return path cleared `onScreenControls` together with session-own
 
 Retain the activity-owned object. Existing `leaveGame` cleanup still closes its editor, releases input, unbinds the old keyboard and hides the overlay. A subsequent game binds its new keyboard and restores visibility. PC-98 already retains its controls this way.
 
-The shared `EndSessionFixture` now accepts an optional second game URI and verifies control-object identity through teardown, overlay visibility in both games, opening/closing touch settings, restoration of the parent controller editor, and native game resumption. The regression failed on the unfixed DOS app with `Activity controls discarded on return to library`.
+The shared `EndSessionFixture` now accepts an optional second game URI and verifies control-object identity through teardown, overlay visibility in both games, opening Controls › Arrange layout over the game, returning to the Controls page, and native game resumption. (It opened the former touch settings from the controller editor when it caught this regression.) The regression failed on the unfixed DOS app with `Activity controls discarded on return to library`.
 
 Both debug builds and RGDS regression runs passed: Commander Keen 4 to DOOM in DOS, and Rusty to Touhou 2 in PC-98. The DOS fixture also verified cancellation during an early third launch.

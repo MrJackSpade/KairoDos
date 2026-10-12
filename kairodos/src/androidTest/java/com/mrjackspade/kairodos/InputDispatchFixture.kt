@@ -20,16 +20,25 @@ object InputDispatchFixture {
                 ControllerBinding("virtual:x", mouse = "leftButton")))
         var screen = InputDispatchCoordinator.Screen.GUEST
         var handled = true
+        var capturing = false
+        var captured = 0
         var frontendCalls = 0
         val frontend = object : InputDispatchCoordinator.Frontend {
             override fun screen() = screen
+            override fun playing() = screen != InputDispatchCoordinator.Screen.LIBRARY &&
+                screen != InputDispatchCoordinator.Screen.INACTIVE
             override fun key(screen: InputDispatchCoordinator.Screen, control: String?, event: KeyEvent): Boolean {
                 frontendCalls++
                 return handled
             }
-            override fun motion(screen: InputDispatchCoordinator.Screen, event: MotionEvent): Boolean {
-                frontendCalls++
-                return handled
+            override fun capturing() = capturing
+            override fun captureKey(event: KeyEvent): Boolean {
+                captured++
+                return KeyEvent.isGamepadButton(event.keyCode) || event.isFromSource(InputDevice.SOURCE_GAMEPAD)
+            }
+            override fun captureMotion(event: MotionEvent): Boolean {
+                captured++
+                return true
             }
         }
         var backs = 0
@@ -43,8 +52,9 @@ object InputDispatchFixture {
             KeyEvent(0, 0, action, code, repeat, 0, device, 0, 0, source)
         fun key(event: KeyEvent) = dispatch.dispatchKey(event, dispatch::physicalKey)
 
+        // A notice leaves the game running: only keys it does not use reach the guest.
         for (target in InputDispatchCoordinator.Screen.entries.filter {
-                it != InputDispatchCoordinator.Screen.GUEST }) {
+                it != InputDispatchCoordinator.Screen.GUEST && it != InputDispatchCoordinator.Screen.NOTICE }) {
             screen = target
             check(key(event(KeyEvent.KEYCODE_BUTTON_A, source = InputDevice.SOURCE_GAMEPAD)))
             check(keys.pressedKeys().isEmpty()) { "Frontend controller input leaked from $target" }
@@ -53,6 +63,16 @@ object InputDispatchFixture {
             check(keys.pressedKeys().isEmpty()) { "Frontend keyboard input leaked from $target" }
             handled = true
         }
+        screen = InputDispatchCoordinator.Screen.NOTICE
+        check(key(event(KeyEvent.KEYCODE_BUTTON_A, source = InputDevice.SOURCE_GAMEPAD)))
+        check(keys.pressedKeys().isEmpty()) { "A notice button press reached the guest" }
+        // Listening captures controller buttons, Back included, before any other routing.
+        screen = InputDispatchCoordinator.Screen.MENU
+        capturing = true
+        check(key(event(KeyEvent.KEYCODE_BUTTON_B, source = InputDevice.SOURCE_GAMEPAD)))
+        check(key(event(KeyEvent.KEYCODE_BACK, source = InputDevice.SOURCE_GAMEPAD)))
+        check(captured == 2 && backs == 0 && keys.pressedKeys().isEmpty())
+        capturing = false
         screen = InputDispatchCoordinator.Screen.GUEST
         key(event(KeyEvent.KEYCODE_BACK))
         key(event(KeyEvent.KEYCODE_BACK, repeat = 1))
@@ -73,10 +93,8 @@ object InputDispatchFixture {
         val motion = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 1f, 0f, 0)
         motion.source = InputDevice.SOURCE_JOYSTICK
         try {
-            for (target in listOf(InputDispatchCoordinator.Screen.FIRST_RUN,
-                    InputDispatchCoordinator.Screen.TOUCH_EDITOR,
-                    InputDispatchCoordinator.Screen.CONTROLLER_EDITOR,
-                    InputDispatchCoordinator.Screen.LIBRARY, InputDispatchCoordinator.Screen.SESSION)) {
+            for (target in InputDispatchCoordinator.Screen.entries.filter {
+                    it != InputDispatchCoordinator.Screen.GUEST }) {
                 screen = target
                 dispatch.dispatchMotion(motion) { false }
                 check(keys.pressedKeys().isEmpty()) { "Frontend axes leaked from $target" }

@@ -7,7 +7,6 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inspector.WindowInspector
-import android.widget.ListView
 import android.widget.TextView
 import java.io.File
 
@@ -42,19 +41,21 @@ internal object DosProgramFixture {
         fun views() = WindowInspector.getGlobalWindowViews().flatMap(::descendants)
         fun text(value: String) = views().filterIsInstance<TextView>().firstOrNull { it.text.toString() == value }
         fun key(code: Int) { test.sendKeyDownUpSync(code); test.waitForIdleSync() }
+        val pages by lazy { field("pages") as com.mrjackspade.kairo.frontend.PageStack }
+        fun picker() = pages.top as? com.mrjackspade.kairo.frontend.DirectoryPicker
+        fun labels(page: com.mrjackspade.kairo.frontend.Page) = page.itemIds().associateWith { id ->
+            descendants(page.itemView(id)!!).filterIsInstance<TextView>().first().text.toString()
+        }
+        /** Folders and programs are rows; the D-pad reaches the one named [label], then A opens it. */
         fun choose(label: String) {
-            await("Picker entry missing: $label") { views().filterIsInstance<ListView>().any { list ->
-                (0 until list.count).any { list.getItemAtPosition(it).toString() == label }
-            } }
-            key(KeyEvent.KEYCODE_DPAD_DOWN)
-            ui {
-                val list = views().filterIsInstance<ListView>().single { list ->
-                    (0 until list.count).any { list.getItemAtPosition(it).toString() == label }
-                }
-                list.requestFocus()
-                list.setSelection((0 until list.count).single { list.getItemAtPosition(it).toString() == label })
+            await("Picker entry missing: $label") { picker()?.let { label in labels(it).values } == true }
+            repeat(200) {
+                var reached = false
+                ui { val page = picker()!!; reached = labels(page)[page.focusedItemId] == label }
+                if (reached) { key(KeyEvent.KEYCODE_BUTTON_A); return }
+                key(KeyEvent.KEYCODE_DPAD_DOWN)
             }
-            key(KeyEvent.KEYCODE_BUTTON_A)
+            error("D-pad could not reach $label")
         }
         var fixture: File? = null
         try {
@@ -86,7 +87,7 @@ internal object DosProgramFixture {
                     views().any { it.isShown && it.contentDescription == "DOS prompt or run program" }
                 }
                 key(KeyEvent.KEYCODE_DPAD_RIGHT)
-                ui { check(views().any { it.hasFocus() && it.contentDescription == "DOS prompt or run program" }) }
+                ui { check(pages.top?.focusedItemId == "command") { "Right did not reach the command button" } }
                 key(KeyEvent.KEYCODE_BUTTON_A)
                 await("Program picker did not open") { field("programPicker") != null }
             }
@@ -106,11 +107,10 @@ internal object DosProgramFixture {
             await("Cancelling picker left the core paused") { field("programPicker") == null && call("getUserPaused") == false }
             for (extension in listOf("BAT", "CMD", "COM", "EXE")) {
                 browse()
-                choose("C:/")
-                ui { check(views().filterIsInstance<ListView>().none { list ->
-                    (0 until list.count).any { list.getItemAtPosition(it).toString() == "Prompt" }
-                }) { "Prompt must only appear at the root" } }
-                choose("K25TEST/")
+                choose("C:")
+                await("Drive did not open") { picker()?.let { "K25TEST" in labels(it).values } == true }
+                ui { check("Prompt" !in labels(picker()!!).values) { "Prompt must only appear at the root" } }
+                choose("K25TEST")
                 ui { check(text("IGNORE.TXT") == null) }
                 choose("RUN.$extension")
                 val result = File(folder, "K25RES.TXT")
