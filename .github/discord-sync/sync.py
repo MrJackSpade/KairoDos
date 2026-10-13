@@ -1,7 +1,7 @@
 """Mirror GitHub issues and their comments into a Discord forum channel.
 
 Each issue becomes a forum post; each comment, close and reopen becomes a
-message in that post, and the post's first message shows the issue's status.
+message in that post, sent under the GitHub user's name and avatar.
 An issue opened before the sync existed is mirrored in full the first time
 anything happens to it. The Discord IDs are recorded next to this script so later events can edit or
 delete the right messages:
@@ -24,10 +24,11 @@ STATE = Path(__file__).resolve().parent / "issues"
 WEBHOOK = os.environ["DISCORD_FORUM_WEBHOOK"]
 REPO = os.environ["GITHUB_REPOSITORY"]
 NO_MENTIONS = {"parse": []}
+MESSAGE_LIMIT = 2000
 
 
-def clip(text, limit):
-    return text if len(text) <= limit else text[: limit - 1] + "…"
+def clip(value, limit):
+    return value if len(value) <= limit else value[: limit - 1] + "…"
 
 
 def request(method, url, label, headers, payload=None):
@@ -62,56 +63,38 @@ def github(path):
     return request("GET", f"https://api.github.com/repos/{REPO}{path}", f"GitHub {path}", headers)
 
 
-def author(user):
-    return {"name": user["login"], "url": user["html_url"], "icon_url": user["avatar_url"]}
+def as_user(user):
+    """Post under the GitHub user's own name and avatar instead of the webhook's."""
+    return {"username": user["login"], "avatar_url": user["avatar_url"]} if user else {}
 
 
-def issue_embed(issue):
-    embed = {
-        "title": clip(f"#{issue['number']}: {issue['title']}", 256),
-        "url": issue["html_url"],
-        "author": author(issue["user"]),
-        "timestamp": issue["created_at"],
-    }
-    if issue["body"]:
-        embed["description"] = clip(issue["body"], 4096)
-    embed["fields"] = [{"name": "Status", "value": status(issue), "inline": True}]
-    labels = ", ".join(label["name"] for label in issue["labels"])
-    if labels:
-        embed["fields"].append({"name": "Labels", "value": clip(labels, 1024), "inline": True})
-    return embed
+def text(body, url):
+    """The body as message text. One too long for a message is cut and links to the rest;
+    the angle brackets keep Discord from adding a preview card for the link."""
+    body = (body or "").strip()
+    if not body:
+        return f"<{url}>"
+    if len(body) <= MESSAGE_LIMIT:
+        return body
+    more = f"…\n\n[Continued on GitHub](<{url}>)"
+    return body[: MESSAGE_LIMIT - len(more)] + more
+
+
+def new_message(user, content):
+    return {"content": content, **as_user(user), "allowed_mentions": NO_MENTIONS}
+
+
+def changed_message(content):
+    # Clearing embeds also converts messages posted before the sync used plain text.
+    return {"content": content, "embeds": [], "allowed_mentions": NO_MENTIONS}
 
 
 def status(issue):
     if issue["state"] == "open":
-        return "Open"
-    reason = {"not_planned": "not planned", "duplicate": "duplicate"}.get(issue.get("state_reason"))
-    return f"Closed ({reason})" if reason else "Closed"
-
-
-def state_embed(issue, actor):
-    """A thread message announcing that the issue was closed or reopened."""
-    verb = "Reopened" if issue["state"] == "open" else status(issue)
-    embed = {
-        "title": clip(f"{verb}: #{issue['number']}", 256),
-        "url": issue["html_url"],
-        "timestamp": issue["closed_at"] if issue["state"] == "closed" else issue["updated_at"],
-    }
-    if actor:
-        embed["author"] = author(actor)
-    return embed
-
-
-def comment_embed(issue, comment):
-    embed = {
-        "title": f"Comment on #{issue['number']}",
-        "url": comment["html_url"],
-        "author": author(comment["user"]),
-        "timestamp": comment["created_at"],
-    }
-    if comment["body"]:
-        embed["description"] = clip(comment["body"], 4096)
-    return embed
+        return "Reopened"
+    reason = {"completed": "completed", "not_planned": "not planned",
+              "duplicate": "a duplicate"}.get(issue.get("state_reason"))
+    return f"Closed as {reason}" if reason else "Closed"
 
 
 def thread_path(issue):
@@ -139,8 +122,7 @@ def open_issue(issue):
         raise RuntimeError(f"Issue #{issue['number']} already has a Discord thread: {path}")
     payload = {
         "thread_name": clip(f"#{issue['number']} {issue['title']}", 100),
-        "embeds": [issue_embed(issue)],
-        "allowed_mentions": NO_MENTIONS,
+        **new_message(issue["user"], text(issue["body"], issue["html_url"])),
     }
     message = discord("POST", "", "?wait=true", payload)
     write_new(path, {"thread_id": message["channel_id"], "message_id": message["id"]})
@@ -165,14 +147,14 @@ def edit_issue(issue):
     if ensure_thread(issue):
         return
     thread = read(thread_path(issue))
-    payload = {"embeds": [issue_embed(issue)], "allowed_mentions": NO_MENTIONS}
+    payload = changed_message(text(issue["body"], issue["html_url"]))
     discord("PATCH", f"/messages/{thread['message_id']}", f"?thread_id={thread['thread_id']}", payload)
     print(f"Issue #{issue['number']} edited in thread {thread['thread_id']}")
 
 
 def post_state(issue, actor):
     thread = read(thread_path(issue))
-    payload = {"embeds": [state_embed(issue, actor)], "allowed_mentions": NO_MENTIONS}
+    payload = new_message(actor, status(issue))
     discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}", payload)
     print(f"Issue #{issue['number']} {status(issue)} in thread {thread['thread_id']}")
 
@@ -180,7 +162,6 @@ def post_state(issue, actor):
 def change_state(issue, actor):
     if ensure_thread(issue):
         return
-    edit_issue(issue)
     post_state(issue, actor)
 
 
@@ -189,7 +170,7 @@ def add_comment(issue, comment):
     path = comment_path(issue, comment)
     if path.exists():
         raise RuntimeError(f"Comment {comment['id']} is already in Discord: {path}")
-    payload = {"embeds": [comment_embed(issue, comment)], "allowed_mentions": NO_MENTIONS}
+    payload = new_message(comment["user"], text(comment["body"], comment["html_url"]))
     message = discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}", payload)
     write_new(path, {"message_id": message["id"]})
     print(f"Comment {comment['id']} -> message {message['id']}")
@@ -198,7 +179,7 @@ def add_comment(issue, comment):
 def edit_comment(issue, comment):
     thread = read(thread_path(issue))
     message_id = read(comment_path(issue, comment))["message_id"]
-    payload = {"embeds": [comment_embed(issue, comment)], "allowed_mentions": NO_MENTIONS}
+    payload = changed_message(text(comment["body"], comment["html_url"]))
     discord("PATCH", f"/messages/{message_id}", f"?thread_id={thread['thread_id']}", payload)
     print(f"Comment {comment['id']} edited in message {message_id}")
 
