@@ -1,0 +1,45 @@
+name: Discord sync
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited, deleted]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  sync:
+    # issue_comment also fires for pull request comments; only issues are mirrored.
+    if: ${{ !github.event.issue.pull_request }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Mirror to Discord
+        env:
+          DISCORD_FORUM_WEBHOOK: ${{ secrets.DISCORD_FORUM_WEBHOOK }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/discord-sync/sync.py
+      # Runs even when the sync step fails so IDs of messages already posted are never lost.
+      - name: Commit sync state
+        if: ${{ !cancelled() }}
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A .github/discord-sync
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -q -m "Discord sync: $GITHUB_EVENT_NAME $ACTION #$ISSUE_NUMBER"
+          # Another sync run may have pushed first. Each run only touches its own files, so rebase and resend.
+          until git push origin HEAD:main 2> push.err; do
+            cat push.err
+            grep -qE 'fetch first|non-fast-forward' push.err || exit 1
+            git pull -q --rebase origin main
+          done
