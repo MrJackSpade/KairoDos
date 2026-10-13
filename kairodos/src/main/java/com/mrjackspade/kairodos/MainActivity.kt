@@ -76,7 +76,6 @@ import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.SetupPage
 import com.mrjackspade.kairo.frontend.FooterButton
 import com.mrjackspade.kairo.frontend.FlyoutModel
-import com.mrjackspade.kairo.frontend.FlyoutButton
 import com.mrjackspade.kairo.frontend.SettingsRow
 import com.mrjackspade.kairo.frontend.RowGroup
 import com.mrjackspade.kairo.frontend.ChoiceSpec
@@ -1009,19 +1008,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             "Games with their own speed keep it."))
     })
 
-    /** The game flyout: Resume and Keep paused, Game settings, settings, then leaving. */
+    /** The game flyout: Game settings, settings, then leaving. */
     private fun gameFlyout() = FlyoutModel("KAIRODOS", { sessionGameTitle ?: currentGame?.displayName ?: "" },
-        ::sessionStatusText, buttons = listOf(
-            FlyoutButton("f-resume", "Resume", com.mrjackspade.kairo.frontend.R.drawable.ic_play, ButtonTone.PRIMARY) {
-                userPaused = false
-                closeMenu()
-            },
-            FlyoutButton("f-pause", "Keep paused", com.mrjackspade.kairo.frontend.R.drawable.ic_pause,
-                ButtonTone.SECONDARY) {
-                userPaused = true
-                closeMenu()
-                Ui.message(this, "Paused")
-            })) {
+        ::sessionStatusText) {
         listOf(
             RowGroup("GAME", listOf(SettingsRow.nav("f-game", "Game settings") {
                 currentGame?.let(::showGameDetails)
@@ -1036,7 +1025,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     }),
                 sessionNavigation.returnRow("KairoDos"),
                 SettingsRow.action("f-exit", "Exit KairoDos",
-                    confirm = Confirm("The machine stops. Progress since your last save is lost.", "Exit") {
+                    confirm = Confirm("The machine stops. Progress since your last save is lost.", "Exit",
+                        title = "Exit KairoDos?") {
                         leaveGame()
                         if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
                     }))))
