@@ -1,10 +1,11 @@
 """Mirror GitHub issues and their comments into a Discord forum channel.
 
 Each issue becomes a forum post; each comment, close and reopen becomes a
-message in that post, sent under the GitHub user's name and avatar.
+message in that post, sent under the GitHub user's name and avatar. Images and
+videos uploaded to GitHub are attached to the message instead of linked.
 An issue opened before the sync existed is mirrored in full the first time
-anything happens to it. The Discord IDs are recorded next to this script so later events can edit or
-delete the right messages:
+anything happens to it. The Discord IDs are recorded next to this script so
+later events can edit or delete the right messages:
 
   issues/<number>/thread.json           {"thread_id": ..., "message_id": ...}
   issues/<number>/comments/<id>.json    {"message_id": ...}
@@ -15,9 +16,12 @@ same path and their commits always rebase cleanly.
 
 import json
 import os
+import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
+import uuid
 from pathlib import Path
 
 STATE = Path(__file__).resolve().parent / "issues"
@@ -25,14 +29,27 @@ WEBHOOK = os.environ["DISCORD_FORUM_WEBHOOK"]
 REPO = os.environ["GITHUB_REPOSITORY"]
 NO_MENTIONS = {"parse": []}
 MESSAGE_LIMIT = 2000
+# Discord's per-message limits for a webhook in a server without boosts.
+ATTACHMENT_LIMIT = 10 * 1024 * 1024
+ATTACHMENT_COUNT = 10
+
+# Files uploaded to GitHub, as the issue editor writes them: an <img> tag, a Markdown
+# image, or a bare link on its own line (how videos are inserted).
+ASSET = (r"https://(?:github\.com/user-attachments/assets/[\w-]+"
+         r"|github\.com/[\w.-]+/[\w.-]+/assets/\d+/[\w-]+"
+         r"|user-images\.githubusercontent\.com/[^\s)\"'<>]+)")
+ASSET_MARKUP = re.compile(
+    rf"<img\b[^>]*?\bsrc=\"(?P<img>{ASSET})\"[^>]*>"
+    rf"|!\[[^\]]*\]\((?P<md>{ASSET})\)"
+    rf"|^[ \t]*(?P<bare>{ASSET})[ \t]*$",
+    re.IGNORECASE | re.MULTILINE)
 
 
 def clip(value, limit):
     return value if len(value) <= limit else value[: limit - 1] + "…"
 
 
-def request(method, url, label, headers, payload=None):
-    data = None if payload is None else json.dumps(payload).encode()
+def request(method, url, label, headers, data=None):
     req = urllib.request.Request(url, data=data, method=method, headers=headers)
     while True:
         try:
@@ -48,10 +65,36 @@ def request(method, url, label, headers, payload=None):
             raise RuntimeError(f"{method} {label} -> {error.code}: {detail}") from None
 
 
-def discord(method, suffix, query, payload=None):
-    headers = {"Content-Type": "application/json", "User-Agent": f"{REPO} discord-sync"}
+def discord(method, suffix, query, payload=None, files=()):
+    """Send a webhook request. Files go as a multipart upload; a PATCH that lists the
+    attachments replaces the message's old ones, so an edit without files clears them."""
+    headers = {"User-Agent": f"{REPO} discord-sync"}
+    data = None
+    if payload is not None:
+        if files or method == "PATCH":
+            payload = {**payload, "attachments": [
+                {"id": index, "filename": name} for index, (name, _) in enumerate(files)]}
+        if files:
+            boundary = uuid.uuid4().hex
+            data = multipart(boundary, payload, files)
+            headers["Content-Type"] = f"multipart/form-data; boundary={boundary}"
+        else:
+            data = json.dumps(payload).encode()
+            headers["Content-Type"] = "application/json"
     # The label keeps the webhook token out of error messages.
-    return request(method, WEBHOOK + suffix + query, f"Discord webhook{suffix}", headers, payload)
+    return request(method, WEBHOOK + suffix + query, f"Discord webhook{suffix}", headers, data)
+
+
+def multipart(boundary, payload, files):
+    parts = [(b'Content-Disposition: form-data; name="payload_json"\r\n'
+              b"Content-Type: application/json", json.dumps(payload).encode())]
+    for index, (name, data) in enumerate(files):
+        quoted = name.replace('"', "")
+        parts.append((f'Content-Disposition: form-data; name="files[{index}]"; filename="{quoted}"\r\n'
+                      "Content-Type: application/octet-stream".encode(), data))
+    body = b"".join(b"--" + boundary.encode() + b"\r\n" + head + b"\r\n\r\n" + data + b"\r\n"
+                    for head, data in parts)
+    return body + b"--" + boundary.encode() + b"--\r\n"
 
 
 def github(path):
@@ -63,21 +106,47 @@ def github(path):
     return request("GET", f"https://api.github.com/repos/{REPO}{path}", f"GitHub {path}", headers)
 
 
+def download(url):
+    """A GitHub upload as (filename, bytes), or None when it is over Discord's size limit.
+    The asset link redirects to a short-lived signed download."""
+    req = urllib.request.Request(url, headers={"User-Agent": f"{REPO} discord-sync"})
+    try:
+        with urllib.request.urlopen(req) as response:
+            data = response.read(ATTACHMENT_LIMIT + 1)
+            name = Path(urllib.parse.urlparse(response.geturl()).path).name
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"GET {url} -> {error.code}") from None
+    return None if len(data) > ATTACHMENT_LIMIT else (name, data)
+
+
+def render(body, url):
+    """The message text and attachments for an issue or comment body. GitHub uploads become
+    attachments; one over Discord's limits stays as a link. Text too long for a message is
+    cut and links to the rest; angle brackets keep Discord from adding a preview card."""
+    files, attached = [], {}
+
+    def attach(match):
+        asset = match.group("img") or match.group("md") or match.group("bare")
+        if asset not in attached:
+            file = download(asset) if len(files) < ATTACHMENT_COUNT else None
+            attached[asset] = file is not None
+            if file:
+                files.append(file)
+        return "" if attached[asset] else f"<{asset}>"
+
+    body = re.sub(r"[ \t]+\n", "\n", ASSET_MARKUP.sub(attach, body or ""))
+    body = re.sub(r"\n{3,}", "\n\n", body).strip()
+    if not body:
+        return ("" if files else f"<{url}>"), files
+    if len(body) <= MESSAGE_LIMIT:
+        return body, files
+    more = f"…\n\n[Continued on GitHub](<{url}>)"
+    return body[: MESSAGE_LIMIT - len(more)] + more, files
+
+
 def as_user(user):
     """Post under the GitHub user's own name and avatar instead of the webhook's."""
     return {"username": user["login"], "avatar_url": user["avatar_url"]} if user else {}
-
-
-def text(body, url):
-    """The body as message text. One too long for a message is cut and links to the rest;
-    the angle brackets keep Discord from adding a preview card for the link."""
-    body = (body or "").strip()
-    if not body:
-        return f"<{url}>"
-    if len(body) <= MESSAGE_LIMIT:
-        return body
-    more = f"…\n\n[Continued on GitHub](<{url}>)"
-    return body[: MESSAGE_LIMIT - len(more)] + more
 
 
 def new_message(user, content):
@@ -120,11 +189,12 @@ def open_issue(issue):
     path = thread_path(issue)
     if path.exists():
         raise RuntimeError(f"Issue #{issue['number']} already has a Discord thread: {path}")
+    content, files = render(issue["body"], issue["html_url"])
     payload = {
         "thread_name": clip(f"#{issue['number']} {issue['title']}", 100),
-        **new_message(issue["user"], text(issue["body"], issue["html_url"])),
+        **new_message(issue["user"], content),
     }
-    message = discord("POST", "", "?wait=true", payload)
+    message = discord("POST", "", "?wait=true", payload, files)
     write_new(path, {"thread_id": message["channel_id"], "message_id": message["id"]})
     print(f"Issue #{issue['number']} -> thread {message['channel_id']}")
 
@@ -147,8 +217,9 @@ def edit_issue(issue):
     if ensure_thread(issue):
         return
     thread = read(thread_path(issue))
-    payload = changed_message(text(issue["body"], issue["html_url"]))
-    discord("PATCH", f"/messages/{thread['message_id']}", f"?thread_id={thread['thread_id']}", payload)
+    content, files = render(issue["body"], issue["html_url"])
+    discord("PATCH", f"/messages/{thread['message_id']}", f"?thread_id={thread['thread_id']}",
+            changed_message(content), files)
     print(f"Issue #{issue['number']} edited in thread {thread['thread_id']}")
 
 
@@ -170,8 +241,9 @@ def add_comment(issue, comment):
     path = comment_path(issue, comment)
     if path.exists():
         raise RuntimeError(f"Comment {comment['id']} is already in Discord: {path}")
-    payload = new_message(comment["user"], text(comment["body"], comment["html_url"]))
-    message = discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}", payload)
+    content, files = render(comment["body"], comment["html_url"])
+    message = discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}",
+                      new_message(comment["user"], content), files)
     write_new(path, {"message_id": message["id"]})
     print(f"Comment {comment['id']} -> message {message['id']}")
 
@@ -179,8 +251,9 @@ def add_comment(issue, comment):
 def edit_comment(issue, comment):
     thread = read(thread_path(issue))
     message_id = read(comment_path(issue, comment))["message_id"]
-    payload = changed_message(text(comment["body"], comment["html_url"]))
-    discord("PATCH", f"/messages/{message_id}", f"?thread_id={thread['thread_id']}", payload)
+    content, files = render(comment["body"], comment["html_url"])
+    discord("PATCH", f"/messages/{message_id}", f"?thread_id={thread['thread_id']}",
+            changed_message(content), files)
     print(f"Comment {comment['id']} edited in message {message_id}")
 
 
@@ -210,6 +283,17 @@ def backfill():
             ensure_thread(issue)
 
 
+def refresh(number):
+    """Mirror one issue, or rewrite its mirrored messages from GitHub's current text."""
+    issue = github(f"/issues/{number}")
+    if ensure_thread(issue):
+        return
+    edit_issue(issue)
+    for comment in paged(f"/issues/{number}/comments?sort=created"):
+        if comment_path(issue, comment).exists():
+            edit_comment(issue, comment)
+
+
 def on_comment(handler):
     return lambda event: ensure_thread(event["issue"]) or handler(event["issue"], event["comment"])
 
@@ -230,7 +314,7 @@ def main():
     if name == "workflow_dispatch":
         number = os.environ["SYNC_ISSUE"]
         if number:
-            ensure_thread({"number": int(number)}) or print(f"Issue #{number} already has a thread")
+            refresh(int(number))
         else:
             backfill()
         return

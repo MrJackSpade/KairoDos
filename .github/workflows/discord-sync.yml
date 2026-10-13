@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       issue:
-        description: 'Issue number to mirror; leave empty to mirror every issue without a thread'
+        description: 'Issue number to mirror, or to rewrite from GitHub if already mirrored; leave empty to mirror every issue without a thread'
         required: false
 
 permissions:
