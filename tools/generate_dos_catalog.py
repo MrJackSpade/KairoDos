@@ -490,7 +490,7 @@ def refresh_from_staging(root: Path, staging: Path, catalog: Path) -> None:
     shards = {f"{index:02x}": {"schemaVersion": 1, "games": {}} for index in range(256)}
     for content_id, record in refreshed.items():
         shards[content_id.split(":", 1)[1][:2]]["games"][content_id] = record
-    provenance_path = project / "docs/catalog-provenance.json"
+    provenance_path = project / "catalog/catalog-provenance.json"
     previous_provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
     # Earlier imports may already contain both an obsolete identity and its
     # replacement. Record those retirements even when no new ID was added.
@@ -537,7 +537,7 @@ def refresh_from_staging(root: Path, staging: Path, catalog: Path) -> None:
             for key, variants in rows.items() if len(variants) > 1},
         "artwork": artwork, "shards": sorted(shards), "archiveIndex": archive_index},
         ensure_ascii=False, indent=2), encoding="utf-8")
-    (project / "docs/catalog-refresh.json").write_text(json.dumps(report, ensure_ascii=False,
+    (project / "catalog/catalog-refresh.json").write_text(json.dumps(report, ensure_ascii=False,
         indent=2) + "\n", encoding="utf-8")
     print(f"Refreshed {len(files)} archives: {len(refreshed)} identities, {len(added)} added, "
           f"{len(removed)} removed, {len(changed)} metadata changes", flush=True)

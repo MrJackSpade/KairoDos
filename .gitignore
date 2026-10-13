@@ -21,3 +21,19 @@ local.properties
 # Generated Python bytecode
 __pycache__/
 *.py[cod]
+
+# Agent instructions and developer notes stay local; docs/ holds only user-facing pages.
+/AGENTS.md
+/docs/*
+!/docs/.nojekyll
+!/docs/privacy-policy.html
+!/docs/releases/
+!/docs/index.md
+!/docs/kairo98-banner.svg
+!/docs/frontends.md
+!/docs/catalog.md
+!/docs/dos-prompt.md
+!/docs/dos-program-picker.md
+!/docs/fps-controller-profiles.md
+!/docs/licensing.md
+!/docs/source-import.md

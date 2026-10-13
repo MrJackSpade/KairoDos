@@ -33,6 +33,6 @@ Use the [external frontend setup guide](docs/frontends.md) to launch KairoDos ga
 
 ## Build and source
 
-Clone with `git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git`. Run `pwsh tools/PrepareStagingDependencies.ps1` before `./gradlew :kairodos:assembleDebug`. The build uses JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1 and ARM64. See [Windows instructions](docs/build-windows.md).
+Clone with `git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git`. Run `pwsh tools/PrepareStagingDependencies.ps1` before `./gradlew :kairodos:assembleDebug`. The build uses JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1 and ARM64.
 
 First-party KairoDos and Kairo frontend code is [GPL-2.0-or-later](COPYING). See [source provenance](docs/source-import.md) and [licensing](docs/licensing.md). Free GitHub and paid Google Play editions must have the same features and behavior from the same revision.

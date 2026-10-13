@@ -28,7 +28,7 @@ Android changes are guarded by `KAIRO_STAGING`:
 
 `backend-dos/CMakeLists.txt` builds `libdosbox_staging.so` from upstream component lists, using ARM64 dynamic recompilation, per-page W^X and optimized core code even in debug APKs. First-party adapters are in `backend-dos/src/main/cpp/`; JNI presents frames and routes input/audio. Game code is not patched.
 
-Optional measurement builds additionally define `KAIRO_GUEST_PROFILE`: `src/cpu/core_dynrec/decoder.h` records translation addresses and already-decoded opcode bytes, and `src/cpu/dyn_cache.h` records invalidation. The first-party recorder is `backend-dos/src/main/cpp/kairo_guest_profile.h`. These hooks add no guest memory reads or generated guest instructions, are compiled out by default, and are prohibited in Release builds. See [guest profiling](guest-profiling.md).
+Optional measurement builds additionally define `KAIRO_GUEST_PROFILE`: `src/cpu/core_dynrec/decoder.h` records translation addresses and already-decoded opcode bytes, and `src/cpu/dyn_cache.h` records invalidation. The first-party recorder is `backend-dos/src/main/cpp/kairo_guest_profile.h`. These hooks add no guest memory reads or generated guest instructions, are compiled out by default, and are prohibited in Release builds.
 
 ## Dependencies
 
@@ -61,7 +61,7 @@ SpeexDSP source retains its BSD notices. The four accumulators use NEON without
 changing filter settings, state handling or reduction order. The original
 oversample-one implementation is retained for identical rounding.
 
-Run `pwsh tools/PrepareStagingDependencies.ps1` to verify sources and build static API 26 libraries. The bootstrap downloads the pinned vcpkg tool and host tools needed by its recipes. See [Windows build](build-windows.md).
+Run `pwsh tools/PrepareStagingDependencies.ps1` to verify sources and build static API 26 libraries. The bootstrap downloads the pinned vcpkg tool and host tools needed by its recipes.
 
 ## Previous core
 
@@ -69,7 +69,7 @@ Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in
 
 ## Local dynrec SETcc implementation
 
-The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. See [adoption and corresponding test evidence](setcc-adoption.md); the change is core-specific and contains no game code.
+The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. The change is core-specific and contains no game code.
 
 ## Known-producer Jcc conditions
 
@@ -77,8 +77,7 @@ The imported Staging decoder and opcode helper now translate generic SETcc (0F 9
 for a single live CMP/TEST producer in the existing flag-elimination queue.
 Other conditions/producers retain original handling; no memory or invalidation
 semantics change. Original GPL notices remain intact. A verification-only macro
-checks producer identity and is absent from normal builds. See the
-[measured evaluation](arm64-known-flags-evaluation.md).
+checks producer identity and is absent from normal builds.
 
 ## Core-owned paging storage
 
@@ -86,15 +85,13 @@ Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
 object hidden visibility. The Android host uses only the C callback bridge and
 does not import this object. Other data and weak-symbol binding remains unchanged;
 non-Kairo builds retain upstream visibility. Original GPL notices are preserved.
-See [the measured evaluation](paging-storage-evaluation.md) for ABI, runtime and
-performance evidence and the completed final integration gate.
 
 ## Core-owned lazy-flag storage
 
 Under `KAIRO_STAGING`, `src/cpu/lazyflags.h` gives the core-owned `lflags`
 object hidden visibility. The Android host does not import this object; the
 C bridge, flag representation and non-Kairo visibility remain unchanged.
-Original GPL notices are preserved. See [evaluation](lazy-flag-storage-evaluation.md).
+Original GPL notices are preserved.
 
 ## Ordered OPL worker
 
@@ -102,7 +99,7 @@ Original GPL notices are preserved. See [evaluation](lazy-flag-storage-evaluatio
 for ordinary OPL modes and an optional Debug-only synchronous comparator.
 It uses first-party shared worker infrastructure; the imported Nuked engine
 is unchanged. Original GPL notices are preserved. The worker is enabled by
-default; see [adoption evidence and deployment status](opl-worker-adoption.md).
+default.
 Verification-only queue statistics and a delayed one-entry stress mode also
 live in `opl.cpp`; they are excluded from normal builds and do not change the
 imported Nuked synthesis engine.
