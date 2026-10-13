@@ -55,6 +55,7 @@ import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SessionFlow
 import com.mrjackspade.kairo.frontend.SessionNavigationCoordinator
+import com.mrjackspade.kairo.frontend.GameOrientation
 import com.mrjackspade.kairo.frontend.SessionNavigationState
 import com.mrjackspade.kairo.frontend.JoystickInputRouter
 import com.mrjackspade.kairo.frontend.GamepadMapper
@@ -251,6 +252,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { touchUi.hideKeyboard() })
     }
     private val sessionState = SessionNavigationState()
+    private val gameOrientation by lazy { GameOrientation(this, preferences) }
     private val sessionNavigation: SessionNavigationCoordinator by lazy {
         SessionNavigationCoordinator(sessionState, libraryScreen, { sessionFlow },
             { currentGame != null }, { sessionFromFrontend }, { leaveGame() }, edgeSwipes::reset,
@@ -262,7 +264,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             }, {
                 secondaryDisplay.setLibraryInfo(null)
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() }, ::endSessionForLibrary)
+            }, libraryFlow::show, ::refreshControllerUi, { surface?.requestFocus() }, ::endSessionForLibrary,
+            gameOrientation)
     }
     private val libraryScreen: LibraryScreen<DosLibrary.Game> get() = libraryFlow.screen
     private val touchUi by lazy {
@@ -937,9 +940,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             select = { preferences.edit().putInt("staging_voodoo_threads", it.toInt()).apply(); configureGuest() }))),
         "Changes apply the next time a game starts. Games with their own setting keep it.")
 
-    /** Configurations: where KairoDos keeps the user's files, for all games. */
+    /** Configurations: settings for all games, such as screen orientation and where saves go. */
     private fun configurationsPage() = GroupsPage("Configurations", { GameSource.ALL_GAMES }, {
-        listOf(RowGroup("SAVED GAMES", listOf(saveFolder.row())))
+        listOf(RowGroup("DISPLAY", listOf(gameOrientation.row())),
+            RowGroup("SAVED GAMES", listOf(saveFolder.row())))
     })
 
     /** A save folder's game name, as a library title when the game is still in the library. */
