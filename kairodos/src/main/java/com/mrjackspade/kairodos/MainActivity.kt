@@ -1061,6 +1061,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
+        gameOrientation.launching()
         sessionNavigation.enterGame(notify = false)
         restoreGameFullscreen()
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
@@ -1200,6 +1201,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             when (nativeStatus()) {
                 2 -> {
                     overlay.hideProgress()
+                    gameOrientation.launched()
                     if (audioThread == null || audioThread?.isAlive != true) startAudio()
                     updateSurfaceLayout()
                     // Wait until autoexec mounts have completed and the shell is
@@ -1255,8 +1257,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         restoreGameFullscreen()
         graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
-        // Rows such as Game orientation show state that depends on the new configuration.
-        if (::pages.isInitialized) pages.refresh()
+        gameOrientation.configurationChanged()
     }
 
     /** Rebuilds views sized for earlier density or font settings once no machine is running or starting. */
