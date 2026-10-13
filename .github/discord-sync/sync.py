@@ -119,10 +119,19 @@ def download(url):
     return None if len(data) > ATTACHMENT_LIMIT else (name, data)
 
 
+def with_footer(text, url):
+    """Every message ends with a small link to its issue or comment; the angle brackets
+    keep Discord from adding a preview card. Text too long for a message is cut to fit."""
+    footer = f"-# [View on GitHub](<{url}>)"
+    room = MESSAGE_LIMIT - len(footer) - 2
+    if len(text) > room:
+        text = text[: room - 1] + "…"
+    return f"{text}\n\n{footer}" if text else footer
+
+
 def render(body, url):
     """The message text and attachments for an issue or comment body. GitHub uploads become
-    attachments; one over Discord's limits stays as a link. Text too long for a message is
-    cut and links to the rest; angle brackets keep Discord from adding a preview card."""
+    attachments; one over Discord's limits stays as a link."""
     files, attached = [], {}
 
     def attach(match):
@@ -136,12 +145,7 @@ def render(body, url):
 
     body = re.sub(r"[ \t]+\n", "\n", ASSET_MARKUP.sub(attach, body or ""))
     body = re.sub(r"\n{3,}", "\n\n", body).strip()
-    if not body:
-        return ("" if files else f"<{url}>"), files
-    if len(body) <= MESSAGE_LIMIT:
-        return body, files
-    more = f"…\n\n[Continued on GitHub](<{url}>)"
-    return body[: MESSAGE_LIMIT - len(more)] + more, files
+    return with_footer(body, url), files
 
 
 def as_user(user):
@@ -225,7 +229,7 @@ def edit_issue(issue):
 
 def post_state(issue, actor):
     thread = read(thread_path(issue))
-    payload = new_message(actor, status(issue))
+    payload = new_message(actor, with_footer(status(issue), issue["html_url"]))
     discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}", payload)
     print(f"Issue #{issue['number']} {status(issue)} in thread {thread['thread_id']}")
 
