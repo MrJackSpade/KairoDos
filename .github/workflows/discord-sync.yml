@@ -2,10 +2,14 @@ name: Discord sync
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, closed, reopened]
   issue_comment:
     types: [created, edited, deleted]
   workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue number to mirror; leave empty to mirror every issue without a thread'
+        required: false
 
 permissions:
   contents: write
@@ -24,12 +28,13 @@ jobs:
         env:
           DISCORD_FORUM_WEBHOOK: ${{ secrets.DISCORD_FORUM_WEBHOOK }}
           GITHUB_TOKEN: ${{ github.token }}
+          SYNC_ISSUE: ${{ inputs.issue }}
         run: python3 .github/discord-sync/sync.py
       # Runs even when the sync step fails so IDs of messages already posted are never lost.
       - name: Commit sync state
         if: ${{ !cancelled() }}
         env:
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue }}
           ACTION: ${{ github.event.action }}
         run: |
           git config user.name 'github-actions[bot]'

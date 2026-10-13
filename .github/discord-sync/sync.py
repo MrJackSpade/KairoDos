@@ -1,7 +1,9 @@
 """Mirror GitHub issues and their comments into a Discord forum channel.
 
-Each issue becomes a forum post; each comment becomes a message in that post.
-The Discord IDs are recorded next to this script so later events can edit or
+Each issue becomes a forum post; each comment, close and reopen becomes a
+message in that post, and the post's first message shows the issue's status.
+An issue opened before the sync existed is mirrored in full the first time
+anything happens to it. The Discord IDs are recorded next to this script so later events can edit or
 delete the right messages:
 
   issues/<number>/thread.json           {"thread_id": ..., "message_id": ...}
@@ -73,9 +75,30 @@ def issue_embed(issue):
     }
     if issue["body"]:
         embed["description"] = clip(issue["body"], 4096)
+    embed["fields"] = [{"name": "Status", "value": status(issue), "inline": True}]
     labels = ", ".join(label["name"] for label in issue["labels"])
     if labels:
-        embed["fields"] = [{"name": "Labels", "value": clip(labels, 1024)}]
+        embed["fields"].append({"name": "Labels", "value": clip(labels, 1024), "inline": True})
+    return embed
+
+
+def status(issue):
+    if issue["state"] == "open":
+        return "Open"
+    reason = {"not_planned": "not planned", "duplicate": "duplicate"}.get(issue.get("state_reason"))
+    return f"Closed ({reason})" if reason else "Closed"
+
+
+def state_embed(issue, actor):
+    """A thread message announcing that the issue was closed or reopened."""
+    verb = "Reopened" if issue["state"] == "open" else status(issue)
+    embed = {
+        "title": clip(f"{verb}: #{issue['number']}", 256),
+        "url": issue["html_url"],
+        "timestamp": issue["closed_at"] if issue["state"] == "closed" else issue["updated_at"],
+    }
+    if actor:
+        embed["author"] = author(actor)
     return embed
 
 
@@ -124,11 +147,41 @@ def open_issue(issue):
     print(f"Issue #{issue['number']} -> thread {message['channel_id']}")
 
 
+def ensure_thread(issue):
+    """Mirror an issue that predates the sync, with its comments and closure, the first time
+    anything happens to it. Returns True when it did, since that covers the triggering event."""
+    if thread_path(issue).exists():
+        return False
+    issue = github(f"/issues/{issue['number']}")
+    open_issue(issue)
+    for comment in paged(f"/issues/{issue['number']}/comments?sort=created"):
+        add_comment(issue, comment)
+    if issue["state"] == "closed":
+        post_state(issue, issue.get("closed_by"))
+    return True
+
+
 def edit_issue(issue):
+    if ensure_thread(issue):
+        return
     thread = read(thread_path(issue))
     payload = {"embeds": [issue_embed(issue)], "allowed_mentions": NO_MENTIONS}
     discord("PATCH", f"/messages/{thread['message_id']}", f"?thread_id={thread['thread_id']}", payload)
     print(f"Issue #{issue['number']} edited in thread {thread['thread_id']}")
+
+
+def post_state(issue, actor):
+    thread = read(thread_path(issue))
+    payload = {"embeds": [state_embed(issue, actor)], "allowed_mentions": NO_MENTIONS}
+    discord("POST", "", f"?wait=true&thread_id={thread['thread_id']}", payload)
+    print(f"Issue #{issue['number']} {status(issue)} in thread {thread['thread_id']}")
+
+
+def change_state(issue, actor):
+    if ensure_thread(issue):
+        return
+    edit_issue(issue)
+    post_state(issue, actor)
 
 
 def add_comment(issue, comment):
@@ -172,26 +225,33 @@ def paged(path):
 def backfill():
     """Create threads for every issue that does not have one yet, oldest first."""
     for issue in paged("/issues?state=all&sort=created&direction=asc"):
-        if "pull_request" in issue or thread_path(issue).exists():
-            continue
-        open_issue(issue)
-        for comment in paged(f"/issues/{issue['number']}/comments?sort=created"):
-            add_comment(issue, comment)
+        if "pull_request" not in issue:
+            ensure_thread(issue)
+
+
+def on_comment(handler):
+    return lambda event: ensure_thread(event["issue"]) or handler(event["issue"], event["comment"])
 
 
 HANDLERS = {
     ("issues", "opened"): lambda event: open_issue(event["issue"]),
     ("issues", "edited"): lambda event: edit_issue(event["issue"]),
-    ("issue_comment", "created"): lambda event: add_comment(event["issue"], event["comment"]),
-    ("issue_comment", "edited"): lambda event: edit_comment(event["issue"], event["comment"]),
-    ("issue_comment", "deleted"): lambda event: delete_comment(event["issue"], event["comment"]),
+    ("issues", "closed"): lambda event: change_state(event["issue"], event["sender"]),
+    ("issues", "reopened"): lambda event: change_state(event["issue"], event["sender"]),
+    ("issue_comment", "created"): on_comment(add_comment),
+    ("issue_comment", "edited"): on_comment(edit_comment),
+    ("issue_comment", "deleted"): on_comment(delete_comment),
 }
 
 
 def main():
     name = os.environ["GITHUB_EVENT_NAME"]
     if name == "workflow_dispatch":
-        backfill()
+        number = os.environ["SYNC_ISSUE"]
+        if number:
+            ensure_thread({"number": int(number)}) or print(f"Issue #{number} already has a thread")
+        else:
+            backfill()
         return
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
     HANDLERS[(name, event["action"])](event)
