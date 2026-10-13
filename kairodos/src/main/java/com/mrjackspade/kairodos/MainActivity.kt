@@ -129,7 +129,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         private val CPU_OPTIONS = listOf(ChoiceOption("0", "Auto"), ChoiceOption("1", "Maximum"))
         private val VOODOO_OPTIONS = listOf(ChoiceOption("0", "Automatic CPU threads"),
             ChoiceOption("1", "Single CPU thread"))
-        init { System.loadLibrary("kairodos_host") }
+        init {
+            // Load the shared C++ runtime on its own, before any DOS session. Otherwise the
+            // DOSBox core loads it as part of its own dlopen group; long-lived threads of the
+            // shader runtime then hold that group, and the core can never unload between games.
+            System.loadLibrary("c++_shared")
+            System.loadLibrary("kairodos_host")
+        }
     }
 
     private val handler = Handler(Looper.getMainLooper())
