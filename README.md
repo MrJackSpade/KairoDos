@@ -1,10 +1,11 @@
+<p align="center">
+  <a href="https://discord.gg/ZkYQ3bPTTq"><img src="docs/discord-banner.svg" alt="Join the Kairo Discord" width="49%"></a>
+  <a href="https://github.com/MrJackSpade/Kairo98"><img src="docs/kairo98-banner.svg" alt="Kairo98: the companion PC-98 emulator for Android" width="49%"></a>
+</p>
+
 # KairoDos
 
 KairoDos is an independent Android DOS emulator using [DOSBox Staging](https://www.dosbox-staging.org/). It offers a game library, controller and touch mapping, an on-screen keyboard, and per-game settings. The audited emulator source is copied into this project.
-
-[![Join the Kairo Discord](https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/ZkYQ3bPTTq)
-
-[![Kairo98: the companion PC-98 emulator for Android](docs/kairo98-banner.svg)](https://github.com/MrJackSpade/Kairo98)
 
 [Kairo98](https://github.com/MrJackSpade/Kairo98) is the companion PC-98 emulator. Both apps use the [Kairo shared frontend](https://github.com/MrJackSpade/Kairo) for the library, navigation, and controls.
 

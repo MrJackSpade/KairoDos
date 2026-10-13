@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="260" viewBox="0 0 600 260" role="img" aria-labelledby="title desc">
+  <title id="title">Join the Kairo Discord</title>
+  <desc id="desc">Blurple banner linking to the Kairo Discord server.</desc>
+  <defs>
+    <linearGradient id="edge" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#5865f2"/>
+      <stop offset="0.55" stop-color="#8b95ff"/>
+      <stop offset="1" stop-color="#c3c9ff"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1c2150"/>
+      <stop offset="1" stop-color="#0d0f26"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="594" height="254" rx="28" fill="#0a0c1d" stroke="url(#edge)" stroke-width="6"/>
+  <path d="M30 236H570" stroke="#8b95ff" stroke-opacity=".16" stroke-width="2"/>
+  <rect x="36" y="48" width="164" height="164" rx="19" fill="#d8daf5" stroke="#aab2ff" stroke-width="4"/>
+  <rect x="50" y="62" width="136" height="112" rx="10" fill="url(#screen)" stroke="#353c78" stroke-width="7"/>
+  <path d="M70 80h72a12 12 0 0 1 12 12v32a12 12 0 0 1-12 12h-44l-18 14v-14h-10a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12z" fill="#5865f2"/>
+  <circle cx="86" cy="108" r="6" fill="#ffffff"/>
+  <circle cx="106" cy="108" r="6" fill="#ffffff"/>
+  <circle cx="126" cy="108" r="6" fill="#ffffff"/>
+  <path d="M150 112h14a10 10 0 0 1 10 10v20a10 10 0 0 1-10 10h-4v10l-13-10h-11" fill="none" stroke="#8b95ff" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="64" y="190" width="108" height="6" rx="3" fill="#3a4170"/>
+  <text x="226" y="82" fill="#aab2ff" font-family="monospace" font-size="20" font-weight="bold" letter-spacing="4">COMMUNITY</text>
+  <text x="222" y="146" fill="#eef0ff" font-family="monospace" font-size="62" font-weight="bold" letter-spacing="-3">DISC<tspan fill="#8b95ff">ORD</tspan></text>
+  <text x="226" y="180" fill="#b3b8d6" font-family="sans-serif" font-size="20">Help, news and game reports</text>
+  <rect x="226" y="194" width="232" height="36" rx="12" fill="#1b1f45" stroke="#5865f2" stroke-width="3"/>
+  <text x="242" y="219" fill="#ffffff" font-family="monospace" font-size="18" font-weight="bold">JOIN THE SERVER →</text>
+</svg>

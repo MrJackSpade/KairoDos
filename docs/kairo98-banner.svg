@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="260" viewBox="0 0 600 260" role="img" aria-labelledby="title desc">
   <title id="title">Kairo98, the companion PC-98 emulator</title>
   <desc id="desc">Neon cyan and magenta banner linking to Kairo98 for Android.</desc>
   <defs>
@@ -12,17 +12,16 @@
       <stop offset="1" stop-color="#0c0c20"/>
     </linearGradient>
   </defs>
-  <rect x="3" y="3" width="1194" height="254" rx="28" fill="#090b19" stroke="url(#edge)" stroke-width="6"/>
-  <path d="M30 218H1170M30 236H1170M765 32V228M790 32V228" stroke="#4acbfa" stroke-opacity=".14" stroke-width="2"/>
-  <rect x="42" y="43" width="168" height="164" rx="19" fill="#d6d5dc" stroke="#f19aff" stroke-width="4"/>
-  <rect x="57" y="57" width="138" height="112" rx="10" fill="url(#screen)" stroke="#31405a" stroke-width="7"/>
-  <text x="70" y="93" fill="#3af4ff" font-family="monospace" font-size="21" font-weight="bold">A:\&gt;</text>
-  <text x="69" y="138" fill="#dc58ff" font-family="monospace" font-size="36" font-weight="bold">PC-98</text>
-  <rect x="71" y="184" width="107" height="6" rx="3" fill="#495269"/>
-  <text x="245" y="79" fill="#7feeff" font-family="monospace" font-size="25" font-weight="bold" letter-spacing="6">COMPANION APP</text>
-  <text x="239" y="163" fill="#e8faff" font-family="monospace" font-size="78" font-weight="bold" letter-spacing="-5">KAIRO<tspan fill="#e64dff">98</tspan></text>
-  <text x="245" y="205" fill="#a8afc6" font-family="sans-serif" font-size="23">Play your PC-98 games on Android</text>
-  <rect x="881" y="78" width="260" height="102" rx="18" fill="#1a1731" stroke="#9b74ed" stroke-width="3"/>
-  <text x="912" y="118" fill="#a8f4ff" font-family="monospace" font-size="20" font-weight="bold">EXPLORE THE</text>
-  <text x="912" y="150" fill="#ffffff" font-family="monospace" font-size="24" font-weight="bold">PC-98 APP →</text>
+  <rect x="3" y="3" width="594" height="254" rx="28" fill="#090b19" stroke="url(#edge)" stroke-width="6"/>
+  <path d="M30 236H570" stroke="#4acbfa" stroke-opacity=".14" stroke-width="2"/>
+  <rect x="36" y="48" width="164" height="164" rx="19" fill="#d6d5dc" stroke="#f19aff" stroke-width="4"/>
+  <rect x="50" y="62" width="136" height="112" rx="10" fill="url(#screen)" stroke="#31405a" stroke-width="7"/>
+  <text x="63" y="98" fill="#3af4ff" font-family="monospace" font-size="21" font-weight="bold">A:\&gt;</text>
+  <text x="62" y="143" fill="#dc58ff" font-family="monospace" font-size="36" font-weight="bold">PC-98</text>
+  <rect x="64" y="190" width="108" height="6" rx="3" fill="#495269"/>
+  <text x="226" y="82" fill="#7feeff" font-family="monospace" font-size="20" font-weight="bold" letter-spacing="4">COMPANION APP</text>
+  <text x="222" y="146" fill="#e8faff" font-family="monospace" font-size="62" font-weight="bold" letter-spacing="-3">KAIRO<tspan fill="#e64dff">98</tspan></text>
+  <text x="226" y="180" fill="#a8afc6" font-family="sans-serif" font-size="20">Play your PC-98 games on Android</text>
+  <rect x="226" y="194" width="232" height="36" rx="12" fill="#1a1731" stroke="#9b74ed" stroke-width="3"/>
+  <text x="242" y="219" fill="#ffffff" font-family="monospace" font-size="18" font-weight="bold">EXPLORE THE APP →</text>
 </svg>
