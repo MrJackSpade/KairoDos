@@ -1255,6 +1255,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         restoreGameFullscreen()
         graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
+        // Rows such as Game orientation show state that depends on the new configuration.
+        if (::pages.isInitialized) pages.refresh()
     }
 
     /** Rebuilds views sized for earlier density or font settings once no machine is running or starting. */
