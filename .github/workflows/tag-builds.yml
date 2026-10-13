@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
       - name: Check out pinned Kairo frontend
@@ -193,4 +194,5 @@ jobs:
             gh release create "$tag" "$apk" "$bundle" "$images" \
               --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
               --notes-file "docs/releases/$tag.md"
+            gh workflow run discord-release.yml -f tag="$tag"
           fi
