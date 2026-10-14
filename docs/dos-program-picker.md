@@ -1,5 +1,7 @@
 # Run a setup program or another executable
 
+[← KairoDos](../README.md) · [All documentation](index.md)
+
 Open a game's page and press the command-prompt icon to the right of **Play**,
 then select a mounted drive, folder, and executable on the **DOS prompt or run
 program** page. The scope chip shows the current path. The picker accepts DOS EXE,
@@ -28,7 +30,8 @@ program; the script's `%0` names the temporary BAT. Original game files are not
 renamed or overwritten by launch preparation. Changes made by the selected setup
 program itself persist in the game's writable files, like ordinary DOS programs.
 
-## Ownership
+## How it works
+
 
 - Shared frontend: the asynchronous `DirectoryPicker` page, history, controller
   navigation, Android system Back, loading/error/empty states, retry, and cancellation.
@@ -38,7 +41,10 @@ program itself persist in the game's writable files, like ordinary DOS programs.
 - Session replacement, return to library, and activity destruction close the
   picker and discard pending work.
 
-## RGDS validation, 2026-10-02
+## Test records
+
+### RGDS validation, 2026-10-02
+
 
 - Shared picker and existing exit-dialog tests passed in both apps, including
   companion-screen keys/hats/Back and returning from touch to controller selection.
@@ -64,6 +70,7 @@ Test component:
 `com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.
 The generated executables and disk images contain no proprietary game assets.
 
-## Combined command launch verification (2026-10-03)
+### Combined command launch verification (2026-10-03)
+
 
 Both apps built and passed detail-page key/hat navigation on RGDS. DOS passed the command-button picker flow, root-only Prompt choice without restarting, cancellation, all four executable formats, working-directory checks, writable shell commands, and restoration of normal Play. Existing user preferences remained unchanged. Retroid was unreachable and not advertised by mDNS.

@@ -5,37 +5,138 @@
 
 # KairoDos
 
-KairoDos is an independent Android DOS emulator using [DOSBox Staging](https://www.dosbox-staging.org/). It offers a game library, controller and touch mapping, an on-screen keyboard, and per-game settings. The audited emulator source is copied into this project.
+**Play your own DOS games on Android phones and handhelds.** KairoDos gives you a game library with artwork, controller and touch controls, an on-screen keyboard, and per-game settings, running on [DOSBox Staging](https://www.dosbox-staging.org/) with ARM64 dynamic recompilation. It is an independent project, not an official DOSBox Staging release.
 
-[Kairo98](https://github.com/MrJackSpade/Kairo98) is the companion PC-98 emulator. Both apps use the [Kairo shared frontend](https://github.com/MrJackSpade/Kairo) for the library, navigation, and controls.
+[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=com.loxifi.kairodos)
 
-## Add games
+## Contents
 
-Choose a DOS game folder when KairoDos first opens, or later in Menu › Manage library, then select a game and tap **Play**. KairoDos prepares a persistent writable DOS drive in private app storage, leaving your original archives intact. Games and proprietary operating system files are not bundled. ZIP/DOSZ archives, programs and game folders are supported; standalone media support follows Staging (ISO/CUE and IMG/IMA, rather than Pure's CHD/JRC formats).
+- [Download](#download)
+- [Quick start](#quick-start)
+- [Supported game formats](#supported-game-formats)
+- [eXoDOS archives](#exodos-archives)
+- [Saves](#saves)
+- [Managing your library](#managing-your-library)
+- [Controls](#controls)
+- [DOS prompt and setup programs](#dos-prompt-and-setup-programs)
+- [Launching from other frontends](#launching-from-other-frontends)
+- [Documentation](#documentation)
+- [Help and community](#help-and-community)
+- [Building from source](#building-from-source)
+- [License](#license)
 
-Known games receive a title, description, tags, and artwork from a hash-keyed catalog seeded from eXoDOS metadata. Your games do not need to be in an eXoDOS directory. An unknown game appears by filename and can still launch. See [catalog behavior](docs/catalog.md).
+## Download
 
-An eXoDOS source ZIP is detected by its empty `.exo` marker, even without a catalog entry, and appears with ` - Installer` in the library. On first launch, KairoDos creates and verifies an installed ZIP in the writable selected folder, then offers to remove the installer. You can keep it. If an external frontend grants access to only one ZIP, the installed copy goes into private app storage. Each game's own files stay unchanged; everything the game writes, including its saves, is kept separately. Existing Pure overlay files are preserved while ordinary in-game saves are imported once. To keep saved games in a folder of your choice, choose Menu › Configurations › Save folder › Custom folder. Changing the folder moves your saved games there; if a game has saves in both places, you choose which copy to keep.
+- **[Google Play](https://play.google.com/store/apps/details?id=com.loxifi.kairodos)** (paid): updates automatically. Buying it supports development.
+- **[GitHub Releases](https://github.com/MrJackSpade/KairoDos/releases)** (free): install the APK yourself.
 
-ARM64 dynamic recompilation is enabled for default/auto CPU profiles in both real and protected modes. Explicit interpreter and prefetch CPU compatibility settings are preserved.
+Both editions are built from the same source and have the same features. Requires an ARM64 device running Android 8.0 or newer.
 
-Staging does not support emulator save states. Use a game's own save system. Existing Pure state files stay on disk but cannot be loaded in Staging.
+## Quick start
 
-To remove a game file or game folder from device storage, open its **Game settings** and choose **Delete game file** or **Delete game folder**. KairoDos names the source in a confirmation before deleting it. Saves and settings are kept.
+1. Install KairoDos from [Google Play](https://play.google.com/store/apps/details?id=com.loxifi.kairodos) or [GitHub Releases](https://github.com/MrJackSpade/KairoDos/releases).
+2. Open KairoDos and choose a folder containing your DOS games. You can change it later in **Menu › Manage library**.
+3. Select a game and tap **Play**.
 
-Some eXoDOS launchers require companion programs or features of other emulators. These may need manual setup.
+Games and proprietary operating system files are not included. Your original files are never modified: KairoDos prepares a writable DOS drive for each game in private app storage.
 
-## External frontends
+## Supported game formats
 
-Use the [external frontend setup guide](docs/frontends.md) to launch KairoDos games from other apps:
+| Type | Formats |
+| --- | --- |
+| Archives | ZIP, DOSZ |
+| Folders and programs | Extracted game folders, standalone EXE/COM/BAT programs |
+| Disc and disk images | ISO/CUE, IMG/IMA |
+
+Known games get a title, description, tags, and artwork from a catalog seeded from eXoDOS metadata. Your games do not need to be laid out like an eXoDOS collection, and unknown games still appear by filename and still launch. Details: [game catalog](docs/catalog.md).
+
+Coming from DOSBox Pure: its CHD/JRC formats are not supported, but existing Pure overlay files are preserved and in-game saves are imported once.
+
+ARM64 dynamic recompilation is used for default and auto CPU profiles in both real and protected mode. Games configured for interpreter or prefetch CPU compatibility keep those settings.
+
+## eXoDOS archives
+
+An eXoDOS game ZIP is detected automatically and appears with ` - Installer` after its name.
+
+1. Launch it once. KairoDos creates and verifies an installed copy beside it in your game folder.
+2. The installed copy appears under the game's normal title.
+3. When you finish playing, KairoDos offers to remove the installer. You can keep it.
+
+If an external frontend shares only that one ZIP, the installed copy is kept in private app storage instead. Some eXoDOS launchers depend on companion programs or features of other emulators and may need manual setup.
+
+## Saves
+
+- **In-game saves.** Everything a game writes, including its saves, is kept separately from the original files.
+- **Save folder.** To keep saved games in a folder of your choice, choose **Menu › Configurations › Save folder › Custom folder**. Changing the folder moves your saves; if a game has saves in both places, you choose which copy to keep.
+- **No emulator save states.** DOSBox Staging does not support save states, so use each game's own save system. Old DOSBox Pure state files stay on disk but cannot be loaded.
+
+## Managing your library
+
+- **Catalog updates.** KairoDos checks for catalog updates when it opens; **Update catalogs** in **Menu › Manage library** checks on demand. Updates refresh titles, descriptions, launch settings, and controller defaults without an app update.
+- **Deleting a game.** Open the game's **Game settings** and choose **Delete game file** or **Delete game folder**. KairoDos names the source before deleting it. Saves and settings are kept.
+
+## Controls
+
+| Action | How |
+| --- | --- |
+| Remap a controller | Map buttons and sticks to DOS keys, mouse movement, or app actions; layouts are saved per game |
+| Use touch controls | The same per-game layout works with on-screen controls |
+| Use a second screen | On a two-screen handheld, the game and controls can use separate displays |
+
+Many games ship with researched controller defaults. Doom and Duke Nukem 3D have full layouts for handhelds with and without analog sticks: see [FPS controller defaults](docs/fps-controller-profiles.md). Any mapping you save yourself always takes priority.
+
+## DOS prompt and setup programs
+
+On a game's page, press the command-prompt icon to the right of **Play** to:
+
+- choose **Prompt** to drop into DOS with the game's drives mounted, or
+- browse the mounted drives and run a different program, such as a game's `SETUP.EXE`.
+
+This only affects that one session; the next **Play** starts the game normally. Details: [run a setup program](docs/dos-program-picker.md) and [boot to DOS prompt](docs/dos-prompt.md).
+
+## Launching from other frontends
+
+KairoDos can open a game sent from another Android frontend; no library folder is needed. Step-by-step setup:
 
 - [LaunchBox for Android](docs/frontends.md#launchbox-for-android)
 - [ES-DE](docs/frontends.md#es-de)
 - [iiSU](docs/frontends.md#iisu)
 - [Beacon](docs/frontends.md#beacon)
 
-## Build and source
+## Documentation
 
-Clone with `git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git`. Run `pwsh tools/PrepareStagingDependencies.ps1` before `./gradlew :kairodos:assembleDebug`. The build uses JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1 and ARM64.
+The full list is in the [documentation index](docs/index.md).
 
-First-party KairoDos and Kairo frontend code is [GPL-2.0-or-later](COPYING). See [source provenance](docs/source-import.md) and [licensing](docs/licensing.md). Free GitHub and paid Google Play editions must have the same features and behavior from the same revision.
+- [External frontend setup](docs/frontends.md): LaunchBox, ES-DE, iiSU, and Beacon configuration
+- [Game catalog](docs/catalog.md): how games are matched, eXoDOS installers, catalog updates
+- [FPS controller defaults](docs/fps-controller-profiles.md): Doom and Duke Nukem 3D control layouts
+- [Run a setup program](docs/dos-program-picker.md): launching another executable from a game's drives
+- [Boot to DOS prompt](docs/dos-prompt.md): opening a DOS prompt with the game mounted
+- [Release notes](docs/releases/README.md): changes in every version
+- [Licensing and credits](docs/licensing.md): code license and third-party components
+- [Source provenance](docs/source-import.md): DOSBox Staging, dependencies, and local changes
+
+## Help and community
+
+- **Report a game problem** in [Issues](https://github.com/MrJackSpade/KairoDos/issues). Include the title, file format, and what happened.
+- **Chat** with other players on [Discord](https://discord.gg/ZkYQ3bPTTq).
+
+### Related projects
+
+- [Kairo98](https://github.com/MrJackSpade/Kairo98): companion PC-98 emulator for Android ([Google Play](https://play.google.com/store/apps/details?id=com.loxifi.kairo98))
+- [Kairo](https://github.com/MrJackSpade/Kairo): shared frontend used by both apps for the library, navigation, and controls
+
+## Building from source
+
+```sh
+git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git
+cd KairoDos
+pwsh tools/PrepareStagingDependencies.ps1
+./gradlew :kairodos:assembleDebug
+```
+
+Requires JDK 17, Android SDK 36, NDK 28.2.13676358, and CMake 3.22.1; builds target ARM64. The default build uses a checked-in performance profile; see [the profile notes](backend-dos/pgo/README.md).
+
+## License
+
+First-party KairoDos and Kairo frontend code is [GPL-2.0-or-later](COPYING); the combined APK is distributed under GPLv3 terms because of bundled components. See [licensing and credits](docs/licensing.md) and [source provenance](docs/source-import.md).

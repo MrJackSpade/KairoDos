@@ -1,16 +1,13 @@
 # FPS controller defaults
 
+[← KairoDos](../README.md) · [All documentation](index.md)
+
 The **With Sticks** Doom and Duke Nukem 3D defaults use the following layout.
 These bindings send the games' existing keyboard/mouse inputs; they do not alter
 game files. Saved custom mappings take precedence. **Without Sticks** retains
 its existing D-pad movement, shoulder strafing and face-button firing layout.
 
-Profiles are generated from `catalog/controller-defaults.json` by
-`tools/GenerateDosControllerProfiles.ps1` and published with
-`tools/BuildPublicDosCatalog.ps1`. A downloaded catalog replaces the bundled
-controller catalog. Only explicit per-game user mappings take precedence;
-there are no executable Doom/Duke default overrides. Catalog refresh also
-reloads the active game's mapping, releasing held inputs through the shared mapper.
+## Layout
 
 | Control | Doom | Duke Nukem 3D |
 | --- | --- | --- |
@@ -46,25 +43,18 @@ track weapon changes made in-game or on the keyboard. Duke also uses the shared 
 [the original game source](https://github.com/id-Software/DOOM/blob/master/linuxdoom-1.10/am_map.c).
 Duke bindings follow the installed game's original `DUKE3D.CFG` key definitions.
 
-`ControllerMouseFixture` exercises these profiles through the shared mapper:
-trigger button/axis ownership and release, stick movement and sensitivity,
-D-pad cycle direction/wrap, map and inventory inputs, profile serialization,
-saved custom mappings and the unchanged Without Sticks controls.
-`ControllerCatalogFixture` installs two different snapshots into an isolated
-catalog directory and verifies both override bundled Doom/Duke defaults without
-changing the APK. It also verifies explicit custom controls win and clearing
-them returns to the downloaded mapping.
+## How profiles are maintained
 
-RGDS catalog-only verification (October 1, 2026): installed KairoDos SHA-256
-`fc2d8cdc24bad5a27d5e0bd9b77bac9e0e94e574a5a9baae5ba1e15f3ec51acd`
-resolved Doom turning at 8x before publication and 4x after fetching public
-catalog revision `a96e570da72d0f4a597a3b47b9badb9271b3423d1b713e8e426d306b47bd1473`.
-The application APK was unchanged. Only the instrumentation test package was
-updated to inspect the resolved bindings and expose download errors. Run
-`CatalogUpdateInstrumentation` with `catalogControllerSpeed=4` to verify the
-active profile; add `catalogFetch=true` to exercise the production download path.
+Profiles are generated from `catalog/controller-defaults.json` by
+`tools/GenerateDosControllerProfiles.ps1` and published with
+`tools/BuildPublicDosCatalog.ps1`. A downloaded catalog replaces the bundled
+controller catalog. Only explicit per-game user mappings take precedence;
+there are no executable Doom/Duke default overrides. Catalog refresh also
+reloads the active game's mapping, releasing held inputs through the shared mapper.
 
-## Doom update, Kairo #16 (October 2, 2026)
+## Change history
+
+### Doom update, Kairo #16 (October 2, 2026)
 
 Both apps passed the shared `KeyCycleFixture` on the RGDS before publication,
 including PC98 guest keys, existing shoulders, D-pad hat events, independent
@@ -91,7 +81,7 @@ override precedence and return to catalog defaults after clearing an override.
 The fixture's old 35% deadzone expectations were updated to the existing 10%
 default from Kairo #7; production deadzone behavior was not changed here.
 
-## Duke Start/Select correction, Kairo #21 (October 2, 2026)
+### Duke Start/Select correction, Kairo #21 (October 2, 2026)
 
 The RGDS `retrogame_joypad` is `/dev/input/event9`; its
 `Vendor_484b_Product_1101.kl` maps Linux key 315 to BUTTON_START and 314 to
@@ -124,10 +114,30 @@ The archive audit found only the two requested Duke bindings changed.
 Duke's own configuration was not edited; its before/after SHA-256 remained
 `4da3770012f4860101e78581b6c56f1bac6658326f32d54cb35a834e40f20cdb`.
 
-## Explicit Duke With Sticks correction (October 2, 2026)
+### Explicit Duke With Sticks correction (October 2, 2026)
 
 The user specified R1=Ctrl, L3=W, R3=N, B=Q, A=Space, Y=Shift,
 D-pad Up=semicolon, Down=J, Left/Right=weapon key cycle 1234567890,
 L2=H and R2=R. Treat this table as the requested layout; do not replace it
 with inferred conventional FPS defaults. Right-stick up/down also send analog mouse movement at 2x, matching horizontal
 turning. Other unspecified controls retain their bindings.
+
+## Test records
+
+`ControllerMouseFixture` exercises these profiles through the shared mapper:
+trigger button/axis ownership and release, stick movement and sensitivity,
+D-pad cycle direction/wrap, map and inventory inputs, profile serialization,
+saved custom mappings and the unchanged Without Sticks controls.
+`ControllerCatalogFixture` installs two different snapshots into an isolated
+catalog directory and verifies both override bundled Doom/Duke defaults without
+changing the APK. It also verifies explicit custom controls win and clearing
+them returns to the downloaded mapping.
+
+RGDS catalog-only verification (October 1, 2026): installed KairoDos SHA-256
+`fc2d8cdc24bad5a27d5e0bd9b77bac9e0e94e574a5a9baae5ba1e15f3ec51acd`
+resolved Doom turning at 8x before publication and 4x after fetching public
+catalog revision `a96e570da72d0f4a597a3b47b9badb9271b3423d1b713e8e426d306b47bd1473`.
+The application APK was unchanged. Only the instrumentation test package was
+updated to inspect the resolved bindings and expose download errors. Run
+`CatalogUpdateInstrumentation` with `catalogControllerSpeed=4` to verify the
+active profile; add `catalogFetch=true` to exercise the production download path.

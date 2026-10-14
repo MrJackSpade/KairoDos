@@ -1,5 +1,7 @@
 # External frontend setup for KairoDos
 
+[← KairoDos](../README.md) · [All documentation](index.md)
+
 KairoDos can open a DOS game file or ZIP sent by another Android frontend. You do not need to select a library folder in KairoDos first. Keep archive extraction off in the frontend; KairoDos opens ZIPs and handles eXoDOS installer archives itself. Choosing **Library** from a frontend-launched game closes KairoDos and returns to the frontend.
 
 ## Setup guides
