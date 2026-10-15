@@ -9,19 +9,25 @@ internal object DosKeyboardLayout {
     val value = GuestKeyboardLayout(
         brand = "KAIRODOS",
         pages = listOf(
+            // The US rows, so a locked Shift shows what every key types.
             GuestKeyboardPage("ABC", listOf(
-                listOf(KeyboardKey("Esc", 27, 1.3f)) +
-                    "1234567890".map { KeyboardKey("$it", it.code) } +
-                    KeyboardKey("Back", 8, 1.5f),
+                listOf(KeyboardKey("Esc", 27, 1.3f), KeyboardKey("`", 96, shifted = "~")) +
+                    "1234567890".zip("!@#\$%^&*()").map { (key, shifted) ->
+                        KeyboardKey("$key", key.code, shifted = "$shifted") } +
+                    listOf(KeyboardKey("-", 45, shifted = "_"), KeyboardKey("=", 61, shifted = "+"),
+                        KeyboardKey("Back", 8, 1.5f)),
                 listOf(KeyboardKey("Tab", 9, 1.3f)) +
                     "qwertyuiop".map { KeyboardKey("$it", it.code) } +
-                    KeyboardKey("Enter", 13, 1.5f),
-                listOf(KeyboardKey("Caps", 301, 1.3f)) +
+                    listOf(KeyboardKey("[", 91, shifted = "{"), KeyboardKey("]", 93, shifted = "}"),
+                        KeyboardKey("\\", 92, shifted = "|")),
+                listOf(KeyboardKey("Caps", 301, 1.4f)) +
                     "asdfghjkl".map { KeyboardKey("$it", it.code) } +
-                    KeyboardKey("'", 39),
+                    listOf(KeyboardKey(";", 59, shifted = ":"), KeyboardKey("'", 39, shifted = "\""),
+                        KeyboardKey("Enter", 13, 1.5f)),
                 listOf(KeyboardKey("Shift", 304, 1.5f)) +
                     "zxcvbnm".map { KeyboardKey("$it", it.code) } +
-                    KeyboardKey("Shift", 303, 1.5f),
+                    listOf(KeyboardKey(",", 44, shifted = "<"), KeyboardKey(".", 46, shifted = ">"),
+                        KeyboardKey("/", 47, shifted = "?"), KeyboardKey("Shift", 303, 1.5f)),
                 listOf(KeyboardKey("Ctrl", 306), KeyboardKey("Alt", 308),
                     KeyboardKey("Space", 32, 5f), KeyboardKey("Alt", 307),
                     KeyboardKey("Ctrl", 305))

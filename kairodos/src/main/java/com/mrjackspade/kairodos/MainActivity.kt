@@ -158,7 +158,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         ControllerProfileStore(preferences, DosControllerBindings::parse,
             { DosControllerBindings.toJson(it).toString() }, { DosControllerBindings.defaults(it) })
     }
-    private val keys = InputRouter(::nativeKey, 341)
+    private val keys = InputRouter(::nativeKey, 341, DosKeyboardLayout.value.lockCodes)
     private val inputModeDecider = InputModeDecider()
     private val mouse = MouseInputRouter(::nativeMouseMove, ::nativeMouseButton)
     private val joystick = JoystickInputRouter(::nativeJoypad,
@@ -861,6 +861,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     }
                 }
                 if (cancelled.get() || generation != launchGeneration) return@Thread
+                // Each DOS machine boots with Caps Lock off.
+                keys.resetLocks()
                 val started = nativeRun(configuration.absolutePath, saveDir.absolutePath,
                     resources.absolutePath)
                 sessions.forEach(::publishOverlay)
@@ -1014,6 +1016,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         { emptyList() }, { currentGame != null }, { currentGame?.let(::showGameDetails) }, ::settingsRows,
         restart = {
             userPaused = false
+            keys.resetLocks()
             nativeReset()
             closeMenu()
         }, exit = {
