@@ -14,7 +14,6 @@ import java.security.MessageDigest
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
@@ -56,11 +55,10 @@ class DosLibrary(private val context: Context) {
     private val storeCache = VersionedLibraryCache(store, 2, "games", 64 * 1024 * 1024,
         50_000, ::decodeCacheEntry, ::encodeCacheEntry)
     private val walker = DocumentTreeWalker(context.contentResolver)
+    private val libraryOrder = compareBy<Game, String>(String.CASE_INSENSITIVE_ORDER) { it.path }
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
-            ::failedScanWork, ::scanLabel,
-            cacheOrder = { entries -> entries.sortedWith(
-                compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
+            ::failedScanWork, ::scanLabel, cacheOrder = { entries -> entries.sortedWith(libraryOrder) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
     private val archiveExtensions = setOf("zip", "dosz")
@@ -69,6 +67,16 @@ class DosLibrary(private val context: Context) {
 
     fun cached(tree: Uri): List<Game> =
         storeCache.readForTree(tree.toString())?.entries.orEmpty()
+
+    /** Saves a library edited without a scan, such as after an install or removal. */
+    fun store(tree: Uri, entries: List<Game>) = storeCache.write(tree.toString(), entries)
+
+    /** [entries] with [game] added or replaced, in scan order. */
+    fun withGame(entries: List<Game>, game: Game): List<Game> =
+        (entries.filter { it.id != game.id } + game).sortedWith(libraryOrder)
+
+    fun withoutGame(entries: List<Game>, game: Game): List<Game> =
+        entries.filter { it.id != game.id }
 
     /** Inspect a launcher-provided file using the same content IDs as a library scan. */
     fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean): Game {
@@ -306,8 +314,9 @@ class DosLibrary(private val context: Context) {
             val staged = File(cache,
                 "$installedId-${game.contentId!!.substringAfter(':').take(16)}.zip")
             if (!staged.isFile) source.renameTo(staged)
+            // The scan's fingerprint, so the next scan reuses this verified content ID.
             return Game(installedId, uri.toString(), path, false, false,
-                "", game.contentId, null, false)
+                documentFingerprint(uri), game.contentId, null, false)
         } catch (failure: Exception) {
             if (existing == null) runCatching {
                 DocumentsContract.deleteDocument(context.contentResolver, uri)
@@ -379,6 +388,17 @@ class DosLibrary(private val context: Context) {
         cache.listFiles()?.filter { it.name.startsWith("${game.id}-") }?.forEach { it.delete() }
     }
 
+    private fun documentFingerprint(uri: Uri): String {
+        val columns = arrayOf(DocumentsContract.Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED)
+        context.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
+            require(cursor.moveToFirst()) { "Installed game archive is missing" }
+            val size = if (cursor.isNull(0)) -1 else cursor.getLong(0)
+            val modified = if (cursor.isNull(1)) 0 else cursor.getLong(1)
+            return "$size:$modified"
+        } ?: error("Could not read installed game archive")
+    }
+
     private fun childId(tree: Uri, parentId: String, name: String,
                         directory: Boolean): String? {
         val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
@@ -422,7 +442,7 @@ class DosLibrary(private val context: Context) {
                         !hasOuterFolder(copied, wrapFolder)) {
                         val pending = File.createTempFile("dos-", ".zip.part", cache)
                         try {
-                            ZipFile(copied).use { input ->
+                            DosZip.open(copied).use { input ->
                                 ZipOutputStream(pending.outputStream()).use { output ->
                                     input.entries().asSequence().filterNot { it.isDirectory }
                                         .forEach { entry ->
@@ -499,7 +519,7 @@ class DosLibrary(private val context: Context) {
         }
     }
 
-    fun hasOuterFolder(file: File, folder: String): Boolean = ZipFile(file).use { archive ->
+    fun hasOuterFolder(file: File, folder: String): Boolean = DosZip.open(file).use { archive ->
         val names = archive.entries().asSequence().filterNot { it.isDirectory }
             .map { it.name.replace('\\', '/') }.toList()
         names.isNotEmpty() && names.all { it.startsWith("$folder/", true) }

@@ -5,7 +5,6 @@ import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.CRC32
-import java.util.zip.ZipFile
 
 /** Staging mounts native folders. Each game has a pristine base drive, extracted
  * once outside the evictable archive cache, and an overlay that holds everything
@@ -230,7 +229,7 @@ internal object DosStagingStorage {
 
     private fun extract(archive: File, root: File, cancelled: AtomicBoolean,
                         progress: (String) -> Unit, skipMods: Boolean = false) {
-        ZipFile(archive).use { zip ->
+        DosZip.open(archive).use { zip ->
             require(zip.size() <= MAX_FILES) { "DOS archive contains too many files" }
             val names = HashMap<String, Boolean>()
             var total = 0L
@@ -292,7 +291,7 @@ internal object DosStagingStorage {
         val top = root.listFiles().orEmpty()
         val base = if (!legacy.name.substringBeforeLast(".zip").substringBeforeLast('.').endsWith("-parent") &&
             top.size == 1 && top[0].isDirectory) top[0] else root
-        ZipFile(legacy).use { zip ->
+        DosZip.open(legacy).use { zip ->
             val mods = zip.entries().asSequence().firstOrNull { it.name.equals("FILEMODS.DBP", true) }
                 ?.let { entry ->
                     require(entry.size in 0..(4L * 1024 * 1024)) { "Invalid legacy file changes" }

@@ -389,7 +389,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { found -> LibraryScanSummary.format(found, dosLibrary.hashCount) },
             onFolderSelected = { finishFirstRun() },
             onFolderError = { message -> if (firstRun?.inStack == true) Ui.message(this, message) },
-            writable = true)
+            writable = true, store = dosLibrary::store)
         libraryMenu = LibraryMenu(this, pages, libraryFlow, catalog, strings,
             { catalogUpdates.check(false) }, { artworkDownloads }, ::settingsRows, ::finish)
         libraryPage.openMenuAction = libraryMenu::open
@@ -611,7 +611,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     GameDeletionFlow.row(this, libraryScreen, GameDeletionFlow.Prompt(entry.path, kind,
                         if (entry.folder) "This removes the folder and everything inside it. " else ""),
                         "DOS folder", { true }, ::chooseFolder, { currentGame?.id == entry.id },
-                        "KairoDos-delete-game", { dosLibrary.deleteSource(entry) }, { refreshLibrary(false) })
+                        "KairoDos-delete-game", { dosLibrary.deleteSource(entry) },
+                        { libraryFlow.edit { dosLibrary.withoutGame(it, entry) } })
                 })),
             RowGroup(null, listOf(GameSettingsRows.reset(hashed) { resetGameSettings(entry, id!!) })))
     }
@@ -807,7 +808,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                     }
                     if (game.external) dosLibrary.installExternal(game, cancelled, progress)
-                    else dosLibrary.install(game, selected!!, cancelled, progress)
+                    else dosLibrary.install(game, selected!!, cancelled, progress).also { installed ->
+                        // The archive is in the folder now, whatever happens to this launch.
+                        runOnUiThread {
+                            if (tree == selected) libraryFlow.edit { dosLibrary.withGame(it, installed) }
+                        }
+                    }
                 } else game
                 val saveDir = File(filesDir, "saves/${playableGame.id}")
                 if (game.installer) {
@@ -1368,7 +1374,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         fun keep() {
             installerPromptOpen = false
             installerNotice = null
-            refreshLibrary(false)
             if (finishAfterInstallerPrompt) {
                 finishAfterInstallerPrompt = false
                 finish()
@@ -1382,7 +1387,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     runCatching { dosLibrary.deleteInstaller(installer, installed) }
                         .onSuccess { runOnUiThread {
                             installerPromptOpen = false
-                            refreshLibrary(false)
+                            libraryFlow.edit { dosLibrary.withoutGame(it, installer) }
                             if (finishAfterInstallerPrompt) {
                                 finishAfterInstallerPrompt = false
                                 finish()

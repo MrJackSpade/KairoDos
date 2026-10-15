@@ -9,7 +9,6 @@ import java.security.MessageDigest
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.CRC32
-import java.util.zip.ZipFile
 
 /** One identity for a DOS game tree, whether stored as a ZIP or extracted files. */
 object DosContentHash {
@@ -32,7 +31,7 @@ object DosContentHash {
     fun zip(file: File, cancelled: AtomicBoolean): String =
         inspectZip(file, cancelled).contentId
 
-    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = ZipFile(file).use { archive ->
+    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = DosZip.open(file).use { archive ->
         if (cancelled.get()) throw CancellationException("Cancelled")
         val entries = archive.entries().asSequence().filterNot { it.isDirectory }.toList()
         val exodosSource = entries.any { entry ->
