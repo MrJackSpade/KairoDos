@@ -409,7 +409,7 @@ class CatalogUpdateInstrumentation : Instrumentation() {
             CatalogFieldLayers.Source("Shipped catalog", shipped),
             CatalogFieldLayers.Source("Updated catalog", partial),
             CatalogFieldLayers.Source("User override", user)
-        ), DosCatalogFields::objectField, DosCatalogFields::validValue)
+        ), DosCatalogFields::objectField)
         check(merged.record.getString("title") == "My Duke")
         check(merged.record.getJSONObject("artwork").getString("boxArt") ==
             "art/catalog/dos/updated.webp")
@@ -425,13 +425,13 @@ class CatalogUpdateInstrumentation : Instrumentation() {
         check(merged.sourceOf("title") == "User override")
         check(merged.sourceOf("artwork", "boxArt") == "Updated catalog")
         check(merged.sourceOf("artwork", "preview") == "Shipped catalog")
-        val ignored = CatalogFieldLayers.merge(listOf(
+        // Layering passes values through; the staging path guard rejects such a folder when used.
+        val passed = CatalogFieldLayers.merge(listOf(
             CatalogFieldLayers.Source("Shipped catalog", shipped),
-            CatalogFieldLayers.Source("Invalid update", JSONObject().put("launch",
-                JSONObject().put("folder", "../invalid")))
-        ), DosCatalogFields::objectField, DosCatalogFields::validValue)
-        check(ignored.record.getJSONObject("launch").getString("folder") ==
-            shipped.getJSONObject("launch").getString("folder"))
+            CatalogFieldLayers.Source("Odd update", JSONObject().put("launch",
+                JSONObject().put("folder", "../outside")))
+        ), DosCatalogFields::objectField)
+        check(passed.record.getJSONObject("launch").getString("folder") == "../outside")
 
         val validator = DosCatalogUpdate(targetContext)
         File(targetContext.filesDir, "dos-core-update-v2.zip").takeIf(File::isFile)

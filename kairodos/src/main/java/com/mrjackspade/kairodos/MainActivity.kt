@@ -205,7 +205,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt, null,
                     game.contentId?.let { catalog.sourceOf(it, game.displayName, "artwork", kind) })
             }, { DosCatalogFields.safeArtPath(it) != null }, catalog::setArtworkOverride,
-            { libraryScreen.showEntries(games) }, ::titleOf, { Ui.message(this, it) })
+            { id -> libraryScreen.metadataChanged(id) }, ::titleOf, { Ui.message(this, it) })
     }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate,
@@ -239,9 +239,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var controllerSetupPending = false
     private var pendingControllerExternalRequest = false
     private val guestLifecycle: GuestLifecycleCoordinator by lazy {
-        GuestLifecycleCoordinator(this, {
-                currentGame != null && ::libraryFlow.isInitialized && libraryScreen.visibility != View.VISIBLE
-            }, ::releaseGuestInputs, ::refreshControllerUi,
+        GuestLifecycleCoordinator(fullscreen::restore, ::releaseGuestInputs, ::refreshControllerUi,
             { audio?.pause() }, { if (currentGame != null) audio?.play() },
             companionActive = { secondaryDisplay.isCompanionActive },
             resetGestures = edgeSwipes::reset)
@@ -251,6 +249,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { if (!sessionNavigation.resumeGame()) finish() }, { keyboard },
             { if (currentGame != null) openMenu() else finish() }, { false },
             { touchUi.hideKeyboard() })
+    }
+    private val fullscreen by lazy {
+        com.mrjackspade.kairo.frontend.GameFullscreen(this) {
+            currentGame != null && ::libraryFlow.isInitialized && libraryScreen.visibility != View.VISIBLE
+        }
     }
     private val sessionState = SessionNavigationState()
     private val gameOrientation by lazy { GameOrientation(this, preferences) }
@@ -466,9 +469,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         dispatchExternalGame(intent)
     }
 
+    /** A frontend launch matches the game against the library, so it waits for the library to load. */
     private fun dispatchExternalGame(intent: Intent) {
         closeFirstRun()
-        externalDispatcher.dispatch(intent)
+        libraryFlow.whenLoaded { externalDispatcher.dispatch(intent) }
     }
 
     private fun showLibrary() {
@@ -613,7 +617,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun updateTitle(id: String?, value: String?) {
         id ?: return
         runCatching { catalog.setTitle(id, value) }
-            .onSuccess { libraryScreen.showEntries(games) }
+            .onSuccess { libraryScreen.metadataChanged(id) }
             .onFailure { Ui.message(this, it.message ?: "Could not save title") }
         refreshPages()
     }
@@ -652,7 +656,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             inputModeDecider.reset()
             configureGuest()
         }
-        libraryScreen.showEntries(games)
+        libraryScreen.metadataChanged(id)
         Ui.message(this, "Game settings reset. Video changes apply the next time the game starts.")
         refreshPages()
     }
@@ -1045,7 +1049,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gameRoot = root
         gameOrientation.launching()
         sessionNavigation.enterGame(notify = false)
-        guestLifecycle.restoreFullscreen()
+        fullscreen.restore()
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
@@ -1209,7 +1213,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (relocating || rebuildIfRescaled()) return
-        guestLifecycle.restoreFullscreen()
+        fullscreen.restore()
         graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
         gameOrientation.configurationChanged()

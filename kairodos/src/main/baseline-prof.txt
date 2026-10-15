@@ -1,0 +1,3 @@
+# Sideloaded installs get no cloud profile: compile the app ahead of time.
+HSPLcom/mrjackspade/kairodos/**->**(**)**
+Lcom/mrjackspade/kairodos/**;

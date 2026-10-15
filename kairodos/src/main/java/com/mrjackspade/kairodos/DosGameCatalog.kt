@@ -32,9 +32,28 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val parts = com.mrjackspade.kairo.frontend.CatalogParts(context)
     private val cache = object : LruCache<String, JSONObject>(8) {}
     private val bundledCache = object : LruCache<String, JSONObject>(8) {}
+    // A game's merged record and resolved metadata are reused until a catalog, override or
+    // artwork change; settings pages read them for every row and every focus move.
+    private val layeredMemo = HashMap<Pair<String, String>, CatalogFieldLayers.Result>()
+    private val resolvedMemo = HashMap<Pair<String, String>, Game>()
+    private var profileByGame: Map<String, String>? = null
+    private fun invalidate() {
+        layeredMemo.clear()
+        resolvedMemo.clear()
+        profileByGame = null
+    }
+
+    /** Only this game's overrides changed. */
+    private fun invalidate(contentId: String) {
+        layeredMemo.keys.removeAll { it.first == contentId }
+        resolvedMemo.keys.removeAll { it.first == contentId }
+    }
     override val installedCatalogs by lazy {
         com.mrjackspade.kairo.frontend.InstalledCatalogs(context, "dos", ::validateInstalled) {
-            synchronized(this) { cache.evictAll(); folderIndex = null; combinedControllerProfiles = null }
+            synchronized(this) {
+                cache.evictAll(); folderIndex = null; combinedControllerProfiles = null
+                invalidate()
+            }
         }
     }
     private fun validateInstalled(root: JSONObject) {
@@ -59,13 +78,14 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private var folderIndex: JSONObject? = null
     private val id = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     private val overridesFile = File(context.filesDir, "dos-overrides-v1.json")
-    private val overrides = GameMetadataOverrides(overridesFile, validRecord = { contentId, record ->
-        id.matches(contentId) && DosCatalogFields.invalidPath(record) == null
-    })
+    private val overrides = GameMetadataOverrides(overridesFile)
     private val userCatalogFile = File(context.filesDir, "user-dos-catalog-v1.json")
     private var userCatalog = readUserCatalog()
 
-    @Synchronized fun reloadUserCatalog() { userCatalog = readUserCatalog() }
+    @Synchronized fun reloadUserCatalog() {
+        userCatalog = readUserCatalog()
+        invalidate()
+    }
 
     /** Call off the main thread; a failed download leaves the active catalog in place. */
     fun downloadUpdate(task: com.mrjackspade.kairo.frontend.CatalogUpdateTask = com.mrjackspade.kairo.frontend.CatalogUpdateTask()): Boolean {
@@ -74,6 +94,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             cache.evictAll()
             combinedControllerProfiles = null
             folderIndex = null
+            invalidate()
             onlineHidden = online.read("hidden-index-v1.json")
                 ?.optJSONObject("hidden") ?: JSONObject()
             onlineControllerProfiles = online.read("controller-profiles-v1.json")
@@ -135,7 +156,24 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 controllerBindings(it, layout)?.let(DosControllerBindings::parse)
             }
 
-    @Synchronized override fun resolve(contentId: String, fileName: String): Game {
+    @Synchronized override fun resolve(contentId: String, fileName: String): Game =
+        resolvedMemo.getOrPut(contentId to fileName) { resolveUncached(contentId, fileName) }
+
+    /** Which controller profile lists a game: built once instead of scanning every profile per game. */
+    private fun profileFor(contentId: String): String? {
+        val index = profileByGame ?: HashMap<String, String>().also { map ->
+            controllerProfileCatalog().optJSONObject("profiles")?.let { profiles ->
+                for (profile in profiles.keys()) {
+                    val ids = profiles.optJSONArray(profile) ?: continue
+                    for (i in 0 until ids.length()) map.putIfAbsent(ids.optString(i), profile)
+                }
+            }
+            profileByGame = map
+        }
+        return index[contentId]
+    }
+
+    private fun resolveUncached(contentId: String, fileName: String): Game {
         val record = layered(contentId, fileName).record
         val description = record.optString("description").takeIf { it.isNotBlank() }
         val baseTitle = record.optString("title").takeIf { it.isNotBlank() }
@@ -143,25 +181,18 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         val title = if (fileName.endsWith(" - Installer", true) &&
             !baseTitle.endsWith(" - Installer", true)) "$baseTitle - Installer" else baseTitle
         val art = record.optJSONObject("artwork")
-        val boxArtPath = DosCatalogFields.safeArtPath(art?.optString("boxArt"))
-        val previewPath = DosCatalogFields.safeArtPath(art?.optString("preview"))
+        // Paths are opened when shown; an image that is absent or unusable fails there alone.
+        val boxArtPath = art?.optString("boxArt")?.takeIf { it.isNotEmpty() }
+        val previewPath = art?.optString("preview")?.takeIf { it.isNotEmpty() }
         val launch = record.optJSONObject("launch")?.let { source ->
             val configs = source.optJSONObject("configs") ?: JSONObject()
             Launch(source.optString("folder"), configs.keys().asSequence()
                 .associateWith { configs.optString(it) }, source.optBoolean("exception"))
         }
-        val controllers = controllerProfileCatalog()
-        val controllerProfile = controllers.optJSONObject("assignments")
-            ?.optString(contentId)?.takeIf { it.isNotBlank() }
-            ?: controllers.optJSONObject("profiles")?.let { profiles ->
-                profiles.keys().asSequence().firstOrNull { profile ->
-                    val ids = profiles.optJSONArray(profile)
-                    ids != null && (0 until ids.length()).any { ids.optString(it) == contentId }
-                }
-            }
+        val controllerProfile = controllerProfileCatalog().optJSONObject("assignments")
+            ?.optString(contentId)?.takeIf { it.isNotBlank() } ?: profileFor(contentId)
         return Game(title, description,
-            installedCatalogs.artwork(boxArtPath) ?: artworkStore.availablePath(boxArtPath),
-            installedCatalogs.artwork(previewPath) ?: artworkStore.availablePath(previewPath),
+            boxArtPath, previewPath,
             record.optJSONArray("tags")?.let { array ->
                 (0 until array.length()).mapNotNull { index ->
                     array.optString(index).takeIf { it.isNotBlank() }
@@ -180,7 +211,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     }
 
     @Synchronized override fun hiddenFromLibrary(contentId: String): Boolean {
-        if (!id.matches(contentId)) return false
+        if (contentId.isEmpty()) return false
         // The generated index avoids opening hundreds of catalog shards merely
         // to decide which cached rows should be visible at startup.
         return CatalogFieldLayers.hidden(
@@ -192,12 +223,15 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         )
     }
 
-    private fun layered(contentId: String, fileName: String): CatalogFieldLayers.Result {
+    private fun layered(contentId: String, fileName: String): CatalogFieldLayers.Result =
+        layeredMemo.getOrPut(contentId to fileName) { layeredUncached(contentId, fileName) }
+
+    private fun layeredUncached(contentId: String, fileName: String): CatalogFieldLayers.Result {
         val sources = ArrayList<CatalogFieldLayers.Source>()
-        if (id.matches(contentId)) {
+        if (contentId.isNotEmpty()) {
             val prefix = contentId.substringAfter(':').take(2)
             fun add(name: String, value: JSONObject?) {
-                val expanded = runCatching { DosArtworkReferences.record(value) }.getOrNull()
+                val expanded = DosArtworkReferences.record(value)
                 sources += CatalogFieldLayers.Source(name, expanded)
                 selectVariant(expanded, fileName)?.let {
                     sources += CatalogFieldLayers.Source(name, it)
@@ -212,8 +246,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 ?.optJSONObject(contentId))
             add("User override", overrides.record(contentId))
         }
-        return CatalogFieldLayers.merge(sources, DosCatalogFields::objectField,
-            DosCatalogFields::validValue)
+        return CatalogFieldLayers.merge(sources, DosCatalogFields::objectField)
     }
 
     @Synchronized fun sourceOf(contentId: String, fileName: String,
@@ -222,9 +255,7 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
             ?: if (path.size == 1 && path[0] == "title") "Filename" else "App default"
 
     private fun readUserCatalog(): JSONObject =
-        LocalCatalogFile.read(userCatalogFile, 8 * 1024 * 1024) { contentId, record ->
-            id.matches(contentId) && DosCatalogFields.invalidPath(record) == null
-        } ?: JSONObject()
+        LocalCatalogFile.read(userCatalogFile, 8 * 1024 * 1024) ?: JSONObject()
 
     @Synchronized fun contentIdsForFolder(folder: String): List<String> {
         val index = folderIndex ?: readFolderIndex().also { folderIndex = it }
@@ -236,20 +267,23 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         require(id.matches(contentId)) { "Hash this game first" }
         require(title == null || title.length in 1..160) { "Invalid title" }
         overrides.set(contentId, "title", title)
+        invalidate(contentId)
     }
 
-    fun setArtworkOverride(contentId: String, kind: String, path: String?) {
+    @Synchronized fun setArtworkOverride(contentId: String, kind: String, path: String?) {
         require(id.matches(contentId)) { "Hash this game first" }
         require(kind == "boxArt" || kind == "preview") { "Invalid artwork kind" }
         require(path == null || DosCatalogFields.safeArtPath(path) != null) {
             "Invalid DOS artwork path"
         }
         overrides.setSubfield(contentId, "artwork", kind, path)
+        invalidate(contentId)
     }
 
-    fun resetOverrides(contentId: String) {
+    @Synchronized fun resetOverrides(contentId: String) {
         require(id.matches(contentId)) { "Hash this game first" }
         overrides.clear(contentId)
+        invalidate(contentId)
     }
 
     override fun openArtwork(path: String): InputStream = installedCatalogs.openArtwork(path) ?: artworkStore.open(path)

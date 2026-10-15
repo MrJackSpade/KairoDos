@@ -115,7 +115,8 @@ object InputDispatchFixture {
         var audioPaused = 0
         var audioResumed = 0
         var resets = 0
-        val lifecycle = GuestLifecycleCoordinator({ dispatch.releaseInputs() }, {},
+        var fullscreenRestores = 0
+        val lifecycle = GuestLifecycleCoordinator({ fullscreenRestores++ }, { dispatch.releaseInputs() }, {},
             { audioPaused++ }, { audioResumed++ }, companionActive = { companion },
             resetGestures = { resets++ }, releaseOnFocusLoss = { dispatch.releaseInputs(true) })
         lifecycle.onWindowFocusChanged(false)
@@ -129,7 +130,7 @@ object InputDispatchFixture {
         check(lifecycle.onPause() && !lifecycle.isVisible && keys.pressedKeys().isEmpty())
         check(cancelled == 1 && audioPaused == 1)
         lifecycle.onResume()
-        check(lifecycle.isVisible && audioResumed == 1)
+        check(lifecycle.isVisible && audioResumed == 1 && fullscreenRestores == 1)
         check(lifecycle.onStop() && !lifecycle.isVisible && resets == 1)
         check(frontendCalls > 0)
 

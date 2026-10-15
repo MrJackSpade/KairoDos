@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter
 internal object DosLaunchConfig {
 
     private val mountC = Regex("(?i)^@?mount\\s+c\\s+(.+)$")
+    private val playerName = Regex("[A-Z0-9_]{1,8}")
     private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
 
     fun needsPlayer(launch: DosGameCatalog.Launch?): Boolean =
@@ -16,7 +17,7 @@ internal object DosLaunchConfig {
 
     fun setupLines(folder: String, player: String?): List<String> {
         if (folder.lowercase() !in setOf("azalta", "dom_door", "legord")) return emptyList()
-        require(player != null && player.matches(Regex("[A-Z0-9_]{1,8}"))) {
+        require(player != null && player.matches(playerName)) {
             "Choose a DOS player name"
         }
         val marker = "echo $player>$player.USR"

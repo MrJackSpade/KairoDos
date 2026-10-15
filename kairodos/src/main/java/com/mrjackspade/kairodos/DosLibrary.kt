@@ -8,6 +8,10 @@ import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.LibraryScanPipeline
 import com.mrjackspade.kairo.frontend.LibraryItem
 import com.mrjackspade.kairo.frontend.VersionedLibraryCache
+import com.mrjackspade.kairo.frontend.readOptionalText
+import com.mrjackspade.kairo.frontend.readText
+import com.mrjackspade.kairo.frontend.writeOptionalText
+import com.mrjackspade.kairo.frontend.writeText
 import org.json.JSONObject
 import java.io.File
 import java.security.MessageDigest
@@ -41,19 +45,23 @@ class DosLibrary(private val context: Context) {
         val external: Boolean = false
     ) : LibraryItem {
         override val zipEntry: String? = null
-        override val displayName: String get() = path.substringAfterLast('/').let {
-            val stem = if (folder) it else archiveStem(it)
-            if (installer && !isInstalledArchive(it)) "$stem - Installer"
-            else stem.replace(installedSuffix, "")
+        // Rows, search and comparisons read the name constantly; it is derived once.
+        override val displayName: String by lazy {
+            path.substringAfterLast('/').let {
+                val stem = if (folder) it else archiveStem(it)
+                if (installer && !isInstalledArchive(it)) "$stem - Installer"
+                else stem.replace(installedSuffix, "")
+            }
         }
         val title: String get() = displayName
         override val playable: Boolean get() = contentId != null && error == null
         override val mediaLabel: String get() = "DOS game"
     }
 
-    private val store = File(context.filesDir, "dos-library-v1.json")
-    private val storeCache = VersionedLibraryCache(store, 2, "games", 64 * 1024 * 1024,
-        50_000, ::decodeCacheEntry, ::encodeCacheEntry)
+    private val storeCache = VersionedLibraryCache(File(context.filesDir, "dos-library-v2.bin"), 3,
+        64 * 1024 * 1024, 50_000, ::writeCacheRecord, ::readCacheRecord,
+        VersionedLibraryCache.Legacy(File(context.filesDir, "dos-library-v1.json"), 2, "games",
+            ::decodeLegacyEntry))
     private val walker = DocumentTreeWalker(context.contentResolver)
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
@@ -590,28 +598,22 @@ class DosLibrary(private val context: Context) {
         return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
     }
 
-    private fun decodeCacheEntry(item: JSONObject): Game? {
-        val id = item.optString("id")
-        val uri = item.optString("uri")
-        val path = item.optString("path")
-        val fingerprint = item.optString("fingerprint")
-        val contentId = item.optString("contentId").takeIf { it.isNotEmpty() }
-        val error = item.optString("error").takeIf { it.isNotEmpty() }
-        if (!id.matches(Regex("[0-9a-f]{64}")) || !uri.startsWith("content://") ||
-            path.isBlank() || path.length > 4096 || fingerprint.length > 256 ||
-            (contentId != null && !contentId.matches(
-                Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}"))) ||
-            (error != null && error.length > 1024)) return null
-        return Game(id, uri, path, item.optBoolean("folder"),
-            item.optBoolean("rootFolder"), fingerprint, contentId, error,
-            item.optBoolean("installer"))
+    private fun writeCacheRecord(output: java.io.DataOutputStream, game: Game) = with(output) {
+        writeText(game.id); writeText(game.uri); writeText(game.path)
+        writeBoolean(game.folder); writeBoolean(game.rootFolder); writeText(game.fingerprint)
+        writeOptionalText(game.contentId); writeOptionalText(game.error); writeBoolean(game.installer)
     }
 
-    private fun encodeCacheEntry(game: Game) = JSONObject().put("id", game.id)
-        .put("uri", game.uri).put("path", game.path).put("folder", game.folder)
-        .put("rootFolder", game.rootFolder).put("fingerprint", game.fingerprint)
-        .put("contentId", game.contentId ?: "").put("error", game.error ?: "")
-        .put("installer", game.installer)
+    private fun readCacheRecord(input: java.io.DataInputStream) = with(input) {
+        Game(readText(), readText(), readText(), readBoolean(), readBoolean(), readText(),
+            readOptionalText(), readOptionalText(), readBoolean())
+    }
+
+    /** The JSON cache that version 1.0.3 and earlier wrote. */
+    private fun decodeLegacyEntry(item: JSONObject) = Game(item.getString("id"), item.getString("uri"),
+        item.getString("path"), item.optBoolean("folder"), item.optBoolean("rootFolder"),
+        item.optString("fingerprint"), item.optString("contentId").takeIf { it.isNotEmpty() },
+        item.optString("error").takeIf { it.isNotEmpty() }, item.optBoolean("installer"))
 
     private fun extension(path: String) = path.substringAfterLast('.', "").lowercase(Locale.ROOT)
     private val MAX_ARCHIVE_BYTES = 8L * 1024 * 1024 * 1024

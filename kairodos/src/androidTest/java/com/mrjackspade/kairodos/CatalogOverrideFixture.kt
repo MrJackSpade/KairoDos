@@ -16,15 +16,10 @@ object CatalogOverrideFixture {
         try {
             val id = "sha256-dos-manifest-v1:" + "0".repeat(64)
             val file = File(root, "flat.json")
-            val flat = GameMetadataOverrides(file, validRecord = { key, record ->
-                key == id && DosCatalogFields.invalidPath(record) == null
-            })
+            val flat = GameMetadataOverrides(file)
             flat.set(id, "title", "My title")
             flat.setSubfield(id, "artwork", "boxArt", "art/catalog/dos/test.webp")
-            val committed = file.readBytes()
             check(!JSONObject(file.readText()).has("games"))
-            check(runCatching { flat.set(id, "title", 99) }.isFailure)
-            check(file.readBytes().contentEquals(committed))
             val copy = flat.record(id)!!
             copy.put("title", "Changed outside store")
             check(flat.record(id)!!.getString("title") == "My title")
@@ -55,33 +50,32 @@ object CatalogOverrideFixture {
             check(boundedFile.readText() == "{broken")
             check(bounded.record("id")!!.getString("title") == "Previous")
 
+            // One record nothing can use must not hide the others: records load as written.
+            val mixedFile = File(root, "mixed.json")
+            mixedFile.writeText(JSONObject().put(id, JSONObject().put("title", "Kept"))
+                .put("other", JSONObject().put("title", 99).put("unknown", true)).toString())
+            val mixed = GameMetadataOverrides(mixedFile)
+            check(mixed.record(id)!!.getString("title") == "Kept")
+            mixed.set(id, "title", "Still editable")
+            check(mixed.record(id)!!.getString("title") == "Still editable")
+
             val envelope = File(root, "schema.json")
-            fun validRecord(key: String, record: JSONObject) = key == "pc98" &&
-                record.keys().asSequence().all { field -> when (field) {
-                    "title" -> record.opt(field) is String
-                    "machine" -> record.optJSONObject(field)?.let { machine ->
-                        machine.keys().asSequence().all { machine.opt(it) is Int }
-                    } == true
-                    else -> false
-                } }
-            val schema = GameMetadataOverrides(envelope, schemaEnvelope = true, validRecord = ::validRecord)
+            val schema = GameMetadataOverrides(envelope, schemaEnvelope = true)
             schema.set("pc98", "title", "PC-98 title")
             schema.updateSubfields("pc98", "machine", mapOf("clock" to 25, "multiple" to 20))
             val parsed = JSONObject(envelope.readText())
             check(parsed.getInt("schemaVersion") == 1 && parsed.getJSONObject("games").has("pc98"))
             val original = envelope.readBytes()
-            check(runCatching { schema.updateSubfields("pc98", "machine", mapOf("clock" to "bad")) }.isFailure)
-            check(envelope.readBytes().contentEquals(original))
             schema.updateSubfields("pc98", "machine", mapOf("clock" to null))
             check(schema.record("pc98")!!.getJSONObject("machine").getInt("multiple") == 20)
             schema.clear("pc98")
             check(JSONObject(envelope.readText()).getJSONObject("games").length() == 0)
             envelope.writeText("{\"schemaVersion\":2,\"games\":{}}")
-            val future = GameMetadataOverrides(envelope, schemaEnvelope = true, validRecord = ::validRecord)
+            val future = GameMetadataOverrides(envelope, schemaEnvelope = true)
             check(runCatching { future.set("pc98", "title", "Wrong schema") }.isFailure)
             check(JSONObject(envelope.readText()).getInt("schemaVersion") == 2)
             File(envelope.path + ".bak").writeBytes(original)
-            val recovered = GameMetadataOverrides(envelope, schemaEnvelope = true, validRecord = ::validRecord)
+            val recovered = GameMetadataOverrides(envelope, schemaEnvelope = true)
             check(recovered.record("pc98")!!.getString("title") == "PC-98 title")
             recovered.set("pc98", "title", "Recovered")
             check(!File(envelope.path + ".bak").exists())
@@ -97,22 +91,12 @@ object CatalogOverrideFixture {
             .put("launch", JSONObject().put("commands", JSONArray().put("START")).put("timeoutMs", 30000))
         val updated = JSONObject().put("title", "Updated")
             .put("launch", JSONObject().put("text", "RUN"))
-        val invalid = JSONObject().put("title", 99)
-            .put("launch", JSONObject().put("text", 99).put("timeoutMs", 60000))
         val user = JSONObject().put("title", "Mine")
             .put("launch", JSONObject().put("timeoutMs", 45000))
-        fun valid(path: List<String>, value: Any): Boolean = when (path) {
-            listOf("title"), listOf("launch", "text") -> value is String
-            listOf("tags"), listOf("launch", "commands") -> value is JSONArray
-            listOf("launch", "timeoutMs") -> value is Int
-            else -> false
-        }
         fun merge(last: JSONObject?) = CatalogFieldLayers.merge(listOf(
             CatalogFieldLayers.Source("Shipped", shipped), CatalogFieldLayers.Source("Updated", updated),
-            CatalogFieldLayers.Source("Invalid", invalid), CatalogFieldLayers.Source("Override", last)
-        ), { it == listOf("launch") }, ::valid,
-            { path, record -> path == listOf("launch") && !(record.has("text") && record.has("commands")) &&
-                record.keys().asSequence().all { valid(path + it, record.get(it)) } },
+            CatalogFieldLayers.Source("Override", last)
+        ), { it == listOf("launch") },
             { _, record -> if (record.has("text")) setOf("commands") else emptySet() })
         val defaults = merge(null)
         check(defaults.record.getString("title") == "Updated" && defaults.sourceOf("title") == "Updated")
@@ -126,5 +110,10 @@ object CatalogOverrideFixture {
         check(custom.record.getJSONObject("launch").getInt("timeoutMs") == 45000)
         custom.record.getJSONArray("tags").put("mutated result")
         check(shipped.getJSONArray("tags").length() == 1)
+        // Layering does not judge values; a value that does not work fails where it is used.
+        val unexpected = CatalogFieldLayers.merge(listOf(
+            CatalogFieldLayers.Source("Shipped", shipped),
+            CatalogFieldLayers.Source("Odd", JSONObject().put("title", 99))), { it == listOf("launch") })
+        check(unexpected.record.get("title") == 99 && unexpected.sourceOf("title") == "Odd")
     }
 }
