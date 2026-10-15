@@ -1160,9 +1160,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (libraryScreen.visibility != View.VISIBLE) {
             secondaryDisplay.setLibraryInfo(null)
         }
-        if (secondaryDisplay.swapped && showingGuest) {
-            if (swappedKeyboard?.visibility != View.VISIBLE) swappedKeyboard?.open()
-        } else if (swappedKeyboard?.visibility == View.VISIBLE) swappedKeyboard?.close()
+        swappedKeyboard?.setShown(secondaryDisplay.swapped && showingGuest)
         secondaryDisplay.setAppearance(showingGuest, Color.BLACK)
         if (showingGuest) ImmersiveWindow.hideBars(this)
         if (currentGame != null) nativePause(presentation.pauseGuest)
