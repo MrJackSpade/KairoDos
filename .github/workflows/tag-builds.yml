@@ -195,4 +195,7 @@ jobs:
               --verify-tag "${release_flags[@]}" --title "KairoDos $KAIRODOS_VERSION_NAME" \
               --notes-file "docs/releases/$tag.md"
             gh workflow run discord-release.yml -f tag="$tag"
+            if [[ "$tag" != *-* ]]; then
+              gh workflow run play-release.yml -f tag="$tag"
+            fi
           fi
