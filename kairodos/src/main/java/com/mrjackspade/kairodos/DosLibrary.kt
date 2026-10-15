@@ -30,7 +30,7 @@ class DosLibrary(private val context: Context) {
 
     data class Game(
         override val id: String,
-        val uri: String,
+        override val uri: String,
         override val path: String,
         val folder: Boolean,
         val rootFolder: Boolean = false,
@@ -55,28 +55,24 @@ class DosLibrary(private val context: Context) {
     private val storeCache = VersionedLibraryCache(store, 2, "games", 64 * 1024 * 1024,
         50_000, ::decodeCacheEntry, ::encodeCacheEntry)
     private val walker = DocumentTreeWalker(context.contentResolver)
-    private val libraryOrder = compareBy<Game, String>(String.CASE_INSENSITIVE_ORDER) { it.path }
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
-            ::failedScanWork, ::scanLabel, cacheOrder = { entries -> entries.sortedWith(libraryOrder) })
+            ::failedScanWork, ::scanLabel, cacheOrder = { entries -> entries.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
     private val archiveExtensions = setOf("zip", "dosz")
     private val executableExtensions = setOf("exe", "com", "bat")
     private val otherExtensions = setOf("iso", "chd", "img", "ima", "vhd", "jrc")
 
-    fun cached(tree: Uri): List<Game> =
-        storeCache.readForTree(tree.toString())?.entries.orEmpty()
+    fun cached(tree: Uri): List<Game> = scanPipeline.cached(tree)
 
-    /** Saves a library edited without a scan, such as after an install or removal. */
-    fun store(tree: Uri, entries: List<Game>) = storeCache.write(tree.toString(), entries)
+    /** Saves a library edited without a scan, such as after an install. */
+    fun store(tree: Uri, entries: List<Game>) = scanPipeline.store(tree, entries)
 
     /** [entries] with [game] added or replaced, in scan order. */
     fun withGame(entries: List<Game>, game: Game): List<Game> =
-        (entries.filter { it.id != game.id } + game).sortedWith(libraryOrder)
-
-    fun withoutGame(entries: List<Game>, game: Game): List<Game> =
-        entries.filter { it.id != game.id }
+        scanPipeline.inScanOrder(entries.filter { it.id != game.id } + game)
 
     /** Inspect a launcher-provided file using the same content IDs as a library scan. */
     fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean): Game {

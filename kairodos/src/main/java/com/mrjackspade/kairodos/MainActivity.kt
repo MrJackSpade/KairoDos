@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.DocumentsContract
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -54,6 +53,7 @@ import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
 import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SessionFlow
+import com.mrjackspade.kairo.frontend.SessionMenus
 import com.mrjackspade.kairo.frontend.SessionNavigationCoordinator
 import com.mrjackspade.kairo.frontend.GameOrientation
 import com.mrjackspade.kairo.frontend.SessionNavigationState
@@ -76,13 +76,11 @@ import com.mrjackspade.kairo.frontend.AppSaveLocation
 import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.SetupPage
 import com.mrjackspade.kairo.frontend.FooterButton
-import com.mrjackspade.kairo.frontend.FlyoutModel
 import com.mrjackspade.kairo.frontend.SettingsRow
 import com.mrjackspade.kairo.frontend.RowGroup
 import com.mrjackspade.kairo.frontend.ChoiceSpec
 import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
-import com.mrjackspade.kairo.frontend.Confirm
 import com.mrjackspade.kairo.frontend.TrayButton
 import com.mrjackspade.kairo.frontend.ButtonTone
 import com.mrjackspade.kairo.frontend.ValueTone
@@ -166,7 +164,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val joystick = JoystickInputRouter(::nativeJoypad,
         DosControllerBindings.joystick)
     private val gamepad = GamepadMapper(keys, joystick, mouse,
-        ::controllerAction, {}, DosControllerBindings.defaults())
+        { action -> sessionFlow?.controllerAction(action, sessionState, ::refreshControllerUi) }, {},
+        DosControllerBindings.defaults())
     private val controllerFlow by lazy {
         ControllerProfileCoordinator(controllerProfiles, gamepad,
             DosLibrary.Game::contentId,
@@ -240,7 +239,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private var controllerSetupPending = false
     private var pendingControllerExternalRequest = false
     private val guestLifecycle: GuestLifecycleCoordinator by lazy {
-        GuestLifecycleCoordinator(::releaseGuestInputs, ::refreshControllerUi,
+        GuestLifecycleCoordinator(this, {
+                currentGame != null && ::libraryFlow.isInitialized && libraryScreen.visibility != View.VISIBLE
+            }, ::releaseGuestInputs, ::refreshControllerUi,
             { audio?.pause() }, { if (currentGame != null) audio?.play() },
             companionActive = { secondaryDisplay.isCompanionActive },
             resetGestures = edgeSwipes::reset)
@@ -383,7 +384,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             ::previewGame, ::showGameDetails, ::showLibrarySelection,
             commandLaunch = { startGame(it, manualConfig(it), target = DosLaunchTarget.Browse) })
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
-            dosLibrary::cached, dosLibrary::scan, ::folderName,
+            dosLibrary::cached, dosLibrary::scan,
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
             { found -> LibraryScanSummary.format(found, dosLibrary.hashCount) },
@@ -482,11 +483,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun chooseFolder() = libraryFlow.chooseFolder()
 
-    private fun folderName(uri: Uri): String = try {
-        DocumentsContract.getTreeDocumentId(uri).substringAfterLast('/').substringAfterLast(':')
-            .ifEmpty { "DOS folder" }
-    } catch (_: Exception) { uri.lastPathSegment ?: "DOS folder" }
-
     /** The single setup step. Back and Skip for now both open the library. */
     private fun showFirstRun() {
         val page = SetupPage("KAIRODOS", null, "Choose a DOS folder",
@@ -529,15 +525,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showLibrarySelection(entry: DosLibrary.Game?) {
         if (!::secondaryDisplay.isInitialized) return
-        if (entry == null) {
-            secondaryDisplay.setLibraryInfo(null)
-            return
-        }
-        val game = libraryScreen.metadata(entry)
-        val info = SecondaryDisplayCoordinator.LibraryInfo(game.title,
-            listOf(entry.displayName) + game.tags,
-            game.description ?: "No description available yet.", null, hasArtwork = game.preview != null)
-        secondaryDisplay.setLibraryInfo(info, game.preview, catalog::openArtwork)
+        secondaryDisplay.showLibrarySelection(entry, entry?.let(libraryScreen::metadata), catalog)
     }
 
     private fun previewGame(game: DosLibrary.Game) = artwork.view(game)
@@ -608,11 +596,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 "Chosen images are copied into your library."),
             RowGroup("FILE", GameSettingsRows.file(entry.path, null, id, entry.error) + listOfNotNull(
                 deleteKind?.let { kind ->
-                    GameDeletionFlow.row(this, libraryScreen, GameDeletionFlow.Prompt(entry.path, kind,
+                    GameDeletionFlow.row(this, libraryFlow, entry, GameDeletionFlow.Prompt(entry.path, kind,
                         if (entry.folder) "This removes the folder and everything inside it. " else ""),
-                        "DOS folder", { true }, ::chooseFolder, { currentGame?.id == entry.id },
-                        "KairoDos-delete-game", { dosLibrary.deleteSource(entry) },
-                        { libraryFlow.edit { dosLibrary.withoutGame(it, entry) } })
+                        "DOS folder", { currentGame?.id == entry.id },
+                        "KairoDos-delete-game") { dosLibrary.deleteSource(entry) }
                 })),
             RowGroup(null, listOf(GameSettingsRows.reset(hashed) { resetGameSettings(entry, id!!) })))
     }
@@ -919,21 +906,22 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     /** One settings list, shown the same way in the game flyout and the library flyout. */
-    private fun settingsRows() = listOf(
-        SettingsRow.nav("f-graphics", "Graphics") {
-            pages.push(graphics.page(shaderOptions) { listOf(videoGroup()) })
-        },
-        SettingsRow.nav("f-controls", "Controls") {
+    private fun settingsRows() = SessionMenus.settingsRows(SessionMenus.Settings(
+        graphics = { pages.push(graphics.page(shaderOptions) { listOf(videoGroup()) }) },
+        controls = {
             pages.push(controllerPages.controlsPage(currentGame?.takeIf {
                 it.contentId != null && libraryScreen.visibility != View.VISIBLE }))
         },
-        SettingsRow.nav("f-machine", "Machine") { pages.push(machinePage()) },
-        SettingsRow.nav("f-configurations", "Configurations") { pages.push(configurationsPage()) },
-        SettingsRow.switch("f-sound", "Sound", { !preferences.getBoolean("muted", false) }) { on ->
+        machine = { pages.push(machinePage()) },
+        configurations = {
+            pages.push(SessionMenus.configurationsPage(gameOrientation, saveFolder, "SAVED GAMES"))
+        },
+        soundOn = { !preferences.getBoolean("muted", false) },
+        setSound = { on ->
             preferences.edit().putBoolean("muted", !on).apply()
             audio?.setVolume(if (on) 1f else 0f)
         },
-        SettingsRow.nav("f-about", "About") { pages.push(aboutPage()) })
+        about = { pages.push(aboutPage()) }))
 
     /** Graphics › VIDEO, for all games. */
     private fun videoGroup() = RowGroup("VIDEO", listOf(
@@ -947,10 +935,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         "Changes apply the next time a game starts. Games with their own setting keep it.")
 
     /** Configurations: settings for all games, such as screen orientation and where saves go. */
-    private fun configurationsPage() = GroupsPage("Configurations", { GameSource.ALL_GAMES }, {
-        listOf(RowGroup("DISPLAY", listOf(gameOrientation.row())),
-            RowGroup("SAVED GAMES", listOf(saveFolder.row())))
-    })
 
     /** A save folder's game name, as a library title when the game is still in the library. */
     private fun saveTitle(game: String): String =
@@ -1025,28 +1009,17 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     })
 
     /** The game flyout: Game settings, settings, then leaving. */
-    private fun gameFlyout() = FlyoutModel("KAIRODOS", { sessionGameTitle ?: currentGame?.displayName ?: "" },
-        ::sessionStatusText) {
-        listOf(
-            RowGroup("GAME", listOf(SettingsRow.nav("f-game", "Game settings") {
-                currentGame?.let(::showGameDetails)
-            })),
-            RowGroup("SETTINGS", settingsRows()),
-            RowGroup(null, listOf(
-                SettingsRow.action("f-restart", "Restart game",
-                    confirm = Confirm("Progress since your last save is lost.", "Restart") {
-                        userPaused = false
-                        nativeReset()
-                        closeMenu()
-                    }),
-                sessionNavigation.returnRow("KairoDos"),
-                SettingsRow.action("f-exit", "Exit KairoDos",
-                    confirm = Confirm("The machine stops. Progress since your last save is lost.", "Exit",
-                        title = "Exit KairoDos?") {
-                        leaveGame()
-                        if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
-                    }))))
-    }
+    private fun gameFlyout() = SessionMenus.gameFlyout("KAIRODOS", "KairoDos",
+        { sessionGameTitle ?: currentGame?.displayName ?: "" }, ::sessionStatusText, sessionNavigation,
+        { emptyList() }, { currentGame != null }, { currentGame?.let(::showGameDetails) }, ::settingsRows,
+        restart = {
+            userPaused = false
+            nativeReset()
+            closeMenu()
+        }, exit = {
+            leaveGame()
+            if (installerPromptOpen) finishAfterInstallerPrompt = true else finish()
+        })
 
     private fun sessionStatusText(): String {
         val state = when (nativeStatus()) {
@@ -1069,7 +1042,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         gameRoot = root
         gameOrientation.launching()
         sessionNavigation.enterGame(notify = false)
-        restoreGameFullscreen()
+        guestLifecycle.restoreFullscreen()
         appRoot.addView(root, 0, FrameLayout.LayoutParams(-1, -1))
         val frame = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         videoFrame = frame
@@ -1101,9 +1074,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         refreshControllerUi()
     }
 
-    private fun openMenu(start: String? = null, confirm: Boolean = false) {
-        if (currentGame != null && libraryScreen.visibility != View.VISIBLE) sessionFlow?.open(start, confirm)
-    }
+    private fun openMenu(start: String? = null, confirm: Boolean = false) { sessionFlow?.open(start, confirm) }
 
     private fun closeMenu() { sessionFlow?.close() }
 
@@ -1127,19 +1098,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             if (running) "Live values from the emulator, updated four times a second." else "Start a game to see live values."))
     }) {
         override fun tick() = refresh()
-    }
-
-    private fun controllerAction(action: String) {
-        when (action) {
-            "menu" -> if (sessionFlow?.isOpen == true) closeMenu() else openMenu()
-            "pause" -> {
-                userPaused = !userPaused
-                refreshControllerUi()
-                Ui.message(this, if (userPaused) "Paused" else "Resumed")
-            }
-            "restart" -> if (sessionFlow?.isOpen != true) openMenu("f-restart", confirm = true)
-            "exit" -> if (sessionFlow?.isOpen != true) openMenu("f-exit", confirm = true)
-        }
     }
 
     private fun controllerMappingStatus(game: DosLibrary.Game?): String? {
@@ -1181,16 +1139,6 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             nativeSetSurface(holder?.surface?.takeIf { it.isValid })
         }
         refreshControllerUi()
-    }
-
-    private fun restoreGameFullscreen() {
-        if (currentGame == null || !::libraryFlow.isInitialized ||
-            libraryScreen.visibility == View.VISIBLE) return
-        ImmersiveWindow.apply(this)
-        window.decorView.post {
-            if (!isDestroyed && window.decorView.hasWindowFocus() && currentGame != null &&
-                libraryScreen.visibility != View.VISIBLE) ImmersiveWindow.hideBars(this)
-        }
     }
 
     private fun pollSession(id: String) {
@@ -1258,7 +1206,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (relocating || rebuildIfRescaled()) return
-        restoreGameFullscreen()
+        guestLifecycle.restoreFullscreen()
         graphics.load()
         videoFrame?.post { updateSurfaceLayout() }
         gameOrientation.configurationChanged()
@@ -1387,7 +1335,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     runCatching { dosLibrary.deleteInstaller(installer, installed) }
                         .onSuccess { runOnUiThread {
                             installerPromptOpen = false
-                            libraryFlow.edit { dosLibrary.withoutGame(it, installer) }
+                            libraryFlow.removeSource(installer)
                             if (finishAfterInstallerPrompt) {
                                 finishAfterInstallerPrompt = false
                                 finish()
@@ -1531,33 +1479,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun dispatchGuestTouch(event: MotionEvent) = super.dispatchTouchEvent(event)
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        // Edge gestures work over the game and its flyout, not over pages above the flyout.
-        if (!::appRoot.isInitialized || !::pages.isInitialized ||
-            (pages.isActive && pages.top?.isFlyout != true) ||
-            currentGame == null || libraryScreen.visibility == View.VISIBLE)
-            return super.dispatchTouchEvent(event)
-        return when (edgeSwipes.handle(event, appRoot.width, sessionFlow?.isOpen == true,
-            canOpenMenu = true, canOpenKeyboard = keyboard?.visibility != View.VISIBLE &&
-                !secondaryDisplay.isKeyboardVisible,
-            controlsHit = onScreenControls?.hitTest(event.x, event.y) == true)) {
-            EdgeSwipeNavigation.Result.PASS -> super.dispatchTouchEvent(event)
-            EdgeSwipeNavigation.Result.CONSUME -> true
-            EdgeSwipeNavigation.Result.REPLAY_GUEST ->
-                edgeSwipes.replay(event, ::dispatchGuestTouch)
-            EdgeSwipeNavigation.Result.OPEN_MENU -> { openMenu(); true }
-            EdgeSwipeNavigation.Result.OPEN_KEYBOARD -> {
-                touchUi.showKeyboard()
-                true
-            }
-            EdgeSwipeNavigation.Result.CLOSE_MENU -> {
-                val cancel = MotionEvent.obtain(event)
-                cancel.action = MotionEvent.ACTION_CANCEL
-                super.dispatchTouchEvent(cancel)
-                cancel.recycle()
-                closeMenu()
-                true
-            }
-        }
+        if (!::appRoot.isInitialized || !::pages.isInitialized) return super.dispatchTouchEvent(event)
+        return edgeSwipes.dispatch(event, appRoot.width, pages,
+            currentGame != null && libraryScreen.visibility != View.VISIBLE, sessionFlow?.isOpen == true,
+            { keyboard?.visibility != View.VISIBLE && !secondaryDisplay.isKeyboardVisible },
+            { onScreenControls?.hitTest(event.x, event.y) == true },
+            { super.dispatchTouchEvent(it) }, ::dispatchGuestTouch, { openMenu() }, touchUi::showKeyboard,
+            ::closeMenu)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean =
@@ -1647,14 +1575,12 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (relocating) return
         secondaryDisplay.start(handler)
         guestLifecycle.onResume()
-        restoreGameFullscreen()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (relocating) return
         guestLifecycle.onWindowFocusChanged(hasFocus)
-        if (hasFocus) restoreGameFullscreen()
     }
 
     override fun onDestroy() {
