@@ -12,6 +12,18 @@ status=0
 
 while read -r local_ref local_sha remote_ref remote_sha; do
     [ "$local_sha" = "$zero" ] && continue
+    # The tag build publishes nothing without the tag's release notes, so check before the tag leaves.
+    case "$remote_ref" in
+        refs/tags/v*)
+            tag=${remote_ref#refs/tags/}
+            notes="docs/releases/$tag.md"
+            if ! git cat-file -e "$local_sha^{commit}:$notes" 2>/dev/null ||
+                [ "$(git cat-file -s "$local_sha^{commit}:$notes")" -eq 0 ]; then
+                echo "Tag $tag has no release notes: $notes is missing or empty in its commit" >&2
+                status=1
+            fi
+            ;;
+    esac
     if [ "$remote_sha" = "$zero" ]; then
         range="$local_sha --not --remotes=$remote"
     else
