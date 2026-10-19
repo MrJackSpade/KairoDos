@@ -242,6 +242,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         GuestLifecycleCoordinator(fullscreen::restore, ::releaseGuestInputs, ::refreshControllerUi,
             { audio?.pause() }, { if (currentGame != null) audio?.play() },
             companionActive = { secondaryDisplay.isCompanionActive },
+            companionHoldsStop = { secondaryDisplay.holdsStoppedPrimary },
             resetGestures = edgeSwipes::reset)
     }
     private val backCoordinator: FrontendBackCoordinator by lazy {
@@ -461,6 +462,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        if (RgDsDisplayRouter.isReturnToUpper(intent)) return
         setIntent(intent)
         if (controllerSetupPending) {
             pendingControllerExternalRequest = true

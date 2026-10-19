@@ -61,6 +61,7 @@ object InputDispatchFixture {
             handled = false
             key(event(KeyEvent.KEYCODE_A))
             check(keys.pressedKeys().isEmpty()) { "Frontend keyboard input leaked from $target" }
+            check(!dispatch.physicalKey(event(KeyEvent.KEYCODE_VOLUME_UP))) { "Volume key consumed on $target" }
             handled = true
         }
         screen = InputDispatchCoordinator.Screen.NOTICE
@@ -112,26 +113,36 @@ object InputDispatchFixture {
         mouse.hold("touch", "rightButton")
         keys.hold("automation", listOf(63))
         var companion = false
+        var companionHoldsStop = false
         var audioPaused = 0
         var audioResumed = 0
         var resets = 0
         var fullscreenRestores = 0
         val lifecycle = GuestLifecycleCoordinator({ fullscreenRestores++ }, { dispatch.releaseInputs() }, {},
             { audioPaused++ }, { audioResumed++ }, companionActive = { companion },
+            companionHoldsStop = { companionHoldsStop },
             resetGestures = { resets++ }, releaseOnFocusLoss = { dispatch.releaseInputs(true) })
         lifecycle.onWindowFocusChanged(false)
         check(keys.pressedKeys() == setOf(63) && cancelled == 0)
         check(joy.takeLast(2) == listOf(4 to true, 4 to false))
         check(clicks.containsAll(listOf(1 to true, 1 to false, 2 to true, 2 to false)))
         companion = true
+        companionHoldsStop = true
         check(!lifecycle.onPause() && !lifecycle.onStop() && lifecycle.isVisible)
         check(keys.pressedKeys() == setOf(63) && audioPaused == 0 && resets == 0)
         companion = false
+        companionHoldsStop = false
         check(lifecycle.onPause() && !lifecycle.isVisible && keys.pressedKeys().isEmpty())
         check(cancelled == 1 && audioPaused == 1)
         lifecycle.onResume()
         check(lifecycle.isVisible && audioResumed == 1 && fullscreenRestores == 1)
         check(lifecycle.onStop() && !lifecycle.isVisible && resets == 1)
+        lifecycle.onResume()
+        // A stop the companion does not hold (the user left either screen) suspends the guest.
+        companion = true
+        check(!lifecycle.onPause() && lifecycle.isVisible)
+        check(lifecycle.onStop() && !lifecycle.isVisible && resets == 2 && audioPaused == 3)
+        companion = false
         check(frontendCalls > 0)
 
         val session = SessionNavigationState()
