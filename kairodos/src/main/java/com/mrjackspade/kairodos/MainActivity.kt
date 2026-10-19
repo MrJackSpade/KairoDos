@@ -1561,6 +1561,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         KeyEvent.KEYCODE_F10 -> 291
         KeyEvent.KEYCODE_F11 -> 292
         KeyEvent.KEYCODE_F12 -> 293
+        in KeyEvent.KEYCODE_NUMPAD_0..KeyEvent.KEYCODE_NUMPAD_9 -> 256 + code - KeyEvent.KEYCODE_NUMPAD_0
+        KeyEvent.KEYCODE_NUMPAD_DOT -> 266
+        KeyEvent.KEYCODE_NUMPAD_DIVIDE -> 267
+        KeyEvent.KEYCODE_NUMPAD_MULTIPLY -> 268
+        KeyEvent.KEYCODE_NUMPAD_SUBTRACT -> 269
+        KeyEvent.KEYCODE_NUMPAD_ADD -> 270
+        KeyEvent.KEYCODE_NUMPAD_ENTER -> 271
+        KeyEvent.KEYCODE_NUM_LOCK -> 300
+        KeyEvent.KEYCODE_CAPS_LOCK -> 301
+        KeyEvent.KEYCODE_SCROLL_LOCK -> 302
+        KeyEvent.KEYCODE_SYSRQ -> 316
+        KeyEvent.KEYCODE_BREAK -> 19
         else -> null
     }
 

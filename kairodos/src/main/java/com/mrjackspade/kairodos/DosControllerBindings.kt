@@ -21,13 +21,12 @@ internal object DosControllerBindings {
         "a" to "2 button 1", "x" to "2 button 2")
     private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
-    // Libretro keypad codes let game-specific presets map physical controls to
-    // DOS games that use the numeric keypad without adding analog-stick input.
-    private val keypadCodes = 256..272
-    private val keyCodes = (keys.map { it.code } + keypadCodes + 96).distinct()
+    private val keyCodes = keys.map { it.code }
+    // Keypad = (272) has no IBM key and reaches no guest key, so it is not offered. Earlier
+    // mappings may still hold it, and decoding them must not fall back to the defaults.
+    private val storedKeyCodes = keyCodes.toSet() + 272
     val spec = ControllerGuestSpec("DOS", keyCodes, { code ->
-        keys.firstOrNull { it.code == code }?.label ?: when (code) {
-            96 -> "`"
+        when (code) {
             in 256..265 -> "NumPad ${code - 256}"
             266 -> "NumPad ."
             267 -> "NumPad /"
@@ -36,14 +35,17 @@ internal object DosControllerBindings {
             270 -> "NumPad +"
             271 -> "NumPad Enter"
             272 -> "NumPad ="
-            else -> "Key $code"
+            300 -> "Num Lock"
+            302 -> "Scroll Lock"
+            316 -> "Print Screen"
+            else -> keys.firstOrNull { it.code == code }?.label ?: "Key $code"
         }
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
         "D-pad: arrows; A: Enter; game-specific profiles can map the D-pad and buttons to DOS joystick controls.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
             "restart" to "Restart", "exit" to "Exit"), DosKeyboardLayout.value)
-    private val codec = ControllerBindingsCodec(::defaults, { it in keyCodes }, joystick,
+    private val codec = ControllerBindingsCodec(::defaults, { it in storedKeyCodes }, joystick,
         spec.actions.map { it.first })
 
     // Catalog data and explicit user mappings must be decoded without rewriting their values.
