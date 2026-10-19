@@ -21,6 +21,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.mrjackspade.kairo.frontend.GuestKeyboardPanel
+import com.mrjackspade.kairo.frontend.KeyMappingMode
 import com.mrjackspade.kairo.frontend.AboutDocuments
 import com.mrjackspade.kairo.frontend.InputRouter
 import com.mrjackspade.kairo.frontend.InputModeDecider
@@ -177,6 +178,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { id, bindings -> dosGameSettings.setControllerBindings(id,
                 DosControllerBindings.toJson(bindings).toString()) },
             dosGameSettings::clearControllerBindings, { currentGame })
+    }
+    private val keyMapping by lazy {
+        KeyMappingMode(controllerFlow::activeBindings, controllerFlow::saveActive, controllerFlow::physical,
+            { inputDispatch.guestCapture = it })
     }
     private var onScreenControls: OnScreenControls? = null
     private val dosLibrary by lazy { DosLibrary(this) }
@@ -379,7 +384,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             { remoteSurface, _, _ -> nativeSetSurface(remoteSurface) },
             { event, width, height -> handleGameTouchAt(event, width, height) },
             ::onSecondarySwapChanged,
-            { nativeAspect().takeIf { it in 0.5..3.0 } ?: 4.0 / 3.0 })
+            { nativeAspect().takeIf { it in 0.5..3.0 } ?: 4.0 / 3.0 }, keyMapping)
         pages = PageStack(this, appRoot)
         artwork.restoreInstanceState(savedInstanceState)
         val strings = LibraryStrings("KAIRODOS", "KairoDos", "DOS folder", "No DOS folder selected")
@@ -1071,13 +1076,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         lateinit var panel: GuestKeyboardPanel
         panel = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value,
             { touchUi.hideKeyboard() }, mouse = mouse,
-            mouseReferenceSize = { 640 to 400 })
+            mouseReferenceSize = { 640 to 400 }, mapping = keyMapping)
         keyboard = panel
         root.addView(panel, FrameLayout.LayoutParams(-1, Ui.dp(this, 280), Gravity.BOTTOM))
         touchUi.bind(panel)
         onScreenControls?.bindGuestKeyboard(panel)
         swappedKeyboard = GuestKeyboardPanel(this, keys, DosKeyboardLayout.value, {},
-            showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse)
+            showClose = false, onSwap = { secondaryDisplay.toggleSwap() }, mouse = mouse, mapping = keyMapping)
             .also { root.addView(it, FrameLayout.LayoutParams(-1, -1)) }
         onScreenControls?.refreshVisibility(true)
         refreshControllerUi()
