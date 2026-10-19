@@ -2,7 +2,8 @@
   "schemaVersion": 1,
   "assignments": {
     "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158": "duke3d-fps-v1",
-    "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke3d-fps-v1"
+    "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke3d-fps-v1",
+    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1"
   },
   "presets": {
     "doom-v1": {
@@ -704,6 +705,75 @@
             "input": "button:107",
             "keys": [
               110
+            ]
+          }
+        ]
+      }
+    },
+    "batman-the-movie-keyboard-v1": {
+      "description": "Keyboard control (choose 1 at the controls menu). The game reads Q up/climb, A crouch, O left, P right and Space to throw; arrow keys do nothing.",
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            113
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            97
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            111
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            112
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            32
+          ]
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              113
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              111
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              112
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              32
             ]
           }
         ]

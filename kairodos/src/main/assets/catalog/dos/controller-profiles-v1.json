@@ -185,6 +185,7 @@
     "sha256-dos-manifest-v1:2c7a29e91e1ea132f525f090c8f8dabcbf5e20fb178bf043bddc1022eb19bdee": "brix-horizontal-cursor-space-pick-v1",
     "sha256-dos-manifest-v1:2d7358713526a8efddde89059e8c0944249a47f08c887c424073b444b3878b52": "personal-nightmare-dpad-mouse-command-v1",
     "sha256-dos-manifest-v1:30cc4309ce50f63de0fedcf60fd46bd9af490d2eccf90a209e86b366ee450538": "dpad-mouse-point-and-select-v1",
+    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1",
     "sha256-dos-manifest-v1:337b77c6f79869b1923ef267b4db5f2b30007ef137cb4f3b11ebdad89e85d8ec": "chaos-engine-native-joystick-keyboard-actions-inferred-v1",
     "sha256-dos-manifest-v1:350dbd2e996d73a70af63a97a3a96b4bf5d9c467f3c707e94af3653e8159a161": "dpad-mouse-left-right-esc-v1",
     "sha256-dos-manifest-v1:354ec4db8c71c450498b62084a75bf94cbc92f0d1c5bb43daf6860a7da647607": "rampcube-keyboard-v1",
@@ -7981,6 +7982,75 @@
             "input": "virtual:x",
             "keys": [
               51
+            ]
+          }
+        ]
+      }
+    },
+    "batman-the-movie-keyboard-v1": {
+      "description": "Keyboard control (choose 1 at the controls menu). The game reads Q up/climb, A crouch, O left, P right and Space to throw; arrow keys do nothing.",
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            113
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            97
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            111
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            112
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            32
+          ]
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              113
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              97
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              111
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              112
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              32
             ]
           }
         ]
