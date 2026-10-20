@@ -887,10 +887,18 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                     }
                 } else game
-                if (game.installer) moveGame(game.key, playableGame.key)
-                // An external installed copy's working files were named by its earlier ID.
-                if (game.installer && game.external)
-                    claimSavedData(Uri.EMPTY, listOf(playableGame)).single().error?.let(::error)
+                if (game.installer) {
+                    moveGame(game.key, playableGame.key)
+                    // An external installed copy's working files were named by its earlier ID.
+                    if (game.external) claimSavedData(Uri.EMPTY, listOf(playableGame)).single().error?.let(::error)
+                    // From here the installed archive is the session's game; its key holds the moved settings.
+                    runOnUiThread {
+                        if (generation == launchGeneration) {
+                            currentGame = playableGame
+                            configureGuest()
+                        }
+                    }
+                }
                 val saveDir = saveDir(playableGame)
                 require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
                 // Each mounted game drive writes to its own overlay. Folder sessions are stored after the run.
@@ -929,7 +937,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val resources = DosStagingResources.prepare(this, cancelled)
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, overlays, playerName,
-                    effectiveVoodoo() == 1, effectiveDirectTouch(),
+                    effectiveVoodoo(playableGame) == 1, effectiveDirectTouch(playableGame),
                     dosGameSettings.videoHardware(playableGame.key), target)
                 if (target == DosLaunchTarget.Browse) runOnUiThread {
                     if (generation == launchGeneration) pendingProgramPicker = {
@@ -958,7 +966,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 false
             }
             runOnUiThread {
-                if (generation == launchGeneration && currentGame?.id == game.id) {
+                if (generation == launchGeneration && currentGame != null) {
                     leaveGame(success)
                     if (!success) {
                         Ui.message(this, message ?: "Could not prepare this game", long = true)
@@ -968,7 +976,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 }
             }
         }.apply { name = "KairoDos-emulation"; start() }
-        pollSession(game.id)
+        pollSession(generation)
     }
 
     /** A game's local working files: its base drive, launch configuration and unsaved session. */
@@ -1294,9 +1302,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         refreshControllerUi()
     }
 
-    private fun pollSession(id: String) {
+    /** Every way a session ends advances [launchGeneration]; an installer's session changes game midway. */
+    private fun pollSession(generation: Int) {
         handler.postDelayed({
-            if (currentGame?.id != id || endingSessionForLibrary) return@postDelayed
+            if (generation != launchGeneration || currentGame == null || endingSessionForLibrary) return@postDelayed
             if (nativeStatus() == 2) {
                 InputModeDecider.GuestInput.fromNative(nativeInputTelemetry())?.let {
                     inputModeDecider.observe(it, android.os.SystemClock.elapsedRealtime())
@@ -1318,7 +1327,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     }
                 }
             }
-            pollSession(id)
+            pollSession(generation)
         }, 250)
     }
 
