@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import com.mrjackspade.kairo.frontend.ExternalGameFile
+import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.LibraryScanPipeline
 import com.mrjackspade.kairo.frontend.LibraryItem
 import com.mrjackspade.kairo.frontend.VersionedLibraryCache
@@ -42,7 +43,8 @@ class DosLibrary(private val context: Context) {
         override val contentId: String?,
         override val error: String? = null,
         val installer: Boolean = false,
-        val external: Boolean = false
+        val external: Boolean = false,
+        override val catalogId: String? = contentId
     ) : LibraryItem {
         override val zipEntry: String? = null
         // Rows, search and comparisons read the name constantly; it is derived once.
@@ -58,10 +60,10 @@ class DosLibrary(private val context: Context) {
         override val mediaLabel: String get() = "DOS game"
     }
 
-    private val storeCache = VersionedLibraryCache(File(context.filesDir, "dos-library-v2.bin"), 3,
+    private val storeCache = VersionedLibraryCache(File(context.filesDir, "dos-library-v2.bin"), 4,
         64 * 1024 * 1024, 50_000, ::writeCacheRecord, ::readCacheRecord,
         VersionedLibraryCache.Legacy(File(context.filesDir, "dos-library-v1.json"), 2, "games",
-            ::decodeLegacyEntry))
+            ::decodeLegacyEntry), mapOf(3 to ::readCacheRecordV3))
     private val walker = DocumentTreeWalker(context.contentResolver)
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
@@ -99,7 +101,8 @@ class DosLibrary(private val context: Context) {
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
             !isInstalledArchive(file.name)
-        return Game(sha256(file.uri.toString()), file.uri.toString(), file.name,
+        // A document in the library opens as its entry; any other keeps its own URI as its key.
+        return Game(file.uri.toString(), file.uri.toString(), file.name,
             false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
     }
 
@@ -143,7 +146,7 @@ class DosLibrary(private val context: Context) {
             work.add(ScanWork.Folder(tree, root, members))
         }
         val folderErrors = source.folders.map { folder ->
-            Game(sha256(folder.uri.toString()), folder.uri.toString(), folder.path,
+            Game(folder.path, folder.uri.toString(), folder.path,
                 true, false, "", null, "Unreadable folder: ${folder.message}")
         }
         return LibraryScanPipeline.Plan(work, finalEntries = folderErrors)
@@ -163,7 +166,7 @@ class DosLibrary(private val context: Context) {
 
     private fun inspectArchive(item: DocumentTreeWalker.FileEntry,
                                scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
-        val id = sha256(item.uri.toString())
+        val id = item.path
         val fingerprint = "${item.size}:${item.modified}"
         val old = scan.prior[id]
         var installer = old?.installer == true &&
@@ -188,10 +191,15 @@ class DosLibrary(private val context: Context) {
             } else hashDocument(item, scan.cancelled)
         }
         return listOf(Game(id, item.uri.toString(), item.path, false, false,
-            fingerprint, contentId, null, installer))
+            fingerprint, contentId, null, installer, catalogId = catalogId(scan, id, contentId)))
     }
 
-    private fun folderId(work: ScanWork.Folder) = sha256("${work.tree}\u0000${work.root}")
+    /** A folder game's key is its folder; a game that is the whole library folder has the empty path. */
+    private fun folderId(work: ScanWork.Folder) = if (work.root == "@root") "" else work.root
+
+    /** The content this key was first scanned with, kept through later edits for its catalog record. */
+    private fun catalogId(scan: LibraryScanPipeline.ScanContext<Game>, id: String, contentId: String?) =
+        scan.earlier[id]?.catalogId ?: contentId
 
     private fun folderFingerprint(work: ScanWork.Folder) =
         sha256(work.members.sortedBy { it.path }.joinToString("\u0000") {
@@ -221,23 +229,25 @@ class DosLibrary(private val context: Context) {
             DosContentHash.documents(context.contentResolver, work.members, scan.cancelled)
         }
         return listOf(Game(id, folderUri(work).toString(), folderDisplay(work), true,
-            work.root == "@root", fingerprint, contentId))
+            work.root == "@root", fingerprint, contentId, catalogId = catalogId(scan, id, contentId)))
     }
 
     private fun failedScanWork(work: ScanWork, scan: LibraryScanPipeline.ScanContext<Game>,
                                error: Exception): List<Game> = when (work) {
         is ScanWork.Archive -> {
             val item = work.file
-            val installer = scan.prior[sha256(item.uri.toString())]?.installer == true &&
+            val installer = scan.prior[item.path]?.installer == true &&
                 !isInstalledArchive(item.path.substringAfterLast('/'))
-            listOf(Game(sha256(item.uri.toString()), item.uri.toString(), item.path,
+            listOf(Game(item.path, item.uri.toString(), item.path,
                 false, false, "${item.size}:${item.modified}", null,
-                error.message ?: "Unreadable DOS game", installer))
+                error.message ?: "Unreadable DOS game", installer,
+                catalogId = scan.earlier[item.path]?.catalogId))
         }
         is ScanWork.Folder -> listOf(Game(folderId(work),
             runCatching { folderUri(work) }.getOrDefault(work.tree).toString(),
             folderDisplay(work), true, work.root == "@root", folderFingerprint(work),
-            null, error.message ?: "Unreadable DOS folder"))
+            null, error.message ?: "Unreadable DOS folder",
+            catalogId = scan.earlier[folderId(work)]?.catalogId))
     }
 
     /** Materialize eXoDOS's ZIP extraction as a durable, separate archive. */
@@ -314,13 +324,12 @@ class DosLibrary(private val context: Context) {
                     "An installed archive with this name already exists and differs"
                 }
             }
-            val installedId = sha256(uri.toString())
             val staged = File(cache,
-                "$installedId-${game.contentId!!.substringAfter(':').take(16)}.zip")
+                "${GameKey(path).storageName}-${game.contentId!!.substringAfter(':').take(16)}.zip")
             if (!staged.isFile) source.renameTo(staged)
             // The scan's fingerprint, so the next scan reuses this verified content ID.
-            return Game(installedId, uri.toString(), path, false, false,
-                documentFingerprint(uri), game.contentId, null, false)
+            return Game(path, uri.toString(), path, false, false,
+                documentFingerprint(uri), game.contentId, null, false, catalogId = game.catalogId)
         } catch (failure: Exception) {
             if (existing == null) runCatching {
                 DocumentsContract.deleteDocument(context.contentResolver, uri)
@@ -355,8 +364,9 @@ class DosLibrary(private val context: Context) {
             } finally { pending.delete() }
         }
         val name = game.path.substringBeforeLast('.') + " - Installed.zip"
-        return Game(installedId, Uri.fromFile(installed).toString(), name, false,
-            false, "", game.contentId, null, false, true)
+        // Outside the library folder, its key is its own file's URI.
+        val uri = Uri.fromFile(installed).toString()
+        return Game(uri, uri, name, false, false, "", game.contentId, null, false, true, game.catalogId)
     }
 
     fun deleteInstaller(game: Game, installed: Game) {
@@ -389,7 +399,7 @@ class DosLibrary(private val context: Context) {
         require(DocumentsContract.deleteDocument(context.contentResolver, uri)) {
             "The document provider could not delete the game"
         }
-        cache.listFiles()?.filter { it.name.startsWith("${game.id}-") }?.forEach { it.delete() }
+        cache.listFiles()?.filter { it.name.startsWith("${game.key.storageName}-") }?.forEach { it.delete() }
     }
 
     private fun documentFingerprint(uri: Uri): String {
@@ -430,7 +440,7 @@ class DosLibrary(private val context: Context) {
             wrapFolder != "." && wrapFolder != "..") { "Invalid game folder" }
         val wrapping = if (wrapFolder != null) "-parent" else ""
         val target = File(cache,
-            "${game.id}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
+            "${game.key.storageName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
         if (target.isFile) return target
         try { if (!game.folder) {
             val source = DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0)
@@ -602,18 +612,39 @@ class DosLibrary(private val context: Context) {
         writeText(game.id); writeText(game.uri); writeText(game.path)
         writeBoolean(game.folder); writeBoolean(game.rootFolder); writeText(game.fingerprint)
         writeOptionalText(game.contentId); writeOptionalText(game.error); writeBoolean(game.installer)
+        writeOptionalText(game.catalogId)
     }
 
     private fun readCacheRecord(input: java.io.DataInputStream) = with(input) {
         Game(readText(), readText(), readText(), readBoolean(), readBoolean(), readText(),
-            readOptionalText(), readOptionalText(), readBoolean())
+            readOptionalText(), readOptionalText(), readBoolean(), catalogId = readOptionalText())
+    }
+
+    /**
+     * Layout 3, from before games had keys: its ID hashed the entry's document. The key is the
+     * path, and the content it was scanned with names its catalog record.
+     */
+    private fun readCacheRecordV3(input: java.io.DataInputStream) = with(input) {
+        readText()
+        keyed(Game("", readText(), readText(), readBoolean(), readBoolean(), readText(),
+            readOptionalText(), readOptionalText(), readBoolean()))
     }
 
     /** The JSON cache that version 1.0.3 and earlier wrote. */
-    private fun decodeLegacyEntry(item: JSONObject) = Game(item.getString("id"), item.getString("uri"),
+    private fun decodeLegacyEntry(item: JSONObject) = keyed(Game("", item.getString("uri"),
         item.getString("path"), item.optBoolean("folder"), item.optBoolean("rootFolder"),
         item.optString("fingerprint"), item.optString("contentId").takeIf { it.isNotEmpty() },
-        item.optString("error").takeIf { it.isNotEmpty() }, item.optBoolean("installer"))
+        item.optString("error").takeIf { it.isNotEmpty() }, item.optBoolean("installer")))
+
+    private fun keyed(game: Game) = game.copy(id = if (game.rootFolder) "" else game.path)
+
+    /** The ID [game]'s entry had before games had keys, which named its local save folder. */
+    fun legacyEntryId(game: Game, tree: Uri?): String = when {
+        game.folder -> sha256("$tree\u0000${if (game.rootFolder) "@root" else game.path}")
+        // An external installed copy's file was named by that ID.
+        game.external && game.uri.startsWith("file:") -> File(Uri.parse(game.uri).path!!).nameWithoutExtension
+        else -> sha256(game.uri)
+    }
 
     private fun extension(path: String) = path.substringAfterLast('.', "").lowercase(Locale.ROOT)
     private val MAX_ARCHIVE_BYTES = 8L * 1024 * 1024 * 1024

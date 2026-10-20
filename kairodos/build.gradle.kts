@@ -96,4 +96,5 @@ tasks.named("preBuild") { dependsOn(stagingResources) }
 dependencies {
     implementation(project(":frontend"))
     implementation(project(":backend-dos"))
+    testImplementation("junit:junit:4.13.2")
 }

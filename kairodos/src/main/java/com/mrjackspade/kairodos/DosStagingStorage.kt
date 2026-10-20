@@ -9,13 +9,16 @@ import java.util.zip.CRC32
 /** Staging mounts native folders. Each game has a pristine base drive, extracted
  * once outside the evictable archive cache, and an overlay that holds everything
  * the game writes. Only the overlay is the player's saved data. Original media
- * and Pure saves are never modified; an interrupted import cannot become live. */
+ * and Pure saves are never modified; an interrupted import cannot become live.
+ * When the game's source changes, the base is extracted again and the overlay kept. */
 internal object DosStagingStorage {
     /** [directory] is the base drive; [overlay] mirrors its layout with the game's writes. */
     data class Drive(val directory: File, val media: File?, val overlay: File)
     private const val MAX_BYTES = 16L * 1024 * 1024 * 1024
     private const val MAX_FILES = 100_000
     private val DOS_NAME = Regex("[A-Z0-9_\\-!#$%&'(){}@^~`]{1,8}(\\.[A-Z0-9_\\-!#$%&'(){}@^~`]{1,3})?")
+    /** Staging's overlay records a removed file or folder as an empty marker file. */
+    private val DELETION = Regex("DBOVERLAY_(DEL|RMD)_(.+)")
 
     /** Whether [saveDir] still holds a drive from before games had overlays. */
     fun hasLegacyDrive(saveDir: File) = File(saveDir, "staging/drive").isDirectory &&
@@ -24,18 +27,24 @@ internal object DosStagingStorage {
     /** The content ID a legacy drive was prepared for. */
     fun legacyContentId(saveDir: File): String = File(saveDir, "staging/drive-v1.txt").readText()
 
+    /**
+     * [edited] receives the saved files that a change to the game's source also changed, as
+     * paths relative to the drive, and returns those whose edited source copy replaces the saved
+     * one. It may wait for the user; it throws to cancel.
+     */
     fun prepare(archive: File, saveDir: File, contentId: String, overlay: File, cancelled: AtomicBoolean,
                 gameFolder: String? = null,
+                edited: (List<String>) -> Set<String> = { error("This game's source changed") },
                 progress: (String) -> Unit = {}): Drive {
         val staging = File(saveDir, "staging").apply { mkdirs() }
         val base = File(staging, "base")
         val marker = File(staging, "base-v2.txt")
         val legacy = File(staging, "drive")
         if (marker.isFile) {
-            require(marker.readText() == contentId) {
-                "This game's source changed. Its existing writable game files were preserved."
-            }
-            check(base.isDirectory) { "This game's files are missing; delete its saved data to prepare it again" }
+            recoverRebuild(staging)
+            val changed = marker.readText() != contentId
+            if (changed || !base.isDirectory)
+                rebuild(archive, staging, contentId, overlay, cancelled, gameFolder, if (changed) edited else null, progress)
             // A conversion that finished before removing the old drive.
             if (legacy.exists()) check(legacy.deleteRecursively() && File(staging, "drive-v1.txt").delete()) {
                 "Could not remove the converted game drive"
@@ -46,7 +55,8 @@ internal object DosStagingStorage {
         }
         if (legacy.isDirectory) {
             require(File(staging, "drive-v1.txt").readText() == contentId) {
-                "This game's source changed. Its existing writable game files were preserved."
+                "This game's source changed before its saved files were converted. They were preserved; " +
+                    "restore the game's original files to convert them."
             }
             convert(archive, legacy, staging, overlay, contentId, cancelled, gameFolder, progress)
             return Drive(base, media(base, archive), overlay)
@@ -79,6 +89,108 @@ internal object DosStagingStorage {
         }
         require(overlay.isDirectory || overlay.mkdirs()) { "Could not create the game's save folder" }
         return Drive(base, media(base, archive), overlay)
+    }
+
+    /** An interrupted [rebuild] left the previous base beside the new one, or in its place. */
+    private fun recoverRebuild(staging: File) {
+        val base = File(staging, "base")
+        val previous = File(staging, "base-previous")
+        if (!previous.exists()) return
+        if (base.isDirectory) check(previous.deleteRecursively()) { "Could not remove the previous game files" }
+        else check(previous.renameTo(base)) { "Could not restore the previous game files" }
+    }
+
+    /**
+     * Extracts the source as the base again. When the source changed, a saved file whose source
+     * file changed too, or was added or removed, is a conflict: [edited] chooses which copies give
+     * way to the source. Without [edited] the source is unchanged and only the base was missing.
+     */
+    private fun rebuild(archive: File, staging: File, contentId: String, overlay: File, cancelled: AtomicBoolean,
+                        gameFolder: String?, edited: ((List<String>) -> Set<String>)?, progress: (String) -> Unit) {
+        val base = File(staging, "base")
+        val marker = File(staging, "base-v2.txt")
+        val pending = File(staging, "base-pending")
+        clear(pending, staging)
+        try {
+            extractPristine(archive, pending, cancelled, gameFolder, progress)
+            require(!cancelled.get()) { "Cancelled" }
+            if (edited != null) {
+                progress("Checking changed game files…")
+                val changed = HashMap<String, String>()
+                changedFiles(base.takeIf { it.isDirectory }, pending, "", changed)
+                // A removed saved folder hides every changed source file inside it.
+                val conflicts = savedPaths(overlay).filter { (key, saved) ->
+                    key in changed || (saved.folder && changed.keys.any { it.startsWith("$key/") })
+                }.map { it.value.path }.sorted()
+                val replace = if (conflicts.isEmpty()) emptySet() else edited(conflicts)
+                require(conflicts.containsAll(replace))
+                require(!cancelled.get()) { "Cancelled" }
+                for (path in replace) for (file in overlayFiles(overlay, path))
+                    check(file.deleteRecursively()) { "Could not remove the saved copy of $path" }
+            }
+            val previous = File(staging, "base-previous")
+            if (base.exists()) check(base.renameTo(previous)) { "Could not replace the game files" }
+            require(pending.renameTo(base)) { "Could not publish game files" }
+            marker.writeText(contentId)
+            if (previous.exists()) check(previous.deleteRecursively()) { "Could not remove the previous game files" }
+        } finally {
+            if (pending.exists()) pending.deleteRecursively()
+        }
+    }
+
+    /** Files that differ between two bases, by lowercase drive path, as [into] path to display path. */
+    private fun changedFiles(old: File?, new: File?, relative: String, into: MutableMap<String, String>) {
+        val oldChildren = old?.listFiles().orEmpty().associateBy { it.name.lowercase(Locale.ROOT) }
+        val newChildren = new?.listFiles().orEmpty().associateBy { it.name.lowercase(Locale.ROOT) }
+        for (key in oldChildren.keys + newChildren.keys) {
+            val before = oldChildren[key]
+            val after = newChildren[key]
+            val name = (after ?: before)!!.name
+            val path = "$relative$name"
+            if (before?.isDirectory == true || after?.isDirectory == true) {
+                if (before?.isFile == true) into[path.lowercase(Locale.ROOT)] = path
+                if (after?.isFile == true) into[path.lowercase(Locale.ROOT)] = path
+                changedFiles(before?.takeIf { it.isDirectory }, after?.takeIf { it.isDirectory }, "$path/", into)
+            } else if (before == null || after == null || !sameContents(before, after)) {
+                into[path.lowercase(Locale.ROOT)] = path
+            }
+        }
+    }
+
+    /** A saved file, or a removed file or [folder], at its drive path. */
+    private class Saved(val path: String, val folder: Boolean)
+
+    /** Every saved file and deletion marker in [overlay], by lowercase drive path. */
+    private fun savedPaths(overlay: File): Map<String, Saved> {
+        val result = HashMap<String, Saved>()
+        fun add(path: String, folder: Boolean) { result[path.lowercase(Locale.ROOT)] = Saved(path, folder) }
+        fun walk(directory: File, relative: String) {
+            for (child in directory.listFiles().orEmpty()) {
+                val marked = DELETION.matchEntire(child.name)
+                when {
+                    marked != null -> add("$relative${marked.groupValues[2]}", marked.groupValues[1] == "RMD")
+                    child.isDirectory -> walk(child, "$relative${child.name}/")
+                    else -> add("$relative${child.name}", false)
+                }
+            }
+        }
+        walk(overlay, "")
+        return result
+    }
+
+    /** The saved copy of [path] in [overlay]: the file itself or its deletion marker. */
+    private fun overlayFiles(overlay: File, path: String): List<File> {
+        val parent = path.substringBeforeLast('/', "")
+        val name = path.substringAfterLast('/')
+        var directory = overlay
+        if (parent.isNotEmpty()) for (segment in parent.split('/')) {
+            directory = directory.listFiles().orEmpty().firstOrNull { it.isDirectory && it.name.equals(segment, true) }
+                ?: return emptyList()
+        }
+        return directory.listFiles().orEmpty().filter { child ->
+            child.name.equals(name, true) ||
+                DELETION.matchEntire(child.name)?.groupValues?.get(2)?.equals(name, true) == true
+        }
     }
 
     private fun media(base: File, archive: File) =

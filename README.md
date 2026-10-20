@@ -67,6 +67,7 @@ If an external frontend shares only that one ZIP, the installed copy is kept in 
 ## Saves
 
 - **In-game saves.** Everything a game writes, including its saves, is kept separately from the original files.
+- **Editing a game's files.** Saves and settings belong to the game's place in your DOS folder, so you can add or change its files, such as a BAT or configuration file. If the game saved its own copy of a file you changed, KairoDos asks which copy to keep. Renaming or moving a game makes it a new game.
 - **Save folder.** To keep saved games in a folder of your choice, choose **Menu › Configurations › Save folder › Custom folder**. Changing the folder moves your saves; if a game has saves in both places, you choose which copy to keep.
 - **No emulator save states.** DOSBox Staging does not support save states, so use each game's own save system. Old DOSBox Pure state files stay on disk but cannot be loaded.
 

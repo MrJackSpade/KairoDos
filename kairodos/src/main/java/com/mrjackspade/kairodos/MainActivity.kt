@@ -51,6 +51,8 @@ import com.mrjackspade.kairo.frontend.RgDsDisplayRouter
 import com.mrjackspade.kairo.frontend.ImmersiveWindow
 import com.mrjackspade.kairo.frontend.ViewScale
 import com.mrjackspade.kairo.frontend.EdgeSwipeNavigation
+import com.mrjackspade.kairo.frontend.GameKey
+import com.mrjackspade.kairo.frontend.GameKeyMigration
 import com.mrjackspade.kairo.frontend.GameSettingScope
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.SessionFlow
@@ -123,6 +125,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     companion object {
         private const val OVERLAY_UNIT = "overlay"
+        private const val SAVED_COPY = "saved"
+        private const val EDITED_FILE = "edited"
         private const val WORKING_OVERLAY = "staging/overlay-working"
         private const val UNSAVED_OVERLAY = "staging/overlay-working.unsaved"
         private const val PICK_FOLDER = 1001
@@ -169,10 +173,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         DosControllerBindings.defaults())
     private val controllerFlow by lazy {
         ControllerProfileCoordinator(controllerProfiles, gamepad,
-            DosLibrary.Game::contentId,
+            { game: DosLibrary.Game -> game.key.takeIf { game.contentId != null } },
             { game: DosLibrary.Game ->
-                catalog.gameControllerBindings(game.contentId!!, game.displayName,
-                    controllerProfiles.configuration.layout, dosGameSettings.controllerBindings(game.contentId))
+                catalog.gameControllerBindings(game, controllerProfiles.configuration.layout,
+                    dosGameSettings.controllerBindings(game.key))
                     ?: controllerProfiles.global()
             },
             { id, bindings -> dosGameSettings.setControllerBindings(id,
@@ -194,23 +198,88 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private val externalDispatcher by lazy {
         ExternalGameDispatcher(this, contentResolver, { games },
             { game: DosLibrary.Game -> Uri.parse(game.uri) },
-            { file, cancelled -> listOf(dosLibrary.inspectExternal(file, cancelled)) },
+            { file, cancelled ->
+                val game = claimSavedData(Uri.EMPTY, listOf(dosLibrary.inspectExternal(file, cancelled))).single()
+                listOf(game.also { it.error?.let(::error) })
+            },
             { entries, _ -> launch(entries.single(), true) },
             libraryScreen::showStatus, "KairoDos-external-game")
     }
     private val catalog by lazy { DosGameCatalog(this) }
+    /** Saves and settings from before games had keys move to their games as the library loads. */
+    private val gameKeyMigration by lazy {
+        val saves = File(filesDir, "saves")
+        GameKeyMigration(preferences, listOf(
+            GameKeyMigration.PreferenceStore(preferences, DosPerGameSettings.LEGACY),
+            catalog.legacyOverrides(),
+            GameKeyMigration.SaveStore({ saveFolder.location }, setOf(OVERLAY_UNIT), cacheDir,
+                File(filesDir, "game-key-migration-v1.json")) { conflicts ->
+                saveFolder.resolveMigrationConflicts(conflicts) { key ->
+                    claiming.firstOrNull { it.key == key }?.let(::titleOf) ?: key.path
+                }
+            }), listOf(LegacySaveDirectories(saves), LegacyLastPlayed()))
+    }
+
+    /** A game's local working files were named by its entry's earlier ID. */
+    private class LegacySaveDirectories(private val root: File) : GameKeyMigration.EntryStore<DosLibrary.Game> {
+        private var legacy = emptySet<String>()
+        override fun refresh() {
+            legacy = root.list().orEmpty().filterNot { it.startsWith(GameKey.STORAGE_PREFIX) }.toSet()
+        }
+        override fun has(claim: GameKeyMigration.Claim<DosLibrary.Game>) = claim.entryId in legacy
+        override fun move(claim: GameKeyMigration.Claim<DosLibrary.Game>) {
+            val from = File(root, claim.entryId!!)
+            val to = File(root, claim.key.storageName)
+            if (to.exists()) {
+                // Only a drive from before overlays or an unstored session is saved data here.
+                require(!File(from, "staging/drive").exists() && !File(from, UNSAVED_OVERLAY).exists()) {
+                    "This game's saved files are in two places: ${from.name} and ${to.name}"
+                }
+                check(from.deleteRecursively()) { "Could not remove the game's earlier working files" }
+            } else check(from.renameTo(to)) { "Could not move the game's working files" }
+            legacy = legacy - from.name
+        }
+        override fun isEmpty() = legacy.isEmpty()
+    }
+
+    private inner class LegacyLastPlayed : GameKeyMigration.EntryStore<DosLibrary.Game> {
+        override fun has(claim: GameKeyMigration.Claim<DosLibrary.Game>) =
+            preferences.getString("last_played_entry", null) == claim.entryId
+        override fun move(claim: GameKeyMigration.Claim<DosLibrary.Game>) {
+            check(preferences.edit().putString("last_played_entry", claim.key.path).commit()) {
+                "Could not remember the last played game"
+            }
+        }
+        // A last-played game no longer in the library is not saved data.
+        override fun isEmpty() = true
+    }
+
+    /** Moves saves and settings from before games had keys to [entries]; a game whose data did not move shows why. */
+    /** The games a claim is moving data to; the library list is not published until it ends. */
+    @Volatile private var claiming: List<DosLibrary.Game> = emptyList()
+
+    private fun claimSavedData(folder: Uri, entries: List<DosLibrary.Game>): List<DosLibrary.Game> {
+        if (!gameKeyMigration.pending) return entries
+        claiming = entries
+        val errors = gameKeyMigration.claim(entries.map {
+            GameKeyMigration.Claim(it, dosLibrary.legacyEntryId(it, folder))
+        })
+        return if (errors.isEmpty()) entries else entries.map { game ->
+            errors[game.key]?.let { game.copy(error = it) } ?: game
+        }
+    }
     private val artworkDownloads by lazy {
         com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController(
             this, libraryScreen, { games }, catalog::missingArtworkFor, catalog::downloadArtwork) { refreshPages() }
     }
     private val artwork by lazy {
-        ArtworkCoordinator(this, pages, catalog.artworkStore, { game: DosLibrary.Game -> game.contentId },
+        ArtworkCoordinator(this, pages, catalog.artworkStore, DosLibrary.Game::key,
             { game, kind ->
-                val record = catalog.resolve(game.contentId ?: "", game.displayName)
+                val record = catalog.resolve(game)
                 ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt, null,
-                    game.contentId?.let { catalog.sourceOf(it, game.displayName, "artwork", kind) })
+                    catalog.sourceOf(game, "artwork", kind))
             }, { DosCatalogFields.safeArtPath(it) != null }, catalog::setArtworkOverride,
-            { id -> libraryScreen.metadataChanged(id) }, ::titleOf, { Ui.message(this, it) })
+            { game -> libraryScreen.metadataChanged(game) }, ::titleOf, { Ui.message(this, it) })
     }
     private val catalogUpdates by lazy {
         CatalogUpdateController(this, catalog::downloadUpdate,
@@ -299,7 +368,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 touchMode(preferences.getInt("touch_mode", 2))
             }
             override fun directTouch(game: DosLibrary.Game): GameValue<Boolean> {
-                val id = game.contentId!!
+                val id = game.key
                 return GameValue({ if (gameSettings.has(id, "direct_touch")) gameSettings.boolean(id, "direct_touch", false) else null },
                     { preferences.getBoolean("direct_touch", false) }, { GameSource.ALL_GAMES },
                     { value -> if (value == null) gameSettings.clear(id, "direct_touch")
@@ -311,7 +380,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             InputModeDecider.Mode.MOUSE to ChoiceOption("mouse", "Mouse")),
             "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your " +
                 "finger; some games require relative movement.") { game ->
-            if (game == null || currentGame?.contentId == game.contentId) {
+            if (game == null || currentGame?.id == game.id) {
                 inputModeDecider.reset()
                 configureGuest()
             }
@@ -321,7 +390,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     /** A per-game value stored as an int beside the all-games preference. */
     private fun <V> gameInt(game: DosLibrary.Game, key: String, read: (Int) -> V, write: (V) -> Int,
                             global: () -> V): GameValue<V> {
-        val id = game.contentId!!
+        val id = game.key
         return GameValue({ if (gameSettings.has(id, key)) read(gameSettings.int(id, key, 0)) else null },
             global, { GameSource.ALL_GAMES },
             { value -> if (value == null) gameSettings.clear(id, key) else gameSettings.setInt(id, key, write(value)) })
@@ -394,7 +463,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             ::previewGame, ::showGameDetails, ::showLibrarySelection,
             commandLaunch = { startGame(it, manualConfig(it), target = DosLaunchTarget.Browse) })
         libraryFlow = LibraryFlow(this, preferences, libraryPage, PICK_FOLDER,
-            dosLibrary::cached, dosLibrary::scan,
+            { folder -> claimSavedData(folder, dosLibrary.cached(folder)) },
+            { folder, force, cancelled, progress ->
+                claimSavedData(folder, dosLibrary.scan(folder, force, cancelled, progress))
+            },
             "Choose a DOS folder to find games",
             "DOS folder needs read and write access. Select it again.",
             { found -> LibraryScanSummary.format(found, dosLibrary.hashCount) },
@@ -542,7 +614,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun previewGame(game: DosLibrary.Game) = artwork.view(game)
 
-    private fun titleOf(game: DosLibrary.Game) = catalog.resolve(game.contentId ?: "", game.displayName).title
+    private fun titleOf(game: DosLibrary.Game) = catalog.resolve(game).title
 
     /** Game settings over the game page, or over the game flyout while the game runs. */
     private fun showGameDetails(entry: DosLibrary.Game) {
@@ -550,14 +622,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun gameSettings(entry: DosLibrary.Game): List<RowGroup> {
-        val id = entry.contentId
+        // Settings belong to the game's key, once its files have been read.
+        val id = entry.key.takeIf { entry.contentId != null }
         val hashed = { id != null }
         val noHash = { GameSettingsRows.NO_HASH }
         val scope = { titleOf(entry) }
-        val record = catalog.resolve(id ?: "", entry.displayName)
+        val record = catalog.resolve(entry)
         val variants = record.launch?.configs?.keys.orEmpty()
             .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
-        fun applyLive() { if (currentGame?.contentId == id) configureGuest() }
+        fun applyLive() { if (currentGame?.id == entry.id) configureGuest() }
         fun intValue(key: String, global: () -> Int) = if (id == null) GameValue({ null }, { global().toString() },
             { GameSource.ALL_GAMES }, { }) else GameValue(
             { if (gameSettings.has(id, key)) gameSettings.int(id, key, 0).toString() else null },
@@ -571,7 +644,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 id == null -> GameSource.ALL_GAMES
                 dosGameSettings.controllerBindings(id) != null -> GameSource.CUSTOM
                 // Controller profiles come from the bundled profile catalog.
-                catalog.resolve(id, entry.displayName).controllerProfile != null -> "Shipped catalog"
+                catalog.resolve(entry).controllerProfile != null -> "Shipped catalog"
                 else -> GameSource.ALL_GAMES
             }
         }
@@ -599,14 +672,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 "Video changes apply the next time the game starts."),
             RowGroup("LIBRARY", listOf(
                 GameSettingsRows.text("title", "Title", "Game title", { titleOf(entry) },
-                    { id != null && catalog.sourceOf(id, entry.displayName, "title") == "User override" },
-                    { id?.let { GameSource.label(catalog.sourceOf(it, entry.displayName, "title")) } ?: "Filename" },
+                    { id != null && catalog.sourceOf(entry, "title") == "User override" },
+                    { id?.let { GameSource.label(catalog.sourceOf(entry, "title")) } ?: "Filename" },
                     { value -> updateTitle(id, value) }, { updateTitle(id, null) },
                     enabled = hashed, disabledReason = noHash),
                 artwork.row(entry, "boxArt", hashed),
                 artwork.row(entry, "preview", hashed)),
                 "Chosen images are copied into your library."),
-            RowGroup("FILE", GameSettingsRows.file(entry.path, null, id, entry.error) + listOfNotNull(
+            RowGroup("FILE", GameSettingsRows.file(entry.path, null, entry.contentId, entry.error) + listOfNotNull(
                 deleteKind?.let { kind ->
                     GameDeletionFlow.row(this, libraryFlow, entry, GameDeletionFlow.Prompt(entry.path, kind,
                         if (entry.folder) "This removes the folder and everything inside it. " else ""),
@@ -622,7 +695,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         ChoiceOption(index.toString(), label)
     }
 
-    private fun updateTitle(id: String?, value: String?) {
+    private fun updateTitle(id: GameKey?, value: String?) {
         id ?: return
         runCatching { catalog.setTitle(id, value) }
             .onSuccess { libraryScreen.metadataChanged(id) }
@@ -632,14 +705,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */
     private fun playerNameRow(entry: DosLibrary.Game, enabled: () -> Boolean): SettingsRow {
-        val id = entry.contentId
+        val id = entry.key.takeIf { entry.contentId != null }
         return GameSettingsRows.text("player", "DOS player name", "1\u20138 letters, digits, or underscores",
             { id?.let(dosGameSettings::playerName) }, { false }, { null },
             { value -> savePlayerName(id, value) }, {}, empty = "Choose on first play",
             enabled = enabled, disabledReason = { GameSettingsRows.NO_HASH })
     }
 
-    private fun savePlayerName(id: String?, value: String): Boolean {
+    private fun savePlayerName(id: GameKey?, value: String): Boolean {
         id ?: return false
         val name = value.trim().uppercase(java.util.Locale.ROOT)
         if (!name.matches(Regex("[A-Z0-9_]{1,8}"))) {
@@ -651,7 +724,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         return true
     }
 
-    private fun resetGameSettings(entry: DosLibrary.Game, id: String) {
+    private fun resetGameSettings(entry: DosLibrary.Game, id: GameKey) {
         try {
             catalog.resetOverrides(id)
             dosGameSettings.reset(id)
@@ -659,7 +732,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             Ui.message(this, failure.message ?: "Could not reset game settings")
             return
         }
-        if (currentGame?.contentId == id) {
+        if (currentGame?.id == entry.id) {
             gamepad.bindings = controllerFlow.load(currentGame)
             inputModeDecider.reset()
             configureGuest()
@@ -670,10 +743,10 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun launch(game: DosLibrary.Game, fromFrontend: Boolean = false) {
-        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
+        val launch = catalog.resolve(game).launch
         val variants = launch?.configs?.keys.orEmpty()
         if (variants.size > 1) {
-            val saved = game.contentId?.let(dosGameSettings::startupVariant)
+            val saved = dosGameSettings.startupVariant(game.key)
             if (saved !in variants) {
                 chooseLaunchVariant(game, true, fromFrontend)
                 return
@@ -685,20 +758,20 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     /** Choose a configuration the first time a game with several is played. Back cancels. */
     private fun chooseLaunchVariant(game: DosLibrary.Game, play: Boolean,
                                     fromFrontend: Boolean = false) {
-        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch ?: return
+        val launch = catalog.resolve(game).launch ?: return
         val names = launch.configs.keys.sortedWith(compareBy<String> { it != "dosbox.conf" }
             .thenBy { it })
         pages.push(ChoicePage(ChoiceSpec("Startup variant", { titleOf(game) }, {
             listOf(ChoiceGroup(null, names.map { ChoiceOption(it, variantLabel(it)) }))
-        }, { game.contentId?.let(dosGameSettings::startupVariant) }, select = { selected ->
-            game.contentId?.let { dosGameSettings.setStartupVariant(it, selected) }
+        }, { dosGameSettings.startupVariant(game.key) }, select = { selected ->
+            dosGameSettings.setStartupVariant(game.key, selected)
             if (play) startGame(game, selected, fromFrontend)
         }, stay = play, cycles = false)))
     }
 
     private fun manualConfig(game: DosLibrary.Game): String {
-        val variants = catalog.resolve(game.contentId ?: "", game.displayName).launch?.configs?.keys.orEmpty()
-        return game.contentId?.let(dosGameSettings::startupVariant)?.takeIf { it in variants }
+        val variants = catalog.resolve(game).launch?.configs?.keys.orEmpty()
+        return dosGameSettings.startupVariant(game.key)?.takeIf { it in variants }
             ?: variants.firstOrNull { it == "dosbox.conf" } ?: variants.sorted().firstOrNull() ?: "dosbox.conf"
     }
 
@@ -758,13 +831,13 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             return
         }
         if (!game.playable) return
-        val launch = catalog.resolve(game.contentId ?: "", game.displayName).launch
+        val launch = catalog.resolve(game).launch
         if (target == DosLaunchTarget.Normal && DosLaunchConfig.needsPlayer(launch) &&
-            game.contentId?.let(dosGameSettings::playerName) == null) {
+            dosGameSettings.playerName(game.key) == null) {
             choosePlayerName(game, configName, fromFrontend)
             return
         }
-        val playerName = game.contentId?.let(dosGameSettings::playerName)
+        val playerName = dosGameSettings.playerName(game.key)
         val availableGames = games.toList()
         val generation = ++launchGeneration
         closeProgramPicker()
@@ -814,31 +887,29 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                         }
                     }
                 } else game
-                val saveDir = File(filesDir, "saves/${playableGame.id}")
-                if (game.installer) {
-                    val oldSaveDir = File(filesDir, "saves/${game.id}")
-                    if (oldSaveDir.isDirectory && !saveDir.exists())
-                        require(oldSaveDir.renameTo(saveDir)) {
-                            "Could not move existing game saves to the installed archive"
-                        }
-                }
+                if (game.installer) moveGame(game.key, playableGame.key)
+                // An external installed copy's working files were named by its earlier ID.
+                if (game.installer && game.external)
+                    claimSavedData(Uri.EMPTY, listOf(playableGame)).single().error?.let(::error)
+                val saveDir = saveDir(playableGame)
                 require(saveDir.isDirectory || saveDir.mkdirs()) { "Could not create game save folder" }
                 // Each mounted game drive writes to its own overlay. Folder sessions are stored after the run.
                 val overlays = LinkedHashMap<File, File>()
                 val sessions = ArrayList<File>()
-                fun overlayFor(dir: File, contentId: String) = beginOverlay(dir, contentId).also {
+                fun overlayFor(dir: File, owner: DosLibrary.Game) = beginOverlay(dir, owner.key).also {
                     if (saveFolder.folder != null) sessions += dir
                 }
                 val dependencies = (if (target == DosLaunchTarget.Prompt) emptySet() else
                     DosLaunchConfig.requiredFolders(launch, configName))
                     .associateWith { folder ->
                         val ids = catalog.contentIdsForFolder(folder).toSet()
-                        val dependency = availableGames.firstOrNull { it.contentId in ids }
+                        val dependency = availableGames.firstOrNull { catalog.matchId(it) in ids }
                             ?: error("This game also needs the $folder archive in your DOS library")
                         val dependencyFile = dosLibrary.prepare(dependency, selected, cancelled)
-                        val dependencyDir = File(filesDir, "saves/${dependency.id}")
+                        val dependencyDir = saveDir(dependency)
                         val stored = DosStagingStorage.prepare(dependencyFile, dependencyDir, dependency.contentId!!,
-                            overlayFor(dependencyDir, dependency.contentId), cancelled, folder)
+                            overlayFor(dependencyDir, dependency), cancelled, folder,
+                            { conflicts -> chooseEditedFiles(dependency, conflicts) })
                         overlays[stored.directory] = stored.overlay
                         stored.directory.listFiles().orEmpty().firstOrNull {
                             it.isDirectory && it.name.equals(folder, true)
@@ -850,7 +921,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                     if (generation == launchGeneration) overlay.showProgress("Starting DOSBox Staging\u2026")
                 }
                 val drive = DosStagingStorage.prepare(file, saveDir, playableGame.contentId!!,
-                    overlayFor(saveDir, playableGame.contentId), cancelled, launch?.folder) { progress -> runOnUiThread {
+                    overlayFor(saveDir, playableGame), cancelled, launch?.folder,
+                    { conflicts -> chooseEditedFiles(playableGame, conflicts) }) { progress -> runOnUiThread {
                         if (generation == launchGeneration) overlay.showProgress(progress)
                     } }
                 overlays[drive.directory] = drive.overlay
@@ -858,7 +930,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, overlays, playerName,
                     effectiveVoodoo() == 1, effectiveDirectTouch(),
-                    dosGameSettings.videoHardware(playableGame.contentId), target)
+                    dosGameSettings.videoHardware(playableGame.key), target)
                 if (target == DosLaunchTarget.Browse) runOnUiThread {
                     if (generation == launchGeneration) pendingProgramPicker = {
                         showProgramPicker(playableGame, configName, generation)
@@ -866,8 +938,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 }
                 if (game.installer && !game.external) runOnUiThread {
                     if (generation == launchGeneration) {
-                        sessionGameTitle = catalog.resolve(playableGame.contentId ?: "",
-                            playableGame.displayName).title
+                        sessionGameTitle = catalog.resolve(playableGame).title
                         preferences.edit().putString("last_played_entry", playableGame.id).apply()
                         showInstallerRemovalPrompt(game, playableGame)
                     }
@@ -900,10 +971,71 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         pollSession(game.id)
     }
 
+    /** A game's local working files: its base drive, launch configuration and unsaved session. */
+    private fun saveDir(game: DosLibrary.Game) = File(filesDir, "saves/${game.key.storageName}")
+
+    /**
+     * Asks, from the launch thread, which saved files give way to the game's edited source files.
+     * Waits for the choice; leaving the page cancels the launch.
+     */
+    private fun chooseEditedFiles(game: DosLibrary.Game, conflicts: List<String>): Set<String> {
+        val chosen = java.util.concurrent.LinkedBlockingQueue<Result<Set<String>>>()
+        runOnUiThread {
+            val useEdited = HashSet<String>()
+            var confirmed = false
+            val rows = conflicts.mapIndexed { index, path ->
+                SettingsRow.choice("edited-$index", path, ChoiceSpec(path, { titleOf(game) }, {
+                    listOf(ChoiceGroup(null, listOf(ChoiceOption(SAVED_COPY, "Saved copy"),
+                        ChoiceOption(EDITED_FILE, "Edited file"))))
+                }, { if (path in useEdited) EDITED_FILE else SAVED_COPY }, select = {
+                    if (it == EDITED_FILE) useEdited += path else useEdited -= path
+                }, cycles = false), value = { if (path in useEdited) "Edited file" else "Saved copy" })
+            }
+            pages.push(object : GroupsPage("Edited game files", { titleOf(game) }, {
+                listOf(RowGroup("KEEP", rows))
+            }, {
+                listOf(FooterButton("cancel", { "Cancel" }) { pages.pop() },
+                    FooterButton("continue", { "Continue" }, ButtonTone.PRIMARY) {
+                        confirmed = true
+                        chosen.put(Result.success(useEdited.toSet()))
+                        pages.pop()
+                    })
+            }) {
+                override fun onRemoved() {
+                    super.onRemoved()
+                    if (!confirmed) chosen.put(Result.failure(IllegalStateException("Cancelled")))
+                }
+            })
+        }
+        return chosen.take().getOrThrow()
+    }
+
+    /** An installer's saves and settings belong to the game it installs. */
+    private fun moveGame(from: GameKey, to: GameKey) {
+        if (from == to) return
+        val oldDir = File(filesDir, "saves/${from.storageName}")
+        val newDir = File(filesDir, "saves/${to.storageName}")
+        if (oldDir.isDirectory && !newDir.exists())
+            require(oldDir.renameTo(newDir)) { "Could not move existing game saves to the installed archive" }
+        val saves = saveFolder.location
+        val unit = SaveUnit(from.storageName, OVERLAY_UNIT)
+        if (saves.exists(unit) && !saves.exists(SaveUnit(to.storageName, OVERLAY_UNIT))) {
+            val copy = File(cacheDir, "installer-saves")
+            check(!copy.exists() || copy.deleteRecursively()) { "Could not clear an earlier move" }
+            try {
+                saves.export(unit, copy)
+                saves.import(SaveUnit(to.storageName, OVERLAY_UNIT), copy)
+            } finally { copy.deleteRecursively() }
+            saves.delete(unit)
+        }
+        dosGameSettings.move(from, to)
+        catalog.moveOverrides(from, to)
+    }
+
     /** Games that ask for a DOS player name get one before their first launch. */
     private fun choosePlayerName(game: DosLibrary.Game, playConfig: String,
                                  fromFrontend: Boolean = false) {
-        val id = game.contentId ?: return
+        val id = game.key.takeIf { game.contentId != null } ?: return
         var name = dosGameSettings.playerName(id) ?: "PLAYER"
         lateinit var page: GroupsPage
         page = GroupsPage("DOS player name", { titleOf(game) }, {
@@ -952,14 +1084,14 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     /** A save folder's game name, as a library title when the game is still in the library. */
     private fun saveTitle(game: String): String =
-        games.firstOrNull { it.contentId?.let(SaveLocation::gameName) == game }?.let(::titleOf) ?: game
+        games.firstOrNull { it.key.storageName == game }?.let(::titleOf) ?: game
 
     /**
      * Where a game's overlay lives while it runs: in app storage, or a working copy of the
      * save folder's. [publishOverlay] stores the working copy back when the session ends.
      */
-    private fun beginOverlay(saveDir: File, contentId: String): File {
-        val unit = SaveUnit(SaveLocation.gameName(contentId), OVERLAY_UNIT)
+    private fun beginOverlay(saveDir: File, game: GameKey): File {
+        val unit = SaveUnit(game.storageName, OVERLAY_UNIT)
         val folder = saveFolder.folder
         if (folder == null) {
             require(!File(saveDir, UNSAVED_OVERLAY).isFile) {
@@ -976,7 +1108,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         require(!working.exists() || working.deleteRecursively()) { "Could not clear the game's working save folder" }
         if (folder.exists(unit)) folder.export(unit, working)
         else require(working.mkdirs()) { "Could not create the game's working save folder" }
-        File(saveDir, UNSAVED_OVERLAY).writeText("${folder.tree}\n$contentId")
+        File(saveDir, UNSAVED_OVERLAY).writeText("${folder.tree}\n${game.storageName}")
         return working
     }
 
@@ -984,10 +1116,17 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun publishOverlay(saveDir: File) {
         val unsaved = File(saveDir, UNSAVED_OVERLAY)
         if (!unsaved.isFile) return
-        val (tree, contentId) = unsaved.readLines()
+        val (tree, owner) = unsaved.readLines()
         val folder = checkNotNull(saveFolder.folder) { "The save folder for these saved files is no longer selected" }
         require(folder.tree.toString() == tree) { "These saved files belong to a different save folder" }
-        folder.import(SaveUnit(SaveLocation.gameName(contentId), OVERLAY_UNIT), File(saveDir, WORKING_OVERLAY))
+        // A session from before games had keys named its game by content ID. Its working files
+        // moved to its game's key, which now names the session's saves too.
+        val game = when {
+            owner.startsWith(GameKey.STORAGE_PREFIX) -> owner
+            saveDir.name.startsWith(GameKey.STORAGE_PREFIX) -> saveDir.name
+            else -> SaveLocation.contentIdName(owner)
+        }
+        folder.import(SaveUnit(game, OVERLAY_UNIT), File(saveDir, WORKING_OVERLAY))
         check(unsaved.delete()) { "Could not finish storing the game's saved files" }
     }
 
@@ -996,20 +1135,19 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         val saveDirs = File(filesDir, "saves").listFiles().orEmpty().filter { it.isDirectory }
         saveDirs.forEach(::publishOverlay)
         val library = games.toList()
-        val legacy = saveDirs.filter(DosStagingStorage::hasLegacyDrive).map { it to DosStagingStorage.legacyContentId(it) }
-        val missing = legacy.filter { (_, id) -> library.none { it.contentId == id } }
+        val legacy = saveDirs.filter(DosStagingStorage::hasLegacyDrive)
+        val missing = legacy.filter { dir -> library.none { saveDir(it) == dir } }
         require(missing.isEmpty()) {
             "These games' saved files use an older format, and moving them needs their game files in the " +
-                "library: " + missing.joinToString { (_, id) -> catalog.resolve(id, id).title }
+                "library: " + missing.joinToString { DosStagingStorage.legacyContentId(it).let { id -> catalog.resolve(id, id).title } }
         }
-        for ((index, entry) in legacy.withIndex()) {
-            val (saveDir, id) = entry
-            val game = library.first { it.contentId == id }
+        for ((index, saveDir) in legacy.withIndex()) {
+            val game = library.first { saveDir(it) == saveDir }
             progress("Converting ${index + 1} of ${legacy.size}…")
             val archive = dosLibrary.prepare(game, tree, AtomicBoolean(false))
-            DosStagingStorage.prepare(archive, saveDir, id,
-                saveFolder.app.directory(SaveUnit(SaveLocation.gameName(id), OVERLAY_UNIT)), AtomicBoolean(false),
-                catalog.resolve(id, game.displayName).launch?.folder)
+            DosStagingStorage.prepare(archive, saveDir, DosStagingStorage.legacyContentId(saveDir),
+                saveFolder.app.directory(SaveUnit(game.key.storageName, OVERLAY_UNIT)), AtomicBoolean(false),
+                catalog.resolve(game).launch?.folder)
         }
     }
 
@@ -1052,7 +1190,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     private fun showGame() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val game = currentGame ?: return
-        sessionGameTitle = catalog.resolve(game.contentId ?: "", game.displayName).title
+        sessionGameTitle = catalog.resolve(game).title
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         gameRoot = root
         gameOrientation.launching()
@@ -1119,8 +1257,8 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         if (controllerProfiles.configuration.layout != com.mrjackspade.kairo.frontend.ControllerLayout.WITH_STICKS)
             return null
         if (game?.contentId != null) {
-            if (dosGameSettings.controllerBindings(game.contentId) != null) return null
-            val profile = catalog.resolve(game.contentId, game.displayName).controllerProfile
+            if (dosGameSettings.controllerBindings(game.key) != null) return null
+            val profile = catalog.resolve(game).controllerProfile
             if (profile != null && !catalog.controllerFallback(profile)) return null
             if (profile != null) return "Using Without Sticks fallback"
         }
@@ -1454,7 +1592,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun touchSelection(game: DosLibrary.Game? = currentGame): ScopedTouchInput {
-        val id = game?.contentId
+        val id = game?.key?.takeIf { game.contentId != null }
         return TouchInputPolicy.resolve(
             TouchInputSelection(touchMode(preferences.getInt("touch_mode", 2)),
                 preferences.getBoolean("direct_touch", false)),
@@ -1468,11 +1606,11 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         touchSelection(game).selection.directTouch
 
     private fun effectiveCycles(game: DosLibrary.Game? = currentGame): Int =
-        gameSettings.int(game?.contentId, "cycles_mode",
+        gameSettings.int(game?.key?.takeIf { game.contentId != null }, "cycles_mode",
             preferences.getInt("cycles_mode", 0)).coerceIn(0, 1)
 
     private fun effectiveVoodoo(game: DosLibrary.Game? = currentGame): Int =
-        gameSettings.int(game?.contentId, "staging_voodoo_threads",
+        gameSettings.int(game?.key?.takeIf { game.contentId != null }, "staging_voodoo_threads",
             preferences.getInt("staging_voodoo_threads", 0)).coerceIn(0, 1)
 
     private fun configureGuest() {
