@@ -239,6 +239,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
     private val controllerDevices by lazy { ControllerDeviceMonitor(this, inputDispatch::releaseDevice) {
         controllerProfiles.configuration.devicesChanged()
+        onScreenControls?.devicesChanged()
         if (currentGame == null) gamepad.bindings = controllerFlow.global()
     } }
     private var controllerSetupPending = false
