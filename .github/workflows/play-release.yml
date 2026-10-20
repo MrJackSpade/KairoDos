@@ -17,6 +17,15 @@ jobs:
   publish:
     runs-on: ubuntu-24.04
     steps:
+      - name: Refuse prerelease tags
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          if [[ "$TAG" == *-* ]]; then
+            echo "$TAG is a prerelease tag; prereleases never go to Google Play" >&2
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - name: Check out pinned Kairo frontend
         run: bash tools/checkout_shared.sh
