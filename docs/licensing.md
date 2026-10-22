@@ -20,4 +20,4 @@ Preserve Staging's LICENSE, licenses directory and per-file notices. These cover
 - No proprietary ROM, BIOS, operating system, soundfont or game is supplied. Freely licensed Staging keyboard/codepage resources and DOS utilities include notices and source.
 - Device boot acceptance and source/license checks are required before an APK is described as release-ready. Build success alone is insufficient.
 
-Existing eXoDOS/LaunchBox-derived metadata and artwork still need creator/redistribution/derivative rights review before public distribution. Access to source data does not grant redistribution rights. Project-owner artwork is separate from the code license.
+Catalog artwork (game covers and screenshots) is used under fair use and is separate from the code license.

@@ -61,7 +61,7 @@ Catalog presets store bindings under `defaults` with `withoutSticks` and optiona
 
 ### Catalog generation
 
-`tools/generate_dos_catalog.py` reads eXoDOS LaunchBox XML and images, DOSBox configuration metadata, and game archives to produce the hash catalog and optional downscaled artwork. Its generated provenance manifest records image sources and checksums. Keep source games and staging data out of Git. Review descriptions, images, and their redistribution rights before packaging them; see [licensing](licensing.md).
+`tools/generate_dos_catalog.py` reads eXoDOS LaunchBox XML and images, DOSBox configuration metadata, and game archives to produce the hash catalog and optional downscaled artwork. Its generated provenance manifest records image sources and checksums. Keep source games and staging data out of Git. Review descriptions and images before packaging them.
 
 To refresh the bundled index from the owner's current collection, first generate a complete private scan, then reconcile it with the bundled catalog:
 
