@@ -98,7 +98,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         "DOS folder needs read and write access. Select it again.",
         MachineFirstRun.Folder("Choose a DOS folder",
             "Select a writable folder containing your DOS games and ZIP archives.", "Choose DOS folder…"),
-        "SAVED GAMES")
+        "SAVED GAMES", "MrJackSpade/KairoDos")
 
     // Input ------------------------------------------------------------------------------------------
 
