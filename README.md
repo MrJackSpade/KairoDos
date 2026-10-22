@@ -1,13 +1,16 @@
+<!-- kairo:discord -->
 <p align="center">
-  <a href="https://discord.gg/ZkYQ3bPTTq"><img src="docs/discord-banner.svg" alt="Join the Kairo Discord" width="49%"></a>
-  <a href="https://github.com/MrJackSpade/Kairo98"><img src="docs/kairo98-banner.svg" alt="Kairo98: the companion PC-98 emulator for Android" width="49%"></a>
+  <a href="https://discord.gg/ZkYQ3bPTTq"><img src="https://raw.githubusercontent.com/MrJackSpade/Kairo/main/docs/assets/discord-banner.svg" alt="Join the Kairo Discord" width="49%"></a>
 </p>
+<!-- /kairo:discord -->
 
 # KairoDos
 
 **Play your own DOS games on Android phones and handhelds.** KairoDos gives you a game library with artwork, controller and touch controls, an on-screen keyboard, and per-game settings, running on [DOSBox Staging](https://www.dosbox-staging.org/) with ARM64 dynamic recompilation. It is an independent project, not an official DOSBox Staging release.
 
+<!-- kairo:play-badge -->
 [<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=com.loxifi.kairodos)
+<!-- /kairo:play-badge -->
 
 ## Contents
 
@@ -27,10 +30,12 @@
 
 ## Download
 
+<!-- kairo:download -->
 - **[Google Play](https://play.google.com/store/apps/details?id=com.loxifi.kairodos)** (paid): updates automatically. Buying it supports development.
-- **[GitHub Releases](https://github.com/MrJackSpade/KairoDos/releases)** (free): install the APK yourself.
+- **[GitHub Releases](https://github.com/MrJackSpade/KairoDos/releases)** (free): install the APK yourself. The larger `-with-images` APK also bundles catalog artwork.
 
 Both editions are built from the same source and have the same features. Requires an ARM64 device running Android 8.0 or newer.
+<!-- /kairo:download -->
 
 ## Quick start
 
@@ -97,12 +102,14 @@ This only affects that one session; the next **Play** starts the game normally. 
 
 ## Launching from other frontends
 
+<!-- kairo:frontend-guides -->
 KairoDos can open a game sent from another Android frontend; no library folder is needed. Step-by-step setup:
 
 - [LaunchBox for Android](docs/frontends.md#launchbox-for-android)
 - [ES-DE](docs/frontends.md#es-de)
 - [iiSU](docs/frontends.md#iisu)
 - [Beacon](docs/frontends.md#beacon)
+<!-- /kairo:frontend-guides -->
 
 ## Documentation
 
@@ -119,18 +126,42 @@ The full list is in the [documentation index](docs/index.md).
 
 ## Help and community
 
+<!-- kairo:community -->
 - **Report a game problem** in [Issues](https://github.com/MrJackSpade/KairoDos/issues). Include the title, file format, and what happened.
 - **Chat** with other players on [Discord](https://discord.gg/ZkYQ3bPTTq).
+<!-- /kairo:community -->
 
-### Related projects
+### Other Kairo apps
 
-- [Kairo98](https://github.com/MrJackSpade/Kairo98): companion PC-98 emulator for Android ([Google Play](https://play.google.com/store/apps/details?id=com.loxifi.kairo98))
-- [Kairo](https://github.com/MrJackSpade/Kairo): shared frontend used by both apps for the library, navigation, and controls
+<!-- kairo:family -->
+<table>
+  <tr>
+    <td align="center" width="33%"><a href="https://github.com/MrJackSpade/Kairo98"><img src="https://raw.githubusercontent.com/MrJackSpade/Kairo98/main/kairo98/src/main/res/drawable-nodpi/kairo98_icon_art.png" width="96" alt="Kairo98"><br><b>Kairo98</b></a><br>PC-98</td>
+    <td align="center" width="33%"><a href="https://github.com/MrJackSpade/Kairo88"><img src="https://raw.githubusercontent.com/MrJackSpade/Kairo88/main/kairo88/src/main/res/drawable-nodpi/product_icon_art.png" width="96" alt="Kairo88"><br><b>Kairo88</b></a><br>PC-88</td>
+    <td align="center" width="33%"><a href="https://github.com/MrJackSpade/Kairo68"><img src="https://raw.githubusercontent.com/MrJackSpade/Kairo68/main/kairo68/src/main/res/drawable-nodpi/product_icon_art.png" width="96" alt="Kairo68"><br><b>Kairo68</b></a><br>X68000</td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><a href="https://github.com/MrJackSpade/KairoTowns"><img src="https://raw.githubusercontent.com/MrJackSpade/KairoTowns/main/kairotowns/src/main/res/drawable-nodpi/product_icon_art.png" width="96" alt="KairoTowns"><br><b>KairoTowns</b></a><br>FM Towns</td>
+    <td align="center" width="33%"><a href="https://github.com/MrJackSpade/KairoMSX"><img src="https://raw.githubusercontent.com/MrJackSpade/KairoMSX/main/kairomsx/src/main/res/drawable-nodpi/product_icon_art.png" width="96" alt="KairoMSX"><br><b>KairoMSX</b></a><br>MSX</td>
+  </tr>
+</table>
+
+Every Kairo app is built on [Kairo](https://github.com/MrJackSpade/Kairo), the shared frontend for the game library, controls, and settings.
+<!-- /kairo:family -->
 
 ## Building from source
 
+<!-- kairo:clone -->
+Clone with submodules to get the pinned shared frontend:
+
 ```sh
 git clone --recurse-submodules https://github.com/MrJackSpade/KairoDos.git
+```
+<!-- /kairo:clone -->
+
+Then prepare the emulator dependencies and build:
+
+```sh
 cd KairoDos
 pwsh tools/PrepareStagingDependencies.ps1
 ./gradlew :kairodos:assembleDebug
@@ -140,4 +171,6 @@ Requires JDK 17, Android SDK 36, NDK 28.2.13676358, and CMake 3.22.1; builds tar
 
 ## License
 
-First-party KairoDos and Kairo frontend code is [GPL-2.0-or-later](COPYING); the combined APK is distributed under GPLv3 terms because of bundled components. See [licensing and credits](docs/licensing.md) and [source provenance](docs/source-import.md).
+<!-- kairo:license -->
+First-party code is [GPL-2.0-or-later](LICENSE.md). The app as distributed is GPLv3 because it bundles GPLv3 components. Third-party components keep their own licenses; see [licensing and credits](docs/licensing.md) and [source provenance](docs/source-import.md).
+<!-- /kairo:license -->

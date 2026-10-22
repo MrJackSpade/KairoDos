@@ -1,28 +1,25 @@
 KairoDos Privacy Policy
-Last updated: October 2, 2026
+Last updated: October 22, 2026
 
-KairoDos is an Android DOS emulator published by Loxifi LLC. This policy covers the paid Google Play edition and the free GitHub edition. For privacy questions or requests, email admin@loxifi.com.
+KairoDos is an Android DOS emulator published by Loxifi LLC. This policy covers KairoDos, including the paid Google Play edition and the free GitHub edition. For privacy questions or requests, email admin@loxifi.com.
 
 Data on your device
+KairoDos reads the game files and folders that you choose through Android's file picker, and games that another app asks it to open. It uses file contents to identify supported games. Game files, file names, content hashes, settings, and downloaded images stay on your device in the selected folder or the app's private storage. Loxifi does not receive these files, names, hashes, or settings. KairoDos has no account, advertising, analytics, or crash reporting service.
 
-KairoDos reads game files and folders that you choose through Android's file picker or share/open actions. It uses file contents to identify catalog entries. Game files, file names, content hashes, save states, screenshots, local artwork choices, and settings remain on your device in the chosen folder or app-private storage. KairoDos has no account, advertising, analytics, or crash reporting service. Loxifi does not receive your game files, file names, content hashes, saves, or settings.
+Optional artwork downloads
+The standard edition does not bundle artwork. If you choose "Download missing images" or tap an image to request a larger version, KairoDos makes an HTTPS request directly to raw.githubusercontent.com. The requested image URL can reveal which game's artwork was requested. The image service also receives your network IP address and ordinary request information needed to deliver the image. KairoDos does not send your game files, file names, or content hashes to these services, and Loxifi does not receive their request logs. The services control their own logging and retention. Downloaded images are stored on your device.
 
 Catalog updates
-
-KairoDos may request a catalog metadata update over HTTPS from raw.githubusercontent.com. That request sends ordinary network information, including your IP address, to the hosting service. It does not send your library's game files, names, or hashes. The hosting service controls its own logs and retention.
+When KairoDos checks for catalog updates, it requests the latest catalog over HTTPS from raw.githubusercontent.com, which hosts the Kairo projects' catalogs. The request sends ordinary network information, including your IP address, to that service. It does not send your game files, file names, or content hashes. The hosting service controls its own logs and retention.
 
 Imported catalog files
-
 When you import a catalog file, a copy of its metadata, artwork and update address is stored privately on your device. Checking installed catalogs contacts only the update addresses supplied by those installed files over HTTPS. Those servers receive your IP address and ordinary request information, but not your game files, library names or content hashes. The servers control their own logs and retention. Removing a catalog deletes its imported metadata and artwork, while keeping your games and personal overrides.
 
-Storage and deletion
-
-KairoDos accesses a folder after you select it with Android's file picker. App data is stored in private app storage, and Android app backup is disabled. Clearing app storage or uninstalling removes that private app data but does not remove original game files in your selected folder. If you use the game's Delete action and confirm, KairoDos deletes the selected game file from the chosen folder. Loxifi has no server copy of app data to delete.
+Storage, security, and deletion
+KairoDos accesses files only after you select them with Android's file picker or another app asks it to open them. It stores app data in private app storage, does not enable Android app backup, and uses HTTPS for every network request. Local app data remains until you clear KairoDos's storage or uninstall it; that does not remove original game files in your chosen folder. If you use a game's Delete action and confirm, KairoDos deletes that game's file from your chosen folder. Loxifi has no server copy of app data to delete. To ask about data sent to an image or hosting service, contact that service.
 
 Support correspondence
-
-If you email Loxifi for support, we receive your email address and information you choose to send and use it to respond. Email admin@loxifi.com to request deletion of that correspondence.
+If you email Loxifi for support, we receive your email address and the information you choose to send and use it to respond. Email admin@loxifi.com to request deletion of that correspondence.
 
 Changes
-
-This policy will be updated in the app when KairoDos behavior changes. The current version will also be available through the Google Play listing.
+We may update this policy when KairoDos's behavior changes. The current version will be available in the app and through the Google Play listing.
