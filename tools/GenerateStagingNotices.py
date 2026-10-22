@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Build the offline notice from pinned source notices, without network access."""
+"""Build the offline notice from pinned source notices, without network access. The shared
+frontend's notices (its libraries and font, the NDK runtime, the shader runtime and AndroidX)
+follow this one in About -> Licenses."""
 from pathlib import Path
 import re
 
@@ -24,7 +26,6 @@ def add(path, body=None):
 add(CORE / "LICENSE")
 for path in sorted((CORE / "licenses").glob("*.txt"), key=lambda p: p.as_posix()):
     add(path)
-add(ROOT / "shared/third_party/spleen/LICENSE")
 for path in sorted((ROOT / "third_party/staging-deps/notices").glob("*.txt"), key=lambda p: p.as_posix()):
     add(path)
 
