@@ -77,7 +77,7 @@ Add this object to the array in `supported_emulators.json`:
 }
 ```
 
-Put your games in the `dos` folder of your iiSU ROM folder. Select the DOS (PC) console, open **Quick Settings → Console Settings → Edit Console Settings**, and choose **KairoDos (Standalone)** as the emulator. An iiSU update can replace these files; add the entries again if KairoDos disappears from the list.
+Put your games in the `dos` folder inside the folder iiSU reads games from (its ROM folder). Select the DOS (PC) console, open **Quick Settings → Console Settings → Edit Console Settings**, and choose **KairoDos (Standalone)** as the emulator. An iiSU update can replace these files; add the entries again if KairoDos disappears from the list.
 
 ## Beacon
 

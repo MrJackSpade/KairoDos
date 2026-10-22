@@ -91,7 +91,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         }
     }
 
-    override val identity = Identity("KAIRODOS", "KairoDos", "DOS", "kairodos",
+    override val identity = Identity("KAIRODOS", 0xff03C5FB.toInt(), "KairoDos", "DOS", "kairodos",
         LibraryStrings("KAIRODOS", "KairoDos", "DOS folder", "No DOS folder selected"),
         "KairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
         "Choose a DOS folder to find games",
