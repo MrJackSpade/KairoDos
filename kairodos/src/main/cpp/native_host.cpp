@@ -50,6 +50,8 @@ std::atomic<int> sample_rate{48000}, video_width{640}, video_height{400};
 std::atomic<double> aspect{4.0 / 3.0};
 std::atomic<bool> stop_requested{false}, paused{false}, reset_requested{false};
 std::atomic<int> status{0}; // idle, loading, running, failed
+// Frames the guest has produced this session, for the UI tests (KairoActivity.gameProbe).
+std::atomic<uint64_t> produced_frames{0};
 std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
 std::atomic<int> guest_keyboard_waiting{0};
 std::atomic<int> dynrec_available{0}, dynamic_active{0};
@@ -112,6 +114,7 @@ void video(const uint32_t* data, int width, int height, int pitch, double ratio)
     if (!data || width <= 0 || height <= 0 || pitch < width * 4) return;
     frame_copy_profile::callback(data, width, height, pitch);
     video_width = width; video_height = height;
+    produced_frames.fetch_add(1, std::memory_order_relaxed);
     if (ratio > 0) aspect = ratio;
     sample_rate = core.audio_rate(); status = 2;
     // Posting a frame may wait for the panel. Keep that wait off Staging's
@@ -257,6 +260,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     const std::string resources = string(env, resources_j);
     { std::lock_guard lock(error_mutex); last_error.clear(); }
     { std::lock_guard lock(control_mutex); stop_requested = false; paused = false; reset_requested = false; }
+    produced_frames = 0;
     mouse_x = 0; mouse_y = 0; mouse_left = false; mouse_right = false; pointer_pressed = false;
     { std::lock_guard lock(frame_mutex); renderer_stopping = false; has_pending_frame = false; redraw_requested = false; }
     std::thread renderer(render_frames);
@@ -324,6 +328,8 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeStatus(JNIEnv*, jobject) { return status; }
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAudioRate(JNIEnv*, jobject) { return sample_rate; }
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeFrames(JNIEnv*, jobject) { return jlong(produced_frames.load()); }
 extern "C" JNIEXPORT jdouble JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAspect(JNIEnv*, jobject) { return aspect; }
 extern "C" JNIEXPORT jint JNICALL

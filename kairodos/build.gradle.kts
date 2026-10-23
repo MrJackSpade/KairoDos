@@ -18,7 +18,7 @@ android {
         versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.15"
         // Google Play updates its builds itself, so they never offer GitHub releases (shared AppUpdateCheck).
         if (providers.gradleProperty("kairoDistribution").orNull == "play") resValue("bool", "kairo_update_check", "false")
-        testInstrumentationRunner = "com.mrjackspade.kairodos.CatalogUpdateInstrumentation"
+        manifestPlaceholders["kairoLabel"] = "KairoDos"
         externalNativeBuild {
             cmake {
                 arguments += "-DKAIRO_OPTIMIZED_PROFILE=" +
@@ -100,3 +100,6 @@ dependencies {
     implementation(project(":backend-dos"))
     testImplementation("junit:junit:4.13.2")
 }
+
+extra["kairoLabel"] = "KairoDos"
+apply(from = rootProject.file("shared/gradle/kairo-uitest.gradle"))

@@ -5,7 +5,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../../../../shared/cmake/KairoNativeDefault
 add_library(kairodos_host SHARED native_host.cpp)
 kairo_native_debug_defaults(kairodos_host)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_sources(kairodos_host PRIVATE gpu_fixture.cpp)
     target_compile_definitions(kairodos_host PRIVATE KAIRO_VIDEO_PROFILE)
     # Optional measurement build, never changes ordinary debug/release settings.
     if(KAIRO_OPTIMIZED_PROFILE)

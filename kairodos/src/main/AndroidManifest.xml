@@ -4,7 +4,7 @@
         android:allowBackup="false"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="KairoDos"
+        android:label="${kairoLabel}"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.KairoDos">
         <!-- Recreating MainActivity stops the running machine. The app has no

@@ -72,8 +72,9 @@ the same APK fetched it through `DosGameCatalog.downloadUpdate()` and resolved
 8x turning, A=Space, D-pad Left/Right cycles, and R1/R2 fire. No app APK reinstall
 occurred after publication; only the test package changed.
 
-Run `CatalogUpdateInstrumentation` with `catalogControllerSpeed=8`,
-`catalogFetch=true`, and `controllerMouse=true` for this check. It also exercises
+`CatalogUpdateInstrumentation` ran this check with `catalogControllerSpeed=8`,
+`catalogFetch=true`, and `controllerMouse=true`; it was removed when the device tests moved to the
+shared UI tests (shared/docs/ui-tests.md). It also exercised
 the downloaded defaults through the real mapper: stick movement and measured
 mouse distance, D-pad shared wrap, overlapping R1/R2 ownership, unchanged Duke
 and Without Sticks inputs, designated-only Escape/Enter, explicit custom
@@ -138,6 +139,4 @@ RGDS catalog-only verification (October 1, 2026): installed KairoDos SHA-256
 resolved Doom turning at 8x before publication and 4x after fetching public
 catalog revision `a96e570da72d0f4a597a3b47b9badb9271b3423d1b713e8e426d306b47bd1473`.
 The application APK was unchanged. Only the instrumentation test package was
-updated to inspect the resolved bindings and expose download errors. Run
-`CatalogUpdateInstrumentation` with `catalogControllerSpeed=4` to verify the
-active profile; add `catalogFetch=true` to exercise the production download path.
+updated to inspect the resolved bindings and expose download errors. The fixtures this describes were removed when the device tests moved to the shared UI tests (shared/docs/ui-tests.md).

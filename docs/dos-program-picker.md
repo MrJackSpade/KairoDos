@@ -66,8 +66,7 @@ program itself persist in the game's writable files, like ordinary DOS programs.
 - `dosPromptUri=<installed Duke URI>` verifies the existing prompt action,
   writable shell, directory enumeration, and normal relaunch.
 
-Test component:
-`com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.
+The fixtures this describes were removed when the device tests moved to the shared UI tests (shared/docs/ui-tests.md).
 The generated executables and disk images contain no proprietary game assets.
 
 ### Combined command launch verification (2026-10-03)

@@ -36,8 +36,7 @@ on RGDS (see `shared/docs/directory-picker.md`). The DOS Run program action uses
 for one-session executable selection. See [dos-program-picker.md](dos-program-picker.md)
 for launch behavior, CMD handling, and FAT/ISO validation.
 
-Instrumentation component:
-`com.loxifi.kairodos.test/com.mrjackspade.kairodos.CatalogUpdateInstrumentation`.
+The fixtures this describes were removed when the device tests moved to the shared UI tests (shared/docs/ui-tests.md).
 
 ## Test records
 

@@ -59,6 +59,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private external fun nativeInputTelemetry(): LongArray
     private external fun nativeCpuTelemetry(): LongArray
     private external fun nativeAudioRate(): Int
+    private external fun nativeFrames(): Long
     private external fun nativeAspect(): Double
     private external fun nativeVideoWidth(): Int
     private external fun nativeVideoHeight(): Int
@@ -407,6 +408,18 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1).toString() },
             select = { preferences.edit().putInt("staging_voodoo_threads", it.toInt()).apply(); configureGuest() }))),
         "Changes apply the next time a game starts. Games with their own setting keep it."))
+
+    /**
+     * Frames, error and video size, and the CPU core's telemetry (dynrec available, dynamic core
+     * active, blocks translated and executed), as the UI tests read them.
+     */
+    override fun probeDetails(): Map<String, String> {
+        val cpu = nativeCpuTelemetry()
+        return mapOf("frames" to nativeFrames().toString(), "error" to nativeLastError(),
+            "video" to "${nativeVideoWidth()}x${nativeVideoHeight()}",
+            "cpu.dynrec" to cpu[0].toString(), "cpu.dynamic" to cpu[1].toString(),
+            "cpu.translated" to cpu[2].toString(), "cpu.executed" to cpu[3].toString())
+    }
 
     override fun sessionStatus() = when (nativeStatus()) {
         1 -> "Loading"
