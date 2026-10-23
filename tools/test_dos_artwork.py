@@ -40,9 +40,11 @@ class ArtworkTests(unittest.TestCase):
                 if isinstance(value, dict):
                     for key, item in value.items():
                         if key == 'artwork':
-                            for asset in expand(item).values():
-                                self.assertTrue((assets / asset).is_file(), asset)
-                                count += 1
+                            # The bundled images; <kind>Url names the LaunchBox image each came from.
+                            for kind, asset in expand(item).items():
+                                if not kind.endswith('Url'):
+                                    self.assertTrue((root / 'catalog/artwork' / asset).is_file(), asset)
+                                    count += 1
                         else:
                             check(item)
             check(source)
