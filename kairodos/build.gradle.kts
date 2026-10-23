@@ -17,7 +17,9 @@ android {
         versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 915
         versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.15"
         // Google Play updates its builds itself, so they never offer GitHub releases (shared AppUpdateCheck).
-        if (providers.gradleProperty("kairoDistribution").orNull == "play") resValue("bool", "kairo_update_check", "false")
+        // Declared in both builds: a resource only the Play build had added a field to the app's R class,
+        // so its code differed from the GitHub build's (audit_android_release.py).
+        resValue("bool", "kairo_update_check", (providers.gradleProperty("kairoDistribution").orNull != "play").toString())
         manifestPlaceholders["kairoLabel"] = "KairoDos"
         externalNativeBuild {
             cmake {
