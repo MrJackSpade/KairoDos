@@ -98,6 +98,8 @@ tasks.named("preBuild") { dependsOn(stagingResources) }
 dependencies {
     implementation(project(":frontend"))
     implementation(project(":backend-dos"))
+    // Game ZIPs read in place through their document's descriptor (DosZip.members).
+    implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
 }
 

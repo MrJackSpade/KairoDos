@@ -4,6 +4,7 @@ import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import android.content.ContentResolver
 import android.net.Uri
 import java.io.File
+import java.io.FileInputStream
 import java.io.InputStream
 import java.security.MessageDigest
 import java.util.concurrent.CancellationException
@@ -16,12 +17,13 @@ object DosContentHash {
     private const val PREFIX = "sha256-dos-manifest-v1:"
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
-    /** Local document providers expose seekable descriptors; others use the copy fallback. */
-    /** Reads a ZIP document in place, through its file descriptor; nothing is copied. */
+    /** Reads a ZIP document in place, through its own file descriptor; nothing is copied. */
     fun inspectZipDocument(resolver: ContentResolver, uri: Uri,
                            cancelled: AtomicBoolean): ZipInspection =
         (resolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
-            inspectZip(File("/proc/self/fd/${descriptor.fd}"), cancelled)
+            FileInputStream(descriptor.fileDescriptor).channel.use { channel ->
+                inspect(DosZip.members(channel), cancelled)
+            }
         }
 
     fun zipDocument(resolver: ContentResolver, uri: Uri,
@@ -31,22 +33,24 @@ object DosContentHash {
     fun zip(file: File, cancelled: AtomicBoolean): String =
         inspectZip(file, cancelled).contentId
 
-    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = DosZip.open(file).use { archive ->
+    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = inspect(DosZip.members(file), cancelled)
+
+    private fun inspect(members: List<DosZip.Member>, cancelled: AtomicBoolean): ZipInspection {
         if (cancelled.get()) throw CancellationException("Cancelled")
-        val entries = archive.entries().asSequence().filterNot { it.isDirectory }.toList()
+        val entries = members.filterNot { it.directory }
         val exodosSource = entries.any { entry ->
             entry.size == 0L && entry.name.replace('\\', '/').substringAfterLast('/')
                 .endsWith(".exo", true)
         }
-        val members = entries.asSequence()
+        val files = entries.asSequence()
             .map { it to safePath(it.name) }.filterNot { it.second.endsWith(".exo", true) }
             .toList()
-        require(members.isNotEmpty()) { "No game files in ZIP" }
-        val roots = members.map { it.second.substringBefore('/') }.distinct()
+        require(files.isNotEmpty()) { "No game files in ZIP" }
+        val roots = files.map { it.second.substringBefore('/') }.distinct()
         val strip = roots.singleOrNull()?.takeIf { root ->
-            members.all { it.second.startsWith("$root/") }
+            files.all { it.second.startsWith("$root/") }
         }?.plus("/") ?: ""
-        val sorted = members.map { (item, path) -> item to asciiLower(path.removePrefix(strip)) }
+        val sorted = files.map { (item, path) -> item to asciiLower(path.removePrefix(strip)) }
             .sortedBy { it.second }
         require(sorted.map { it.second }.distinct().size == sorted.size) { "Duplicate game file" }
         val digest = MessageDigest.getInstance("SHA-256")
@@ -57,7 +61,7 @@ object DosContentHash {
             require(item.crc in 0..0xffffffffL) { "Missing ZIP member checksum" }
             frame(digest, path, item.size, item.crc)
         }
-        ZipInspection(PREFIX + hex(digest.digest()), exodosSource)
+        return ZipInspection(PREFIX + hex(digest.digest()), exodosSource)
     }
 
     fun documents(resolver: ContentResolver, files: List<DocumentTreeWalker.FileEntry>,
