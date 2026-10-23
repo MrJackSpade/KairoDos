@@ -17,16 +17,16 @@ object DosContentHash {
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
     /** Local document providers expose seekable descriptors; others use the copy fallback. */
+    /** Reads a ZIP document in place, through its file descriptor; nothing is copied. */
     fun inspectZipDocument(resolver: ContentResolver, uri: Uri,
-                           cancelled: AtomicBoolean): ZipInspection? = try {
-        resolver.openFileDescriptor(uri, "r")?.use { descriptor ->
+                           cancelled: AtomicBoolean): ZipInspection =
+        (resolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
             inspectZip(File("/proc/self/fd/${descriptor.fd}"), cancelled)
         }
-    } catch (_: Exception) { null }
 
     fun zipDocument(resolver: ContentResolver, uri: Uri,
-                    cancelled: AtomicBoolean): String? =
-        inspectZipDocument(resolver, uri, cancelled)?.contentId
+                    cancelled: AtomicBoolean): String =
+        inspectZipDocument(resolver, uri, cancelled).contentId
 
     fun zip(file: File, cancelled: AtomicBoolean): String =
         inspectZip(file, cancelled).contentId

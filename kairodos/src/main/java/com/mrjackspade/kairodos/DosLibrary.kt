@@ -93,10 +93,6 @@ class DosLibrary(private val context: Context) {
         val source = DocumentTreeWalker.FileEntry(file.uri, file.name, file.size, file.modified)
         val inspection = if (type in archiveExtensions) {
             DosContentHash.inspectZipDocument(context.contentResolver, file.uri, cancelled)
-                ?: copySource(source, cancelled).let { temp ->
-                    try { DosContentHash.inspectZip(temp, cancelled) }
-                    finally { temp.delete() }
-                }
         } else null
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
@@ -153,8 +149,8 @@ class DosLibrary(private val context: Context) {
     }
 
     private fun scanLabel(work: ScanWork, index: Int, total: Int): String = when (work) {
-        is ScanWork.Archive -> "Scanning ${index + 1}/$total: ${work.file.path}"
-        is ScanWork.Folder -> "Hashing ${work.root}"
+        is ScanWork.Archive -> "Checking ${index + 1} of $total for changes: ${work.file.path}"
+        is ScanWork.Folder -> "Checking ${index + 1} of $total for changes: ${work.root}"
     }
 
     private fun inspectScanWork(work: ScanWork,
@@ -181,10 +177,6 @@ class DosLibrary(private val context: Context) {
             if (extension(item.path) in archiveExtensions) {
                 val inspection = DosContentHash.inspectZipDocument(
                     context.contentResolver, item.uri, scan.cancelled)
-                    ?: copySource(item, scan.cancelled).let { temp ->
-                        try { DosContentHash.inspectZip(temp, scan.cancelled) }
-                        finally { temp.delete() }
-                    }
                 installer = inspection.exodosSource &&
                     !isInstalledArchive(item.path.substringAfterLast('/'))
                 inspection.contentId
@@ -313,13 +305,7 @@ class DosLibrary(private val context: Context) {
                 }
             } else {
                 progress("Checking installed game archive…")
-                val checked = DosContentHash.inspectZipDocument(
-                    context.contentResolver, uri, cancelled)?.contentId
-                    ?: copySource(DocumentTreeWalker.FileEntry(uri, path, -1, 0), cancelled)
-                        .let { temp ->
-                            try { DosContentHash.zip(temp, cancelled) }
-                            finally { temp.delete() }
-                        }
+                val checked = DosContentHash.zipDocument(context.contentResolver, uri, cancelled)
                 require(checked == game.contentId) {
                     "An installed archive with this name already exists and differs"
                 }
@@ -374,13 +360,8 @@ class DosLibrary(private val context: Context) {
         require(!installed.installer && installed.contentId == game.contentId) {
             "Installed game is not available"
         }
-        val check = DosContentHash.inspectZipDocument(context.contentResolver,
-            Uri.parse(installed.uri), AtomicBoolean(false))?.contentId
-            ?: copySource(DocumentTreeWalker.FileEntry(Uri.parse(installed.uri),
-                installed.path, -1, 0), AtomicBoolean(false)).let { temp ->
-                try { DosContentHash.zip(temp, AtomicBoolean(false)) }
-                finally { temp.delete() }
-            }
+        val check = DosContentHash.zipDocument(context.contentResolver,
+            Uri.parse(installed.uri), AtomicBoolean(false))
         require(check == game.contentId) { "Installed game could not be verified" }
         require(DocumentsContract.deleteDocument(context.contentResolver, Uri.parse(game.uri))) {
             "The document provider could not remove the installer"
@@ -442,6 +423,8 @@ class DosLibrary(private val context: Context) {
         val target = File(cache,
             "${game.key.storageName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
         if (target.isFile) return target
+        // Only the game being started keeps a prepared copy; every other one is made again when played.
+        cache.listFiles()?.filter { it.name != target.name && !it.name.endsWith(".part") }?.forEach { it.delete() }
         try { if (!game.folder) {
             val source = DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0)
             val copied = copySource(source, cancelled)

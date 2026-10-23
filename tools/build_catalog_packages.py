@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'shared/tools'))
 from catalog_package import build_package, compact, image_paths, filter_artwork
-from dos_artwork import expand, compact as compact_art
+from dos_artwork import expand, compact as compact_art, with_launchbox
 from dos_catalog_review import apply_review, read_review
 
 
@@ -29,12 +29,27 @@ def controllers(source, ids):
     return result
 
 
+def launchbox_artwork(games):
+    """Each record's and variant's artwork, downloaded from LaunchBox where LaunchBox has the image
+    (catalog/launchbox-artwork-v1.json, from tools/dos_launchbox.py)."""
+    folders = json.loads((ROOT / 'catalog/launchbox-artwork-v1.json').read_text('utf8'))['folders']
+    def apply(record):
+        record = dict(record)
+        images = folders.get(record.get('launch', {}).get('folder', '').lower())
+        if images and record.get('artwork'):
+            record['artwork'] = with_launchbox(record['artwork'], images)
+        if 'variants' in record:
+            record['variants'] = {k: apply(v) for k, v in record['variants'].items()}
+        return record
+    return {k: apply(v) for k, v in games.items()}
+
+
 def generate(check=False):
     policy = json.loads((ROOT / 'catalog/core-review-v1.json').read_text('utf8'))
     with zipfile.ZipFile(ROOT / 'catalog/complete-input-v1.zip') as archive:
         files = {name:json.loads(archive.read(name)) for name in archive.namelist()}
-    games = apply_review({k:v for name,root in files.items() if re.fullmatch('[0-9a-f]{2}.json',name)
-                          for k,v in root['games'].items()}, read_review())
+    games = launchbox_artwork(apply_review({k:v for name,root in files.items() if re.fullmatch('[0-9a-f]{2}.json',name)
+                          for k,v in root['games'].items()}, read_review()))
     excluded = set(policy['excluded'])
     marked = {k for k,v in games.items() if any('♥' in r.get('tags',[]) for r in [v,*v.get('variants',{}).values()])}
     assert marked <= excluded and excluded <= games.keys(), 'Review every adult-marked record'

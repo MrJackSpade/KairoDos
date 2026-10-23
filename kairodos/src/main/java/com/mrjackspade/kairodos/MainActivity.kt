@@ -17,6 +17,7 @@ import com.mrjackspade.kairo.frontend.ChoiceOption
 import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.ChoiceSpec
 import com.mrjackspade.kairo.frontend.ControllerBinding
+import com.mrjackspade.kairo.frontend.ControllerDefaults
 import com.mrjackspade.kairo.frontend.ControllerLayout
 import com.mrjackspade.kairo.frontend.DirectoryPicker
 import com.mrjackspade.kairo.frontend.ExternalGameFile
@@ -222,9 +223,13 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private val settingScope by lazy { GameSettingScope(preferences) }
     private val dosGameSettings by lazy { DosPerGameSettings(preferences, settingScope) }
 
-    override fun gameBindings(entry: DosLibrary.Game): List<ControllerBinding> =
-        catalog.gameControllerBindings(entry, controllerProfiles.configuration.layout,
-            dosGameSettings.controllerBindings(entry.key)) ?: controllerProfiles.global()
+    /** The player's own mapping as set; a catalog profile over the all-games mapping; else that mapping. */
+    override fun gameBindings(entry: DosLibrary.Game): List<ControllerBinding> {
+        val user = dosGameSettings.controllerBindings(entry.key)
+        val game = catalog.gameControllerBindings(entry, controllerProfiles.configuration.layout, user)
+            ?: return controllerProfiles.global()
+        return if (user != null) game else ControllerDefaults.layered(game, controllerProfiles.global())
+    }
     override fun saveGameBindings(game: GameKey, bindings: List<ControllerBinding>) =
         dosGameSettings.setControllerBindings(game, DosControllerBindings.toJson(bindings).toString())
     override fun clearGameBindings(game: GameKey) = dosGameSettings.clearControllerBindings(game)

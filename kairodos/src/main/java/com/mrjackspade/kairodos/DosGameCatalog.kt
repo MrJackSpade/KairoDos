@@ -77,7 +77,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
     private val bundledControllerProfiles by lazy { readAssetCatalog("controller-profiles-v1.json") }
     private var onlineControllerProfiles = online.read("controller-profiles-v1.json")
     val artworkStore = CatalogArtworkStore(context, { url ->
-        url.startsWith(ARTWORK_ROOT) && remoteArtworkPath.matches(url.removePrefix(ARTWORK_ROOT))
+        DosArtworkReferences.isLaunchBoxImage(url) ||
+            url.startsWith(ARTWORK_ROOT) && remoteArtworkPath.matches(url.removePrefix(ARTWORK_ROOT))
     },
         "art/catalog/dos/")
     // Dependency folder lookup is only needed when preparing a game launch.
@@ -330,7 +331,10 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     data class ArtworkSource(val path: String, val url: String)
 
-    /** Use catalog paths even when images are absent from the smaller APK. */
+    /**
+     * Use catalog paths even when images are absent from the smaller APK. Each downloads from
+     * LaunchBox when the record names LaunchBox's image, and from the repository's copy otherwise.
+     */
     @Synchronized fun missingArtworkFor(entries: List<DosLibrary.Game>): List<ArtworkSource> =
         entries.asSequence().filter { it.playable }.flatMap { entry ->
             val record = layered(MemoKey(matchId(entry) ?: "", entry.key, entry.displayName))
@@ -339,9 +343,10 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
                 val path = DosCatalogFields.safeArtPath(artwork?.optString(kind))
                 path?.takeIf { remoteArtworkPath.matches(it) &&
                     record.sourceOf("artwork", kind) in setOf("Shipped catalog", "Updated catalog") }
+                    ?.let { ArtworkSource(it, artwork?.optString(kind + "Url")
+                        ?.takeIf(DosArtworkReferences::isLaunchBoxImage) ?: (ARTWORK_ROOT + it)) }
             }.asSequence()
-        }.distinct().filter { artworkStore.availablePath(it) == null }
-            .map { ArtworkSource(it, ARTWORK_ROOT + it) }.toList()
+        }.distinctBy { it.path }.filter { artworkStore.availablePath(it.path) == null }.toList()
 
     fun downloadArtwork(source: ArtworkSource, cancelled: AtomicBoolean) =
         artworkStore.download(source.path, source.url, cancelled)

@@ -5,6 +5,7 @@ import com.mrjackspade.kairo.frontend.ControllerBindingsCodec
 import com.mrjackspade.kairo.frontend.ControllerGuestSpec
 import com.mrjackspade.kairo.frontend.ControllerLayout
 import com.mrjackspade.kairo.frontend.ControllerDefaults
+import com.mrjackspade.kairo.frontend.JoystickPort
 
 /** DOS key codes and libretro joypad targets; the editor and codec live in Kairo. */
 internal object DosControllerBindings {
@@ -42,9 +43,11 @@ internal object DosControllerBindings {
         }
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
-        "D-pad: arrows; A: Enter; game-specific profiles can map the D-pad and buttons to DOS joystick controls.",
+        "The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.",
         listOf("menu" to "Open menu", "pause" to "Pause or resume",
-            "restart" to "Restart", "exit" to "Exit"), DosKeyboardLayout.value)
+            "restart" to "Restart", "exit" to "Exit"), DosKeyboardLayout.value,
+        listOf(JoystickPort("Joystick 1", "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
+            JoystickPort("Joystick 2", "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
     val codec = ControllerBindingsCodec(::defaults, { it in storedKeyCodes }, joystick,
         spec.actions.map { it.first })
 
@@ -66,16 +69,20 @@ internal object DosControllerBindings {
         )).bindings
 
     fun defaults() = listOf(
-        ControllerBinding("virtual:up", keys = listOf(273)),
-        ControllerBinding("virtual:down", keys = listOf(274)),
-        ControllerBinding("virtual:left", keys = listOf(276)),
-        ControllerBinding("virtual:right", keys = listOf(275)),
+        // The D-pad is the arrow keys and joystick 1, so a controller without sticks reaches both.
+        ControllerBinding("virtual:up", keys = listOf(273), joystick = "joy1up"),
+        ControllerBinding("virtual:down", keys = listOf(274), joystick = "joy1down"),
+        ControllerBinding("virtual:left", keys = listOf(276), joystick = "joy1left"),
+        ControllerBinding("virtual:right", keys = listOf(275), joystick = "joy1right"),
+        // A and B are Enter and Space; X and Y are joystick 1's buttons.
         ControllerBinding("virtual:a", keys = listOf(13)),
-        ControllerBinding("virtual:b", joystick = "y"),
-        ControllerBinding("virtual:x", keys = listOf(32)),
-        ControllerBinding("virtual:y", joystick = "b"),
+        ControllerBinding("virtual:b", keys = listOf(32)),
+        ControllerBinding("virtual:x", joystick = "b"),
+        ControllerBinding("virtual:y", joystick = "y"),
         ControllerBinding("virtual:l1", joystick = "a"),
         ControllerBinding("virtual:r1", joystick = "x"),
+        ControllerBinding("virtual:l2", keys = listOf(282)),
+        ControllerBinding("virtual:r2", keys = listOf(283)),
         ControllerBinding("virtual:start", keys = listOf(27)),
         ControllerBinding("virtual:select", joystick = "select"),
         ControllerBinding("virtual:menu", action = "menu")

@@ -71,11 +71,31 @@ function Write-PublicJson([System.Text.Json.JsonElement] $value,
                 }
                 $fields = @($art.EnumerateObject() | ForEach-Object Name)
                 if ($fields.Count -gt 0) {
-                    if ($fields.Count -ne 3 -or @($fields | Where-Object { $_ -notin @('id', 'variant', 'kinds') }).Count -gt 0 -or
+                    $paths = @($fields | Where-Object { $_ -ne 'launchbox' })
+                    if ($paths.Count -ne 3 -or @($paths | Where-Object { $_ -notin @('id', 'variant', 'kinds') }).Count -gt 0 -or
                         $art.GetProperty('id').GetString() -cnotmatch '^[0-9a-f]{64}$' -or
                         $art.GetProperty('variant').GetString() -cnotmatch '^[0-9a-f]{12}$' -or
                         $art.GetProperty('kinds').GetInt32() -notin @(1, 2, 3)) {
                         throw 'Regenerate compact artwork with tools/dos_catalog_review.py'
+                    }
+                    # LaunchBox's images for the kinds it has (tools/dos_artwork.py).
+                    if ($fields -contains 'launchbox') {
+                        $launchbox = $art.GetProperty('launchbox')
+                        $kinds = @($launchbox.EnumerateObject())
+                        if ($launchbox.ValueKind -ne [System.Text.Json.JsonValueKind]::Object -or $kinds.Count -eq 0) {
+                            throw 'Invalid LaunchBox artwork'
+                        }
+                        foreach ($kind in $kinds) {
+                            $ref = $kind.Value
+                            $bit = @{ boxArt = 1; preview = 2 }[$kind.Name]
+                            if ($null -eq $bit -or ($art.GetProperty('kinds').GetInt32() -band $bit) -eq 0 -or
+                                @($ref.EnumerateObject()).Count -ne 3 -or
+                                $ref.GetProperty('id').GetString() -cnotmatch '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' -or
+                                $ref.GetProperty('format').GetInt32() -notin @(0, 1) -or
+                                $ref.GetProperty('revision').GetInt32() -notin @(0, 2)) {
+                                throw "Invalid LaunchBox artwork reference for $($kind.Name)"
+                            }
+                        }
                     }
                 }
             }
