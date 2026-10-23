@@ -70,7 +70,7 @@ val catalogAssets by tasks.registering(Sync::class) {
     from(rootProject.file("catalog/parts")) {
         into("catalog")
         include("*.idx")
-        if (providers.gradleProperty("kairoDistribution").orNull == "play") exclude("art.nsfw.*")
+        if (providers.gradleProperty("kairoDistribution").orNull == "play") exclude("*.nsfw.*")
     }
     inputs.dir(rootProject.file("catalog/parts"))
     into(layout.buildDirectory.dir("generated/release-assets"))

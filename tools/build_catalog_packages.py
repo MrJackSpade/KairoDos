@@ -83,7 +83,7 @@ def generate(check=False):
     for i in range(256):
         full_documents[f'{i:02x}.json'] = {'schemaVersion':1,'games':{k:v for k,v in complete_games.items() if k.split(':')[1].startswith(f'{i:02x}')}}
     generate_parts(ROOT, 'kairodos', {'dos/'+k:v for k,v in full_documents.items()},
-        {'schemaVersion':1,'games':clean(games),'folders':{},'controllers':{}}, expand, compact_art, check)
+        {'schemaVersion':1,'games':clean(games),'folders':{},'controllers':{}}, {}, expand, compact_art, check)
     if check:
         with zipfile.ZipFile(ROOT/'catalog/optional/kairodos-adult-v1.zip') as archive:
             assert json.loads(archive.read('data.json')) == optional, 'Stale optional DOS catalog'
