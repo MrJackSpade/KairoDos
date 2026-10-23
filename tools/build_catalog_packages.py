@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import re
-import shutil
 import sys
 import zipfile
 from pathlib import Path
@@ -88,10 +87,6 @@ def generate(check=False):
         with zipfile.ZipFile(ROOT/'catalog/optional/kairodos-adult-v1.zip') as archive:
             assert json.loads(archive.read('data.json')) == optional, 'Stale optional DOS catalog'
     if not check:
-        for path in approved:
-            destination=ROOT/'kairodos/src/main/assets'/path
-            destination.parent.mkdir(parents=True,exist_ok=True)
-            shutil.copyfile(art_root/path,destination)
         build_package(optional,image_paths(optional,expand),art_root,
             ROOT/'catalog/optional/kairodos-adult-v1.zip',product='dos',identity='kairodos-adult',
             name='KairoDos adult catalog',revision=1,
