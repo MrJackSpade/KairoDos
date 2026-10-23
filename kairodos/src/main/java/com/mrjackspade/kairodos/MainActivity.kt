@@ -90,7 +90,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             // DOSBox core loads it as part of its own dlopen group; long-lived threads of the
             // shader runtime then hold that group, and the core can never unload between games.
             System.loadLibrary("c++_shared")
-            System.loadLibrary("kairodos_host")
+            System.loadLibrary("kairodos")
         }
     }
 

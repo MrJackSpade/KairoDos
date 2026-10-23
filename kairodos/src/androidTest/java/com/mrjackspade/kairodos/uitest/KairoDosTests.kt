@@ -26,6 +26,8 @@ object KairoDosApp : AppUnderTest() {
     override val biosTitle: String? = null
     override val biosResource: String? = null
     override val bootGame = "Digger (1983) - Installer"
+    // Its first launch installs it; it runs as the installed game.
+    override val runningTitle = "Digger (1983)"
     override val separateGames = listOf("Digger (1983) - Installer", "Alley Cat - Installer")
     override val searchTerm = "Digger"
     // SDL key codes: the cursor keys, Return and Space (DosControllerBindings).

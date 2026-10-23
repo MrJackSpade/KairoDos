@@ -36,3 +36,6 @@ __pycache__/
 !/docs/fps-controller-profiles.md
 !/docs/licensing.md
 !/docs/source-import.md
+
+# Local build and UI test logs (shared/tools/build.ps1, uitest.ps1).
+.build/

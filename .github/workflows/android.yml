@@ -1,39 +1,40 @@
 name: Android debug build
 
+# Verifies and builds the debug APK through the shared app build workflow
+# (shared/docs/android-build.md). A manual run with signed builds an APK signed with the Kairo key
+# that updates an installed release.
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      signed:
+        description: 'Sign with the Kairo key, to update an installed release'
+        type: boolean
+        default: false
+      version_code:
+        description: 'Version code of a signed APK, above the installed one'
+        type: string
+        default: ''
+      version_name:
+        description: 'Version name of a signed APK'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
 
 jobs:
   build:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check out pinned Kairo frontend
-        run: bash tools/checkout_shared.sh
-      - name: Verify clean core and optional catalog integrity
-        run: python3 shared/tools/audit_core_catalog.py dos
-      - name: Verify portable catalog archive generation
-        run: python3 -m unittest discover -s shared/tools -p test_catalog_package.py
-      - uses: ./shared/.github/actions/setup-android
-      - name: Verify downloadable DOS catalog
-        shell: pwsh
-        run: ./tools/BuildPublicDosCatalog.ps1 -Check
-      - name: Verify reviewed catalog language and description export
-        run: python3 -m unittest discover -s tools -p 'test_dos_catalog_review.py'
-      - name: Verify compact artwork references
-        run: python3 -m unittest discover -s tools -p 'test_dos_artwork.py'
-      - name: Build pinned Staging Android dependencies
-        shell: pwsh
-        run: ./tools/PrepareStagingDependencies.ps1
-      - name: Verify offline emulator notices
-        run: |
-          python3 tools/GenerateStagingNotices.py
-          git diff --exit-code -- kairodos/src/main/assets/THIRD_PARTY_NOTICES.txt
-      - name: Build non-PGO comparator
-        run: ./gradlew --no-daemon -Ppgo=false :kairodos:assembleDebug
-      - name: Build default PGO and verify profile matching
-        run: |
-          ./gradlew --no-daemon :kairodos:assembleDebug
-          python3 tools/check_pgo_profile_matching.py --output .tmp/pgo-ci
+    uses: MrJackSpade/Kairo/.github/workflows/app-build.yml@9c1b49f6dca382dabb5b8c584dbd093a039dc2ef
+    with:
+      module: kairodos
+      signed: ${{ inputs.signed || false }}
+      version_code: ${{ inputs.version_code }}
+      version_name: ${{ inputs.version_name }}
+      # The PGO build's profile matches the sources; the build without PGO is the comparator.
+      tests: |
+        ./gradlew --no-daemon -Ppgo=false :kairodos:assembleWithoutImagesDebug
+        ./gradlew --no-daemon :kairodos:assembleWithoutImagesDebug
+        python3 tools/check_pgo_profile_matching.py --output .tmp/pgo-ci
+    secrets: inherit

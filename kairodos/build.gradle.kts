@@ -3,92 +3,23 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-apply(from = rootProject.file("shared/gradle/android-module.gradle"))
-apply(from = rootProject.file("shared/gradle/catalog-binary.gradle"))
-@Suppress("UNCHECKED_CAST")
-val compileCatalogParts = extra["compileCatalogParts"] as groovy.lang.Closure<Unit>
+extra["kairoProduct"] = "kairodos"
+extra["kairoLabel"] = "KairoDos"
+extra["kairoLauncherBackground"] = "#00110A"
+apply(from = rootProject.file("shared/gradle/kairo-app.gradle"))
 
 android {
-    androidResources { noCompress += listOf("json", "idx", "bin") }
-    namespace = "com.mrjackspade.kairodos"
-
     defaultConfig {
-        applicationId = "com.loxifi.kairodos"
-        versionCode = providers.gradleProperty("kairodosVersionCode").orNull?.toInt() ?: 915
-        versionName = providers.gradleProperty("kairodosVersionName").orNull ?: "0.9.15"
-        // Google Play updates its builds itself, so they never offer GitHub releases (shared AppUpdateCheck).
-        // Declared in both builds: a resource only the Play build had added a field to the app's R class,
-        // so its code differed from the GitHub build's (audit_android_release.py).
-        resValue("bool", "kairo_update_check", (providers.gradleProperty("kairoDistribution").orNull != "play").toString())
-        manifestPlaceholders["kairoLabel"] = "KairoDos"
         externalNativeBuild {
             cmake {
                 arguments += "-DKAIRO_OPTIMIZED_PROFILE=" +
                     if (providers.gradleProperty("presentationProfile").orNull == "true") "ON" else "OFF"
             }
         }
-        ndk { abiFilters += "arm64-v8a" }
     }
-    signingConfigs {
-        create("releaseKey") {
-            val keystore = System.getenv("KAIRO_RELEASE_KEYSTORE")
-            if (!keystore.isNullOrBlank()) {
-                storeFile = file(keystore)
-                storePassword = System.getenv("KAIRO_RELEASE_PASSWORD")
-                keyAlias = "kairo98-beta"
-                keyPassword = System.getenv("KAIRO_RELEASE_PASSWORD")
-            }
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("releaseKey")
-            isMinifyEnabled = false
-        }
-        create("withImagesRelease") {
-            initWith(getByName("release"))
-            matchingFallbacks += "release"
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-        }
-    }
-
-    sourceSets.getByName("main").assets.setSrcDirs(listOf(layout.buildDirectory.dir("generated/staging-assets")))
-    sourceSets.getByName("debug").assets.srcDir(layout.buildDirectory.dir("generated/release-assets"))
-    sourceSets.getByName("release").assets.srcDir(layout.buildDirectory.dir("generated/release-assets"))
-    sourceSets.getByName("withImagesRelease").assets.srcDirs(
-        layout.buildDirectory.dir("generated/release-assets"),
-        layout.buildDirectory.dir("generated/release-artwork"))
+    // DOSBox Staging's runtime resources, beside the shared catalog assets.
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/staging-assets"))
 }
-
-// Same executable and core metadata for every distribution. Play omits the
-// additional artwork catalog; the image-inclusive GitHub APK adds image payloads.
-val catalogAssets by tasks.registering(Sync::class) {
-    from("src/main/assets") { exclude("catalog/**", "art/**") }
-    from(rootProject.file("catalog/parts")) {
-        into("catalog")
-        include("*.idx")
-        if (providers.gradleProperty("kairoDistribution").orNull == "play") exclude("*.nsfw.*")
-    }
-    inputs.dir(rootProject.file("catalog/parts"))
-    into(layout.buildDirectory.dir("generated/release-assets"))
-    doLast {
-        compileCatalogParts.call(rootProject.file("catalog/parts"),
-            layout.buildDirectory.dir("generated/release-assets/catalog").get().asFile)
-    }
-}
-val releaseArtwork by tasks.registering(Sync::class) {
-    from(rootProject.file("catalog/artwork")) { include("art/**") }
-    into(layout.buildDirectory.dir("generated/release-artwork"))
-}
-tasks.matching { it.name.startsWith("pre") && it.name.endsWith("Build") }.configureEach {
-    dependsOn(catalogAssets)
-}
-tasks.matching { it.name == "preWithImagesReleaseBuild" }.configureEach { dependsOn(releaseArtwork) }
 
 val stagingResources by tasks.registering(Sync::class) {
     from(rootProject.file("third_party/dosbox-staging/resources"))
@@ -98,12 +29,8 @@ val stagingResources by tasks.registering(Sync::class) {
 tasks.named("preBuild") { dependsOn(stagingResources) }
 
 dependencies {
-    implementation(project(":frontend"))
     implementation(project(":backend-dos"))
     // Game ZIPs read in place through their document's descriptor (DosZip.members).
     implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
 }
-
-extra["kairoLabel"] = "KairoDos"
-apply(from = rootProject.file("shared/gradle/kairo-uitest.gradle"))

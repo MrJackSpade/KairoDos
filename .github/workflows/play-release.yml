@@ -15,27 +15,8 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Refuse prerelease tags
-        shell: bash
-        env:
-          TAG: ${{ inputs.tag }}
-        run: |
-          if [[ "$TAG" == *-* ]]; then
-            echo "$TAG is a prerelease tag; prereleases never go to Google Play" >&2
-            exit 1
-          fi
-      - uses: actions/checkout@v4
-      - name: Check out pinned Kairo frontend
-        run: bash tools/checkout_shared.sh
-      - name: Download the release's Play bundle
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
-        run: gh release download "$TAG" --pattern "KairoDos-$TAG-play.aab" --dir "$RUNNER_TEMP"
-      - uses: ./shared/.github/actions/play-publish
-        with:
-          package: com.loxifi.kairodos
-          bundle: ${{ runner.temp }}/KairoDos-${{ inputs.tag }}-play.aab
-          track: production
+    uses: MrJackSpade/Kairo/.github/workflows/app-play-release.yml@9c1b49f6dca382dabb5b8c584dbd093a039dc2ef
+    with:
+      name: KairoDos
+      package: com.loxifi.kairodos
+      tag: ${{ inputs.tag }}

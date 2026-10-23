@@ -1,9 +1,0 @@
-<resources>
-    <style name="Theme.KairoDos" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:defaultFocusHighlightEnabled">false</item>
-        <!-- The launch splash, setup, and library share one background, with no grey or
-             black frame between them. The game area paints its own black. -->
-        <item name="android:windowBackground">@color/kairo_background</item>
-        <item name="android:colorBackground">@color/kairo_background</item>
-    </style>
-</resources>
