@@ -28,6 +28,10 @@ object KairoDosApp : AppUnderTest() {
     override val bootGame = "Digger (1983) - Installer"
     override val separateGames = listOf("Digger (1983) - Installer", "Alley Cat - Installer")
     override val searchTerm = "Digger"
+    // SDL key codes: the cursor keys, Return and Space (DosControllerBindings).
+    override val arrowKeys = listOf(273, 274, 276, 275)
+    override val returnKey = 13
+    override val spaceKey = 32
     override val bootGameFile = "games/Digger (1983).zip"
     override val otherGame = "Alley Cat - Installer"
     override val hasStates = false

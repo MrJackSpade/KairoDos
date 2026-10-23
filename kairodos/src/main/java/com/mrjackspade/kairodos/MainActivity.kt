@@ -44,6 +44,7 @@ import com.mrjackspade.kairo.frontend.TouchInputSelection
 import com.mrjackspade.kairo.frontend.TouchSettingsStore
 import com.mrjackspade.kairo.frontend.TrayButton
 import com.mrjackspade.kairo.frontend.ValueTone
+import com.mrjackspade.kairo.frontend.ScanDepth
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
@@ -126,8 +127,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private val dosLibrary by lazy { DosLibrary(this) }
     override val catalog by lazy { DosGameCatalog(this) }
     override fun cachedLibrary(tree: Uri) = claimSavedData(tree, dosLibrary.cached(tree))
-    override fun scanLibrary(tree: Uri, forceHash: Boolean, cancelled: AtomicBoolean, progress: (String) -> Unit) =
-        claimSavedData(tree, dosLibrary.scan(tree, forceHash, cancelled, progress))
+    override fun scanLibrary(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean, progress: (String) -> Unit) =
+        claimSavedData(tree, dosLibrary.scan(tree, depth, cancelled, progress))
     override fun storeLibrary(tree: Uri, entries: List<DosLibrary.Game>) = dosLibrary.store(tree, entries)
     override val hashCount: Int get() = dosLibrary.hashCount
     override val writableFolder = true

@@ -14,6 +14,8 @@ import com.mrjackspade.kairo.frontend.readText
 import com.mrjackspade.kairo.frontend.writeOptionalText
 import com.mrjackspade.kairo.frontend.writeText
 import org.json.JSONObject
+import com.mrjackspade.kairo.frontend.FolderListings
+import com.mrjackspade.kairo.frontend.ScanDepth
 import java.io.File
 import java.security.MessageDigest
 import java.util.Locale
@@ -65,6 +67,8 @@ class DosLibrary(private val context: Context) {
         VersionedLibraryCache.Legacy(File(context.filesDir, "dos-library-v1.json"), 2, "games",
             ::decodeLegacyEntry), mapOf(3 to ::readCacheRecordV3))
     private val walker = DocumentTreeWalker(context.contentResolver)
+    /** The games folder's listings, so a launch lists only the folders that changed (ScanDepth). */
+    private val folderListings = FolderListings(File(context.filesDir, "folder-listings-v1.json"))
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
             ::failedScanWork, ::scanLabel, cacheOrder = { entries -> entries.sortedWith(
@@ -108,13 +112,13 @@ class DosLibrary(private val context: Context) {
                           val members: List<DocumentTreeWalker.FileEntry>) : ScanWork
     }
 
-    fun scan(tree: Uri, forceHash: Boolean, cancelled: AtomicBoolean,
+    fun scan(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean,
              progress: (String) -> Unit): List<Game> =
-        scanPipeline.scan(tree, forceHash, cancelled, progress)
+        scanPipeline.scan(tree, depth, cancelled, progress)
 
-    private fun planScan(tree: Uri, cancelled: AtomicBoolean,
+    private fun planScan(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean,
                          progress: (String) -> Unit): LibraryScanPipeline.Plan<ScanWork, Game> {
-        val source = walker.scan(tree, cancelled, { true }, progress)
+        val source = walker.scan(tree, cancelled, { true }, progress, folderListings, depth)
         val all = source.files
         val rootFiles = all.filter { !it.path.contains('/') }
         val containsArchives = all.any { extension(it.path) in archiveExtensions }
