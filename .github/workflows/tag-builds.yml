@@ -52,6 +52,10 @@ jobs:
           fi
           echo "KAIRODOS_VERSION_CODE=$version_code" >> "$GITHUB_ENV"
           echo "KAIRODOS_ARTIFACT_REF=${GITHUB_REF_NAME//\//-}" >> "$GITHUB_ENV"
+      - name: Require the Kairo release version
+        if: github.event_name == 'push'
+        shell: bash
+        run: sh shared/tools/check-release-version.sh "$GITHUB_REF_NAME" "$(cat shared/release-version)"
       - name: Validate release notes
         if: github.event_name == 'push'
         shell: bash
