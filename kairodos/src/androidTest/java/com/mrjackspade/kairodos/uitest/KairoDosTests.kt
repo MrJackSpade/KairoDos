@@ -7,6 +7,12 @@ import com.mrjackspade.kairo.uitest.suites.GameTests
 import com.mrjackspade.kairo.uitest.suites.LibraryTests
 import com.mrjackspade.kairo.uitest.suites.SearchTests
 import com.mrjackspade.kairo.uitest.suites.WordingTests
+import com.mrjackspade.kairo.uitest.suites.MenuTests
+import com.mrjackspade.kairo.uitest.suites.ControllerTests
+import com.mrjackspade.kairo.uitest.suites.TouchTests
+import com.mrjackspade.kairo.uitest.suites.LaunchTests
+import com.mrjackspade.kairo.uitest.suites.LibraryManagementTests
+import com.mrjackspade.kairo.uitest.suites.SettingsTests
 import org.junit.Test
 
 /**
@@ -22,6 +28,9 @@ object KairoDosApp : AppUnderTest() {
     override val bootGame = "Digger (1983) - Installer"
     override val separateGames = listOf("Digger (1983) - Installer", "Alley Cat - Installer")
     override val searchTerm = "Digger"
+    override val bootGameFile = "games/Digger (1983).zip"
+    override val otherGame = "Alley Cat - Installer"
+    override val hasStates = false
 }
 
 class KairoDosFirstRunTests : FirstRunTests() { override val app = KairoDosApp }
@@ -29,6 +38,12 @@ class KairoDosLibraryTests : LibraryTests() { override val app = KairoDosApp }
 class KairoDosSearchTests : SearchTests() { override val app = KairoDosApp }
 class KairoDosGameTests : GameTests() { override val app = KairoDosApp }
 class KairoDosWordingTests : WordingTests() { override val app = KairoDosApp }
+class KairoDosMenuTests : MenuTests() { override val app = KairoDosApp }
+class KairoDosControllerTests : ControllerTests() { override val app = KairoDosApp }
+class KairoDosTouchTests : TouchTests() { override val app = KairoDosApp }
+class KairoDosLaunchTests : LaunchTests() { override val app = KairoDosApp }
+class KairoDosLibraryManagementTests : LibraryManagementTests() { override val app = KairoDosApp }
+class KairoDosSettingsTests : SettingsTests() { override val app = KairoDosApp }
 
 /** DOS's own behavior: an eXoDOS installer installs itself on its first launch, then runs. */
 class DosTests : KairoUiTest() {
@@ -42,6 +57,20 @@ class DosTests : KairoUiTest() {
         expect.equal("the game's error after installing", "", probe.details["error"].orEmpty())
         val picture = driver.pictures.game("installed")
         expect.that("the installed game draws", picture.litFraction() > 0.02) { "lit ${picture.litFraction()}" }
+    }
+
+    /** The emulated video card a player chooses is kept when the app starts again. */
+    @Test
+    fun theVideoCardChoiceIsKept() {
+        screens.completeFirstRun()
+        screens.library.openMenu().find(com.mrjackspade.kairo.uitest.By.item("f-graphics")).tap()
+        val graphics = driver.page("Graphics").waitUntilShown()
+        screens.choose(graphics, "video")
+        val chosen = graphics.find(com.mrjackspade.kairo.uitest.By.item("video")).find(com.mrjackspade.kairo.uitest.By.id("value")).text()
+        session.relaunch()
+        screens.library.waitUntilShown().openMenu().find(com.mrjackspade.kairo.uitest.By.item("f-graphics")).tap()
+        expect.equal("the video card after restarting", chosen, driver.page("Graphics").waitUntilShown()
+            .find(com.mrjackspade.kairo.uitest.By.item("video")).find(com.mrjackspade.kairo.uitest.By.id("value")).text())
     }
 
     /** The ARM64 dynamic recompiler is built in, selected, and runs code it generated. */
