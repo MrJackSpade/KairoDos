@@ -169,6 +169,26 @@ pwsh tools/PrepareStagingDependencies.ps1
 
 Requires JDK 17, Android SDK 36, NDK 28.2.13676358, and CMake 3.22.1; builds target ARM64. The default build uses a checked-in performance profile; see [the profile notes](backend-dos/pgo/README.md).
 
+<!-- kairo:ui-tests -->
+## UI tests
+
+KairoDos has device tests in the style of Selenium tests, on the shared Kairo test framework: they
+name the app's elements, act on them as a player would, and assert what the player would see
+([how they work and how to run them](https://github.com/MrJackSpade/Kairo/blob/main/docs/ui-tests.md)). Run them from this
+repository with a device connected over adb (Android 10 or later) and the `LOCAL_BUILD_TOKEN` key set:
+
+```
+shared\tools\uitest.ps1 -Device <serial>                                              every test
+shared\tools\uitest.ps1 -Device <serial> -Filter 'MenuTests|ControllerTests'          by test name
+shared\tools\uitest.ps1 -Device <serial> -Class com.mrjackspade.kairodos.uitest.<Class>   one class
+shared\tools\uitest-all.ps1 -Device <serial>                                          every Kairo app
+```
+
+The tests are in `kairodos/src/androidTest/java/com/mrjackspade/kairodos/uitest/`. They run in a
+build of their own, `com.loxifi.kairodos.uitest`, installed beside the app without touching its data, and
+each run's logs, screenshots and summary land in `.build/uitest/<run id>/`.
+<!-- /kairo:ui-tests -->
+
 ## License
 
 <!-- kairo:license -->
