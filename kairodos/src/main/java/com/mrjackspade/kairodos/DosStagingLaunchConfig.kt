@@ -33,10 +33,36 @@ internal object DosStagingLaunchConfig {
         return if (core in setOf("", "auto", "dynamic_nodhfpu")) "dynamic" else core
     }
 
+    /**
+     * The settings the app gives every game over its catalog config, by section in the order
+     * written; a game's own DOSBox settings follow them.
+     */
+    fun hostSettings(source: String?, singleVoodooThread: Boolean, directTouch: Boolean,
+                     videoHardware: Int): List<Pair<String, List<Pair<String, String>>>> = listOfNotNull(
+        // Product-owned host settings override desktop settings in the source
+        // profile. They do not change the emulated VGA refresh rate.
+        // Disable CPU pixel/scan doubling: Android scales the native-size surface.
+        // Plain texture enables a redundant 320x200 -> 640x400 CPU expansion.
+        "sdl" to listOf("output" to "texturenb", "vsync" to "off", "presentation_mode" to "dos-rate",
+            "window_size" to "800x600", "fullscreen" to "false", "pause_when_inactive" to "false"),
+        "mixer" to listOf("rate" to "48000", "blocksize" to "512", "prebuffer" to "30", "negotiate" to "false"),
+        "mouse" to listOf("mouse_capture" to if (directTouch) "seamless" else "onstart", "mouse_raw_input" to "false"),
+        "joystick" to listOf("joysticktype" to "2axis"),
+        // Desktop catalog cycle counts can exceed the handheld's capacity and
+        // slow the DOS clock itself. Auto keeps real-mode compatibility and
+        // adapts protected-mode cycles to the host instead of inheriting those
+        // fixed desktop budgets. Keep this after the imported CPU settings.
+        "cpu" to listOf("core" to cpuCore(source), "cycles" to "auto"),
+        "voodoo" to listOf("voodoo_threads" to if (singleVoodooThread) "1" else "auto"),
+        // Automatic preserves the catalog's machine (Staging defaults to S3).
+        // Explicit user choices follow imported settings so they take precedence.
+        DosVideoHardware.machine(videoHardware)?.let { "dosbox" to listOf("machine" to it) })
+
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
-              target: DosLaunchTarget = DosLaunchTarget.Normal): File {
+              target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
+              autoexec: String? = null): File {
         val manualProgram = target == DosLaunchTarget.Browse || target is DosLaunchTarget.Program
         val source = launch?.configs?.get(name)
         val folder = launch?.folder.orEmpty()
@@ -49,7 +75,8 @@ internal object DosStagingLaunchConfig {
             onlyChild else drive.directory
         val mountedRoot = if (parentMount) drive.directory else gameRoot
         val marker = Regex("(?im)^\\s*\\[autoexec]\\s*$").find(source.orEmpty())
-        val commands = marker?.let { source!!.substring(it.range.last + 1).let { tail ->
+        // The game's own startup commands replace its config's.
+        val commands = autoexec ?: marker?.let { source!!.substring(it.range.last + 1).let { tail ->
             Regex("(?m)^\\s*\\[").find(tail)?.let { tail.substring(0, it.range.first) } ?: tail
         } }.orEmpty()
         val contentDrive = if (!commands.lineSequence().any { mountC.matches(it.trim()) } &&
@@ -130,7 +157,7 @@ internal object DosStagingLaunchConfig {
             overlayMount(contentDrive, initialRoot, initialOptions)?.let(lines::add)
             lines += "$contentDrive:"
             if (!manualProgram) lines += DosLaunchConfig.setupLines(folder, player)
-            if (source == null) {
+            if (source == null && autoexec == null) {
                 if (drive.media != null) {
                     when (drive.media.extension.lowercase()) {
                         "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
@@ -209,27 +236,16 @@ internal object DosStagingLaunchConfig {
                 lines += "call $letter:\\KAIRO.BAT"
             } else lines += program.replace("%", "%%")
         }
-        // Product-owned host settings override desktop settings in the source
-        // profile. They do not change the emulated VGA refresh rate.
-        // Disable CPU pixel/scan doubling: Android scales the native-size surface.
-        // Plain texture enables a redundant 320x200 -> 640x400 CPU expansion.
-        lines += listOf("[sdl]", "output = texturenb", "vsync = off",
-            "presentation_mode = dos-rate", "window_size = 800x600",
-            "fullscreen = false", "pause_when_inactive = false", "[mixer]",
-            "rate = 48000", "blocksize = 512", "prebuffer = 30", "negotiate = false",
-            "[mouse]", "mouse_capture = ${if (directTouch) "seamless" else "onstart"}",
-            "mouse_raw_input = false", "[joystick]", "joysticktype = 2axis")
-        // Desktop catalog cycle counts can exceed the handheld's capacity and
-        // slow the DOS clock itself. Auto keeps real-mode compatibility and
-        // adapts protected-mode cycles to the host instead of inheriting those
-        // fixed desktop budgets. Keep this after the imported CPU settings.
-        lines += listOf("[cpu]", "core = ${cpuCore(source)}", "cycles = auto")
-        lines += listOf("[voodoo]", "voodoo_threads = ${if (singleVoodooThread) "1" else "auto"}")
-        // Automatic preserves the catalog's machine (Staging defaults to S3).
-        // Explicit user choices follow imported settings so they take precedence.
-        DosVideoHardware.machine(videoHardware)?.let {
-            lines += listOf("[dosbox]", "machine = $it")
+        hostSettings(source, singleVoodooThread, directTouch, videoHardware).forEach { (section, values) ->
+            lines += "[$section]"
+            values.forEach { (key, value) -> lines += "$key = $value" }
         }
+        // The game's own DOSBox settings come last, over the catalog's and the app's.
+        settings.entries.groupBy({ it.key.substringBefore('.') }, { it.key.substringAfter('.') to it.value })
+            .forEach { (section, values) ->
+                lines += "[$section]"
+                values.forEach { (key, value) -> lines += "$key = $value" }
+            }
         val atomic = AtomicFile(config)
         val output = atomic.startWrite()
         try {

@@ -6,6 +6,7 @@ plugins {
 extra["kairoProduct"] = "kairodos"
 extra["kairoLabel"] = "KairoDos"
 extra["kairoLauncherBackground"] = "#00110A"
+extra["kairoCatalogRules"] = "com.mrjackspade.kairodos.DosCatalogSettings"
 apply(from = rootProject.file("shared/gradle/kairo-app.gradle"))
 
 android {

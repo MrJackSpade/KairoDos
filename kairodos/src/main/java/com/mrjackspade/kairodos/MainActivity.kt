@@ -14,7 +14,6 @@ import com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController
 import com.mrjackspade.kairo.frontend.CatalogUpdateTask
 import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
-import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.ChoiceSpec
 import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerDefaults
@@ -138,7 +137,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         listOf(claimSavedData(Uri.EMPTY, listOf(dosLibrary.inspectExternal(file, cancelled))).single()
             .also { it.error?.let(::error) })
     override val commandLaunch: (DosLibrary.Game) -> Unit = {
-        startGame(it, manualConfig(it), target = DosLaunchTarget.Browse)
+        startGame(it, startConfig(it), target = DosLaunchTarget.Browse)
     }
 
     override val artworkStore get() = catalog.artworkStore
@@ -321,8 +320,13 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         val noHash = { GameSettingsRows.NO_HASH }
         val scope = { titleOf(entry) }
         val record = catalog.resolve(entry)
-        val variants = record.launch?.configs?.keys.orEmpty()
-            .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
+        val versions = versions(record)
+        val configRows = id?.let { game ->
+            DosConfigRows(game, dosGameSettings, { catalogConfig(entry) }, {
+                DosStagingLaunchConfig.hostSettings(record.launch?.configs?.get(startConfig(entry)),
+                    effectiveVoodoo(entry) == 1, touchSelection(entry).directTouch, dosGameSettings.videoHardware(game))
+            }, { catalogSource(entry) }, enabled, scope) { toast(it) }
+        }
         fun intValue(key: String, global: () -> Int) = if (id == null) GameValue({ null }, { global().toString() },
             { GameSource.ALL_GAMES }, { }) else GameValue(
             { if (settingScope.has(id, key)) settingScope.int(id, key, 0).toString() else null },
@@ -339,19 +343,31 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             GameSettingsRows.choice("voodoo", "3dfx rendering", scope, VOODOO_OPTIONS,
                 intValue("staging_voodoo_threads") { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1) },
                 enabled, noHash),
-            if (variants.size > 1) SettingsRow.choice("variant", "Startup variant",
-                ChoiceSpec("Startup variant", scope, {
-                    listOf(ChoiceGroup(null, variants.map { ChoiceOption(it, variantLabel(it)) }))
-                }, { id?.let(dosGameSettings::startupVariant) },
-                    select = { picked -> id?.let { dosGameSettings.setStartupVariant(it, picked) } }, cycles = false),
-                value = { id?.let(dosGameSettings::startupVariant)?.let(::variantLabel) ?: "Choose on first play" },
-                tone = { if (id?.let(dosGameSettings::startupVariant) == null) ValueTone.EMPTY else ValueTone.CURRENT },
-                enabled = enabled, disabledReason = noHash) else null,
+            if (versions.size > 1) GameSettingsRows.choice("version", "Version", scope,
+                versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) },
+                GameValue({ id?.let(dosGameSettings::version)?.takeIf { it in versions } }, { versions.first() },
+                    { catalogSource(entry) }, { picked -> id?.let { dosGameSettings.setVersion(it, picked) } }),
+                enabled, noHash) else null,
+            configRows?.settingsRow { pages.push(it) },
+            configRows?.commandsRow(),
             if (DosLaunchConfig.needsPlayer(record.launch)) playerNameRow(entry, enabled) else null),
-            "Video changes apply the next time the game starts.")
+            "Changes apply the next time the game starts.")
     }
 
-    private fun variantLabel(name: String) = if (name == "dosbox.conf") "Default" else name
+    /** A game's versions, its catalog configs, the standard one first. */
+    private fun versions(record: DosGameCatalog.Game) = record.launch?.configs?.keys.orEmpty()
+        .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
+
+    /** The catalog config the game starts with: the version the player picked, or its standard one. */
+    private fun startConfig(game: DosLibrary.Game): String {
+        val versions = versions(catalog.resolve(game))
+        return dosGameSettings.version(game.key)?.takeIf { it in versions } ?: versions.firstOrNull() ?: "dosbox.conf"
+    }
+
+    private fun catalogConfig(game: DosLibrary.Game): DosConfig? =
+        catalog.resolve(game).launch?.configs?.get(startConfig(game))?.let(DosConfig::parse)
+
+    private fun catalogSource(game: DosLibrary.Game) = GameSource.label(catalog.sourceOf(game, "launch", "configs"))
 
     private fun videoOptions() = DosVideoHardware.choices.mapIndexed { index, (_, label) ->
         ChoiceOption(index.toString(), label)
@@ -575,35 +591,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private var programPicker: DirectoryPicker? = null
     private var pendingProgramPicker: (() -> Unit)? = null
 
-    override fun launch(entry: DosLibrary.Game, fromFrontend: Boolean) {
-        val variants = catalog.resolve(entry).launch?.configs?.keys.orEmpty()
-        if (variants.size > 1) {
-            val saved = dosGameSettings.startupVariant(entry.key)
-            if (saved !in variants) {
-                chooseLaunchVariant(entry, fromFrontend)
-                return
-            }
-            startGame(entry, saved!!, fromFrontend)
-        } else startGame(entry, "dosbox.conf", fromFrontend)
-    }
-
-    /** Choose a configuration the first time a game with several is played. Back cancels. */
-    private fun chooseLaunchVariant(game: DosLibrary.Game, fromFrontend: Boolean) {
-        val launch = catalog.resolve(game).launch ?: return
-        val names = launch.configs.keys.sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
-        pages.push(ChoicePage(ChoiceSpec("Startup variant", { titleOf(game) }, {
-            listOf(ChoiceGroup(null, names.map { ChoiceOption(it, variantLabel(it)) }))
-        }, { dosGameSettings.startupVariant(game.key) }, select = { selected ->
-            dosGameSettings.setStartupVariant(game.key, selected)
-            startGame(game, selected, fromFrontend)
-        }, stay = true, cycles = false)))
-    }
-
-    private fun manualConfig(game: DosLibrary.Game): String {
-        val variants = catalog.resolve(game).launch?.configs?.keys.orEmpty()
-        return dosGameSettings.startupVariant(game.key)?.takeIf { it in variants }
-            ?: variants.firstOrNull { it == "dosbox.conf" } ?: variants.sorted().firstOrNull() ?: "dosbox.conf"
-    }
+    override fun launch(entry: DosLibrary.Game, fromFrontend: Boolean) =
+        startGame(entry, startConfig(entry), fromFrontend)
 
     /** Games that ask for a DOS player name get one before their first launch. */
     private fun choosePlayerName(game: DosLibrary.Game, playConfig: String, fromFrontend: Boolean) {
@@ -721,7 +710,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, overlays, playerName,
                     effectiveVoodoo(playableGame) == 1, touchSelection(playableGame).directTouch,
-                    dosGameSettings.videoHardware(playableGame.key), target)
+                    dosGameSettings.videoHardware(playableGame.key), target,
+                    dosGameSettings.configSettings(playableGame.key), dosGameSettings.autoexec(playableGame.key))
                 if (target == DosLaunchTarget.Browse) runOnUiThread {
                     if (current(generation)) pendingProgramPicker = {
                         showProgramPicker(playableGame, configName, generation)
