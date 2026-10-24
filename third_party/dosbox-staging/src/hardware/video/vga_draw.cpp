@@ -1408,8 +1408,13 @@ static void VGA_PanningLatch(uint32_t /*val*/)
 	vga.draw.panning = vga.config.pel_panning;
 }
 
+// Kairo: counts every emulated frame, changed or not (staging_bridge.h); the
+// renderer skips GFX_EndUpdate for a frame that did not change.
+void KairoStagingFrameEnd();
+
 static void VGA_VerticalTimer(uint32_t /*val*/)
 {
+	KairoStagingFrameEnd();
 	vga.draw.delay.framestart = PIC_FullIndex();
 	PIC_AddEvent(VGA_VerticalTimer, vga.draw.delay.vtotal);
 

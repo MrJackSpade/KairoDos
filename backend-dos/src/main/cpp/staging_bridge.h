@@ -33,6 +33,11 @@ void kairo_staging_mouse(int dx, int dy, bool left, bool right,
     int pointer_x, int pointer_y, bool pointer_pressed, bool absolute);
 int kairo_staging_read_audio(int16_t* samples, int frames);
 int kairo_staging_audio_rate();
+// Emulated frames since the run started, whether or not the picture changed: the
+// video callback sees only frames whose picture changed.
+uint64_t kairo_staging_guest_frames();
+/** Runs the guest as fast as it can while [enabled], as Staging's fast-forward hotkey does. Emulation thread (poll). */
+void kairo_staging_fast_forward(bool enabled);
 // Emulation-thread only. Empty path lists mounted user drives; otherwise an
 // absolute UTF-8 DOS directory. Result lives until the next call: OK or ERROR
 // on the first line, followed by D/F, a tab, and an absolute UTF-8 DOS path.
@@ -40,6 +45,8 @@ const char* kairo_staging_list_directory(const char* path);
 }
 
 bool KairoStagingPoll();
+// Called by VGA_VerticalTimer at the start of every emulated frame.
+void KairoStagingFrameEnd();
 void KairoStagingVideo(const uint32_t* pixels, int width, int height, int pitch, double aspect);
 void KairoStagingKeyboardWait(bool waiting);
 void KairoStagingKeyboardPoll();

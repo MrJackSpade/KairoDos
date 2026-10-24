@@ -2774,6 +2774,13 @@ static Bits hlt_decode()
 	return 0;
 }
 
+// Kairo: the core the CPU runs, or for a halted CPU the core it resumes with
+// (staging_bridge's CPU telemetry, which a halt must not read as another core).
+CPU_Decoder* KairoRunningDecoder()
+{
+	return cpudecoder == &hlt_decode ? cpu.hlt.old_decoder : cpudecoder;
+}
+
 void CPU_HLT(Bitu oldeip)
 {
 	reg_eip = oldeip;

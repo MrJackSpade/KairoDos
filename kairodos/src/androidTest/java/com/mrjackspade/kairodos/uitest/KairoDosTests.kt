@@ -30,6 +30,9 @@ object KairoDosApp : AppUnderTest() {
     override val runningTitle = "Digger (1983)"
     override val separateGames = listOf("Digger (1983) - Installer", "Alley Cat - Installer")
     override val searchTerm = "Digger"
+    // Each start of an installer in the library offers to remove its ZIP; a player keeps it.
+    override fun launchNotice(game: String, inLibrary: Boolean) =
+        if (inLibrary && game.endsWith(" - Installer")) "Remove installer ZIP?" to "Keep" else null
     // SDL key codes: the cursor keys, Return and Space (DosControllerBindings).
     override val arrowKeys = listOf(273, 274, 276, 275)
     override val returnKey = 13
@@ -62,7 +65,7 @@ class DosTests : KairoUiTest() {
         val probe = driver.probe()
         expect.equal("the game's error after installing", "", probe.details["error"].orEmpty())
         val picture = driver.pictures.game("installed")
-        expect.that("the installed game draws", picture.litFraction() > 0.02) { "lit ${picture.litFraction()}" }
+        expect.that("the installed game draws", picture.drawn()) { "lit ${picture.litFraction()}" }
     }
 
     /** The emulated video card a player chooses is kept when the app starts again. */

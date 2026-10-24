@@ -46,12 +46,11 @@ std::array<uint8_t, 24> joypad{};
 std::atomic<int> mouse_x{0}, mouse_y{0}, pointer_x{0}, pointer_y{0};
 std::atomic<bool> mouse_left{false}, mouse_right{false}, pointer_pressed{false};
 std::atomic<int> mouse_mode{0}, cycles_mode{0};
+std::atomic<bool> fast_forward{false};
 std::atomic<int> sample_rate{48000}, video_width{640}, video_height{400};
 std::atomic<double> aspect{4.0 / 3.0};
 std::atomic<bool> stop_requested{false}, paused{false}, reset_requested{false};
 std::atomic<int> status{0}; // idle, loading, running, failed
-// Frames the guest has produced this session, for the UI tests (KairoActivity.gameProbe).
-std::atomic<uint64_t> produced_frames{0};
 std::atomic<uint64_t> guest_keyboard_waits{0}, guest_keyboard_polls{0}, guest_mouse_reads{0};
 std::atomic<int> guest_keyboard_waiting{0};
 std::atomic<int> dynrec_available{0}, dynamic_active{0};
@@ -71,6 +70,8 @@ struct Core {
     decltype(&kairo_staging_read_audio) read_audio = nullptr;
     decltype(&kairo_staging_audio_rate) audio_rate = nullptr;
     decltype(&kairo_staging_list_directory) list_directory = nullptr;
+    decltype(&kairo_staging_guest_frames) guest_frames = nullptr;
+    decltype(&kairo_staging_fast_forward) fast_forward = nullptr;
 } core;
 void set_error(const std::string& message) {
     std::lock_guard lock(error_mutex);
@@ -90,7 +91,9 @@ bool load_core() {
         symbol(core.configure, "kairo_staging_configure") &&
         symbol(core.joypad, "kairo_staging_joypad") && symbol(core.mouse, "kairo_staging_mouse") &&
         symbol(core.read_audio, "kairo_staging_read_audio") && symbol(core.audio_rate, "kairo_staging_audio_rate") &&
-        symbol(core.list_directory, "kairo_staging_list_directory");
+        symbol(core.list_directory, "kairo_staging_list_directory") &&
+        symbol(core.guest_frames, "kairo_staging_guest_frames") &&
+        symbol(core.fast_forward, "kairo_staging_fast_forward");
 }
 void unload_core() {
     std::unique_lock lock(core_api_mutex);
@@ -114,7 +117,6 @@ void video(const uint32_t* data, int width, int height, int pitch, double ratio)
     if (!data || width <= 0 || height <= 0 || pitch < width * 4) return;
     frame_copy_profile::callback(data, width, height, pitch);
     video_width = width; video_height = height;
-    produced_frames.fetch_add(1, std::memory_order_relaxed);
     if (ratio > 0) aspect = ratio;
     sample_rate = core.audio_rate(); status = 2;
     // Posting a frame may wait for the panel. Keep that wait off Staging's
@@ -231,6 +233,7 @@ int poll() {
     { std::lock_guard lock(input_mutex); changes.swap(key_changes); buttons = joypad; }
     for (const auto& key : changes) core.key(key.code, key.down);
     core.configure(mouse_mode == 1, cycles_mode);
+    core.fast_forward(fast_forward);
     core.joypad(buttons.data(), buttons.size());
     core.mouse(std::clamp(mouse_x.exchange(0), -32768, 32767), std::clamp(mouse_y.exchange(0), -32768, 32767),
         mouse_left, mouse_right, pointer_x, pointer_y, pointer_pressed, mouse_mode == 1);
@@ -260,8 +263,7 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
     const std::string resources = string(env, resources_j);
     { std::lock_guard lock(error_mutex); last_error.clear(); }
     { std::lock_guard lock(control_mutex); stop_requested = false; paused = false; reset_requested = false; }
-    produced_frames = 0;
-    mouse_x = 0; mouse_y = 0; mouse_left = false; mouse_right = false; pointer_pressed = false;
+    mouse_x = 0; mouse_y = 0; mouse_left = false; mouse_right = false; pointer_pressed = false; fast_forward = false;
     { std::lock_guard lock(frame_mutex); renderer_stopping = false; has_pending_frame = false; redraw_requested = false; }
     std::thread renderer(render_frames);
     int result = 0;
@@ -324,12 +326,20 @@ Java_com_mrjackspade_kairodos_MainActivity_nativePause(JNIEnv*, jobject, jboolea
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeReset(JNIEnv*, jobject) { restart(); }
+// Whether the emulation thread is held paused (poll), for the game probe.
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativePaused(JNIEnv*, jobject) { return paused ? JNI_TRUE : JNI_FALSE; }
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeStatus(JNIEnv*, jobject) { return status; }
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAudioRate(JNIEnv*, jobject) { return sample_rate; }
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_mrjackspade_kairodos_MainActivity_nativeFrames(JNIEnv*, jobject) { return jlong(produced_frames.load()); }
+Java_com_mrjackspade_kairodos_MainActivity_nativeFrames(JNIEnv*, jobject) {
+    // Emulated frames this session, for the UI tests (KairoActivity.gameProbe): every frame,
+    // not only those whose picture changed, so a game waiting on a still screen still counts.
+    std::shared_lock lock(core_api_mutex);
+    return core.guest_frames ? jlong(core.guest_frames()) : 0;
+}
 extern "C" JNIEXPORT jdouble JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeAspect(JNIEnv*, jobject) { return aspect; }
 extern "C" JNIEXPORT jint JNICALL
@@ -375,6 +385,10 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeKey(JNIEnv*, jobject, jint code
     if (code < 0 || code >= int(keys.size())) return;
     std::lock_guard lock(input_mutex); if (keys[code] == uint8_t(down)) return;
     keys[code] = uint8_t(down); key_changes.push_back({code, bool(down)});
+}
+extern "C" JNIEXPORT void JNICALL
+Java_com_mrjackspade_kairodos_MainActivity_nativeFastForward(JNIEnv*, jobject, jboolean enabled) {
+    fast_forward = enabled;
 }
 extern "C" JNIEXPORT void JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeJoypad(JNIEnv*, jobject, jint id, jboolean down) {

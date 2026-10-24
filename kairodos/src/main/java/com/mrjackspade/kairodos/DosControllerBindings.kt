@@ -44,8 +44,7 @@ internal object DosControllerBindings {
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
         "The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.",
-        listOf("menu" to "Open menu", "pause" to "Pause or resume",
-            "restart" to "Restart", "exit" to "Exit"), DosKeyboardLayout.value,
+        ControllerGuestSpec.STANDARD_ACTIONS, DosKeyboardLayout.value,
         listOf(JoystickPort("Joystick 1", "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
             JoystickPort("Joystick 2", "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
     val codec = ControllerBindingsCodec(::defaults, { it in storedKeyCodes }, joystick,

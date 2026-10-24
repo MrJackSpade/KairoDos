@@ -15,6 +15,7 @@
 #include <android/log.h>
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
@@ -22,6 +23,7 @@
 
 int KairoStagingMain(int argc, char** argv);
 void KairoResetHostTiming();
+void KairoSetFastForward(bool enabled);  // dosbox.cpp (Kairo)
 
 static_assert(C_DYNREC && C_TARGET_CPU_ARM,
     "KairoDos requires the ARM64 dynamic recompiler");
@@ -91,6 +93,8 @@ namespace {
 KairoStagingCallbacks callbacks{};
 SDL_Keymod modifiers = KMOD_NONE;
 uint64_t keyboard_waits = 0, keyboard_polls = 0, mouse_reads = 0;
+// Written on the emulation thread, read by the host's probe.
+std::atomic<uint64_t> guest_frames{0};
 int keyboard_waiting = 0;
 bool last_left = false, last_right = false, last_pointer = false;
 int last_cycles = 0, last_mouse = -1;
@@ -147,6 +151,7 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
 #endif
     callbacks = *cb;
     kairo_staging_cpu_counters = {};
+    guest_frames = 0;
     std::filesystem::create_directories(config_dir);
     SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
     SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
@@ -175,23 +180,31 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     return result;
 }
 
+CPU_Decoder* KairoRunningDecoder();  // cpu/cpu.cpp (Kairo)
+
 bool KairoStagingPoll() {
 #ifdef KAIRO_GUEST_PROFILE
     kairo_guest_profile::flush();
 #endif
     if (callbacks.telemetry)
         callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
-    if (callbacks.cpu_telemetry)
+    if (callbacks.cpu_telemetry) {
+        // A game waiting for a key spends most of its time halted, in DOSBox's halt decoder.
+        CPU_Decoder* const decoder = KairoRunningDecoder();
         callbacks.cpu_telemetry(1,
-            cpudecoder == &CPU_Core_Dynrec_Run || cpudecoder == &CPU_Core_Dynrec_Trap_Run,
+            decoder == &CPU_Core_Dynrec_Run || decoder == &CPU_Core_Dynrec_Trap_Run,
             kairo_staging_cpu_counters.translated_blocks,
             kairo_staging_cpu_counters.executed_blocks);
+    }
     const int result = callbacks.poll ? callbacks.poll() : 1;
     if (result == 2) KairoResetHostTiming();
     if (result) return true;
     DOSBOX_RequestShutdown();
     return false;
 }
+void KairoStagingFrameEnd() { guest_frames.fetch_add(1, std::memory_order_relaxed); }
+extern "C" void kairo_staging_fast_forward(bool enabled) { KairoSetFastForward(enabled); }
+extern "C" uint64_t kairo_staging_guest_frames() { return guest_frames.load(std::memory_order_relaxed); }
 void KairoStagingVideo(const uint32_t* pixels, int w, int h, int pitch, double aspect) {
     if (callbacks.video) callbacks.video(pixels, w, h, pitch, aspect);
 }

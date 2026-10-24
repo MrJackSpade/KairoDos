@@ -471,6 +471,14 @@ static void DOSBOX_UnlockSpeed(bool pressed)
 	}
 }
 
+#ifdef KAIRO_STAGING
+// The fast-forward hotkey's own switch, for the host's fast-forward button (emulation thread).
+void KairoSetFastForward(bool enabled)
+{
+	if (enabled != ticks.locked) DOSBOX_UnlockSpeed(enabled);
+}
+#endif
+
 void DOSBOX_SetMachineTypeFromConfig(SectionProp& section)
 {
 	const auto arguments = &control->arguments;

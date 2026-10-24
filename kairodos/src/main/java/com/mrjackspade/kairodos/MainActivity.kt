@@ -55,6 +55,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private external fun nativeRun(config: String, saveDir: String, resources: String): Boolean
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
+    private external fun nativePaused(): Boolean
     private external fun nativeReset()
     private external fun nativeListDirectory(path: String): String
     private external fun nativeStatus(): Int
@@ -69,6 +70,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private external fun nativeSetSurface(surface: Surface?)
     private external fun nativeSetShaderPreset(path: String?)
     private external fun nativeKey(code: Int, down: Boolean)
+    private external fun nativeFastForward(enabled: Boolean)
     private external fun nativeJoypad(id: Int, down: Boolean)
     private external fun nativeMouseMove(dx: Int, dy: Int)
     private external fun nativeMouseButton(button: Int, down: Boolean)
@@ -421,7 +423,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
      */
     override fun probeDetails(): Map<String, String> {
         val cpu = nativeCpuTelemetry()
-        return mapOf("frames" to nativeFrames().toString(), "error" to nativeLastError(),
+        return mapOf("frames" to nativeFrames().toString(), "native.paused" to nativePaused().toString(), "error" to nativeLastError(),
             "video" to "${nativeVideoWidth()}x${nativeVideoHeight()}",
             "cpu.dynrec" to cpu[0].toString(), "cpu.dynamic" to cpu[1].toString(),
             "cpu.translated" to cpu[2].toString(), "cpu.executed" to cpu[3].toString())
@@ -429,7 +431,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     override fun sessionStatus() = when (nativeStatus()) {
         1 -> "Loading"
-        2 -> if (userPaused) "Paused" else "Running"
+        // Held paused by the menu or the player, as the machine apps report it.
+        2 -> if (nativePaused()) "Paused" else "Running"
         3 -> "Failed"
         else -> "Stopped"
     }
@@ -987,7 +990,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun pauseAudio() { audio?.pause() }
     override fun resumeAudio() { audio?.play() }
     override fun setMuted(muted: Boolean) { audio?.setVolume(if (muted) 0f else 1f) }
-    override fun setFastForward(enabled: Boolean) {}
+    override fun setFastForward(enabled: Boolean) = nativeFastForward(enabled)
     override fun setGuestSurface(surface: Surface?) = nativeSetSurface(surface)
     override fun setShaderPreset(path: String?) = nativeSetShaderPreset(path)
     override val shaderNeedsNewSurface = true

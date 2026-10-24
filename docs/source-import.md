@@ -17,8 +17,10 @@ The shared frontend also supplies RetroArch Slang support from a pinned librasha
 Android changes are guarded by `KAIRO_STAGING`:
 
 - `src/main.cpp`: callable entry, no process exit/signal handlers, cleanup on failure.
-- `src/dosbox.cpp`: frontend restart instead of fork/exec; reset host timing after pause.
+- `src/dosbox.cpp`: frontend restart instead of fork/exec; reset host timing after pause; the host fast-forward button runs the fast-forward hotkey's switch.
 - `src/gui/sdl_gui.cpp`: frontend renderer/event polling and Android mouse capture routing.
+- `src/cpu/cpu.cpp`: `KairoRunningDecoder`, the core the CPU runs or, while halted, resumes with, for the CPU telemetry.
+- `src/hardware/video/vga_draw.cpp`: a count of every emulated frame, changed or not (`VGA_VerticalTimer` calls `KairoStagingFrameEnd`).
 - `src/hardware/video/vga_draw.cpp` and `src/gui/render/render.cpp`: indexed VESA scanline history in the first-party `kairo_palette_cache.h` avoids palette expansion and RGB comparison when the renderer's preceding line is provably unchanged. Palette changes, missing lines, failed updates and renderer resets invalidate reuse. Hardware cursors, wrapped VRAM, ReelMagic mixing and unsupported renderer paths retain upstream conversion; scanout timing and game resolution are unchanged.
 - `src/audio/mixer.cpp`: AudioTrack consumes samples; dummy SDL device stays paused.
 - `src/cpu/core_dynrec.cpp`: emulation-thread counters for translated blocks and returns from generated ARM64 code; the adapter publishes snapshots for device verification.
