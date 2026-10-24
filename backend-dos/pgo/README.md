@@ -24,7 +24,7 @@ llvm-profdata merge --text training.profdata -o original.proftext
 The literal `M:/` source prefix was replaced with `@KAIRO_SOURCE@/`, and text
 newlines were canonicalized to LF with one final newline for stable Git hashes.
 No counts, CFG hashes, weights or training inputs were changed. At configure
-time `PrepareProfile.cmake` substitutes the actual checkout prefix and uses
+time `shared/cmake/KairoPgo.cmake` (through `PrepareProfile.cmake`) substitutes the actual checkout prefix and uses
 the selected NDK's `llvm-profdata merge` to recreate the indexed file. LLVM
 therefore updates named indirect-call target GUIDs consistently with the
 relocated function names. Do not rewrite numeric target GUIDs manually.
