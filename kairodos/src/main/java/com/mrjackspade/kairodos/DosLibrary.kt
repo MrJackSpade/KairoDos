@@ -71,7 +71,7 @@ class DosLibrary(private val context: Context) {
     private val folderListings = FolderListings(File(context.filesDir, "folder-listings-v1.json"))
     private val scanPipeline by lazy {
         LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
-            ::failedScanWork, ::scanLabel, cacheOrder = { entries -> entries.sortedWith(
+            ::failedScanWork, ::describe, ::known, Game::path, cacheOrder = { entries -> entries.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
@@ -152,9 +152,23 @@ class DosLibrary(private val context: Context) {
         return LibraryScanPipeline.Plan(work, finalEntries = folderErrors)
     }
 
-    private fun scanLabel(work: ScanWork, index: Int, total: Int): String = when (work) {
-        is ScanWork.Archive -> "Checking ${index + 1} of $total for changes: ${work.file.path}"
-        is ScanWork.Folder -> "Checking ${index + 1} of $total for changes: ${work.root}"
+    private fun describe(work: ScanWork): String = when (work) {
+        is ScanWork.Archive -> work.file.path
+        is ScanWork.Folder -> folderDisplay(work)
+    }
+
+    /** A game the library has scanned before keeps its identity; only Recheck all files hashes it again. */
+    private fun known(work: ScanWork, scan: LibraryScanPipeline.ScanContext<Game>): Boolean = when (work) {
+        is ScanWork.Archive -> scan.prior[work.file.path] != null
+        is ScanWork.Folder -> scan.prior[folderId(work)] != null
+    }
+
+    /** [old]'s content ID, when it is a game this scan need not read again. */
+    private fun knownContent(old: Game?, fingerprint: String, prefix: String): String? {
+        if (old == null || old.contentId == null || old.error != null || !old.contentId.startsWith(prefix)) return null
+        if (old.fingerprint != fingerprint) android.util.Log.w("KairoLibrary",
+            "Known game changed: ${old.path}: ${old.fingerprint} -> $fingerprint")
+        return old.contentId
     }
 
     private fun inspectScanWork(work: ScanWork,
@@ -171,13 +185,9 @@ class DosLibrary(private val context: Context) {
         val old = scan.prior[id]
         var installer = old?.installer == true &&
             !isInstalledArchive(item.path.substringAfterLast('/'))
-        val contentId = if (old != null && old.fingerprint == fingerprint &&
-            item.modified > 0 && old.contentId != null && old.error == null &&
-            (if (extension(item.path) in archiveExtensions)
-                old.contentId.startsWith("sha256-dos-manifest-v1:") else
-                old.contentId.startsWith("sha256-dos-file-v1:"))) old.contentId
-        else {
-            scan.hashStarted()
+        val contentId = knownContent(old, fingerprint, if (extension(item.path) in archiveExtensions)
+                "sha256-dos-manifest-v1:" else "sha256-dos-file-v1:") ?: run {
+            scan.hashStarted(item.path)
             if (extension(item.path) in archiveExtensions) {
                 val inspection = DosContentHash.inspectZipDocument(
                     context.contentResolver, item.uri, scan.cancelled)
@@ -217,11 +227,8 @@ class DosLibrary(private val context: Context) {
         val id = folderId(work)
         val fingerprint = folderFingerprint(work)
         val old = scan.prior[id]
-        val contentId = if (old != null && old.fingerprint == fingerprint &&
-            work.members.all { it.size >= 0 && it.modified > 0 } && old.contentId != null &&
-            old.contentId.startsWith("sha256-dos-manifest-v1:") && old.error == null) old.contentId
-        else {
-            scan.hashStarted()
+        val contentId = knownContent(old, fingerprint, "sha256-dos-manifest-v1:") ?: run {
+            scan.hashStarted(folderDisplay(work))
             DosContentHash.documents(context.contentResolver, work.members, scan.cancelled)
         }
         return listOf(Game(id, folderUri(work).toString(), folderDisplay(work), true,
@@ -436,7 +443,7 @@ class DosLibrary(private val context: Context) {
                 require(if (extension(game.path) in archiveExtensions)
                     DosContentHash.zip(copied, cancelled) == game.contentId
                     else hashFile(copied, cancelled) == game.contentId) {
-                    "Game changed since scan; refresh the library"
+                    "Game changed since it was scanned; use Recheck all files in Manage library"
                 }
                 if (type in archiveExtensions + otherExtensions) {
                     if (type in archiveExtensions && wrapFolder != null &&
@@ -462,7 +469,7 @@ class DosLibrary(private val context: Context) {
                                 }
                             }
                             require(DosContentHash.zip(pending, cancelled) == game.contentId) {
-                                "Game changed while preparing; refresh the library"
+                                "Game changed while preparing; use Recheck all files in Manage library"
                             }
                             require(pending.renameTo(target)) { "Could not prepare game" }
                         } finally { pending.delete() }
@@ -488,7 +495,7 @@ class DosLibrary(private val context: Context) {
                 else it.path.startsWith("${game.path}/")
             }
             require(DosContentHash.documents(context.contentResolver, files, cancelled) == game.contentId) {
-                "Game changed since scan; refresh the library"
+                "Game changed since it was scanned; use Recheck all files in Manage library"
             }
             val pending = File.createTempFile("dos-", ".zip.part", cache)
             try {
@@ -508,7 +515,7 @@ class DosLibrary(private val context: Context) {
                     }
                 }
                 require(DosContentHash.zip(pending, cancelled) == game.contentId) {
-                    "Game changed while preparing; refresh the library"
+                    "Game changed while preparing; use Recheck all files in Manage library"
                 }
                 require(pending.renameTo(target)) { "Could not prepare game" }
             } finally { pending.delete() }

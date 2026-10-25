@@ -170,7 +170,8 @@ void render_frames() {
         shader_renderer.setPreset(shader_preset);
         if (!shader_preset.empty()) {
             const auto shader_start = video_profile::now();
-            const bool shown = shader_renderer.render(surface, frame.data(), width, height);
+            const bool shown = shader_renderer.render(surface, frame.data(),
+                kairo::FrameShape{static_cast<uint32_t>(width), static_cast<uint32_t>(height)});
             surface_width = surface_height = 0;
             if (shown) {
                 video_profile::record(video_profile::Presented);
