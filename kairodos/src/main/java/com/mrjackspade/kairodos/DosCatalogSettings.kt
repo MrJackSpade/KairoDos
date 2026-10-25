@@ -6,9 +6,9 @@ import java.io.File
 
 /**
  * AGENTS.md's catalog settings rule for the DOS catalog (kairodos/src/main/assets/catalog/dos): a
- * game's settings are its catalog configs, one per version. The Version row picks one; DOSBox
- * settings has a row for each setting a config gives and Startup commands holds its [autoexec], so
- * every line a config holds must be one DosConfig reads.
+ * game's settings are its catalog configs (eXoDOS presets), one per version. The Version row
+ * picks one; its Custom version shows DOSBox settings, a row for each setting a config gives, and
+ * Startup commands, its [autoexec], so every line a config holds must be one DosConfig reads.
  */
 object DosCatalogSettings : CatalogSettingsRule {
     /** Fields that say what a game is or where its files are, not how it runs. */

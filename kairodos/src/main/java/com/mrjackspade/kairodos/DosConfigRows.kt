@@ -12,8 +12,9 @@ import com.mrjackspade.kairo.frontend.TrayInput
 import com.mrjackspade.kairo.frontend.TraySpec
 
 /**
- * A game's DOSBox settings and startup commands: each starts as its catalog config's, and the
- * player's own value replaces it the next time the game starts.
+ * A game's DOSBox settings and startup commands, shown when it runs its Custom version: each
+ * starts as its preset's (or the app's), and the player's own value replaces it the next time
+ * the game starts.
  */
 internal class DosConfigRows(
     private val game: GameKey,
@@ -30,16 +31,19 @@ internal class DosConfigRows(
 ) {
     private fun own() = settings.configSettings(game)
 
-    /** The page's sections: the catalog config's, then any the player added. */
+    /**
+     * The page's sections: the catalog config's, then the app's (so a game without a preset still
+     * shows what it runs with), then any the player added.
+     */
     private fun sections(): Map<String, List<String>> {
         val keys = LinkedHashMap<String, MutableList<String>>()
-        config()?.sections?.forEach { (section, values) -> keys.getOrPut(section) { ArrayList() } += values.map { it.first } }
-        own().keys.forEach { name ->
-            val section = name.substringBefore('.')
-            val key = name.substringAfter('.')
+        fun add(section: String, key: String) {
             val list = keys.getOrPut(section) { ArrayList() }
             if (key !in list) list += key
         }
+        config()?.sections?.forEach { (section, values) -> values.forEach { add(section, it.first) } }
+        host().forEach { (section, values) -> values.forEach { add(section, it.first) } }
+        own().keys.forEach { add(it.substringBefore('.'), it.substringAfter('.')) }
         return keys
     }
 

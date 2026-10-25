@@ -14,6 +14,16 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
     private fun playerKey(game: GameKey) = "$PLAYER${game.storageName}"
     private fun configKey(game: GameKey) = "$CONFIG${game.storageName}"
     private fun autoexecKey(game: GameKey) = "$AUTOEXEC${game.storageName}"
+    private fun customKey(game: GameKey) = "$CUSTOM${game.storageName}"
+
+    /**
+     * Whether the game runs its Custom version: its preset ([version]) with the player's own
+     * DOSBox settings and startup commands. Other versions keep those but do not use them.
+     */
+    fun custom(game: GameKey): Boolean = preferences.getBoolean(customKey(game), false)
+    fun setCustom(game: GameKey, custom: Boolean) = preferences.edit().apply {
+        if (custom) putBoolean(customKey(game), true) else remove(customKey(game))
+    }.apply()
 
     /** The game's own DOSBox settings, which replace its catalog config's: {"section.key": value}. */
     fun configSettings(game: GameKey): Map<String, String> =
@@ -43,7 +53,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         preferences.edit().putString(controllerKey(game), json).apply()
     fun clearControllerBindings(game: GameKey) = preferences.edit().remove(controllerKey(game)).apply()
 
-    /** The catalog config the player picked for the game, or null for its standard one. */
+    /** The catalog config (preset) the player picked for the game, or null for its standard one. */
     fun version(game: GameKey): String? = preferences.getString(variantKey(game), null)
     fun setVersion(game: GameKey, config: String?) = preferences.edit().apply {
         if (config == null) remove(variantKey(game)) else putString(variantKey(game), config)
@@ -59,7 +69,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
     fun reset(game: GameKey) {
         common.clear(game, "touch_mode", "direct_touch", "cycles_mode", "staging_voodoo_threads", DosVideoHardware.setting)
         preferences.edit().remove(controllerKey(game)).remove(variantKey(game))
-            .remove(playerKey(game)).remove(configKey(game)).remove(autoexecKey(game)).apply()
+            .remove(playerKey(game)).remove(configKey(game)).remove(autoexecKey(game)).remove(customKey(game)).apply()
     }
 
     /** An installer's settings belong to the game it installs. */
@@ -84,6 +94,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         move(playerKey(from), playerKey(to))
         move(configKey(from), configKey(to))
         move(autoexecKey(from), autoexecKey(to))
+        move(customKey(from), customKey(to))
         check(editor.commit()) { "Could not move the game's settings" }
     }
 
@@ -93,6 +104,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         private const val PLAYER = "game_dos_player_v2_"
         private const val CONFIG = "game_dos_config_v1_"
         private const val AUTOEXEC = "game_dos_autoexec_v1_"
+        private const val CUSTOM = "game_dos_custom_v1_"
 
         /** Settings from before games had keys, named by content ID. */
         val LEGACY = listOf(

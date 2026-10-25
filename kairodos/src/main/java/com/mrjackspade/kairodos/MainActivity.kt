@@ -14,6 +14,7 @@ import com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController
 import com.mrjackspade.kairo.frontend.CatalogUpdateTask
 import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
+import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.ChoiceSpec
 import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerDefaults
@@ -83,6 +84,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         private const val EDITED_FILE = "edited"
         private const val WORKING_OVERLAY = "staging/overlay-working"
         private const val UNSAVED_OVERLAY = "staging/overlay-working.unsaved"
+        /** The Version choice that runs the preset with the player's own DOSBox settings and startup commands. */
+        private const val CUSTOM_VERSION = "custom"
         private val CPU_OPTIONS = listOf(ChoiceOption("0", "Auto"), ChoiceOption("1", "Maximum"))
         private val VOODOO_OPTIONS = listOf(ChoiceOption("0", "Automatic CPU threads"),
             ChoiceOption("1", "Single CPU thread"))
@@ -343,18 +346,32 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             GameSettingsRows.choice("voodoo", "3dfx rendering", scope, VOODOO_OPTIONS,
                 intValue("staging_voodoo_threads") { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1) },
                 enabled, noHash),
-            if (versions.size > 1) GameSettingsRows.choice("version", "Version", scope,
-                versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) },
-                GameValue({ id?.let(dosGameSettings::version)?.takeIf { it in versions } }, { versions.first() },
-                    { catalogSource(entry) }, { picked -> id?.let { dosGameSettings.setVersion(it, picked) } }),
-                enabled, noHash) else null,
-            configRows?.settingsRow { pages.push(it) },
-            configRows?.commandsRow(),
+            GameSettingsRows.choice("version", "Version", scope,
+                versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) } + ChoiceOption(CUSTOM_VERSION, "Custom"),
+                GameValue({ id?.let { if (dosGameSettings.custom(it)) CUSTOM_VERSION else dosGameSettings.version(it)?.takeIf { v -> v in versions } } },
+                    { versions.firstOrNull().orEmpty() },
+                    { if (versions.isEmpty()) GameSource.BUILT_IN else catalogSource(entry) },
+                    { picked -> id?.let { setVersion(it, picked) } }),
+                enabled, noHash, defaultLabel = { versions.firstOrNull()?.let(DosConfig::versionLabel) ?: "None" }),
+            configRows?.takeIf { id != null && dosGameSettings.custom(id) }?.settingsRow { pages.push(it) },
+            configRows?.takeIf { id != null && dosGameSettings.custom(id) }?.commandsRow(),
             if (DosLaunchConfig.needsPlayer(record.launch)) playerNameRow(entry, enabled) else null),
             "Changes apply the next time the game starts.")
     }
 
-    /** A game's versions, its catalog configs, the standard one first. */
+    /**
+     * Picks a game's version: one of its presets, or Custom, which runs the preset it had with the
+     * player's own DOSBox settings and startup commands. Null goes back to the catalog's preset.
+     */
+    private fun setVersion(game: GameKey, picked: String?) = when (picked) {
+        CUSTOM_VERSION -> dosGameSettings.setCustom(game, true)
+        else -> {
+            dosGameSettings.setVersion(game, picked)
+            dosGameSettings.setCustom(game, false)
+        }
+    }
+
+    /** A game's versions, its catalog configs (eXoDOS presets), the standard one first. */
     private fun versions(record: DosGameCatalog.Game) = record.launch?.configs?.keys.orEmpty()
         .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
 
@@ -591,8 +608,22 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private var programPicker: DirectoryPicker? = null
     private var pendingProgramPicker: (() -> Unit)? = null
 
-    override fun launch(entry: DosLibrary.Game, fromFrontend: Boolean) =
-        startGame(entry, startConfig(entry), fromFrontend)
+    override fun launch(entry: DosLibrary.Game, fromFrontend: Boolean) {
+        val versions = versions(catalog.resolve(entry))
+        val chosen = dosGameSettings.custom(entry.key) || dosGameSettings.version(entry.key) in versions
+        if (versions.size > 1 && !chosen) chooseVersion(entry, versions, fromFrontend)
+        else startGame(entry, startConfig(entry), fromFrontend)
+    }
+
+    /** Choose a version the first time a game with several presets is played. Back cancels. */
+    private fun chooseVersion(game: DosLibrary.Game, versions: List<String>, fromFrontend: Boolean) {
+        pages.push(ChoicePage(ChoiceSpec("Version", { titleOf(game) }, {
+            listOf(ChoiceGroup(null, versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) }))
+        }, { dosGameSettings.version(game.key) }, select = { selected ->
+            dosGameSettings.setVersion(game.key, selected)
+            startGame(game, selected, fromFrontend)
+        }, stay = true, cycles = false)))
+    }
 
     /** Games that ask for a DOS player name get one before their first launch. */
     private fun choosePlayerName(game: DosLibrary.Game, playConfig: String, fromFrontend: Boolean) {
@@ -711,7 +742,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                     drive, launch, configName, dependencies, overlays, playerName,
                     effectiveVoodoo(playableGame) == 1, touchSelection(playableGame).directTouch,
                     dosGameSettings.videoHardware(playableGame.key), target,
-                    dosGameSettings.configSettings(playableGame.key), dosGameSettings.autoexec(playableGame.key))
+                    if (dosGameSettings.custom(playableGame.key)) dosGameSettings.configSettings(playableGame.key) else emptyMap(),
+                    if (dosGameSettings.custom(playableGame.key)) dosGameSettings.autoexec(playableGame.key) else null)
                 if (target == DosLaunchTarget.Browse) runOnUiThread {
                     if (current(generation)) pendingProgramPicker = {
                         showProgramPicker(playableGame, configName, generation)
