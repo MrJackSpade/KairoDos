@@ -10,6 +10,7 @@ import org.json.JSONObject
 internal class DosPerGameSettings(private val preferences: SharedPreferences,
                                   private val common: GameSettingScope) {
     private fun controllerKey(game: GameKey) = "$CONTROLLER${game.storageName}"
+    private fun controllerLayerKey(game: GameKey) = "$CONTROLLER_LAYER${game.storageName}"
     private fun variantKey(game: GameKey) = "$VARIANT${game.storageName}"
     private fun playerKey(game: GameKey) = "$PLAYER${game.storageName}"
     private fun configKey(game: GameKey) = "$CONFIG${game.storageName}"
@@ -48,10 +49,15 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         if (lines == null) remove(autoexecKey(game)) else putString(autoexecKey(game), lines)
     }.apply()
 
-    fun controllerBindings(game: GameKey): String? = preferences.getString(controllerKey(game), null)
-    fun setControllerBindings(game: GameKey, json: String) =
-        preferences.edit().putString(controllerKey(game), json).apply()
-    fun clearControllerBindings(game: GameKey) = preferences.edit().remove(controllerKey(game)).apply()
+    /** The player's own controller layer for [game] (ControllerDefaults.cascade): what they changed. */
+    fun controllerLayer(game: GameKey): String? = preferences.getString(controllerLayerKey(game), null)
+    /** The whole mapping the player saved for [game] before mappings were layers. */
+    fun legacyControllerBindings(game: GameKey): String? = preferences.getString(controllerKey(game), null)
+    fun hasOwnController(game: GameKey) = preferences.contains(controllerLayerKey(game)) || preferences.contains(controllerKey(game))
+    fun setControllerLayer(game: GameKey, json: String) =
+        preferences.edit().putString(controllerLayerKey(game), json).remove(controllerKey(game)).apply()
+    fun clearControllerBindings(game: GameKey) =
+        preferences.edit().remove(controllerLayerKey(game)).remove(controllerKey(game)).apply()
 
     /** The catalog config (preset) the player picked for the game, or null for its standard one. */
     fun version(game: GameKey): String? = preferences.getString(variantKey(game), null)
@@ -68,7 +74,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
 
     fun reset(game: GameKey) {
         common.clear(game, "touch_mode", "direct_touch", "cycles_mode", "staging_voodoo_threads", DosVideoHardware.setting)
-        preferences.edit().remove(controllerKey(game)).remove(variantKey(game))
+        preferences.edit().remove(controllerKey(game)).remove(controllerLayerKey(game)).remove(variantKey(game))
             .remove(playerKey(game)).remove(configKey(game)).remove(autoexecKey(game)).remove(customKey(game)).apply()
     }
 
@@ -90,6 +96,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         for (name in values.keys.filter { it.startsWith(common) })
             move(name, "${GameSettingScope.PREFIX}${to.storageName}_${name.removePrefix(common)}")
         move(controllerKey(from), controllerKey(to))
+        move(controllerLayerKey(from), controllerLayerKey(to))
         move(variantKey(from), variantKey(to))
         move(playerKey(from), playerKey(to))
         move(configKey(from), configKey(to))
@@ -100,6 +107,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
 
     companion object {
         private const val CONTROLLER = "game_controller_v2_"
+        private const val CONTROLLER_LAYER = "game_controller_layer_v3_"
         private const val VARIANT = "game_launch_variant_v2_"
         private const val PLAYER = "game_dos_player_v2_"
         private const val CONFIG = "game_dos_config_v1_"

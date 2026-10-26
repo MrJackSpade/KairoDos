@@ -11,6 +11,7 @@ import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.GameKeyMigration
 import com.mrjackspade.kairo.frontend.GameMetadataOverrides
 import com.mrjackspade.kairo.frontend.LibraryItem
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
 import java.io.File
@@ -154,14 +155,16 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
         controllerProfileCatalog().optJSONObject("presets")?.optJSONObject(profileId)
             ?.optJSONObject("defaults")?.optJSONArray("withSticks") == null
 
-    /** Only explicitly saved controls can supersede catalog data. Defaults are never saved here. */
-    fun gameControllerBindings(item: LibraryItem,
-                               layout: com.mrjackspade.kairo.frontend.ControllerLayout,
-                               userBindings: String? = null): List<com.mrjackspade.kairo.frontend.ControllerBinding>? =
-        userBindings?.let(DosControllerBindings::parse)
-            ?: resolve(item).controllerProfile?.let {
-                controllerBindings(it, layout)?.let(DosControllerBindings::parse)
-            }
+    /** The game's catalog layer: its controller profile's bindings for [layout], over the system's mapping. */
+    fun gameControllerLayer(item: LibraryItem,
+                            layout: com.mrjackspade.kairo.frontend.ControllerLayout): List<com.mrjackspade.kairo.frontend.ControllerBinding> =
+        resolve(item).controllerProfile?.let { controllerBindings(it, layout)?.let(DosControllerBindings::parse) }
+            ?: emptyList()
+
+    /** The system's controller mapping from the catalog's system definition (dos/system-v1.json). */
+    fun systemControllerBindings(): JSONArray =
+        readAssetCatalog(com.mrjackspade.kairo.frontend.LayeredGameCatalog.SYSTEM_DOCUMENT)
+            .getJSONObject("controller").getJSONArray("bindings")
 
     @Synchronized override fun resolve(item: LibraryItem): Game =
         resolve(matchId(item) ?: "", item.key, item.displayName)

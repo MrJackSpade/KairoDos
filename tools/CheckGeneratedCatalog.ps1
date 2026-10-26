@@ -9,7 +9,7 @@ $public += @('catalog/artwork-exclusions-v1.json', 'catalog/optional/kairodos-ar
 $public += @(git ls-files --cached -- catalog/parts/)
 $inputs = @('catalog/artwork-release-v1.json', 'catalog/complete-input-v1.zip', 'catalog/core-review-v1.json', 'tools/build_catalog_packages.py', 'catalog/metadata-review-v1.json', 'tools/dos_catalog_review.py',
     'tools/dos_artwork.py', 'tools/generate_dos_catalog.py', 'tools/BuildPublicDosCatalog.ps1',
-    'catalog/launchbox-artwork-v1.json', 'tools/dos_launchbox.py')
+    'catalog/launchbox-artwork-v1.json', 'tools/dos_launchbox.py', 'catalog/system-v1.json')
 $staged = @(git diff --cached --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect staged files.' }
 if (-not $All -and -not @($staged | Where-Object {

@@ -3,8 +3,6 @@ package com.mrjackspade.kairodos
 import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerBindingsCodec
 import com.mrjackspade.kairo.frontend.ControllerGuestSpec
-import com.mrjackspade.kairo.frontend.ControllerLayout
-import com.mrjackspade.kairo.frontend.ControllerDefaults
 import com.mrjackspade.kairo.frontend.JoystickPort
 
 /** DOS key codes and libretro joypad targets; the editor and codec live in Kairo. */
@@ -47,44 +45,11 @@ internal object DosControllerBindings {
         ControllerGuestSpec.STANDARD_ACTIONS, DosKeyboardLayout.value,
         listOf(JoystickPort("Joystick 1", "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
             JoystickPort("Joystick 2", "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
-    val codec = ControllerBindingsCodec(::defaults, { it in storedKeyCodes }, joystick,
+    val codec = ControllerBindingsCodec({ it in storedKeyCodes }, joystick,
         spec.actions.map { it.first })
 
     // Catalog data and explicit user mappings must be decoded without rewriting their values.
-    fun parse(text: String?) = codec.parse(text)
+    fun parse(text: String) = codec.parse(text)
     fun toJson(bindings: List<ControllerBinding>) = codec.toJson(bindings)
     fun valid(array: org.json.JSONArray) = codec.valid(array)
-
-    fun defaults(layout: ControllerLayout) = ControllerDefaults.resolve(layout, defaults(),
-        defaults() + listOf(
-            ControllerBinding("virtual:lsup", joystick = "joy1up"),
-            ControllerBinding("virtual:lsdown", joystick = "joy1down"),
-            ControllerBinding("virtual:lsleft", joystick = "joy1left"),
-            ControllerBinding("virtual:lsright", joystick = "joy1right"),
-            ControllerBinding("virtual:rsup", joystick = "joy2up"),
-            ControllerBinding("virtual:rsdown", joystick = "joy2down"),
-            ControllerBinding("virtual:rsleft", joystick = "joy2left"),
-            ControllerBinding("virtual:rsright", joystick = "joy2right")
-        )).bindings
-
-    fun defaults() = listOf(
-        // The D-pad is the arrow keys and joystick 1, so a controller without sticks reaches both.
-        ControllerBinding("virtual:up", keys = listOf(273), joystick = "joy1up"),
-        ControllerBinding("virtual:down", keys = listOf(274), joystick = "joy1down"),
-        ControllerBinding("virtual:left", keys = listOf(276), joystick = "joy1left"),
-        ControllerBinding("virtual:right", keys = listOf(275), joystick = "joy1right"),
-        // A and B are Enter and Space; X and Y are joystick 1's buttons.
-        ControllerBinding("virtual:a", keys = listOf(13)),
-        ControllerBinding("virtual:b", keys = listOf(32)),
-        ControllerBinding("virtual:x", joystick = "b"),
-        ControllerBinding("virtual:y", joystick = "y"),
-        ControllerBinding("virtual:l1", joystick = "a"),
-        ControllerBinding("virtual:r1", joystick = "x"),
-        ControllerBinding("virtual:l2", keys = listOf(282)),
-        ControllerBinding("virtual:r2", keys = listOf(283)),
-        ControllerBinding("virtual:start", keys = listOf(27)),
-        ControllerBinding("virtual:select", joystick = "select"),
-        ControllerBinding("virtual:menu", action = "menu")
-    )
-
 }

@@ -114,7 +114,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun guestKey(androidKey: Int) = mapKey(androidKey)
     override val controllerSpec = DosControllerBindings.spec
     override val bindingsCodec = DosControllerBindings.codec
-    override fun defaultBindings(layout: ControllerLayout) = DosControllerBindings.defaults(layout)
+    private val systemBindings by lazy { DosControllerBindings.parse(catalog.systemControllerBindings().toString()) }
+    override fun systemControllerBindings() = systemBindings
     override val joystickControls: List<String> get() = DosControllerBindings.joystick
     override fun sendKey(code: Int, down: Boolean) = nativeKey(code, down)
     override fun sendJoystick(control: Int, down: Boolean) = nativeJoypad(control, down)
@@ -228,21 +229,22 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private val settingScope by lazy { GameSettingScope(preferences) }
     private val dosGameSettings by lazy { DosPerGameSettings(preferences, settingScope) }
 
-    /** The player's own mapping as set; a catalog profile over the all-games mapping; else that mapping. */
-    override fun gameBindings(entry: DosLibrary.Game): List<ControllerBinding> {
-        val user = dosGameSettings.controllerBindings(entry.key)
-        val game = catalog.gameControllerBindings(entry, controllerProfiles.configuration.layout, user)
-            ?: return controllerProfiles.global()
-        return if (user != null) game else ControllerDefaults.layered(game, controllerProfiles.global())
+    override fun catalogControllerLayer(entry: DosLibrary.Game) =
+        catalog.gameControllerLayer(entry, controllerProfiles.configuration.layout)
+    override fun playerControllerLayer(entry: DosLibrary.Game): List<ControllerBinding> {
+        dosGameSettings.controllerLayer(entry.key)?.let { return DosControllerBindings.parse(it) }
+        // Saved before mappings were layers: the whole mapping as it played.
+        return dosGameSettings.legacyControllerBindings(entry.key)
+            ?.let { ControllerDefaults.legacyLayer(DosControllerBindings.parse(it)) } ?: emptyList()
     }
-    override fun saveGameBindings(game: GameKey, bindings: List<ControllerBinding>) =
-        dosGameSettings.setControllerBindings(game, DosControllerBindings.toJson(bindings).toString())
+    override fun savePlayerControllerLayer(game: GameKey, layer: List<ControllerBinding>) =
+        dosGameSettings.setControllerLayer(game, DosControllerBindings.toJson(layer).toString())
     override fun clearGameBindings(game: GameKey) = dosGameSettings.clearControllerBindings(game)
     override fun controllerSource(entry: DosLibrary.Game): String {
         val id = entry.key.takeIf { entry.contentId != null }
         return when {
             id == null -> GameSource.ALL_GAMES
-            dosGameSettings.controllerBindings(id) != null -> GameSource.CUSTOM
+            dosGameSettings.hasOwnController(id) -> GameSource.CUSTOM
             // Controller profiles come from the bundled profile catalog.
             catalog.resolve(entry).controllerProfile != null -> "Shipped catalog"
             else -> GameSource.ALL_GAMES
@@ -250,7 +252,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     }
     override fun controllerMappingStatus(entry: DosLibrary.Game?): String? {
         if (controllerProfiles.configuration.layout != ControllerLayout.WITH_STICKS) return null
-        if (entry?.contentId == null || dosGameSettings.controllerBindings(entry.key) != null) return null
+        if (entry?.contentId == null || dosGameSettings.hasOwnController(entry.key)) return null
         val profile = catalog.resolve(entry).controllerProfile ?: return null
         return if (catalog.controllerFallback(profile)) "Using Without Sticks fallback" else null
     }

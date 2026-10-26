@@ -12,7 +12,7 @@ $outputs = @(
 $metadataOutputs = @($outputs | ForEach-Object { [IO.Path]::ChangeExtension($_, '.json') })
 $shardNames = @(0..255 | ForEach-Object { '{0:x2}.json' -f $_ })
 $names = $shardNames + @('folders.json', 'controller-profiles-v1.json',
-    'hidden-index-v1.json', 'core-v2.json')
+    'hidden-index-v1.json', 'core-v2.json', 'system-v1.json')
 $review = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../catalog/metadata-review-v1.json') -Raw |
     ConvertFrom-Json -AsHashtable
 if ($review.schemaVersion -ne 1) { throw 'Unsupported metadata review schema' }

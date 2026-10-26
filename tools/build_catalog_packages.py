@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'shared/tools'))
 from catalog_package import build_package, compact, image_paths, filter_artwork
+from app_catalog import validate_system
 from dos_artwork import expand, compact as compact_art, with_launchbox
 from dos_catalog_review import apply_review, read_review
 
@@ -72,6 +73,10 @@ def generate(check=False):
     generated['hidden-index-v1.json']={'schemaVersion':1,'hidden':{k:v['hidden'] for k,v in core.items() if 'hidden' in v}}
     generated['controller-profiles-v1.json']=controllers(files['controller-profiles-v1.json'],core_ids)
     generated['core-v2.json']={'schemaVersion':2}
+    # The system's definition: its controller mapping, below every game's (shared ControllerDefaults.cascade).
+    system=json.loads((ROOT/'catalog/system-v1.json').read_text('utf8'))
+    validate_system(system)
+    generated['system-v1.json']=system
     for name,value in generated.items():
         if check:
             assert json.loads((output/name).read_text('utf8'))==value, f'Stale generated core: {name}'
