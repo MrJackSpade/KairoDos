@@ -58,11 +58,28 @@ internal object DosStagingLaunchConfig {
         // Explicit user choices follow imported settings so they take precedence.
         DosVideoHardware.machine(videoHardware)?.let { "dosbox" to listOf("machine" to it) })
 
+    /**
+     * A launch configuration and the host paths it names: AUTOEXEC.BAT is read in the DOS code
+     * page, so it names each host path by reference (`kairo-host:<n>` is [hostPaths]`[n]`), which
+     * DOSBox's MOUNT, IMGMOUNT and BOOT resolve (KairoStagingHostPath) with every character intact.
+     */
+    class Written(val config: File, val hostPaths: List<String>)
+
+    /** The reference prefix, KAIRO_HOST_PATH_PREFIX in staging_bridge.h. */
+    private const val HOST_PATH_PREFIX = "kairo-host:"
+
     fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
               target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
-              autoexec: String? = null): File {
+              autoexec: String? = null): Written {
+        val hostPaths = ArrayList<String>()
+        // A mount operand: a host path by reference, quoted; a DOS path as it is.
+        fun operand(path: String): String {
+            if (!File(path).isAbsolute) return "\"$path\""
+            hostPaths += path
+            return "\"$HOST_PATH_PREFIX${hostPaths.size - 1}\""
+        }
         val manualProgram = target == DosLaunchTarget.Browse || target is DosLaunchTarget.Program
         val source = launch?.configs?.get(name)
         val folder = launch?.folder.orEmpty()
@@ -123,7 +140,7 @@ internal object DosStagingLaunchConfig {
             val type = Regex("(?i)-t\\s+(\\S+)").find(options)?.groupValues?.get(1)?.lowercase()
             if (type != null && type !in setOf("dir", "floppy")) return null // CD-ROM folders are read-only.
             require(layer.isDirectory || layer.mkdirs()) { "Could not create the game's save folder" }
-            return "mount $letter \"${layer.absolutePath}\" -t overlay" + options.replace(Regex("(?i)\\s*-t\\s+\\S+"), "")
+            return "mount $letter ${operand(layer.absolutePath)} -t overlay" + options.replace(Regex("(?i)\\s*-t\\s+\\S+"), "")
         }
         // Disk images are written in place, so the game uses its overlay's copy of each one.
         fun writableImage(path: String): String {
@@ -143,7 +160,7 @@ internal object DosStagingLaunchConfig {
         // This is a one-session launch choice, not a saved startup variant.
         // Do not execute catalog setup scripts, BOOT, or a lone executable.
         if (target == DosLaunchTarget.Prompt) {
-            lines += "mount C \"${gameRoot.absolutePath}\""
+            lines += "mount C ${operand(gameRoot.absolutePath)}"
             overlayMount("C", gameRoot.absolutePath, "")?.let(lines::add)
             lines += "C:"
             lines += "dir /w"
@@ -153,18 +170,18 @@ internal object DosStagingLaunchConfig {
             val initialRoot = initialMount?.let { nativePath(it.groupValues[4].trim('"')) }
                 ?: mountedRoot.absolutePath
             val initialOptions = initialMount?.groupValues?.get(5) ?: ""
-            lines += "mount $contentDrive \"$initialRoot\"" + initialOptions
+            lines += "mount $contentDrive ${operand(initialRoot)}" + initialOptions
             overlayMount(contentDrive, initialRoot, initialOptions)?.let(lines::add)
             lines += "$contentDrive:"
             if (!manualProgram) lines += DosLaunchConfig.setupLines(folder, player)
             if (source == null && autoexec == null) {
                 if (drive.media != null) {
                     when (drive.media.extension.lowercase()) {
-                        "iso", "cue" -> lines += "imgmount D \"${drive.media.absolutePath}\" -t iso"
+                        "iso", "cue" -> lines += "imgmount D ${operand(drive.media.absolutePath)} -t iso"
                         "img", "ima" -> if (manualProgram) {
                             val floppy = drive.media.length() <= 2_949_120
-                            lines += "imgmount ${if (floppy) "A" else "D"} \"${writableImage(drive.media.absolutePath)}\" -t ${if (floppy) "floppy" else "hdd"}"
-                        } else lines += "boot \"${writableImage(drive.media.absolutePath)}\""
+                            lines += "imgmount ${if (floppy) "A" else "D"} ${operand(writableImage(drive.media.absolutePath))} -t ${if (floppy) "floppy" else "hdd"}"
+                        } else lines += "boot ${operand(writableImage(drive.media.absolutePath))}"
                         else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
                     }
                 } else {
@@ -185,7 +202,7 @@ internal object DosStagingLaunchConfig {
                     val image = File(path).isFile && File(path).extension.lowercase() in setOf("iso", "cue", "img", "ima")
                     val prefix = if (image) mounted.groupValues[1].replace("mount", "imgmount", true)
                         else mounted.groupValues[1]
-                    lines += "$prefix${mounted.groupValues[2]} \"${if (image) writableImage(path) else path}\"${mounted.groupValues[5]}"
+                    lines += "$prefix${mounted.groupValues[2]} ${operand(if (image) writableImage(path) else path)}${mounted.groupValues[5]}"
                     if (!image) overlayMount(mounted.groupValues[2], path, mounted.groupValues[5])?.let(lines::add)
                     continue
                 }
@@ -199,7 +216,7 @@ internal object DosStagingLaunchConfig {
                     lines += tokens.mapIndexed { index, token ->
                         if (index < 2 || token.startsWith('-')) token else {
                             val path = writableImage(nativePath(token.trim('"')))
-                            if (path != token.trim('"')) "\"$path\"" else token
+                            if (path != token.trim('"')) operand(path) else token
                         }
                     }.joinToString(" ")
                     continue
@@ -231,7 +248,7 @@ internal object DosStagingLaunchConfig {
                     require(isDirectory || mkdirs()) { "Could not prepare command script drive" }
                 }
                 File(scratch, "KAIRO.BAT").writeText("@echo Could not read command script.\r\n")
-                lines += "mount $letter \"${scratch.absolutePath}\""
+                lines += "mount $letter ${operand(scratch.absolutePath)}"
                 lines += "copy ${DosLaunchTarget.batchQuote(program)} $letter:\\KAIRO.BAT >NUL"
                 lines += "call $letter:\\KAIRO.BAT"
             } else lines += program.replace("%", "%%")
@@ -252,6 +269,6 @@ internal object DosStagingLaunchConfig {
             output.write((lines.joinToString("\r\n") + "\r\n").toByteArray(Charsets.UTF_8))
             atomic.finishWrite(output)
         } catch (failure: Exception) { atomic.failWrite(output); throw failure }
-        return config
+        return Written(config, hostPaths)
     }
 }

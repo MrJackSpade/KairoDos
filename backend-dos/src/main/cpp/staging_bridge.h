@@ -23,9 +23,16 @@ struct KairoStagingCpuCounters {
 };
 extern KairoStagingCpuCounters kairo_staging_cpu_counters;
 
+// A host path the launch configuration names by reference: "kairo-host:<n>" is host_paths[n].
+// AUTOEXEC.BAT is read in the DOS code page, so a host path written into it loses every
+// character outside that code page; MOUNT, IMGMOUNT and BOOT resolve a reference instead.
+#define KAIRO_HOST_PATH_PREFIX "kairo-host:"
+
 extern "C" {
+// [host_paths]: UTF-8 host paths the configuration's references name, [host_path_count] of them.
 int kairo_staging_run(const char* config, const char* config_dir,
-    const char* resources, const KairoStagingCallbacks* callbacks);
+    const char* resources, const char* const* host_paths, size_t host_path_count,
+    const KairoStagingCallbacks* callbacks);
 void kairo_staging_key(int code, bool pressed);
 void kairo_staging_configure(bool absolute_mouse, int cycles_mode);
 void kairo_staging_joypad(const uint8_t* buttons, size_t count);
@@ -43,6 +50,9 @@ void kairo_staging_fast_forward(bool enabled);
 // on the first line, followed by D/F, a tab, and an absolute UTF-8 DOS path.
 const char* kairo_staging_list_directory(const char* path);
 }
+
+// The host path [reference] names, or null when it is not a reference. Emulation thread.
+const char* KairoStagingHostPath(const char* reference);
 
 bool KairoStagingPoll();
 // Called by VGA_VerticalTimer at the start of every emulated frame.

@@ -54,7 +54,7 @@ import kotlin.math.roundToInt
 
 /** KairoDos: DOS games on DOSBox Staging, compiled in :backend-dos and hosted via JNI, in the shared Kairo frontend. */
 class MainActivity : KairoActivity<DosLibrary.Game>() {
-    private external fun nativeRun(config: String, saveDir: String, resources: String): Boolean
+    private external fun nativeRun(config: String, saveDir: String, resources: String, hostPaths: Array<String>): Boolean
     private external fun nativeStop()
     private external fun nativePause(value: Boolean)
     private external fun nativePaused(): Boolean
@@ -84,8 +84,6 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         /** A game's saved files: `<savePath>.sav`; in v1.4.0 and earlier, `<hash name>/overlay`. */
         private const val SAVE_KIND = "sav"
         private const val OVERLAY_UNIT = "overlay"
-        /** An unfinished session's location when its saves are in app storage. */
-        private const val APP_STORAGE = "app"
         private const val SAVED_COPY = "saved"
         private const val EDITED_FILE = "edited"
         private const val WORKING_OVERLAY = "staging/overlay-working"
@@ -526,39 +524,69 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         listOf(DosPerGameSettings.v1Settings(preferences), catalog.v1Overrides(), EarlierSaveDirectories())
 
     /**
-     * A game's local working files ([saveDir]) move with its key when it changed (Kairo#56), as
-     * for a game a frontend opened, which v1.4.0 keyed by its URI. They never keep a library load
-     * waiting: every game's folder is named by its hash name.
+     * A game's local working files, named by its hash name before v1.4.1 (`saves/<hash name>`),
+     * move to its path ([saveDir], Kairo#113): a library game's as the library loads, a frontend's
+     * file's from the hash name of the URI v1.4.0 keyed it by.
      */
     private inner class EarlierSaveDirectories : GamePathMigration.Store<DosLibrary.Game> {
-        override fun refresh(claims: List<GamePathMigration.Claim<DosLibrary.Game>>) {}
-        override fun has(hashName: String) = File(filesDir, "saves/$hashName").isDirectory
+        private val root = File(filesDir, "saves")
+        private var names = emptySet<String>()
+
+        override fun refresh(claims: List<GamePathMigration.Claim<DosLibrary.Game>>, every: Boolean) {
+            names = if (every) root.list().orEmpty().filter { GameKey.HASH_NAME.matches(it) }.toSet()
+                else claims.map { it.from }.filter { File(root, it).isDirectory }.toSet()
+        }
+        override fun has(hashName: String) = hashName in names
         override fun move(claim: GamePathMigration.Claim<DosLibrary.Game>, keep: Set<GamePathMigration.Conflict>) {
-            if (!claim.external) return
-            val from = File(filesDir, "saves/${claim.from}")
-            val to = File(filesDir, "saves/${claim.to.hashName}")
+            val from = File(root, claim.from)
+            val to = saveDir(claim.to)
             if (to.exists()) {
                 // Only an unstored session or a drive from before overlays is saved data here.
                 require(!File(from, UNSAVED_OVERLAY).exists() && !DosStagingStorage.hasLegacyDrive(from)) {
-                    "This game's saved files are in two places: ${from.name} and ${to.name}"
+                    "This game's saved files are in two places: ${from.name} and ${to.path}"
                 }
                 check(from.deleteRecursively()) { "Could not remove the game's earlier working files" }
-            } else check(from.renameTo(to)) { "Could not move the game's working files" }
+            } else {
+                check(to.parentFile!!.isDirectory || to.parentFile!!.mkdirs()) { "Could not create the game's working folder" }
+                check(from.renameTo(to)) { "Could not move the game's working files" }
+            }
+            names = names - claim.from
         }
-        override fun isEmpty() = true
+        override fun isEmpty() = names.isEmpty()
     }
 
     /**
-     * A game's local working files: its base drive, launch configuration and the working copy of
-     * its saved files. DOSBox mounts these by their path in AUTOEXEC.BAT, which it reads in a DOS
-     * code page, so the folder is the game's ASCII hash name, not its path.
+     * A game's local working files: its base drive, launch configuration and, for a save folder,
+     * the working copy of its saved files, at `saves/<savePath>.work`. DOSBox is given their host
+     * paths by reference (DosStagingLaunchConfig.Written), so any name works.
      */
-    private fun saveDir(game: DosLibrary.Game) = File(filesDir, "saves/${game.key.hashName}")
+    private fun saveDir(game: GameKey) =
+        File(File(filesDir, "saves"), SaveLocation.segments("${game.savePath}.work").joinToString(File.separator))
+
+    private fun saveDir(game: DosLibrary.Game) = saveDir(game.key)
 
     /**
-     * A working copy of a game's saved files (its overlay, `<savePath>.sav`), which the game
-     * writes while it runs, in [saveDir] so DOSBox is given an ASCII path. [publishOverlay] stores
-     * it back in the save location when the session ends, or before the next one if it never did.
+     * Every game's working folder: `<savePath>.work` anywhere under `saves`, and one still named
+     * by its hash name which a later library load moves.
+     */
+    private fun saveDirs(): List<File> {
+        val root = File(filesDir, "saves")
+        val found = ArrayList<File>()
+        fun walk(directory: File, top: Boolean) {
+            for (child in directory.listFiles().orEmpty().filter { it.isDirectory }) {
+                if (child.name.endsWith(".work") || (top && GameKey.HASH_NAME.matches(child.name))) found += child
+                else walk(child, false)
+            }
+        }
+        walk(root, true)
+        return found
+    }
+
+    /**
+     * The overlay a game's session writes: in app storage its saved files themselves
+     * (`<savePath>.sav`), which DOSBox mounts directly; for a save folder, which DOSBox cannot
+     * open by path, a working copy in [saveDir] that [publishOverlay] stores back when the session
+     * ends, or before the next one if it never did.
      */
     private fun beginOverlay(saveDir: File, game: GameKey): File {
         val unit = SaveUnit.of(game, SAVE_KIND)
@@ -568,12 +596,15 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 "Configurations › Save folder, then choose the folder again to move them."
         }
         publishOverlay(saveDir, game)
+        if (folder == null) return saveFolder.app.directory(unit).apply {
+            require(isDirectory || mkdirs()) { "Could not create the game's save folder" }
+        }
         val saves = saveFolder.location
         val working = File(saveDir, WORKING_OVERLAY)
         require(!working.exists() || working.deleteRecursively()) { "Could not clear the game's working save folder" }
         if (saves.exists(unit)) saves.export(unit, working)
         else require(working.mkdirs()) { "Could not create the game's working save folder" }
-        File(saveDir, UNSAVED_OVERLAY).writeText("${folder?.tree ?: APP_STORAGE}\n${unit.path}")
+        File(saveDir, UNSAVED_OVERLAY).writeText("${folder.tree}\n${unit.path}")
         return working
     }
 
@@ -587,7 +618,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         if (!unsaved.isFile) return
         val (location, owner) = unsaved.readLines()
         val folder = saveFolder.folder
-        require(location == (folder?.tree?.toString() ?: APP_STORAGE)) {
+        require(location == folder?.tree?.toString()) {
             if (folder == null) "The save folder for these saved files is no longer selected"
             else "These saved files belong to a different save folder"
         }
@@ -602,7 +633,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     /** Before saves move: store unfinished sessions and convert drives from before overlays. */
     override fun prepareSaveMove(progress: (String) -> Unit) {
-        val saveDirs = File(filesDir, "saves").listFiles().orEmpty().filter { it.isDirectory }
+        val saveDirs = saveDirs()
         val library = libraryEntries.toList()
         saveDirs.forEach { dir -> publishOverlay(dir, library.firstOrNull { saveDir(it) == dir }?.key) }
         val legacy = saveDirs.filter(DosStagingStorage::hasLegacyDrive)
@@ -624,12 +655,12 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     /** An installer's saves and settings belong to the game it installs. */
     private fun moveGame(from: GameKey, to: GameKey) {
         if (from == to) return
-        val oldDir = File(filesDir, "saves/${from.hashName}")
-        val newDir = File(filesDir, "saves/${to.hashName}")
+        val oldDir = saveDir(from)
+        val newDir = saveDir(to)
         // An unfinished session is the installer's; it is stored before its saves move.
         publishOverlay(oldDir, from)
         if (oldDir.isDirectory && !newDir.exists())
-            require(oldDir.renameTo(newDir)) { "Could not move existing game saves to the installed archive" }
+            require((newDir.parentFile!!.isDirectory || newDir.parentFile!!.mkdirs()) && oldDir.renameTo(newDir)) { "Could not move existing game saves to the installed archive" }
         val saves = saveFolder.location
         val unit = SaveUnit.of(from, SAVE_KIND)
         if (saves.exists(unit) && !saves.exists(SaveUnit.of(to, SAVE_KIND))) {
@@ -808,7 +839,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 if (cancelled.get() || !current(generation)) return@Thread
                 // Each DOS machine boots with Caps Lock off.
                 inputRouter.resetLocks()
-                val started = nativeRun(configuration.absolutePath, saveDir.absolutePath, resources.absolutePath)
+                val started = nativeRun(configuration.config.absolutePath, saveDir.absolutePath, resources.absolutePath,
+                    configuration.hostPaths.toTypedArray())
                 sessions.forEach { publishOverlay(it, null) }
                 if (!started) message = nativeLastError().ifBlank { "DOSBox Staging could not start this game." }
                 started

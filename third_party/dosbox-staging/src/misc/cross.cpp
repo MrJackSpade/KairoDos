@@ -203,6 +203,11 @@ std_fs::path get_config_dir()
 
 std_fs::path resolve_home(const std::string &str) noexcept
 {
+#ifdef KAIRO_STAGING
+	// A host path the launch names by reference, since AUTOEXEC.BAT holds only DOS code page text.
+	extern const char* KairoStagingHostPath(const char* reference);
+	if (const auto host = KairoStagingHostPath(str.c_str())) return std_fs::path(host);
+#endif
 	if (!str.size() || str[0] != '~') // No ~
 		return str;
 

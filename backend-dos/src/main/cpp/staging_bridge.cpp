@@ -17,6 +17,7 @@
 #include <array>
 #include <atomic>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -91,6 +92,8 @@ extern "C" const char* kairo_staging_list_directory(const char* input) {
 
 namespace {
 KairoStagingCallbacks callbacks{};
+// The launch's host paths, which its configuration names by reference (KairoStagingHostPath).
+std::vector<std::string> host_paths;
 SDL_Keymod modifiers = KMOD_NONE;
 uint64_t keyboard_waits = 0, keyboard_polls = 0, mouse_reads = 0;
 // Written on the emulation thread, read by the host's probe.
@@ -144,8 +147,9 @@ SDL_Scancode scancode(int code) {
 }
 
 extern "C" int kairo_staging_run(const char* config, const char* config_dir,
-    const char* resources, const KairoStagingCallbacks* cb) {
-    if (!cb || cb->version != 2 || !config || !config_dir || !resources) return 1;
+    const char* resources, const char* const* paths, size_t path_count, const KairoStagingCallbacks* cb) {
+    if (!cb || cb->version != 2 || !config || !config_dir || !resources || (path_count && !paths)) return 1;
+    host_paths.assign(paths, paths + path_count);
 #ifdef KAIRO_GUEST_PROFILE
     kairo_guest_profile::open(config_dir);
 #endif
@@ -177,7 +181,20 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     kairo_guest_profile::close();
 #endif
     loguru::shutdown();
+    host_paths.clear();
     return result;
+}
+
+const char* KairoStagingHostPath(const char* reference) {
+    const size_t prefix = std::strlen(KAIRO_HOST_PATH_PREFIX);
+    if (!reference || std::strncmp(reference, KAIRO_HOST_PATH_PREFIX, prefix) != 0) return nullptr;
+    char* end = nullptr;
+    const unsigned long index = std::strtoul(reference + prefix, &end, 10);
+    if (end == reference + prefix || *end != '\0' || index >= host_paths.size()) {
+        LOG_ERR("KAIRO: The launch configuration names an unknown host path: %s", reference);
+        return nullptr;
+    }
+    return host_paths[index].c_str();
 }
 
 CPU_Decoder* KairoRunningDecoder();  // cpu/cpu.cpp (Kairo)

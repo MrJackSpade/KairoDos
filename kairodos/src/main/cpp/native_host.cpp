@@ -21,6 +21,7 @@
 #include "staging_bridge.h"
 #include "video_profile.h"
 #include "frame_copy_profile.h"
+#include "kairo/jni_strings.h"
 #include "kairo/slang_surface_presenter.h"
 
 namespace {
@@ -105,14 +106,7 @@ void unload_core() {
     core_handle = nullptr;
     dynrec_available = 0; dynamic_active = 0;
 }
-std::string string(JNIEnv* env, jstring value) {
-    if (!value) return {};
-    const char* chars = env->GetStringUTFChars(value, nullptr);
-    if (!chars) return {};
-    std::string result(chars);
-    env->ReleaseStringUTFChars(value, chars);
-    return result;
-}
+std::string string(JNIEnv* env, jstring value) { return kairo::utf8(env, value); }
 void video(const uint32_t* data, int width, int height, int pitch, double ratio) {
     if (!data || width <= 0 || height <= 0 || pitch < width * 4) return;
     frame_copy_profile::callback(data, width, height, pitch);
@@ -256,12 +250,16 @@ void restart() {
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
-    jstring config_j, jstring save_j, jstring resources_j) {
+    jstring config_j, jstring save_j, jstring resources_j, jobjectArray host_paths_j) {
     int expected = status.load();
     while (expected == 0 || expected == 3) { if (status.compare_exchange_weak(expected, 1)) break; }
     if (expected == 1 || expected == 2) { set_error("DOS session already active"); return false; }
     const std::string config = string(env, config_j), config_dir = string(env, save_j) + "/staging/config";
     const std::string resources = string(env, resources_j);
+    // The host paths the configuration names by reference (KAIRO_HOST_PATH_PREFIX).
+    const std::vector<std::string> host_paths = kairo::utf8_strings(env, host_paths_j);
+    std::vector<const char*> host_path_chars;
+    for (const auto& path : host_paths) host_path_chars.push_back(path.c_str());
     { std::lock_guard lock(error_mutex); last_error.clear(); }
     { std::lock_guard lock(control_mutex); stop_requested = false; paused = false; reset_requested = false; }
     mouse_x = 0; mouse_y = 0; mouse_left = false; mouse_right = false; pointer_pressed = false; fast_forward = false;
@@ -276,7 +274,8 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeRun(JNIEnv* env, jobject,
         cpu_telemetry(0, 0, 0, 0);
         const KairoStagingCallbacks callbacks{2, video, poll, restart, telemetry, cpu_telemetry};
         try {
-            result = core.run(config.c_str(), config_dir.c_str(), resources.c_str(), &callbacks);
+            result = core.run(config.c_str(), config_dir.c_str(), resources.c_str(),
+                host_path_chars.data(), host_path_chars.size(), &callbacks);
         } catch (const std::exception& failure) {
             result = 1; set_error(failure.what());
         } catch (...) {

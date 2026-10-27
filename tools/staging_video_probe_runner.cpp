@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     if (!run) return 4;
     KairoStagingCallbacks cb{}; cb.version=2; cb.poll=poll; cb.video=video;
     started=Clock::now();
-    const int result=run(argv[2],argv[3],argv[4],&cb);
+    const int result=run(argv[2],argv[3],argv[4],nullptr,0,&cb);
     printf("{\"core_result\":%d,\"elapsed_seconds\":%.6f,\"callbacks_after_2s\":%llu,"
            "\"changed\":%llu,\"duplicate\":%llu,\"callback_bytes\":%llu,"
            "\"observer_ns\":%llu,\"last_width\":%d,\"last_height\":%d}\n",
