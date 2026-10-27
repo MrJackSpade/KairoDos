@@ -101,8 +101,8 @@ class DosLibrary(private val context: Context) {
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
             !isInstalledArchive(file.name)
-        // A document in the library opens as its entry; any other keeps its own URI as its key.
-        return Game(file.uri.toString(), file.uri.toString(), file.name,
+        // Keyed by its path relative to the library folder, or its URI where it has none (Kairo#56).
+        return Game(file.key, file.uri.toString(), file.name,
             false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
     }
 
@@ -322,7 +322,7 @@ class DosLibrary(private val context: Context) {
                 }
             }
             val staged = File(cache,
-                "${GameKey(path).storageName}-${game.contentId!!.substringAfter(':').take(16)}.zip")
+                "${GameKey(path).hashName}-${game.contentId!!.substringAfter(':').take(16)}.zip")
             if (!staged.isFile) source.renameTo(staged)
             // The scan's fingerprint, so the next scan reuses this verified content ID.
             return Game(path, uri.toString(), path, false, false,
@@ -391,7 +391,7 @@ class DosLibrary(private val context: Context) {
         require(DocumentsContract.deleteDocument(context.contentResolver, uri)) {
             "The document provider could not delete the game"
         }
-        cache.listFiles()?.filter { it.name.startsWith("${game.key.storageName}-") }?.forEach { it.delete() }
+        cache.listFiles()?.filter { it.name.startsWith("${game.key.hashName}-") }?.forEach { it.delete() }
     }
 
     private fun documentFingerprint(uri: Uri): String {
@@ -432,7 +432,7 @@ class DosLibrary(private val context: Context) {
             wrapFolder != "." && wrapFolder != "..") { "Invalid game folder" }
         val wrapping = if (wrapFolder != null) "-parent" else ""
         val target = File(cache,
-            "${game.key.storageName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
+            "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
         if (target.isFile) return target
         // Only the game being started keeps a prepared copy; every other one is made again when played.
         cache.listFiles()?.filter { it.name != target.name && !it.name.endsWith(".part") }?.forEach { it.delete() }

@@ -3,19 +3,21 @@ package com.mrjackspade.kairodos
 import android.content.SharedPreferences
 import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.GameKeyMigration
+import com.mrjackspade.kairo.frontend.GamePathMigration
 import com.mrjackspade.kairo.frontend.GameSettingScope
+import com.mrjackspade.kairo.frontend.LibraryItem
 import org.json.JSONObject
 
-/** DOS-only per-game choices, by game key. */
+/** DOS-only per-game choices: each `<prefix><game key>`, after the prefix the game's whole [GameKey.path]. */
 internal class DosPerGameSettings(private val preferences: SharedPreferences,
                                   private val common: GameSettingScope) {
-    private fun controllerKey(game: GameKey) = "$CONTROLLER${game.storageName}"
-    private fun controllerLayerKey(game: GameKey) = "$CONTROLLER_LAYER${game.storageName}"
-    private fun variantKey(game: GameKey) = "$VARIANT${game.storageName}"
-    private fun playerKey(game: GameKey) = "$PLAYER${game.storageName}"
-    private fun configKey(game: GameKey) = "$CONFIG${game.storageName}"
-    private fun autoexecKey(game: GameKey) = "$AUTOEXEC${game.storageName}"
-    private fun customKey(game: GameKey) = "$CUSTOM${game.storageName}"
+    private fun controllerKey(game: GameKey) = "$CONTROLLER${game.path}"
+    private fun controllerLayerKey(game: GameKey) = "$CONTROLLER_LAYER${game.path}"
+    private fun variantKey(game: GameKey) = "$VARIANT${game.path}"
+    private fun playerKey(game: GameKey) = "$PLAYER${game.path}"
+    private fun configKey(game: GameKey) = "$CONFIG${game.path}"
+    private fun autoexecKey(game: GameKey) = "$AUTOEXEC${game.path}"
+    private fun customKey(game: GameKey) = "$CUSTOM${game.path}"
 
     /**
      * Whether the game runs its Custom version: its preset ([version]) with the player's own
@@ -93,9 +95,7 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
             }
             editor.remove(old)
         }
-        val common = "${GameSettingScope.PREFIX}${from.storageName}_"
-        for (name in values.keys.filter { it.startsWith(common) })
-            move(name, "${GameSettingScope.PREFIX}${to.storageName}_${name.removePrefix(common)}")
+        common.move(from, to, editor)
         move(controllerKey(from), controllerKey(to))
         move(controllerLayerKey(from), controllerLayerKey(to))
         move(variantKey(from), variantKey(to))
@@ -117,11 +117,21 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         private const val AUTOEXEC = "game_dos_autoexec_v1_"
         private const val CUSTOM = "game_dos_custom_v1_"
 
-        /** Settings from before games had keys, named by content ID. */
+        /** Settings from before games had keys, named by content ID, moved to where v1.4.0 kept them. */
         val LEGACY = listOf(
-            GameKeyMigration.PreferenceFamily(GameSettingScope.CONTENT_ID_PREFIX, GameSettingScope.PREFIX, true),
+            GameKeyMigration.PreferenceFamily(GameSettingScope.CONTENT_ID_PREFIX, GameSettingScope.V1_PREFIX, true),
             GameKeyMigration.PreferenceFamily("controller_game_", CONTROLLER, false),
             GameKeyMigration.PreferenceFamily("launch_variant_", VARIANT, false),
             GameKeyMigration.PreferenceFamily("dos_player_", PLAYER, false))
+
+        /**
+         * Settings v1.4.0 and earlier named by games' hash names, `<prefix><hash name>`, for
+         * [GamePathMigration]; the common game settings are the shared scope's.
+         */
+        fun <E : LibraryItem> v1Settings(preferences: SharedPreferences) = GamePathMigration.PreferenceStore<E>(preferences,
+            listOf(GamePathMigration.PreferenceFamily(GameSettingScope.V1_PREFIX, true) { game, name -> GameSettingScope.key(game, name!!) }) +
+                listOf(CONTROLLER, CONTROLLER_LAYER, VARIANT, PLAYER, CONFIG, AUTOEXEC, CUSTOM).map { prefix ->
+                    GamePathMigration.PreferenceFamily(prefix, false) { game, _ -> prefix + game.path }
+                })
     }
 }

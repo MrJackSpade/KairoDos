@@ -4,6 +4,10 @@
 
 KairoDos can open a DOS game file or ZIP sent by another Android frontend. You do not need to select a library folder in KairoDos first. Keep archive extraction off in the frontend; KairoDos opens ZIPs and handles eXoDOS installer archives itself. Choosing **Library** from a frontend-launched game closes KairoDos and returns to the frontend.
 
+## Saves across devices
+
+Point the frontend at the same folder as KairoDos's games folder, and keep your games inside it. A game the frontend sends from inside that folder opens as the library's game, with the same saves and settings, whether you start it from the frontend or from KairoDos, and on every device that has the same folder, whatever its SD card is called. A game from outside the folder keeps saves of its own; they line up across devices only when the game sits on the same storage as the games folder.
+
 ## Setup guides
 
 - [LaunchBox for Android](#launchbox-for-android)

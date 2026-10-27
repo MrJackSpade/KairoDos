@@ -10,6 +10,7 @@ import com.mrjackspade.kairo.frontend.CatalogArtworkStore
 import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.GameKeyMigration
 import com.mrjackspade.kairo.frontend.GameMetadataOverrides
+import com.mrjackspade.kairo.frontend.GamePathMigration
 import com.mrjackspade.kairo.frontend.LibraryItem
 import org.json.JSONArray
 import org.json.JSONObject
@@ -329,6 +330,8 @@ class DosGameCatalog(private val context: Context) : LibraryCatalog {
 
     /** Overrides from before games had keys, for [GameKeyMigration]. */
     fun legacyOverrides() = GameKeyMigration.OverrideStore(overrides) { synchronized(this) { invalidate() } }
+    /** Overrides v1.4.0 and earlier kept under games' hash names, for [GamePathMigration]. */
+    fun v1Overrides() = GamePathMigration.OverrideStore<DosLibrary.Game>(overrides) { synchronized(this) { invalidate() } }
 
     override fun openArtwork(path: String): InputStream = installedCatalogs.openArtwork(path) ?: artworkStore.open(path)
 
