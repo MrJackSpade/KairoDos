@@ -7,6 +7,7 @@ import android.net.Uri
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.Surface
+import com.mrjackspade.kairo.frontend.Anchor
 import com.mrjackspade.kairo.frontend.AppSaveLocation
 import com.mrjackspade.kairo.frontend.ArtworkCoordinator
 import com.mrjackspade.kairo.frontend.ButtonTone
@@ -288,6 +289,13 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun touchChanged() = configureGuest()
 
     /** A per-game value stored as an int beside the all-games preference. */
+    override fun gameAnchor(game: DosLibrary.Game, orientation: String, allGames: () -> Anchor): GameValue<String> {
+        val id = game.key
+        val setting = DosPerGameSettings.anchorSetting(orientation)
+        return GameValue({ settingScope.string(id, setting) }, { allGames().id }, { GameSource.ALL_GAMES },
+            { value -> if (value == null) settingScope.clear(id, setting) else settingScope.setString(id, setting, value) })
+    }
+
     private fun <V> gameInt(game: DosLibrary.Game, key: String, read: (Int) -> V, write: (V) -> Int,
                             global: () -> V): GameValue<V> {
         val id = game.key

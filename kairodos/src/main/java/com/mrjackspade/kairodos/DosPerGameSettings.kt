@@ -73,7 +73,8 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
         common.int(game, DosVideoHardware.setting, preferences.getInt(DosVideoHardware.setting, 0)))
 
     fun reset(game: GameKey) {
-        common.clear(game, "touch_mode", "direct_touch", "cycles_mode", "staging_voodoo_threads", DosVideoHardware.setting)
+        common.clear(game, "touch_mode", "direct_touch", "cycles_mode", "staging_voodoo_threads", DosVideoHardware.setting,
+            anchorSetting("landscape"), anchorSetting("portrait"))
         preferences.edit().remove(controllerKey(game)).remove(controllerLayerKey(game)).remove(variantKey(game))
             .remove(playerKey(game)).remove(configKey(game)).remove(autoexecKey(game)).remove(customKey(game)).apply()
     }
@@ -106,6 +107,8 @@ internal class DosPerGameSettings(private val preferences: SharedPreferences,
     }
 
     companion object {
+        /** The game's own anchor in an orientation (Kairo#54), in the common game settings. */
+        fun anchorSetting(orientation: String) = "${orientation}_anchor"
         private const val CONTROLLER = "game_controller_v2_"
         private const val CONTROLLER_LAYER = "game_controller_layer_v3_"
         private const val VARIANT = "game_launch_variant_v2_"
