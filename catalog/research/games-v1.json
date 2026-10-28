@@ -310858,6 +310858,17 @@
   },
   "dos:ced07107b51f53aa": {
    "adult": true,
+   "adultDescription": "An adult text adventure: you are 22, and your 15-year-old girlfriend, with whom you have been having sex, wants to run away with you; slip into her house, avoid her father, mother, brother and dog, who have sworn to kill you, and get her out within 30 minutes to catch your flight.",
+   "adultDescriptions": {
+    "ar": "مغامرة نصية للبالغين: عمرك 22 عامًا، وصديقتك ذات الخمسة عشر عامًا، التي تمارس معها الجنس، تريد الهرب معك؛ تسلّل إلى بيتها متفاديًا أباها وأمها وأخاها وكلبها الذين أقسموا على قتلك، وأخرجها في غضون 30 دقيقة لتلحقا بالطائرة.",
+    "de": "Ein Textadventure für Erwachsene: Du bist 22, und deine 15-jährige Freundin, mit der du Sex hattest, will mit dir durchbrennen; schleich dich in ihr Haus, weich ihrem Vater, ihrer Mutter, ihrem Bruder und dem Hund aus, die geschworen haben, dich umzubringen, und bring sie innerhalb von 30 Minuten hinaus, um deinen Flug zu erwischen.",
+    "es": "Una aventura de texto para adultos: tienes 22 años y tu novia de 15, con la que has estado teniendo sexo, quiere fugarse contigo; entra a escondidas en su casa, evita a su padre, su madre, su hermano y su perro, que han jurado matarte, y sácala en menos de 30 minutos para coger el vuelo.",
+    "id": "Petualangan teks dewasa: kamu berusia 22 tahun, dan pacarmu yang berusia 15 tahun, yang selama ini berhubungan seks denganmu, ingin kabur bersamamu; menyelinaplah ke rumahnya, hindari ayah, ibu, kakak laki-laki, dan anjingnya yang bersumpah akan membunuhmu, lalu bawa dia keluar dalam 30 menit agar sempat naik pesawat.",
+    "ja": "成人向けテキストアドベンチャー。22歳の主人公には、肉体関係を続けてきた15歳の恋人がいて、彼女は一緒に駆け落ちしたがっている。彼女の家に忍び込み、主人公を殺すと誓った父、母、兄、犬を避けながら、30分以内に彼女を連れ出して飛行機に間に合わせる。",
+    "ko": "성인용 텍스트 어드벤처. 22살인 주인공에게는 성관계를 가져 온 15살 여자친구가 있고, 그녀는 함께 도망치고 싶어 한다. 주인공을 죽이겠다고 맹세한 아버지, 어머니, 오빠, 개를 피해 그녀의 집에 몰래 들어가 30분 안에 그녀를 데리고 나와 비행기를 타야 한다.",
+    "pt-BR": "Uma aventura de texto adulta: você tem 22 anos e sua namorada de 15, com quem vem fazendo sexo, quer fugir com você; entre escondido na casa dela, evite o pai, a mãe, o irmão e o cachorro, que juraram te matar, e tire-a de lá em 30 minutos para pegar o voo.",
+    "ru": "Текстовое приключение для взрослых: вам 22 года, а ваша 15-летняя подруга, с которой вы занимались сексом, хочет сбежать с вами; проберитесь в её дом, избегая отца, матери, брата и собаки, поклявшихся вас убить, и выведите её за 30 минут, чтобы успеть на самолёт."
+   },
    "artwork": {
     "id": "ced07107b51f53aa415ab38d862c95ffa7d810bb4920fdbd6f4bf476540f2706",
     "kinds": 3,
@@ -343025,6 +343036,17 @@
   },
   "dos:e5eee27a05f742a0": {
    "adult": true,
+   "adultDescription": "An adult action-puzzle game: apprentice witch Marble releases a demon whose plan is to brainwash and sexually abuse young girls. Explicit sexual scenes involving fetishes and torture play between the seven stages.",
+   "adultDescriptions": {
+    "ar": "لعبة حركة وألغاز للبالغين: تُطلق Marble، الساحرة المتدربة، شيطانًا يخطط لغسل أدمغة الفتيات الصغيرات والاعتداء عليهن جنسيًا. وتُعرض بين المراحل السبع مشاهد جنسية صريحة فيها فتشية وتعذيب.",
+    "de": "Ein Action-Puzzlespiel für Erwachsene: Die Hexenlehrling Marble entfesselt einen Dämon, der junge Mädchen einer Gehirnwäsche unterziehen und sexuell missbrauchen will. Zwischen den sieben Abschnitten laufen explizite Sexszenen mit Fetischen und Folter.",
+    "es": "Un juego de acción y puzles para adultos: Marble, aprendiz de bruja, libera a un demonio cuyo plan es lavar el cerebro a chicas jóvenes y abusar sexualmente de ellas. Entre las siete fases aparecen escenas sexuales explícitas con fetiches y tortura.",
+    "id": "Gim aksi teka-teki dewasa: penyihir magang Marble melepaskan iblis yang berencana mencuci otak dan melecehkan secara seksual gadis-gadis muda. Adegan seksual eksplisit yang melibatkan fetish dan penyiksaan muncul di antara ketujuh babaknya.",
+    "ja": "成人向けアクションパズル。見習い魔女マーブルが、若い少女たちを洗脳して性的に虐待しようとする悪魔を解き放ってしまう。全7ステージの合間に、フェティシズムや拷問を含む露骨な性的シーンが挿入される。",
+    "ko": "성인용 액션 퍼즐 게임. 견습 마녀 마블이 어린 소녀들을 세뇌하고 성적으로 학대하려는 악마를 풀어 버린다. 일곱 스테이지 사이마다 페티시와 고문이 담긴 노골적인 성적 장면이 나온다.",
+    "pt-BR": "Um jogo adulto de ação e quebra-cabeça: Marble, aprendiz de bruxa, liberta um demônio cujo plano é fazer lavagem cerebral em garotas jovens e abusar sexualmente delas. Entre as sete fases aparecem cenas sexuais explícitas com fetiches e tortura.",
+    "ru": "Экшен-головоломка для взрослых: ученица волшебницы Марбл выпускает демона, который задумал промывать мозги юным девушкам и сексуально над ними надругаться. Между семью этапами показываются откровенные сексуальные сцены с фетишами и пытками."
+   },
    "artwork": {
     "id": "e5eee27a05f742a0ac8f1a1d60e69a77600acf9a8c276a2b6eeb364f3520d352",
     "kinds": 3,
