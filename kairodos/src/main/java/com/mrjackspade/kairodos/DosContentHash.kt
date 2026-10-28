@@ -1,7 +1,9 @@
 package com.mrjackspade.kairodos
 
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
-import android.content.ContentResolver
+import android.content.Context
+import com.mrjackspade.kairo.frontend.UiText
+import com.mrjackspade.kairo.frontend.text
 import android.net.Uri
 import java.io.File
 import java.io.FileInputStream
@@ -18,24 +20,26 @@ object DosContentHash {
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
     /** Reads a ZIP document in place, through its own file descriptor; nothing is copied. */
-    fun inspectZipDocument(resolver: ContentResolver, uri: Uri,
+    fun inspectZipDocument(context: Context, uri: Uri,
                            cancelled: AtomicBoolean): ZipInspection =
-        (resolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
+        (context.contentResolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
             FileInputStream(descriptor.fileDescriptor).channel.use { channel ->
-                inspect(DosZip.members(channel), cancelled)
+                inspect({ context.text(it) }, DosZip.members(channel), cancelled)
             }
         }
 
-    fun zipDocument(resolver: ContentResolver, uri: Uri,
+    fun zipDocument(context: Context, uri: Uri,
                     cancelled: AtomicBoolean): String =
-        inspectZipDocument(resolver, uri, cancelled).contentId
+        inspectZipDocument(context, uri, cancelled).contentId
 
-    fun zip(file: File, cancelled: AtomicBoolean): String =
-        inspectZip(file, cancelled).contentId
+    /** [text] puts a refusal the player reads in their language. */
+    fun zip(text: (UiText) -> String, file: File, cancelled: AtomicBoolean): String =
+        inspectZip(text, file, cancelled).contentId
 
-    fun inspectZip(file: File, cancelled: AtomicBoolean): ZipInspection = inspect(DosZip.members(file), cancelled)
+    fun inspectZip(text: (UiText) -> String, file: File, cancelled: AtomicBoolean): ZipInspection =
+        inspect(text, DosZip.members(file), cancelled)
 
-    private fun inspect(members: List<DosZip.Member>, cancelled: AtomicBoolean): ZipInspection {
+    private fun inspect(text: (UiText) -> String, members: List<DosZip.Member>, cancelled: AtomicBoolean): ZipInspection {
         if (cancelled.get()) throw CancellationException("Cancelled")
         val entries = members.filterNot { it.directory }
         val exodosSource = entries.any { entry ->
@@ -43,44 +47,44 @@ object DosContentHash {
                 .endsWith(".exo", true)
         }
         val files = entries.asSequence()
-            .map { it to safePath(it.name) }.filterNot { it.second.endsWith(".exo", true) }
+            .map { it to safePath(text, it.name) }.filterNot { it.second.endsWith(".exo", true) }
             .toList()
-        require(files.isNotEmpty()) { "No game files in ZIP" }
+        require(files.isNotEmpty()) { text(UiText.res(R.string.zip_no_game_files)) }
         val roots = files.map { it.second.substringBefore('/') }.distinct()
         val strip = roots.singleOrNull()?.takeIf { root ->
             files.all { it.second.startsWith("$root/") }
         }?.plus("/") ?: ""
         val sorted = files.map { (item, path) -> item to asciiLower(path.removePrefix(strip)) }
             .sortedBy { it.second }
-        require(sorted.map { it.second }.distinct().size == sorted.size) { "Duplicate game file" }
+        require(sorted.map { it.second }.distinct().size == sorted.size) { text(UiText.res(R.string.duplicate_game_file)) }
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(HEADER)
         sorted.forEach { (item, path) ->
             if (cancelled.get()) throw CancellationException("Cancelled")
-            require(item.size in 0..MAX_FILE_BYTES) { "Game file is too large" }
-            require(item.crc in 0..0xffffffffL) { "Missing ZIP member checksum" }
+            require(item.size in 0..MAX_FILE_BYTES) { text(UiText.res(R.string.game_file_too_large)) }
+            require(item.crc in 0..0xffffffffL) { text(UiText.res(R.string.zip_missing_checksum)) }
             frame(digest, path, item.size, item.crc)
         }
         return ZipInspection(PREFIX + hex(digest.digest()), exodosSource)
     }
 
-    fun documents(resolver: ContentResolver, files: List<DocumentTreeWalker.FileEntry>,
+    fun documents(context: Context, files: List<DocumentTreeWalker.FileEntry>,
                   cancelled: AtomicBoolean): String {
-        require(files.isNotEmpty()) { "Empty game folder" }
+        require(files.isNotEmpty()) { context.getString(R.string.folder_empty) }
         val prefix = files.map { it.path.substringBefore('/') }.distinct().singleOrNull()
             ?.takeIf { root -> files.all { it.path.startsWith("$root/") } }?.plus("/") ?: ""
         val sorted = files.filterNot { it.path.endsWith(".exo", true) }
-            .map { it to asciiLower(safePath(it.path.removePrefix(prefix))) }
+            .map { it to asciiLower(safePath({ context.text(it) }, it.path.removePrefix(prefix))) }
             .sortedBy { it.second }
-        require(sorted.isNotEmpty()) { "No game files" }
-        require(sorted.map { it.second }.distinct().size == sorted.size) { "Duplicate game file" }
+        require(sorted.isNotEmpty()) { context.getString(R.string.no_game_files) }
+        require(sorted.map { it.second }.distinct().size == sorted.size) { context.getString(R.string.duplicate_game_file) }
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(HEADER)
         sorted.forEach { (item, path) ->
-            require(item.size in 0..MAX_FILE_BYTES) { "Game file is too large" }
+            require(item.size in 0..MAX_FILE_BYTES) { context.getString(R.string.game_file_too_large) }
             val crc = CRC32()
-            resolver.openInputStream(item.uri)?.use { input ->
-                stream(crc, input, item.size, cancelled)
+            context.contentResolver.openInputStream(item.uri)?.use { input ->
+                stream({ context.text(it) }, crc, input, item.size, cancelled)
             } ?: error("Unable to open $path")
             frame(digest, path, item.size, crc.value)
         }
@@ -96,7 +100,7 @@ object DosContentHash {
         digest.update(0)
     }
 
-    private fun stream(crc: CRC32, input: InputStream, size: Long,
+    private fun stream(text: (UiText) -> String, crc: CRC32, input: InputStream, size: Long,
                        cancelled: AtomicBoolean) {
         val buffer = ByteArray(65536)
         var count = 0L
@@ -105,18 +109,18 @@ object DosContentHash {
             val read = input.read(buffer)
             if (read < 0) break
             count += read
-            require(count <= size) { "Game file changed while hashing" }
+            require(count <= size) { text(UiText.res(R.string.game_file_changed_while_hashing)) }
             crc.update(buffer, 0, read)
         }
-        require(count == size) { "Game file changed while hashing" }
+        require(count == size) { text(UiText.res(R.string.game_file_changed_while_hashing)) }
     }
 
-    private fun safePath(raw: String): String {
+    private fun safePath(text: (UiText) -> String, raw: String): String {
         val path = raw.replace('\\', '/')
         require(path.isNotEmpty() && path.length <= 4096 && !path.startsWith('/') &&
             !path.contains(':') && !path.contains('\u0000') &&
             path.split('/').all { it.isNotEmpty() && it != "." && it != ".." }) {
-            "Unsafe game file path"
+            text(UiText.res(R.string.game_file_path_unsafe))
         }
         return path
     }

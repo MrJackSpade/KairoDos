@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 package com.mrjackspade.kairodos
 
+import com.mrjackspade.kairo.frontend.UiText
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
@@ -30,11 +31,12 @@ internal object DosStagingStorage {
     /**
      * [edited] receives the saved files that a change to the game's source also changed, as
      * paths relative to the drive, and returns those whose edited source copy replaces the saved
-     * one. It may wait for the user; it throws to cancel.
+     * one. It may wait for the user; it throws to cancel. [text] puts what the player reads in
+     * their language.
      */
-    fun prepare(archive: File, saveDir: File, contentId: String, overlay: File, cancelled: AtomicBoolean,
-                gameFolder: String? = null,
-                edited: (List<String>) -> Set<String> = { error("This game's source changed") },
+    fun prepare(text: (UiText) -> String, archive: File, saveDir: File, contentId: String, overlay: File,
+                cancelled: AtomicBoolean, gameFolder: String? = null,
+                edited: (List<String>) -> Set<String> = { error(text(UiText.res(R.string.source_changed))) },
                 progress: (String) -> Unit = {}): Drive {
         val staging = File(saveDir, "staging").apply { mkdirs() }
         val base = File(staging, "base")
@@ -44,7 +46,7 @@ internal object DosStagingStorage {
             recoverRebuild(staging)
             val changed = marker.readText() != contentId
             if (changed || !base.isDirectory)
-                rebuild(archive, staging, contentId, overlay, cancelled, gameFolder, if (changed) edited else null, progress)
+                rebuild(text, archive, staging, contentId, overlay, cancelled, gameFolder, if (changed) edited else null, progress)
             // A conversion that finished before removing the old drive.
             if (legacy.exists()) check(legacy.deleteRecursively() && File(staging, "drive-v1.txt").delete()) {
                 "Could not remove the converted game drive"
@@ -55,10 +57,9 @@ internal object DosStagingStorage {
         }
         if (legacy.isDirectory) {
             require(File(staging, "drive-v1.txt").readText() == contentId) {
-                "This game's source changed before its saved files were converted. They were preserved; " +
-                    "restore the game's original files to convert them."
+                text(UiText.res(R.string.source_changed_before_conversion))
             }
-            convert(archive, legacy, staging, overlay, contentId, cancelled, gameFolder, progress)
+            convert(text, archive, legacy, staging, overlay, contentId, cancelled, gameFolder, progress)
             return Drive(base, media(base, archive), overlay)
         }
         val pures = pureSaves(saveDir)
@@ -68,9 +69,9 @@ internal object DosStagingStorage {
             val pending = File(staging, "drive-pending")
             clear(pending, staging)
             try {
-                extractPristine(archive, pending, cancelled, gameFolder, progress)
-                importPureSave(archive, saveDir, pending, cancelled, progress)
-                convert(archive, pending, staging, overlay, contentId, cancelled, gameFolder, progress)
+                extractPristine(text, archive, pending, cancelled, gameFolder, progress)
+                importPureSave(text, archive, saveDir, pending, cancelled, progress)
+                convert(text, archive, pending, staging, overlay, contentId, cancelled, gameFolder, progress)
             } finally {
                 if (pending.exists()) pending.deleteRecursively()
             }
@@ -79,7 +80,7 @@ internal object DosStagingStorage {
         val pending = File(staging, "base-pending")
         clear(pending, staging)
         try {
-            extractPristine(archive, pending, cancelled, gameFolder, progress)
+            extractPristine(text, archive, pending, cancelled, gameFolder, progress)
             require(!cancelled.get()) { "Cancelled" }
             require(pending.renameTo(base)) { "Could not publish game files" }
             // The marker follows the directory, so a marker always means a complete base.
@@ -105,17 +106,17 @@ internal object DosStagingStorage {
      * file changed too, or was added or removed, is a conflict: [edited] chooses which copies give
      * way to the source. Without [edited] the source is unchanged and only the base was missing.
      */
-    private fun rebuild(archive: File, staging: File, contentId: String, overlay: File, cancelled: AtomicBoolean,
+    private fun rebuild(text: (UiText) -> String, archive: File, staging: File, contentId: String, overlay: File, cancelled: AtomicBoolean,
                         gameFolder: String?, edited: ((List<String>) -> Set<String>)?, progress: (String) -> Unit) {
         val base = File(staging, "base")
         val marker = File(staging, "base-v2.txt")
         val pending = File(staging, "base-pending")
         clear(pending, staging)
         try {
-            extractPristine(archive, pending, cancelled, gameFolder, progress)
+            extractPristine(text, archive, pending, cancelled, gameFolder, progress)
             require(!cancelled.get()) { "Cancelled" }
             if (edited != null) {
-                progress("Checking changed game files…")
+                progress(text(UiText.res(R.string.checking_changed_files)))
                 val changed = HashMap<String, String>()
                 changedFiles(base.takeIf { it.isDirectory }, pending, "", changed)
                 // A removed saved folder hides every changed source file inside it.
@@ -203,11 +204,11 @@ internal object DosStagingStorage {
     }
 
     /** The archive's files, laid out as every launch variant mounts them. */
-    private fun extractPristine(archive: File, into: File, cancelled: AtomicBoolean, gameFolder: String?,
+    private fun extractPristine(text: (UiText) -> String, archive: File, into: File, cancelled: AtomicBoolean, gameFolder: String?,
                                 progress: (String) -> Unit) {
         if (archive.extension.equals("zip", true)) {
-            progress("Preparing game files…")
-            extract(archive, into, cancelled, progress)
+            progress(text(UiText.res(R.string.preparing_game_files)))
+            extract(text, archive, into, cancelled, progress)
             // Keep one layout for all catalog launch variants. A parent
             // mount and a game-folder mount must share the same saves.
             if (!gameFolder.isNullOrEmpty()) {
@@ -223,7 +224,7 @@ internal object DosStagingStorage {
             }
         } else {
             require(!cancelled.get()) { "Cancelled" }
-            copy(archive, File(into, archive.name), cancelled)
+            copy(text, archive, File(into, archive.name), cancelled)
         }
     }
 
@@ -232,13 +233,13 @@ internal object DosStagingStorage {
      * changed and new files are copied to the overlay, and removed files get Staging's
      * deletion markers. The old drive stays until the new pair is complete.
      */
-    private fun convert(archive: File, drive: File, staging: File, overlay: File, contentId: String,
+    private fun convert(text: (UiText) -> String, archive: File, drive: File, staging: File, overlay: File, contentId: String,
                         cancelled: AtomicBoolean, gameFolder: String?, progress: (String) -> Unit) {
         val converting = File(staging, "converting.txt")
         if (overlay.exists() && overlay.walkTopDown().any { it.isFile }) {
             // Only an interrupted conversion leaves an overlay beside an old drive.
             require(converting.isFile && converting.readText() == contentId) {
-                "This game has saved files from another copy of it. Its existing writable game files were preserved."
+                text(UiText.res(R.string.saves_from_another_copy))
             }
             require(overlay.deleteRecursively()) { "Could not clear an interrupted conversion" }
         }
@@ -246,11 +247,11 @@ internal object DosStagingStorage {
         clear(base, staging)
         val changes = File(overlay.parentFile, "${overlay.name}.converting")
         try {
-            extractPristine(archive, base, cancelled, gameFolder, progress)
-            progress("Converting saved game files…")
+            extractPristine(text, archive, base, cancelled, gameFolder, progress)
+            progress(text(UiText.res(R.string.converting_saved_files)))
             if (changes.exists()) require(changes.deleteRecursively()) { "Could not clear an interrupted conversion" }
             require(changes.mkdirs()) { "Could not create the game's save folder" }
-            diff(drive, base, changes, "", cancelled)
+            diff(text, drive, base, changes, "", cancelled)
             require(!cancelled.get()) { "Cancelled" }
             converting.writeText(contentId)
             if (overlay.exists()) require(overlay.deleteRecursively()) { "Could not replace the game's save folder" }
@@ -267,7 +268,7 @@ internal object DosStagingStorage {
         }
     }
 
-    private fun diff(drive: File, base: File, out: File, relative: String, cancelled: AtomicBoolean) {
+    private fun diff(text: (UiText) -> String, drive: File, base: File, out: File, relative: String, cancelled: AtomicBoolean) {
         require(!cancelled.get()) { "Cancelled" }
         val baseChildren = base.listFiles().orEmpty().associateBy { it.name.lowercase(Locale.ROOT) }
         val driveChildren = drive.listFiles() ?: error("Could not read $relative")
@@ -279,11 +280,11 @@ internal object DosStagingStorage {
             val target = File(out, child.name)
             if (child.isDirectory) {
                 require(original == null || original.isDirectory) { "A file became a folder: $relative${child.name}" }
-                if (original == null) copy(child, target, cancelled)
-                else diff(child, original, target, "$relative${child.name}/", cancelled)
+                if (original == null) copy(text, child, target, cancelled)
+                else diff(text, child, original, target, "$relative${child.name}/", cancelled)
             } else {
                 require(original == null || original.isFile) { "A folder became a file: $relative${child.name}" }
-                if (original == null || !sameContents(child, original)) copy(child, target, cancelled)
+                if (original == null || !sameContents(child, original)) copy(text, child, target, cancelled)
             }
         }
         for ((key, original) in baseChildren) if (key !in seen) {
@@ -339,10 +340,10 @@ internal object DosStagingStorage {
         return result
     }
 
-    private fun extract(archive: File, root: File, cancelled: AtomicBoolean,
+    private fun extract(text: (UiText) -> String, archive: File, root: File, cancelled: AtomicBoolean,
                         progress: (String) -> Unit, skipMods: Boolean = false) {
         DosZip.open(archive).use { zip ->
-            require(zip.size() <= MAX_FILES) { "DOS archive contains too many files" }
+            require(zip.size() <= MAX_FILES) { text(UiText.res(R.string.archive_too_many_files)) }
             val names = HashMap<String, Boolean>()
             var total = 0L
             var reported = 0L
@@ -353,15 +354,15 @@ internal object DosStagingStorage {
                 val name = entry.name.replace('\\', '/').trimEnd('/')
                 val previous = names.put(name.lowercase(Locale.ROOT), entry.isDirectory)
                 require(previous == null || (previous && entry.isDirectory)) {
-                    "Ambiguous duplicate DOS archive entry: $name"
+                    text(UiText.res(R.string.archive_duplicate_entry, name))
                 }
                 val target = path(root, name)
                 if (entry.isDirectory) {
                     require(target.isDirectory || target.mkdirs()) { "Could not create game directory" }
                     continue
                 }
-                require(entry.size >= 0 && entry.size <= MAX_BYTES - total) { "DOS archive is too large" }
-                require(root.usableSpace > entry.size + 16L * 1024 * 1024) { "Not enough storage for writable game files" }
+                require(entry.size >= 0 && entry.size <= MAX_BYTES - total) { text(UiText.res(R.string.archive_too_large)) }
+                require(root.usableSpace > entry.size + 16L * 1024 * 1024) { text(UiText.res(R.string.not_enough_storage)) }
                 require(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs()) { "Could not create game directory" }
                 val crc = CRC32()
                 var count = 0L
@@ -371,23 +372,23 @@ internal object DosStagingStorage {
                         val size = input.read(buffer)
                         if (size < 0) break
                         count += size
-                        require(count <= entry.size && total + count <= MAX_BYTES) { "Invalid DOS archive size" }
+                        require(count <= entry.size && total + count <= MAX_BYTES) { text(UiText.res(R.string.archive_invalid_size)) }
                         crc.update(buffer, 0, size)
                         output.write(buffer, 0, size)
                     }
                 } }
-                require(count == entry.size && crc.value == entry.crc) { "DOS archive verification failed: $name" }
+                require(count == entry.size && crc.value == entry.crc) { text(UiText.res(R.string.archive_verification_failed, name)) }
                 if (entry.time > 0) target.setLastModified(entry.time)
                 total += count
                 if (total - reported >= 64L * 1024 * 1024) {
-                    progress("Preparing writable game files: ${total / (1024 * 1024)} MiB")
+                    progress(text(UiText.res(R.string.preparing_writable_files, total / (1024 * 1024))))
                     reported = total
                 }
             }
         }
     }
 
-    private fun importPureSave(archive: File, saveDir: File, root: File,
+    private fun importPureSave(text: (UiText) -> String, archive: File, saveDir: File, root: File,
                                cancelled: AtomicBoolean, progress: (String) -> Unit) {
         val saves = pureSaves(saveDir)
         if (saves.isEmpty()) return
@@ -396,8 +397,8 @@ internal object DosStagingStorage {
                 it.name.equals(archive.nameWithoutExtension + ".sav.zip", true)
         }
         val legacy = exact ?: saves.singleOrNull()
-            ?: error("Several legacy game saves were found. They were preserved; the import needs a save selection.")
-        progress("Importing existing game saves…")
+            ?: error(text(UiText.res(R.string.legacy_saves_several)))
+        progress(text(UiText.res(R.string.importing_legacy_saves)))
         // Pure's overlay paths are relative to its mounted C drive. Its
         // '-parent' archive retains the eXoDOS wrapper, other launchers strip it.
         val top = root.listFiles().orEmpty()
@@ -424,7 +425,7 @@ internal object DosStagingStorage {
                 require(mod[1].isNotEmpty() && mod[2].isNotEmpty() &&
                     from.isDirectory == (mod[0] == "REDIRECTDIR")) { "Invalid legacy rename" }
                 require(!to.canonicalPath.startsWith(from.canonicalPath + File.separator)) { "Invalid legacy directory rename" }
-                copy(from, File(snapshots, index.toString()), cancelled)
+                copy(text, from, File(snapshots, index.toString()), cancelled)
             }
             for (mod in mods.filter { it[0] == "DELETE" }) {
                 require(mod.size == 2) { "Invalid legacy deletion" }
@@ -433,24 +434,24 @@ internal object DosStagingStorage {
                 if (target.exists()) require(target.deleteRecursively()) { "Could not apply legacy file deletion" }
             }
             for ((index, mod) in redirects.withIndex())
-                copy(File(snapshots, index.toString()), path(base, mod[1]), cancelled)
+                copy(text, File(snapshots, index.toString()), path(base, mod[1]), cancelled)
             } finally { snapshots.deleteRecursively() }
         }
-        extract(legacy, base, cancelled, progress, skipMods = true)
+        extract(text, legacy, base, cancelled, progress, skipMods = true)
         // Pure frontend control files are not DOS game data.
         for (name in listOf("AUTOBOOT.DBP", "PADMAP.DBP", "FRONTEND.DBP")) path(base, name).delete()
     }
 
-    private fun copy(source: File, target: File, cancelled: AtomicBoolean) {
+    private fun copy(text: (UiText) -> String, source: File, target: File, cancelled: AtomicBoolean) {
         require(!cancelled.get()) { "Cancelled" }
         if (source.isDirectory) {
             require(target.isDirectory || target.mkdirs()) { "Could not create game directory" }
             for (child in source.listFiles() ?: error("Could not read game directory"))
-                copy(child, path(target, child.name), cancelled)
+                copy(text, child, path(target, child.name), cancelled)
         } else {
-            require(source.length() <= MAX_BYTES) { "DOS file is too large" }
+            require(source.length() <= MAX_BYTES) { text(UiText.res(R.string.file_too_large)) }
             require(target.parentFile!!.isDirectory || target.parentFile!!.mkdirs())
-            require(target.parentFile!!.usableSpace > source.length() + 16L * 1024 * 1024) { "Not enough storage for writable game files" }
+            require(target.parentFile!!.usableSpace > source.length() + 16L * 1024 * 1024) { text(UiText.res(R.string.not_enough_storage)) }
             val buffer = ByteArray(65536)
             source.inputStream().use { input -> target.outputStream().use { output ->
                 while (true) {

@@ -1,5 +1,6 @@
 package com.mrjackspade.kairodos
 
+import com.mrjackspade.kairo.frontend.UiText
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -12,6 +13,8 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class DosZipTest {
+    /** A refusal as its resource, which the test reads without a Context. */
+    private val text: (UiText) -> String = { (it as UiText.Res).id.toString() }
     @get:Rule val folder = TemporaryFolder()
 
     /** A game ZIP with one plain name, one CP437 name (0xFF, not UTF-8) and one UTF-8-flagged name. */
@@ -68,9 +71,9 @@ class DosZipTest {
     @Test
     fun theContentIdIsTheSameEitherWay() {
         val zip = gameZip()
-        val fromFile = DosContentHash.zip(zip, AtomicBoolean(false))
+        val fromFile = DosContentHash.zip(text, zip, AtomicBoolean(false))
         val members = throughChannel(zip)
         assertEquals(DosZip.members(zip), members)
-        assertEquals(fromFile, DosContentHash.inspectZip(zip, AtomicBoolean(false)).contentId)
+        assertEquals(fromFile, DosContentHash.inspectZip(text, zip, AtomicBoolean(false)).contentId)
     }
 }

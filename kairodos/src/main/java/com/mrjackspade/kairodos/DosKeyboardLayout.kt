@@ -2,6 +2,7 @@ package com.mrjackspade.kairodos
 
 import com.mrjackspade.kairo.frontend.GuestKeyboardLayout
 import com.mrjackspade.kairo.frontend.GuestKeyboardPage
+import com.mrjackspade.kairo.frontend.UiText
 import com.mrjackspade.kairo.frontend.KeyboardKey
 
 /** Libretro RETROK codes, which the DOSBox Staging bridge turns into IBM PC keys. */
@@ -49,7 +50,7 @@ internal object DosKeyboardLayout {
                     KeyboardKey("/", 47)),
                 listOf(KeyboardKey("Tab", 9), KeyboardKey("Space", 32, 5f),
                     KeyboardKey("Enter", 13))
-            ), pickerLabel = "Symbols"),
+            ), pickerLabel = UiText.res(R.string.keyboard_symbols)),
             // The keys above and beside the IBM main block, with Shift for Shift+F-key commands.
             GuestKeyboardPage("FN", listOf(
                 (1..6).map { KeyboardKey("F$it", 281 + it) },
@@ -63,7 +64,7 @@ internal object DosKeyboardLayout {
                 listOf(KeyboardKey("Shift", 304, 1.5f), KeyboardKey("Ctrl", 306), KeyboardKey("Alt", 308),
                     KeyboardKey("Space", 32, 3f), KeyboardKey("Enter", 13, 1.5f),
                     KeyboardKey("ScrLk", SCROLL_LOCK))
-            ), pickerLabel = "Function"),
+            ), pickerLabel = UiText.res(R.string.keyboard_function)),
             // The IBM keypad, with its tall + and Enter; with Num Lock off the digits act as
             // the navigation keys their legends then show.
             GuestKeyboardPage("NUM", listOf(
@@ -75,7 +76,7 @@ internal object DosKeyboardLayout {
                 listOf(pad("1", 257, "End"), pad("2", 258, "↓"), pad("3", 259, "PgDn"),
                     KeyboardKey("Enter", 271, rows = 2)),
                 listOf(pad("0", 256, "Ins", 2f), pad(".", 266, "Del"))
-            ), pickerLabel = "Keypad")
+            ), pickerLabel = UiText.res(R.string.keyboard_keypad))
         ),
         modifiers = setOf(301, 303, 304, 305, 306, 307, 308, NUM_LOCK, SCROLL_LOCK),
         shiftCodes = setOf(303, 304),

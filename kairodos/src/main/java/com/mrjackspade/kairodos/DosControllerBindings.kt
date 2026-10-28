@@ -4,6 +4,7 @@ import com.mrjackspade.kairo.frontend.ControllerBinding
 import com.mrjackspade.kairo.frontend.ControllerBindingsCodec
 import com.mrjackspade.kairo.frontend.ControllerGuestSpec
 import com.mrjackspade.kairo.frontend.JoystickPort
+import com.mrjackspade.kairo.frontend.UiText
 
 /** DOS key codes and libretro joypad targets; the editor and codec live in Kairo. */
 internal object DosControllerBindings {
@@ -11,13 +12,15 @@ internal object DosControllerBindings {
         "a", "x", "l1", "r1", "l2", "r2", "l3", "r3",
         "joy1up", "joy1down", "joy1left", "joy1right",
         "joy2up", "joy2down", "joy2left", "joy2right")
-    private val joystickTargets = listOf(
-        "joy1up" to "1 up", "joy1down" to "1 down",
-        "joy1left" to "1 left", "joy1right" to "1 right",
-        "b" to "1 button 1", "y" to "1 button 2",
-        "joy2up" to "2 up", "joy2down" to "2 down",
-        "joy2left" to "2 left", "joy2right" to "2 right",
-        "a" to "2 button 1", "x" to "2 button 2")
+    private val joystickTargets = listOf(1, 2).flatMap { stick ->
+        listOf("joy${stick}up" to UiText.res(R.string.joystick_up, stick),
+            "joy${stick}down" to UiText.res(R.string.joystick_down, stick),
+            "joy${stick}left" to UiText.res(R.string.joystick_left, stick),
+            "joy${stick}right" to UiText.res(R.string.joystick_right, stick)) +
+            (if (stick == 1) listOf("b", "y") else listOf("a", "x")).mapIndexed { index, id ->
+                id to UiText.res(R.string.joystick_button, stick, index + 1)
+            }
+    }
     private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
     private val keyCodes = keys.map { it.code }
@@ -41,7 +44,7 @@ internal object DosControllerBindings {
         }
     }, DosKeyboardLayout.value.modifiers,
         joystickTargets,
-        "The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.",
+        UiText.res(R.string.joystick_help),
         ControllerGuestSpec.STANDARD_ACTIONS, DosKeyboardLayout.value,
         listOf(JoystickPort("Joystick 1", "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
             JoystickPort("Joystick 2", "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))

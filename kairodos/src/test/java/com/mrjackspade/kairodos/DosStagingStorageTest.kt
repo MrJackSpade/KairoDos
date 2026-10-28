@@ -1,5 +1,6 @@
 package com.mrjackspade.kairodos
 
+import com.mrjackspade.kairo.frontend.UiText
 import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.atomic.AtomicBoolean
@@ -29,7 +30,7 @@ class DosStagingStorageTest {
 
     private fun prepare(source: File, contentId: String,
                         edited: (List<String>) -> Set<String> = { error("Unexpected conflict: $it") }) =
-        DosStagingStorage.prepare(source, saveDir, contentId, overlay, AtomicBoolean(false), edited = edited)
+        DosStagingStorage.prepare({ (it as UiText.Res).id.toString() }, source, saveDir, contentId, overlay, AtomicBoolean(false), edited = edited)
 
     private fun saved(path: String, text: String) =
         File(overlay, path).apply { parentFile!!.mkdirs(); writeText(text) }

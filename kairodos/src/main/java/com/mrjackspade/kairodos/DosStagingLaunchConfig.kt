@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 package com.mrjackspade.kairodos
 
+import android.content.Context
 import android.util.AtomicFile
 import java.io.File
 
@@ -68,7 +69,8 @@ internal object DosStagingLaunchConfig {
     /** The reference prefix, KAIRO_HOST_PATH_PREFIX in staging_bridge.h. */
     private const val HOST_PATH_PREFIX = "kairo-host:"
 
-    fun write(config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
+    /** [context] puts a failure the player reads in their language. */
+    fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
               target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
@@ -110,7 +112,7 @@ internal object DosStagingLaunchConfig {
                 if (inside.isEmpty()) return drive.directory.absolutePath
                 val game = inside.substringBefore('/')
                 val root = if (game.equals(folder, true)) gameRoot else
-                    dependencies[game.lowercase()] ?: error("Missing eXoDOS dependency: $game")
+                    dependencies[game.lowercase()] ?: error(context.getString(R.string.exodos_dependency_missing, game))
                 return DosStagingStorage.path(root, inside.substringAfter('/', "")).absolutePath
             }
             if (normalized.startsWith("./discs/", true))
@@ -182,7 +184,7 @@ internal object DosStagingLaunchConfig {
                             val floppy = drive.media.length() <= 2_949_120
                             lines += "imgmount ${if (floppy) "A" else "D"} ${operand(writableImage(drive.media.absolutePath))} -t ${if (floppy) "floppy" else "hdd"}"
                         } else lines += "boot ${operand(writableImage(drive.media.absolutePath))}"
-                        else -> error("DOSBox Staging does not support this standalone media type: ${drive.media.extension}")
+                        else -> error(context.getString(R.string.media_type_unsupported, "DOSBox Staging", drive.media.extension))
                     }
                 } else {
                     val executables = mountedRoot.listFiles().orEmpty().filter {
@@ -239,11 +241,11 @@ internal object DosStagingLaunchConfig {
             if (program.endsWith(".cmd", true)) {
                 // DOS-compatible CMD text is run as a batch file on an app-owned
                 // scratch drive. Never rename/overwrite a file in the game drive.
-                require(target.occupiedDrives.isNotEmpty()) { "Mounted DOS drives are needed to run a command script" }
+                require(target.occupiedDrives.isNotEmpty()) { context.getString(R.string.command_script_needs_drives) }
                 val used = target.occupiedDrives + lines.mapNotNull { Regex("(?i)^\\s*@?(?:img)?mount\\s+([a-z])\\s+").find(it)
                     ?.groupValues?.get(1)?.uppercase()?.single() }.toSet()
                 val letter = ('Y' downTo 'A').firstOrNull { it !in used }
-                    ?: error("No free DOS drive for the command script")
+                    ?: error(context.getString(R.string.command_script_no_drive))
                 val scratch = File(config.parentFile, "command-script").apply {
                     require(isDirectory || mkdirs()) { "Could not prepare command script drive" }
                 }

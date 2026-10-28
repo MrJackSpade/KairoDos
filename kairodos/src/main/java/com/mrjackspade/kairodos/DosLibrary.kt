@@ -8,6 +8,7 @@ import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.LibraryScanPipeline
 import com.mrjackspade.kairo.frontend.LibraryItem
+import com.mrjackspade.kairo.frontend.text
 import com.mrjackspade.kairo.frontend.VersionedLibraryCache
 import com.mrjackspade.kairo.frontend.readOptionalText
 import com.mrjackspade.kairo.frontend.readText
@@ -66,11 +67,11 @@ class DosLibrary(private val context: Context) {
         64 * 1024 * 1024, 50_000, ::writeCacheRecord, ::readCacheRecord,
         VersionedLibraryCache.Legacy(File(context.filesDir, "dos-library-v1.json"), 2, "games",
             ::decodeLegacyEntry), mapOf(3 to ::readCacheRecordV3))
-    private val walker = DocumentTreeWalker(context.contentResolver)
+    private val walker = DocumentTreeWalker(context)
     /** The games folder's listings, so a launch lists only the folders that changed (ScanDepth). */
     private val folderListings = FolderListings(File(context.filesDir, "folder-listings-v1.json"))
     private val scanPipeline by lazy {
-        LibraryScanPipeline(storeCache, Game::id, ::planScan, ::inspectScanWork,
+        LibraryScanPipeline(context, storeCache, Game::id, ::planScan, ::inspectScanWork,
             ::failedScanWork, ::describe, ::known, Game::path, cacheOrder = { entries -> entries.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
@@ -92,11 +93,11 @@ class DosLibrary(private val context: Context) {
     fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean): Game {
         val type = extension(file.name)
         require(type in archiveExtensions + executableExtensions + otherExtensions) {
-            "Unsupported DOS game file: ${file.name}"
+            context.getString(R.string.unsupported_file, file.name)
         }
         val source = DocumentTreeWalker.FileEntry(file.uri, file.name, file.size, file.modified)
         val inspection = if (type in archiveExtensions) {
-            DosContentHash.inspectZipDocument(context.contentResolver, file.uri, cancelled)
+            DosContentHash.inspectZipDocument(context, file.uri, cancelled)
         } else null
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
@@ -147,7 +148,7 @@ class DosLibrary(private val context: Context) {
         }
         val folderErrors = source.folders.map { folder ->
             Game(folder.path, folder.uri.toString(), folder.path,
-                true, false, "", null, "Unreadable folder: ${folder.message}")
+                true, false, "", null, context.getString(R.string.unreadable_folder, folder.message))
         }
         return LibraryScanPipeline.Plan(work, finalEntries = folderErrors)
     }
@@ -190,7 +191,7 @@ class DosLibrary(private val context: Context) {
             scan.hashStarted(item.path)
             if (extension(item.path) in archiveExtensions) {
                 val inspection = DosContentHash.inspectZipDocument(
-                    context.contentResolver, item.uri, scan.cancelled)
+                    context, item.uri, scan.cancelled)
                 installer = inspection.exodosSource &&
                     !isInstalledArchive(item.path.substringAfterLast('/'))
                 inspection.contentId
@@ -218,7 +219,7 @@ class DosLibrary(private val context: Context) {
 
     private fun folderUri(work: ScanWork.Folder): Uri = if (work.root == "@root") work.tree else {
         val child = childId(work.tree, DocumentsContract.getTreeDocumentId(work.tree),
-            work.root, true) ?: error("Game folder was moved; refresh the library")
+            work.root, true) ?: error(context.getString(R.string.game_folder_moved))
         DocumentsContract.buildDocumentUriUsingTree(work.tree, child)
     }
 
@@ -229,7 +230,7 @@ class DosLibrary(private val context: Context) {
         val old = scan.prior[id]
         val contentId = knownContent(old, fingerprint, "sha256-dos-manifest-v1:") ?: run {
             scan.hashStarted(folderDisplay(work))
-            DosContentHash.documents(context.contentResolver, work.members, scan.cancelled)
+            DosContentHash.documents(context, work.members, scan.cancelled)
         }
         return listOf(Game(id, folderUri(work).toString(), folderDisplay(work), true,
             work.root == "@root", fingerprint, contentId, catalogId = catalogId(scan, id, contentId)))
@@ -243,13 +244,13 @@ class DosLibrary(private val context: Context) {
                 !isInstalledArchive(item.path.substringAfterLast('/'))
             listOf(Game(item.path, item.uri.toString(), item.path,
                 false, false, "${item.size}:${item.modified}", null,
-                error.message ?: "Unreadable DOS game", installer,
+                error.message ?: context.getString(R.string.unreadable_game), installer,
                 catalogId = scan.earlier[item.path]?.catalogId))
         }
         is ScanWork.Folder -> listOf(Game(folderId(work),
             runCatching { folderUri(work) }.getOrDefault(work.tree).toString(),
             folderDisplay(work), true, work.root == "@root", folderFingerprint(work),
-            null, error.message ?: "Unreadable DOS folder",
+            null, error.message ?: context.getString(R.string.unreadable_game_folder),
             catalogId = scan.earlier[folderId(work)]?.catalogId))
     }
 
@@ -257,7 +258,7 @@ class DosLibrary(private val context: Context) {
     fun install(game: Game, tree: Uri, cancelled: AtomicBoolean,
                 progress: (String) -> Unit = {}): Game {
         require(game.installer && !game.folder && game.playable) { "Not an eXoDOS installer" }
-        progress("Preparing installer archive…")
+        progress(context.getString(R.string.preparing_installer))
         val source = prepare(game, tree, cancelled)
         val originalName = game.path.substringAfterLast('/')
         val installedName = originalName.substringBeforeLast('.') + " - Installed.zip"
@@ -265,7 +266,7 @@ class DosLibrary(private val context: Context) {
         var parentId = DocumentsContract.getTreeDocumentId(tree)
         if (parentPath.isNotEmpty()) for (segment in parentPath.split('/')) {
             parentId = childId(tree, parentId, segment, true)
-                ?: error("Installer folder was moved; refresh the library")
+                ?: error(context.getString(R.string.installer_folder_moved))
         }
         val path = if (parentPath.isEmpty()) installedName else "$parentPath/$installedName"
         val existing = childId(tree, parentId, installedName, false)
@@ -293,7 +294,7 @@ class DosLibrary(private val context: Context) {
                             output.write(buffer, 0, count)
                             written += count
                             if (written >= nextReport) {
-                                progress("Installing game: ${written / (1024 * 1024)} MiB copied")
+                                progress(context.getString(R.string.installing_copied, written / (1024 * 1024)))
                                 nextReport += 64L * 1024 * 1024
                             }
                         }
@@ -301,7 +302,7 @@ class DosLibrary(private val context: Context) {
                 }
                 val expected = digest.digest()
                 val actual = MessageDigest.getInstance("SHA-256")
-                progress("Verifying installed game archive…")
+                progress(context.getString(R.string.installed_verifying))
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     val buffer = ByteArray(65536)
                     while (true) {
@@ -312,13 +313,13 @@ class DosLibrary(private val context: Context) {
                     }
                 } ?: error("Could not verify installed game archive")
                 require(expected.contentEquals(actual.digest())) {
-                    "Installed game archive failed verification"
+                    context.getString(R.string.installed_verification_failed)
                 }
             } else {
-                progress("Checking installed game archive…")
-                val checked = DosContentHash.zipDocument(context.contentResolver, uri, cancelled)
+                progress(context.getString(R.string.installed_checking))
+                val checked = DosContentHash.zipDocument(context, uri, cancelled)
                 require(checked == game.contentId) {
-                    "An installed archive with this name already exists and differs"
+                    context.getString(R.string.installed_name_taken)
                 }
             }
             val staged = File(cache,
@@ -339,14 +340,14 @@ class DosLibrary(private val context: Context) {
     fun installExternal(game: Game, cancelled: AtomicBoolean,
                         progress: (String) -> Unit = {}): Game {
         require(game.external && game.installer && game.playable) { "Not an external installer" }
-        progress("Preparing installer archive…")
+        progress(context.getString(R.string.preparing_installer))
         val source = prepare(game, null, cancelled)
         val installedId = sha256("external:${game.contentId}")
         val folder = File(context.filesDir, "installed-dos").apply { mkdirs() }
         val installed = File(folder, "$installedId.zip")
         if (installed.isFile) {
-            require(DosContentHash.zip(installed, cancelled) == game.contentId) {
-                "Installed game archive changed"
+            require(DosContentHash.zip({ context.text(it) }, installed, cancelled) == game.contentId) {
+                context.getString(R.string.installed_changed)
             }
         } else {
             val pending = File.createTempFile("dos-install-", ".part", folder)
@@ -354,8 +355,8 @@ class DosLibrary(private val context: Context) {
                 source.inputStream().use { input -> pending.outputStream().use { output ->
                     copyChecked(input, output, cancelled)
                 } }
-                require(DosContentHash.zip(pending, cancelled) == game.contentId) {
-                    "Installed game archive failed verification"
+                require(DosContentHash.zip({ context.text(it) }, pending, cancelled) == game.contentId) {
+                    context.getString(R.string.installed_verification_failed)
                 }
                 require(pending.renameTo(installed)) { "Could not save installed game" }
             } finally { pending.delete() }
@@ -369,27 +370,27 @@ class DosLibrary(private val context: Context) {
     fun deleteInstaller(game: Game, installed: Game) {
         require(game.installer) { "Not an installer" }
         require(!installed.installer && installed.contentId == game.contentId) {
-            "Installed game is not available"
+            context.getString(R.string.installed_unavailable)
         }
-        val check = DosContentHash.zipDocument(context.contentResolver,
+        val check = DosContentHash.zipDocument(context,
             Uri.parse(installed.uri), AtomicBoolean(false))
-        require(check == game.contentId) { "Installed game could not be verified" }
+        require(check == game.contentId) { context.getString(R.string.installed_unverified) }
         require(DocumentsContract.deleteDocument(context.contentResolver, Uri.parse(game.uri))) {
-            "The document provider could not remove the installer"
+            context.getString(R.string.installer_remove_refused)
         }
     }
 
     /** Remove the selected source document, rather than only hiding its catalog entry. */
     fun deleteSource(game: Game) {
         require(!game.external && !game.rootFolder) {
-            "This game is not a removable library document"
+            context.getString(R.string.game_not_removable)
         }
         val uri = Uri.parse(game.uri)
         require(DocumentsContract.isDocumentUri(context, uri)) {
-            "This game is not a removable library document"
+            context.getString(R.string.game_not_removable)
         }
         require(DocumentsContract.deleteDocument(context.contentResolver, uri)) {
-            "The document provider could not delete the game"
+            context.getString(R.string.game_delete_refused)
         }
         cache.listFiles()?.filter { it.name.startsWith("${game.key.hashName}-") }?.forEach { it.delete() }
     }
@@ -441,9 +442,9 @@ class DosLibrary(private val context: Context) {
             val copied = copySource(source, cancelled)
             try {
                 require(if (extension(game.path) in archiveExtensions)
-                    DosContentHash.zip(copied, cancelled) == game.contentId
+                    DosContentHash.zip({ context.text(it) }, copied, cancelled) == game.contentId
                     else hashFile(copied, cancelled) == game.contentId) {
-                    "Game changed since it was scanned; use Recheck all files in Manage library"
+                    context.getString(R.string.game_changed_since_scan)
                 }
                 if (type in archiveExtensions + otherExtensions) {
                     if (type in archiveExtensions && wrapFolder != null &&
@@ -458,7 +459,7 @@ class DosLibrary(private val context: Context) {
                                             require(!name.startsWith('/') &&
                                                 name.split('/').all { it.isNotEmpty() &&
                                                     it != "." && it != ".." }) {
-                                                "Unsafe game archive"
+                                                context.getString(R.string.game_archive_unsafe)
                                             }
                                             output.putNextEntry(ZipEntry("$wrapFolder/$name"))
                                             input.getInputStream(entry).use {
@@ -468,8 +469,8 @@ class DosLibrary(private val context: Context) {
                                         }
                                 }
                             }
-                            require(DosContentHash.zip(pending, cancelled) == game.contentId) {
-                                "Game changed while preparing; use Recheck all files in Manage library"
+                            require(DosContentHash.zip({ context.text(it) }, pending, cancelled) == game.contentId) {
+                                context.getString(R.string.game_changed_while_preparing)
                             }
                             require(pending.renameTo(target)) { "Could not prepare game" }
                         } finally { pending.delete() }
@@ -489,13 +490,13 @@ class DosLibrary(private val context: Context) {
                 } finally { pending.delete() }
             } finally { copied.delete() }
         } else {
-            val files = walker.scan(tree ?: error("Choose a DOS folder for this game"),
+            val files = walker.scan(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)),
                 cancelled, { true }, {}).files.filter {
                 if (game.rootFolder) true
                 else it.path.startsWith("${game.path}/")
             }
-            require(DosContentHash.documents(context.contentResolver, files, cancelled) == game.contentId) {
-                "Game changed since it was scanned; use Recheck all files in Manage library"
+            require(DosContentHash.documents(context, files, cancelled) == game.contentId) {
+                context.getString(R.string.game_changed_since_scan)
             }
             val pending = File.createTempFile("dos-", ".zip.part", cache)
             try {
@@ -514,8 +515,8 @@ class DosLibrary(private val context: Context) {
                         }
                     }
                 }
-                require(DosContentHash.zip(pending, cancelled) == game.contentId) {
-                    "Game changed while preparing; use Recheck all files in Manage library"
+                require(DosContentHash.zip({ context.text(it) }, pending, cancelled) == game.contentId) {
+                    context.getString(R.string.game_changed_while_preparing)
                 }
                 require(pending.renameTo(target)) { "Could not prepare game" }
             } finally { pending.delete() }
@@ -535,7 +536,7 @@ class DosLibrary(private val context: Context) {
 
     private fun copySource(source: DocumentTreeWalker.FileEntry,
                            cancelled: AtomicBoolean): File {
-        require(source.size <= MAX_ARCHIVE_BYTES) { "DOS game exceeds size limit" }
+        require(source.size <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
         val temp = File.createTempFile("dos-", ".part", cache)
         try {
             context.contentResolver.openInputStream(source.uri)?.use { input ->
@@ -547,12 +548,12 @@ class DosLibrary(private val context: Context) {
                         val read = input.read(buffer)
                         if (read < 0) break
                         total += read
-                        require(total <= MAX_ARCHIVE_BYTES) { "DOS game exceeds size limit" }
+                        require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
                         output.write(buffer, 0, read)
                     }
                 }
             } ?: error("Unable to read ${source.path}")
-            if (source.size >= 0) require(temp.length() == source.size) { "Game changed while copying" }
+            if (source.size >= 0) require(temp.length() == source.size) { context.getString(R.string.game_changed_while_copying) }
             return temp
         } catch (failure: Exception) { temp.delete(); throw failure }
     }
@@ -584,7 +585,7 @@ class DosLibrary(private val context: Context) {
 
     private fun hashDocument(source: DocumentTreeWalker.FileEntry,
                              cancelled: AtomicBoolean): String {
-        require(source.size <= MAX_ARCHIVE_BYTES) { "DOS game exceeds size limit" }
+        require(source.size <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
         val digest = MessageDigest.getInstance("SHA-256")
         var total = 0L
         context.contentResolver.openInputStream(source.uri)?.use { input ->
@@ -594,11 +595,11 @@ class DosLibrary(private val context: Context) {
                 val count = input.read(buffer)
                 if (count < 0) break
                 total += count
-                require(total <= MAX_ARCHIVE_BYTES) { "DOS game exceeds size limit" }
+                require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
                 digest.update(buffer, 0, count)
             }
         } ?: error("Unable to read ${source.path}")
-        if (source.size >= 0) require(total == source.size) { "Game changed while hashing" }
+        if (source.size >= 0) require(total == source.size) { context.getString(R.string.game_changed_while_hashing) }
         return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
     }
 

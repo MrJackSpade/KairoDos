@@ -1,5 +1,8 @@
 package com.mrjackspade.kairodos
 
+import android.content.Context
+import com.mrjackspade.kairo.frontend.R as FrontendR
+
 /**
  * A catalog DOSBox config as the game's settings show it: every `key = value` of each section, in
  * order, and the [autoexec] lines, which DOS runs to start the game. A game's own settings replace
@@ -48,25 +51,26 @@ internal class DosConfig private constructor(
         }
 
         /** What a game's version (one of its catalog configs, named as eXoDOS names them) is called. */
-        fun versionLabel(name: String): String {
+        fun versionLabel(context: Context, name: String): String {
             val stem = name.lowercase().removeSuffix(".conf").removePrefix("dosbox").trimStart('_')
             val parts = stem.split('_').filter(String::isNotEmpty).map { part ->
                 when (part) {
                     "tandy", "t" -> "Tandy"
-                    "tga" -> "Tandy graphics"
+                    "tga" -> context.getString(R.string.version_tandy_graphics)
                     "pcjr" -> "PCjr"
                     "cga", "c" -> "CGA"
                     "ega" -> "EGA"
                     "h" -> "Hercules"
                     "gbc" -> "Game Blaster"
-                    "upg" -> "Upgraded"
-                    "mods" -> "Mods"
-                    "fix" -> "Fixed"
-                    "2" -> "Alternate"
+                    "upg" -> context.getString(R.string.version_upgraded)
+                    "mods" -> context.getString(R.string.version_mods)
+                    "fix" -> context.getString(R.string.version_fixed)
+                    "2" -> context.getString(R.string.version_alternate)
                     else -> part.uppercase()
                 }
             }
-            return if (parts.isEmpty()) "Standard" else parts.joinToString(", ")
+            return if (parts.isEmpty()) context.getString(R.string.version_standard)
+                else parts.joinToString(context.getString(FrontendR.string.kairo_list_separator))
         }
     }
 }

@@ -45,8 +45,11 @@ import com.mrjackspade.kairo.frontend.SettingsRow
 import com.mrjackspade.kairo.frontend.TouchInputSelection
 import com.mrjackspade.kairo.frontend.TouchSettingsStore
 import com.mrjackspade.kairo.frontend.TrayButton
+import com.mrjackspade.kairo.frontend.UiText
 import com.mrjackspade.kairo.frontend.ValueTone
 import com.mrjackspade.kairo.frontend.ScanDepth
+import com.mrjackspade.kairo.frontend.text
+import com.mrjackspade.kairo.frontend.R as FrontendR
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
@@ -90,9 +93,10 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         private const val UNSAVED_OVERLAY = "staging/overlay-working.unsaved"
         /** The Version choice that runs the preset with the player's own DOSBox settings and startup commands. */
         private const val CUSTOM_VERSION = "custom"
-        private val CPU_OPTIONS = listOf(ChoiceOption("0", "Auto"), ChoiceOption("1", "Maximum"))
-        private val VOODOO_OPTIONS = listOf(ChoiceOption("0", "Automatic CPU threads"),
-            ChoiceOption("1", "Single CPU thread"))
+        private val CPU_OPTIONS = listOf(ChoiceOption("0", UiText.res(FrontendR.string.kairo_auto)),
+            ChoiceOption("1", UiText.res(R.string.cpu_maximum)))
+        private val VOODOO_OPTIONS = listOf(ChoiceOption("0", UiText.res(R.string.voodoo_automatic)),
+            ChoiceOption("1", UiText.res(R.string.voodoo_single)))
         init {
             // Load the shared C++ runtime on its own, before any DOS session. Otherwise the
             // DOSBox core loads it as part of its own dlopen group; long-lived threads of the
@@ -103,13 +107,12 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     }
 
     override val identity = Identity("KAIRODOS", 0xff03C5FB.toInt(), "KairoDos", "DOS", "kairodos",
-        LibraryStrings("KAIRODOS", "KairoDos", "DOS folder", "No DOS folder selected"),
-        "KairoDos uses the DOSBox Staging emulator core. Source and provenance: github.com/MrJackSpade/KairoDos.",
-        "Choose a DOS folder to find games",
-        "DOS folder needs read and write access. Select it again.",
-        MachineFirstRun.Folder("Choose a DOS folder",
-            "Select a writable folder containing your DOS games and ZIP archives.", "Choose DOS folder…"),
-        "SAVED GAMES", "MrJackSpade/KairoDos")
+        LibraryStrings("KAIRODOS", "KairoDos", UiText.res(R.string.dos_folder), UiText.res(R.string.no_dos_folder)),
+        UiText.res(R.string.credits, "KairoDos", "DOSBox Staging", "MrJackSpade/KairoDos"),
+        UiText.res(R.string.library_empty), UiText.res(R.string.library_expired),
+        MachineFirstRun.Folder(UiText.res(R.string.folder_title), UiText.res(R.string.folder_description),
+            UiText.res(R.string.folder_button)),
+        UiText.res(R.string.saves_group), "MrJackSpade/KairoDos")
 
     // Input ------------------------------------------------------------------------------------------
 
@@ -182,7 +185,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override val keyMigrationPending: Boolean get() = gameKeyMigration.pending
 
     /** A game's local working files were named by its entry's earlier ID. */
-    private class LegacySaveDirectories(private val root: File) : GameKeyMigration.EntryStore<DosLibrary.Game> {
+    private inner class LegacySaveDirectories(private val root: File) : GameKeyMigration.EntryStore<DosLibrary.Game> {
         private var legacy = emptySet<String>()
         override fun refresh() {
             legacy = root.list().orEmpty().filterNot { GameKey.HASH_NAME.matches(it) }.toSet()
@@ -194,7 +197,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             if (to.exists()) {
                 // Only a drive from before overlays or an unstored session is saved data here.
                 require(!File(from, "staging/drive").exists() && !File(from, UNSAVED_OVERLAY).exists()) {
-                    "This game's saved files are in two places: ${from.name} and ${to.name}"
+                    getString(R.string.saves_in_two_places, from.name, to.name)
                 }
                 check(from.deleteRecursively()) { "Could not remove the game's earlier working files" }
             } else check(from.renameTo(to)) { "Could not move the game's working files" }
@@ -226,7 +229,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             GameKeyMigration.Claim(it, dosLibrary.legacyEntryId(it, folder))
         })
         return if (errors.isEmpty()) entries else entries.map { game ->
-            errors[game.key]?.let { game.copy(error = it) } ?: game
+            errors[game.key]?.let { game.copy(error = text(it)) } ?: game
         }
     }
 
@@ -260,15 +263,16 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         if (controllerProfiles.configuration.layout != ControllerLayout.WITH_STICKS) return null
         if (entry?.contentId == null || dosGameSettings.hasOwnController(entry.key)) return null
         val profile = catalog.resolve(entry).controllerProfile ?: return null
-        return if (catalog.controllerFallback(profile)) "Using Without Sticks fallback" else null
+        return if (catalog.controllerFallback(profile)) getString(FrontendR.string.kairo_mapping_without_sticks_fallback) else null
     }
 
     override val touchModes = listOf(
-        InputModeDecider.Mode.AUTO to ChoiceOption("auto", "Auto", "Follows what the game reads"),
-        InputModeDecider.Mode.KEYBOARD to ChoiceOption("keyboard", "Keyboard", "Tap opens the DOS keyboard"),
-        InputModeDecider.Mode.MOUSE to ChoiceOption("mouse", "Mouse"))
-    override val directTouchExplanation = "Touchpad moves the DOS mouse by dragging. Direct tap positions it at your " +
-        "finger; some games require relative movement."
+        InputModeDecider.Mode.AUTO to ChoiceOption("auto", UiText.res(FrontendR.string.kairo_auto),
+            UiText.res(FrontendR.string.kairo_touch_auto_help)),
+        InputModeDecider.Mode.KEYBOARD to ChoiceOption("keyboard", UiText.res(FrontendR.string.kairo_keyboard),
+            UiText.res(FrontendR.string.kairo_touch_tap_keyboard_help, "DOS")),
+        InputModeDecider.Mode.MOUSE to ChoiceOption("mouse", UiText.res(FrontendR.string.kairo_mouse)))
+    override val directTouchExplanation = UiText.res(R.string.direct_touch_explanation)
     override val directTouchAvailable = true
     override val touchStore: TouchSettingsStore<DosLibrary.Game> by lazy {
         object : TouchSettingsStore<DosLibrary.Game> {
@@ -335,12 +339,12 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     override fun machineGroup(entry: DosLibrary.Game, enabled: () -> Boolean): RowGroup {
         val id = entry.key.takeIf { entry.contentId != null }
-        val noHash = { GameSettingsRows.NO_HASH }
+        val noHash = { GameSettingsRows.noHash(this) }
         val scope = { titleOf(entry) }
         val record = catalog.resolve(entry)
         val versions = versions(record)
         val configRows = id?.let { game ->
-            DosConfigRows(game, dosGameSettings, { catalogConfig(entry) }, {
+            DosConfigRows(this, game, dosGameSettings, { catalogConfig(entry) }, {
                 DosStagingLaunchConfig.hostSettings(record.launch?.configs?.get(startConfig(entry)),
                     effectiveVoodoo(entry) == 1, touchSelection(entry).directTouch, dosGameSettings.videoHardware(game))
             }, { catalogSource(entry) }, enabled, scope) { toast(it) }
@@ -353,25 +357,28 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 if (value == null) settingScope.clear(id, key) else settingScope.setInt(id, key, value.toInt())
                 if (currentEntry?.id == entry.id) configureGuest()
             })
-        return RowGroup("MACHINE", listOfNotNull(
-            GameSettingsRows.choice("cpu", "DOS CPU speed", scope, CPU_OPTIONS,
+        return RowGroup(getString(FrontendR.string.kairo_machine_group), listOfNotNull(
+            GameSettingsRows.choice(this, "cpu", getString(R.string.cpu_speed), scope, CPU_OPTIONS,
                 intValue("cycles_mode") { preferences.getInt("cycles_mode", 0).coerceIn(0, 1) }, enabled, noHash),
-            GameSettingsRows.choice("video", "Emulated video card", scope, videoOptions(),
+            GameSettingsRows.choice(this, "video", getString(R.string.video_card), scope, videoOptions(),
                 intValue(DosVideoHardware.setting) { dosGameSettings.videoHardware() }, enabled, noHash),
-            GameSettingsRows.choice("voodoo", "3dfx rendering", scope, VOODOO_OPTIONS,
+            GameSettingsRows.choice(this, "voodoo", getString(R.string.voodoo), scope, VOODOO_OPTIONS,
                 intValue("staging_voodoo_threads") { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1) },
                 enabled, noHash),
-            GameSettingsRows.choice("version", "Version", scope,
-                versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) } + ChoiceOption(CUSTOM_VERSION, "Custom"),
+            GameSettingsRows.choice(this, "version", getString(R.string.version), scope,
+                versions.map { ChoiceOption(it, DosConfig.versionLabel(this, it)) } +
+                    ChoiceOption(CUSTOM_VERSION, UiText.res(R.string.version_custom)),
                 GameValue({ id?.let { if (dosGameSettings.custom(it)) CUSTOM_VERSION else dosGameSettings.version(it)?.takeIf { v -> v in versions } } },
                     { versions.firstOrNull().orEmpty() },
                     { if (versions.isEmpty()) GameSource.BUILT_IN else catalogSource(entry) },
                     { picked -> id?.let { setVersion(it, picked) } }),
-                enabled, noHash, defaultLabel = { versions.firstOrNull()?.let(DosConfig::versionLabel) ?: "None" }),
+                enabled, noHash, defaultLabel = {
+                    versions.firstOrNull()?.let { DosConfig.versionLabel(this, it) } ?: getString(FrontendR.string.kairo_none)
+                }),
             configRows?.takeIf { id != null && dosGameSettings.custom(id) }?.settingsRow { pages.push(it) },
             configRows?.takeIf { id != null && dosGameSettings.custom(id) }?.commandsRow(),
             if (DosLaunchConfig.needsPlayer(record.launch)) playerNameRow(entry, enabled) else null),
-            "Changes apply the next time the game starts.")
+            getString(R.string.game_machine_foot))
     }
 
     /**
@@ -413,29 +420,28 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     /** The game's own folder or archive; a frontend's file or the DOS folder itself is not the library's to delete. */
     override fun deletePrompt(entry: DosLibrary.Game) = if (entry.external || entry.rootFolder) null
-        else GameDeletionFlow.Prompt(entry.path, if (entry.folder) "folder" else "file",
-            if (entry.folder) "This removes the folder and everything inside it. " else "")
+        else GameDeletionFlow.Prompt(entry.path, entry.folder)
     override fun deleteSource(entry: DosLibrary.Game) = dosLibrary.deleteSource(entry)
     override fun resetGameSettings(game: GameKey) {
         catalog.resetOverrides(game)
         dosGameSettings.reset(game)
     }
-    override val resetMessage = "Game settings reset. Video changes apply the next time the game starts."
+    override val resetMessage = UiText.res(R.string.reset_message)
 
     /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */
     private fun playerNameRow(entry: DosLibrary.Game, enabled: () -> Boolean): SettingsRow {
         val id = entry.key.takeIf { entry.contentId != null }
-        return GameSettingsRows.text("player", "DOS player name", "1–8 letters, digits, or underscores",
+        return GameSettingsRows.text(this, "player", getString(R.string.player_name), getString(R.string.player_name_hint),
             { id?.let(dosGameSettings::playerName) }, { false }, { null },
-            { value -> savePlayerName(id, value) }, {}, empty = "Choose on first play",
-            enabled = enabled, disabledReason = { GameSettingsRows.NO_HASH })
+            { value -> savePlayerName(id, value) }, {}, empty = getString(R.string.player_name_empty),
+            enabled = enabled, disabledReason = { GameSettingsRows.noHash(this) })
     }
 
     private fun savePlayerName(id: GameKey?, value: String): Boolean {
         id ?: return false
         val name = value.trim().uppercase(java.util.Locale.ROOT)
         if (!name.matches(Regex("[A-Z0-9_]{1,8}"))) {
-            toast("Use 1–8 letters, digits, or underscores")
+            toast(getString(R.string.player_name_invalid))
             return false
         }
         dosGameSettings.setPlayerName(id, name)
@@ -446,24 +452,25 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     // Pages ------------------------------------------------------------------------------------------
 
     /** Machine: the DOS CPU speed for all games. */
-    override fun machinePage() = GroupsPage("Machine", { GameSource.ALL_GAMES }, {
-        listOf(RowGroup("CPU", listOf(SettingsRow.choice("cpu", "DOS CPU speed", ChoiceSpec("DOS CPU speed",
+    override fun machinePage() = GroupsPage(getString(FrontendR.string.kairo_machine), { GameSource.ALL_GAMES }, {
+        val speed = getString(R.string.cpu_speed)
+        listOf(RowGroup(getString(R.string.machine_cpu_group), listOf(SettingsRow.choice("cpu", speed, ChoiceSpec(speed,
             { GameSource.ALL_GAMES }, { listOf(ChoiceGroup(null, CPU_OPTIONS)) },
             { preferences.getInt("cycles_mode", 0).coerceIn(0, 1).toString() },
             select = { preferences.edit().putInt("cycles_mode", it.toInt()).apply(); configureGuest() }))),
-            "Games with their own speed keep it."))
+            getString(R.string.cpu_foot)))
     })
 
     /** Graphics › VIDEO, for all games. */
-    override fun graphicsGroups() = listOf(RowGroup("VIDEO", listOf(
-        SettingsRow.choice("video", "Emulated video card", ChoiceSpec("Emulated video card", { GameSource.ALL_GAMES },
+    override fun graphicsGroups() = listOf(RowGroup(getString(R.string.video_group), listOf(
+        SettingsRow.choice("video", getString(R.string.video_card), ChoiceSpec(getString(R.string.video_card), { GameSource.ALL_GAMES },
             { listOf(ChoiceGroup(null, videoOptions())) }, { dosGameSettings.videoHardware().toString() },
             select = { preferences.edit().putInt(DosVideoHardware.setting, it.toInt()).apply() })),
-        SettingsRow.choice("voodoo", "3dfx rendering", ChoiceSpec("3dfx rendering", { GameSource.ALL_GAMES },
+        SettingsRow.choice("voodoo", getString(R.string.voodoo), ChoiceSpec(getString(R.string.voodoo), { GameSource.ALL_GAMES },
             { listOf(ChoiceGroup(null, VOODOO_OPTIONS)) },
             { preferences.getInt("staging_voodoo_threads", 0).coerceIn(0, 1).toString() },
             select = { preferences.edit().putInt("staging_voodoo_threads", it.toInt()).apply(); configureGuest() }))),
-        "Changes apply the next time a game starts. Games with their own setting keep it."))
+        getString(R.string.video_foot)))
 
     /**
      * Frames, error and video size, and the CPU core's telemetry (dynrec available, dynamic core
@@ -485,27 +492,44 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         else -> "Stopped"
     }
 
+    /** [sessionStatus] as the player reads it. */
+    private fun sessionStatusText() = getString(when (sessionStatus()) {
+        "Loading" -> R.string.session_loading
+        "Paused" -> FrontendR.string.kairo_state_paused
+        "Running" -> FrontendR.string.kairo_state_running
+        "Failed" -> R.string.session_failed
+        else -> FrontendR.string.kairo_state_stopped
+    })
+
     override fun diagnosticsRows(running: Boolean): List<SettingsRow> {
         val rows = mutableListOf(
-            SettingsRow.info("core", "Core") { "DOSBox Staging" },
-            SettingsRow.info("state", "State") { if (running) sessionStatus() else "Stopped" })
+            SettingsRow.info("core", getString(R.string.diagnostics_core)) { "DOSBox Staging" },
+            SettingsRow.info("state", getString(FrontendR.string.kairo_diagnostics_state)) {
+                if (running) sessionStatusText() else getString(FrontendR.string.kairo_diagnostics_stopped)
+            })
         if (running) {
-            rows += SettingsRow.info("cpu", "DOS CPU speed") { if (effectiveCycles() == 0) "Auto" else "Maximum" }
-            rows += SettingsRow.info("touch", "Touch input") {
-                touchSelection().mode.name.lowercase().replaceFirstChar(Char::uppercase)
+            rows += SettingsRow.info("cpu", getString(R.string.cpu_speed)) {
+                getString(if (effectiveCycles() == 0) FrontendR.string.kairo_auto else R.string.cpu_maximum)
+            }
+            rows += SettingsRow.info("touch", getString(R.string.diagnostics_touch)) {
+                text(touchModes.first { it.first == touchSelection().mode }.second.label)
             }
             if (nativeStatus() == 2) {
-                rows += SettingsRow.info("video", "Video") { "${nativeVideoWidth()} × ${nativeVideoHeight()}" }
-                rows += SettingsRow.info("audio", "Audio") { "${nativeAudioRate()} Hz" }
+                rows += SettingsRow.info("video", getString(R.string.diagnostics_video)) {
+                    getString(R.string.diagnostics_video_size, nativeVideoWidth(), nativeVideoHeight())
+                }
+                rows += SettingsRow.info("audio", getString(FrontendR.string.kairo_diagnostics_audio)) {
+                    getString(R.string.diagnostics_audio_rate, nativeAudioRate())
+                }
             }
         }
         return rows
     }
 
     override val aboutHelp get() = listOf(
-        "Open the menu" to "Back, Mode or Home button, or a swipe from the left edge",
-        "Open the keyboard" to "Tap a keyboard prompt or swipe in from the right edge",
-        "Second screen" to "On dual-screen devices, the keyboard appears on the other screen")
+        getString(FrontendR.string.kairo_help_open_menu) to getString(R.string.help_open_menu_how),
+        getString(FrontendR.string.kairo_help_open_keyboard) to getString(R.string.help_open_keyboard_how),
+        getString(R.string.help_second_screen) to getString(R.string.help_second_screen_how))
 
     // First run: one step, the DOS folder ------------------------------------------------------------
 
@@ -518,7 +542,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     override val saveKinds = mapOf(SAVE_KIND to OVERLAY_UNIT)
     override val appSaves: File get() = File(filesDir, "dos-saves")
-    override fun saveUnitLabel(kind: String) = "Saved files"
+    override fun saveUnitLabel(kind: String) = getString(R.string.saved_files)
     override fun withError(entry: DosLibrary.Game, message: String) = entry.copy(error = message)
     override fun v1DataStores(): List<GamePathMigration.Store<DosLibrary.Game>> =
         listOf(DosPerGameSettings.v1Settings(preferences), catalog.v1Overrides(), EarlierSaveDirectories())
@@ -543,7 +567,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             if (to.exists()) {
                 // Only an unstored session or a drive from before overlays is saved data here.
                 require(!File(from, UNSAVED_OVERLAY).exists() && !DosStagingStorage.hasLegacyDrive(from)) {
-                    "This game's saved files are in two places: ${from.name} and ${to.path}"
+                    getString(R.string.saves_in_two_places, from.name, to.path)
                 }
                 check(from.deleteRecursively()) { "Could not remove the game's earlier working files" }
             } else {
@@ -592,8 +616,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         val unit = SaveUnit.of(game, SAVE_KIND)
         val folder = saveFolder.folder
         if (folder != null) require(!DosStagingStorage.hasLegacyDrive(saveDir)) {
-            "This game's saved files use an older format. Choose Private app storage in " +
-                "Configurations › Save folder, then choose the folder again to move them."
+            getString(R.string.saves_older_format)
         }
         publishOverlay(saveDir, game)
         if (folder == null) return saveFolder.app.directory(unit).apply {
@@ -619,13 +642,12 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         val (location, owner) = unsaved.readLines()
         val folder = saveFolder.folder
         require(location == folder?.tree?.toString()) {
-            if (folder == null) "The save folder for these saved files is no longer selected"
-            else "These saved files belong to a different save folder"
+            getString(if (folder == null) R.string.saves_folder_not_selected else R.string.saves_other_folder)
         }
         val unit = if (owner.endsWith(".$SAVE_KIND") && !SaveLocation.isV1Game(owner))
             SaveUnit(owner.removeSuffix(".$SAVE_KIND"), SAVE_KIND)
         else SaveUnit.of(checkNotNull(game) {
-            "Saved files from an unfinished session are waiting for their game; add it to the library"
+            getString(R.string.saves_waiting_for_game)
         }, SAVE_KIND)
         saveFolder.location.import(unit, File(saveDir, WORKING_OVERLAY))
         check(unsaved.delete()) { "Could not finish storing the game's saved files" }
@@ -639,14 +661,15 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         val legacy = saveDirs.filter(DosStagingStorage::hasLegacyDrive)
         val missing = legacy.filter { dir -> library.none { saveDir(it) == dir } }
         require(missing.isEmpty()) {
-            "These games' saved files use an older format, and moving them needs their game files in the " +
-                "library: " + missing.joinToString { DosStagingStorage.legacyContentId(it).let { id -> catalog.resolve(id, id).title } }
+            getString(R.string.saves_need_games, missing.joinToString(getString(FrontendR.string.kairo_list_separator)) {
+                DosStagingStorage.legacyContentId(it).let { id -> catalog.resolve(id, id).title }
+            })
         }
         for ((index, saveDir) in legacy.withIndex()) {
             val game = library.first { saveDir(it) == saveDir }
-            progress("Converting ${index + 1} of ${legacy.size}…")
+            progress(getString(R.string.saves_converting, index + 1, legacy.size))
             val archive = dosLibrary.prepare(game, tree, AtomicBoolean(false))
-            DosStagingStorage.prepare(archive, saveDir, DosStagingStorage.legacyContentId(saveDir),
+            DosStagingStorage.prepare({ text(it) }, archive, saveDir, DosStagingStorage.legacyContentId(saveDir),
                 saveFolder.app.directory(SaveUnit.of(game.key, SAVE_KIND)), AtomicBoolean(false),
                 catalog.resolve(game).launch?.folder)
         }
@@ -698,8 +721,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
 
     /** Choose a version the first time a game with several presets is played. Back cancels. */
     private fun chooseVersion(game: DosLibrary.Game, versions: List<String>, fromFrontend: Boolean) {
-        pages.push(ChoicePage(ChoiceSpec("Version", { titleOf(game) }, {
-            listOf(ChoiceGroup(null, versions.map { ChoiceOption(it, DosConfig.versionLabel(it)) }))
+        pages.push(ChoicePage(ChoiceSpec(getString(R.string.version), { titleOf(game) }, {
+            listOf(ChoiceGroup(null, versions.map { ChoiceOption(it, DosConfig.versionLabel(this, it)) }))
         }, { dosGameSettings.version(game.key) }, select = { selected ->
             dosGameSettings.setVersion(game.key, selected)
             startGame(game, selected, fromFrontend)
@@ -710,13 +733,13 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private fun choosePlayerName(game: DosLibrary.Game, playConfig: String, fromFrontend: Boolean) {
         val id = game.key.takeIf { game.contentId != null } ?: return
         var name = dosGameSettings.playerName(id) ?: "PLAYER"
-        pages.push(GroupsPage("DOS player name", { titleOf(game) }, {
-            listOf(RowGroup(null, listOf(GameSettingsRows.text("player", "Player name",
-                "1–8 letters, digits, or underscores", { name }, { false }, { null },
+        pages.push(GroupsPage(getString(R.string.player_name), { titleOf(game) }, {
+            listOf(RowGroup(null, listOf(GameSettingsRows.text(this, "player", getString(R.string.player_name_short),
+                getString(R.string.player_name_hint), { name }, { false }, { null },
                 { value -> if (savePlayerName(id, value)) name = dosGameSettings.playerName(id) ?: name },
-                {})), "The game uses this name for its saves."))
+                {})), getString(R.string.player_name_foot)))
         }, {
-            listOf(FooterButton("play", { "Play" }, ButtonTone.PRIMARY) {
+            listOf(FooterButton("play", { getString(R.string.play) }, ButtonTone.PRIMARY) {
                 if (savePlayerName(id, name)) startGame(game, playConfig, fromFrontend)
             })
         }))
@@ -729,12 +752,12 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private fun startGame(game: DosLibrary.Game, configName: String, fromFrontend: Boolean = false,
                           target: DosLaunchTarget = DosLaunchTarget.Normal) {
         if (saveFolder.busy) {
-            toast("Wait for the saves to finish moving.")
+            toast(getString(FrontendR.string.kairo_saves_moving_wait))
             return
         }
         val selected = tree
         if (!game.external && selected == null) {
-            libraryScreen.showStatus("Choose a DOS folder for this game")
+            libraryScreen.showStatus(getString(R.string.choose_dos_folder_for_game))
             return
         }
         if (!game.playable) return
@@ -746,7 +769,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         }
         val playerName = dosGameSettings.playerName(game.key)
         val availableGames = libraryEntries.toList()
-        val loading = if (game.installer) "Preparing installer archive…" else "Preparing ${titleOf(game)}…"
+        val loading = if (game.installer) getString(R.string.preparing_installer)
+            else getString(FrontendR.string.kairo_launch_preparing, titleOf(game))
         releaseInputs()
         hideKeyboard()
         val generation = beginLaunch(loading)
@@ -800,10 +824,10 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                     .associateWith { folder ->
                         val ids = catalog.contentIdsForFolder(folder).toSet()
                         val dependency = availableGames.firstOrNull { catalog.matchId(it) in ids }
-                            ?: error("This game also needs the $folder archive in your DOS library")
+                            ?: error(getString(R.string.dependency_missing, folder))
                         val dependencyFile = dosLibrary.prepare(dependency, selected, cancelled)
                         val dependencyDir = saveDir(dependency)
-                        val stored = DosStagingStorage.prepare(dependencyFile, dependencyDir, dependency.contentId!!,
+                        val stored = DosStagingStorage.prepare({ text(it) }, dependencyFile, dependencyDir, dependency.contentId!!,
                             overlayFor(dependencyDir, dependency), cancelled, folder,
                             { conflicts -> chooseEditedFiles(dependency, conflicts) })
                         overlays[stored.directory] = stored.overlay
@@ -813,13 +837,13 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                     }
                 val file = dosLibrary.prepare(playableGame, selected, cancelled)
                 if (!current(generation)) return@Thread
-                progress("Starting DOSBox Staging…")
-                val drive = DosStagingStorage.prepare(file, saveDir, playableGame.contentId!!,
+                progress(getString(FrontendR.string.kairo_launch_starting, "DOSBox Staging"))
+                val drive = DosStagingStorage.prepare({ text(it) }, file, saveDir, playableGame.contentId!!,
                     overlayFor(saveDir, playableGame), cancelled, launch?.folder,
                     { conflicts -> chooseEditedFiles(playableGame, conflicts) }, progress)
                 overlays[drive.directory] = drive.overlay
                 val resources = DosStagingResources.prepare(this, cancelled)
-                val configuration = DosStagingLaunchConfig.write(File(saveDir, "staging/launch.conf"),
+                val configuration = DosStagingLaunchConfig.write(this, File(saveDir, "staging/launch.conf"),
                     drive, launch, configName, dependencies, overlays, playerName,
                     effectiveVoodoo(playableGame) == 1, touchSelection(playableGame).directTouch,
                     dosGameSettings.videoHardware(playableGame.key), target,
@@ -842,10 +866,10 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 val started = nativeRun(configuration.config.absolutePath, saveDir.absolutePath, resources.absolutePath,
                     configuration.hostPaths.toTypedArray())
                 sessions.forEach { publishOverlay(it, null) }
-                if (!started) message = nativeLastError().ifBlank { "DOSBox Staging could not start this game." }
+                if (!started) message = nativeLastError().ifBlank { getString(R.string.emulator_start_failed, "DOSBox Staging") }
                 started
             } catch (failure: Exception) {
-                message = failure.message ?: "Could not prepare this game"
+                message = failure.message ?: getString(R.string.prepare_failed)
                 false
             }
             runOnUiThread {
@@ -853,7 +877,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                     stopAudio()
                     guestFinished(success)
                     if (!success) {
-                        toast(message ?: "Could not prepare this game", long = true)
+                        toast(message ?: getString(R.string.prepare_failed), long = true)
                         // Let the message finish before rebuilding views for new display settings.
                         handler.postDelayed({ rebuildIfRescaled() }, 3800)
                     } else rebuildIfRescaled()
@@ -922,17 +946,19 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
             var confirmed = false
             val rows = conflicts.mapIndexed { index, path ->
                 SettingsRow.choice("edited-$index", path, ChoiceSpec(path, { titleOf(game) }, {
-                    listOf(ChoiceGroup(null, listOf(ChoiceOption(SAVED_COPY, "Saved copy"),
-                        ChoiceOption(EDITED_FILE, "Edited file"))))
+                    listOf(ChoiceGroup(null, listOf(ChoiceOption(SAVED_COPY, UiText.res(R.string.edited_saved_copy)),
+                        ChoiceOption(EDITED_FILE, UiText.res(R.string.edited_file)))))
                 }, { if (path in useEdited) EDITED_FILE else SAVED_COPY }, select = {
                     if (it == EDITED_FILE) useEdited += path else useEdited -= path
-                }, cycles = false), value = { if (path in useEdited) "Edited file" else "Saved copy" })
+                }, cycles = false), value = {
+                    getString(if (path in useEdited) R.string.edited_file else R.string.edited_saved_copy)
+                })
             }
-            pages.push(object : GroupsPage("Edited game files", { titleOf(game) }, {
-                listOf(RowGroup("KEEP", rows))
+            pages.push(object : GroupsPage(getString(R.string.edited_files), { titleOf(game) }, {
+                listOf(RowGroup(getString(R.string.edited_keep_group), rows))
             }, {
-                listOf(FooterButton("cancel", { "Cancel" }) { pages.pop() },
-                    FooterButton("continue", { "Continue" }, ButtonTone.PRIMARY) {
+                listOf(FooterButton("cancel", { getString(FrontendR.string.kairo_cancel) }) { pages.pop() },
+                    FooterButton("continue", { getString(FrontendR.string.kairo_continue) }, ButtonTone.PRIMARY) {
                         confirmed = true
                         chosen.put(Result.success(useEdited.toSet()))
                         pages.pop()
@@ -960,7 +986,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         userPaused = true
         applyPauseState()
         val mountedDrives = java.util.concurrent.atomic.AtomicReference<Set<Char>>(emptySet())
-        programPicker = DirectoryPicker.show(pages, "DOS prompt or run program", DirectoryPicker.Location("", "Launch"), { path ->
+        programPicker = DirectoryPicker.show(pages, getString(R.string.program_picker_title),
+            DirectoryPicker.Location("", getString(R.string.program_picker_launch)), { path ->
             check(current(generation)) { "Game session ended" }
             val response = nativeListDirectory(path)
             check(response.startsWith("OK\n")) { response.substringAfter('\n') }
@@ -988,7 +1015,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 userPaused = false
                 applyPauseState()
             }
-        }, rootEntries = listOf(DirectoryPicker.Entry("", "Prompt", false)))
+        }, rootEntries = listOf(DirectoryPicker.Entry("", getString(R.string.program_picker_prompt), false)))
     }
 
     /** Offered while the installed game starts; Keep is the same as dismissing it. */
@@ -1002,9 +1029,10 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                 finish()
             }
         }
-        val notice = GameNotice("Remove installer ZIP?",
-            "The installed game archive is in your DOS folder. Remove ${installer.path.substringAfterLast('/')} now?",
-            listOf(TrayButton("Keep") { keep() }, TrayButton("Remove", ButtonTone.DANGER) {
+        val notice = GameNotice(getString(R.string.installer_remove_title),
+            getString(R.string.installer_remove_message, installer.path.substringAfterLast('/')),
+            listOf(TrayButton(getString(R.string.installer_keep)) { keep() },
+                TrayButton(getString(FrontendR.string.kairo_remove), ButtonTone.DANGER) {
                 installerNotice = null
                 Thread {
                     runCatching { dosLibrary.deleteInstaller(installer, installed) }
@@ -1018,7 +1046,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
                         } }
                         .onFailure { failure -> runOnUiThread {
                             installerPromptOpen = false
-                            toast(failure.message ?: "Could not remove installer", long = true)
+                            toast(failure.message ?: getString(R.string.installer_remove_failed), long = true)
                             if (finishAfterInstallerPrompt) {
                                 finishAfterInstallerPrompt = false
                                 handler.postDelayed({ finish() }, 3500)
