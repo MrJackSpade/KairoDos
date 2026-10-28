@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German (de): the translation of values/strings.xml. Each EN comment is the English a string translates; update it with the translation. Check with shared/tools/translations.py check. -->
+<resources>
+    <!-- EN: DOS folder -->
+    <string name="dos_folder">DOS folder</string>
+    <!-- EN: No DOS folder selected -->
+    <string name="no_dos_folder">No DOS folder selected</string>
+    <!-- %1$s is the app's name, KairoDos; %2$s the emulator it runs; %3$s its GitHub repository. -->
+    <!-- EN: %1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s. -->
+    <string name="credits">%1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s.</string>
+    <!-- EN: Choose a DOS folder to find games -->
+    <string name="library_empty">Choose a DOS folder to find games</string>
+    <!-- EN: DOS folder needs read and write access. Select it again. -->
+    <string name="library_expired">DOS folder needs read and write access. Select it again.</string>
+    <!-- EN: Choose a DOS folder -->
+    <string name="folder_title">Choose a DOS folder</string>
+    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
+    <string name="folder_description">Select a writable folder containing your DOS games and ZIP archives.</string>
+    <!-- EN: Choose DOS folder… -->
+    <string name="folder_button">Choose DOS folder…</string>
+    <!-- EN: SAVED GAMES -->
+    <string name="saves_group">SAVED GAMES</string>
+    <!-- EN: Saved files -->
+    <string name="saved_files">Saved files</string>
+    <!-- EN: Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement. -->
+    <string name="direct_touch_explanation">Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.</string>
+    <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
+    <string name="reset_message">Game settings reset. Video changes apply the next time the game starts.</string>
+    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
+    <string name="help_open_menu_how">Back, Mode or Home button, or a swipe from the left edge</string>
+    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
+    <string name="help_open_keyboard_how">Tap a keyboard prompt or swipe in from the right edge</string>
+    <!-- EN: Second screen -->
+    <string name="help_second_screen">Second screen</string>
+    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
+    <string name="help_second_screen_how">On dual-screen devices, the keyboard appears on the other screen</string>
+    <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
+    <!-- EN: Joystick %1$d -->
+    <string name="joystick_port">Joystick %1$d</string>
+    <!-- EN: DOS game -->
+    <string name="dos_game">DOS game</string>
+    <!-- EN: The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control. -->
+    <string name="joystick_help">The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.</string>
+    <!-- A DOS joystick control: %1$d is the joystick's number. -->
+    <!-- EN: %1$d up -->
+    <string name="joystick_up">%1$d up</string>
+    <!-- EN: %1$d down -->
+    <string name="joystick_down">%1$d down</string>
+    <!-- EN: %1$d left -->
+    <string name="joystick_left">%1$d left</string>
+    <!-- EN: %1$d right -->
+    <string name="joystick_right">%1$d right</string>
+    <!-- %1$d is the joystick's number; %2$d the button's. -->
+    <!-- EN: %1$d button %2$d -->
+    <string name="joystick_button">%1$d button %2$d</string>
+    <!-- EN: Symbols -->
+    <string name="keyboard_symbols">Symbols</string>
+    <!-- EN: Function -->
+    <string name="keyboard_function">Function</string>
+    <!-- EN: Keypad -->
+    <string name="keyboard_keypad">Keypad</string>
+    <!-- EN: Loading -->
+    <string name="session_loading">Loading</string>
+    <!-- EN: Failed -->
+    <string name="session_failed">Failed</string>
+    <!-- EN: Core -->
+    <string name="diagnostics_core">Core</string>
+    <!-- EN: Touch input -->
+    <string name="diagnostics_touch">Touch input</string>
+    <!-- EN: Video -->
+    <string name="diagnostics_video">Video</string>
+    <!-- The DOS screen's width and height in pixels. -->
+    <!-- EN: %1$d × %2$d -->
+    <string name="diagnostics_video_size">%1$d × %2$d</string>
+    <!-- %1$d is the audio's sample rate. -->
+    <!-- EN: %1$d Hz -->
+    <string name="diagnostics_audio_rate">%1$d Hz</string>
+    <!-- EN: CPU -->
+    <string name="machine_cpu_group">CPU</string>
+    <!-- EN: DOS CPU speed -->
+    <string name="cpu_speed">DOS CPU speed</string>
+    <!-- EN: Maximum -->
+    <string name="cpu_maximum">Maximum</string>
+    <!-- EN: Games with their own speed keep it. -->
+    <string name="cpu_foot">Games with their own speed keep it.</string>
+    <!-- EN: VIDEO -->
+    <string name="video_group">VIDEO</string>
+    <!-- EN: Emulated video card -->
+    <string name="video_card">Emulated video card</string>
+    <!-- EN: Changes apply the next time a game starts. Games with their own setting keep it. -->
+    <string name="video_foot">Changes apply the next time a game starts. Games with their own setting keep it.</string>
+    <!-- EN: 3dfx rendering -->
+    <string name="voodoo">3dfx rendering</string>
+    <!-- EN: Automatic CPU threads -->
+    <string name="voodoo_automatic">Automatic CPU threads</string>
+    <!-- EN: Single CPU thread -->
+    <string name="voodoo_single">Single CPU thread</string>
+    <!-- EN: Automatic (game profile) -->
+    <string name="video_automatic">Automatic (game profile)</string>
+    <!-- EN: S3 (no linear framebuffer) -->
+    <string name="video_s3_no_lfb">S3 (no linear framebuffer)</string>
+    <!-- EN: CGA monochrome -->
+    <string name="video_cga_mono">CGA monochrome</string>
+    <!-- EN: Version -->
+    <string name="version">Version</string>
+    <!-- EN: Custom -->
+    <string name="version_custom">Custom</string>
+    <!-- EN: Standard -->
+    <string name="version_standard">Standard</string>
+    <!-- EN: Tandy graphics -->
+    <string name="version_tandy_graphics">Tandy graphics</string>
+    <!-- EN: Upgraded -->
+    <string name="version_upgraded">Upgraded</string>
+    <!-- EN: Mods -->
+    <string name="version_mods">Mods</string>
+    <!-- EN: Fixed -->
+    <string name="version_fixed">Fixed</string>
+    <!-- EN: Alternate -->
+    <string name="version_alternate">Alternate</string>
+    <!-- EN: Changes apply the next time the game starts. -->
+    <string name="game_machine_foot">Changes apply the next time the game starts.</string>
+    <!-- EN: DOS player name -->
+    <string name="player_name">DOS player name</string>
+    <!-- EN: Player name -->
+    <string name="player_name_short">Player name</string>
+    <!-- EN: 1–8 letters, digits, or underscores -->
+    <string name="player_name_hint">1–8 letters, digits, or underscores</string>
+    <!-- EN: Choose on first play -->
+    <string name="player_name_empty">Choose on first play</string>
+    <!-- EN: Use 1–8 letters, digits, or underscores -->
+    <string name="player_name_invalid">Use 1–8 letters, digits, or underscores</string>
+    <!-- EN: The game uses this name for its saves. -->
+    <string name="player_name_foot">The game uses this name for its saves.</string>
+    <!-- EN: Play -->
+    <string name="play">Play</string>
+    <!-- %1$s is the emulator's name, DOSBox. -->
+    <!-- EN: %1$s settings -->
+    <string name="dosbox_settings">%1$s settings</string>
+    <!-- %1$d is how many settings the player changed. -->
+    <!-- EN: %1$d custom -->
+    <string name="dosbox_settings_custom">%1$d custom</string>
+    <!-- EN: Startup commands -->
+    <string name="startup_commands">Startup commands</string>
+    <!-- EN: One DOS command per line -->
+    <string name="startup_commands_hint">One DOS command per line</string>
+    <!-- EN: Not set -->
+    <string name="setting_not_set">Not set</string>
+    <!-- EN: Add setting -->
+    <string name="setting_add">Add setting</string>
+    <!-- EN: Add -->
+    <string name="add">Add</string>
+    <!-- EN: Write the setting as section.key = value -->
+    <string name="setting_add_invalid">Write the setting as section.key = value</string>
+    <!-- EN: Choose a DOS folder for this game -->
+    <string name="choose_dos_folder_for_game">Choose a DOS folder for this game</string>
+    <!-- EN: Preparing installer archive… -->
+    <string name="preparing_installer">Preparing installer archive…</string>
+    <!-- %1$s is the folder name of the eXoDOS archive the game needs. -->
+    <!-- EN: This game also needs the %1$s archive in your DOS library -->
+    <string name="dependency_missing">This game also needs the %1$s archive in your DOS library</string>
+    <!-- %1$s is the emulator's name, DOSBox Staging. -->
+    <!-- EN: %1$s could not start this game. -->
+    <string name="emulator_start_failed">%1$s could not start this game.</string>
+    <!-- EN: Could not prepare this game -->
+    <string name="prepare_failed">Could not prepare this game</string>
+    <!-- EN: Saved copy -->
+    <string name="edited_saved_copy">Saved copy</string>
+    <!-- EN: Edited file -->
+    <string name="edited_file">Edited file</string>
+    <!-- EN: Edited game files -->
+    <string name="edited_files">Edited game files</string>
+    <!-- EN: KEEP -->
+    <string name="edited_keep_group">KEEP</string>
+    <!-- EN: DOS prompt or run program -->
+    <string name="program_picker_title">DOS prompt or run program</string>
+    <!-- EN: Launch -->
+    <string name="program_picker_launch">Launch</string>
+    <!-- EN: Prompt -->
+    <string name="program_picker_prompt">Prompt</string>
+    <!-- EN: Remove installer ZIP? -->
+    <string name="installer_remove_title">Remove installer ZIP?</string>
+    <!-- %1$s is the installer ZIP's file name. -->
+    <!-- EN: The installed game archive is in your DOS folder. Remove %1$s now? -->
+    <string name="installer_remove_message">The installed game archive is in your DOS folder. Remove %1$s now?</string>
+    <!-- EN: Keep -->
+    <string name="installer_keep">Keep</string>
+    <!-- EN: Could not remove installer -->
+    <string name="installer_remove_failed">Could not remove installer</string>
+    <!-- Saved files. %1$s and %2$s are the two folders holding them. -->
+    <!-- EN: This game\'s saved files are in two places: %1$s and %2$s -->
+    <string name="saves_in_two_places">This game\'s saved files are in two places: %1$s and %2$s</string>
+    <!-- EN: This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them. -->
+    <string name="saves_older_format">This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them.</string>
+    <!-- EN: The save folder for these saved files is no longer selected -->
+    <string name="saves_folder_not_selected">The save folder for these saved files is no longer selected</string>
+    <!-- EN: These saved files belong to a different save folder -->
+    <string name="saves_other_folder">These saved files belong to a different save folder</string>
+    <!-- EN: Saved files from an unfinished session are waiting for their game; add it to the library -->
+    <string name="saves_waiting_for_game">Saved files from an unfinished session are waiting for their game; add it to the library</string>
+    <!-- %1$s lists the games' titles. -->
+    <!-- EN: These games\' saved files use an older format, and moving them needs their game files in the library: %1$s -->
+    <string name="saves_need_games">These games\' saved files use an older format, and moving them needs their game files in the library: %1$s</string>
+    <!-- %1$d is the game being converted; %2$d how many there are. -->
+    <!-- EN: Converting %1$d of %2$d… -->
+    <string name="saves_converting">Converting %1$d of %2$d…</string>
+    <!-- The library. %1$s is a file's name. -->
+    <!-- EN: Unsupported DOS game file: %1$s -->
+    <string name="unsupported_file">Unsupported DOS game file: %1$s</string>
+    <!-- %1$s says why the folder could not be read. -->
+    <!-- EN: Unreadable folder: %1$s -->
+    <string name="unreadable_folder">Unreadable folder: %1$s</string>
+    <!-- EN: Unreadable DOS game -->
+    <string name="unreadable_game">Unreadable DOS game</string>
+    <!-- EN: Unreadable DOS folder -->
+    <string name="unreadable_game_folder">Unreadable DOS folder</string>
+    <!-- EN: Game folder was moved; refresh the library -->
+    <string name="game_folder_moved">Game folder was moved; refresh the library</string>
+    <!-- EN: Installer folder was moved; refresh the library -->
+    <string name="installer_folder_moved">Installer folder was moved; refresh the library</string>
+    <!-- %1$d is how many mebibytes have been copied. -->
+    <!-- EN: Installing game: %1$d MiB copied -->
+    <string name="installing_copied">Installing game: %1$d MiB copied</string>
+    <!-- EN: Verifying installed game archive… -->
+    <string name="installed_verifying">Verifying installed game archive…</string>
+    <!-- EN: Checking installed game archive… -->
+    <string name="installed_checking">Checking installed game archive…</string>
+    <!-- EN: Installed game archive failed verification -->
+    <string name="installed_verification_failed">Installed game archive failed verification</string>
+    <!-- EN: An installed archive with this name already exists and differs -->
+    <string name="installed_name_taken">An installed archive with this name already exists and differs</string>
+    <!-- EN: Installed game archive changed -->
+    <string name="installed_changed">Installed game archive changed</string>
+    <!-- EN: Installed game is not available -->
+    <string name="installed_unavailable">Installed game is not available</string>
+    <!-- EN: Installed game could not be verified -->
+    <string name="installed_unverified">Installed game could not be verified</string>
+    <!-- EN: The document provider could not remove the installer -->
+    <string name="installer_remove_refused">The document provider could not remove the installer</string>
+    <!-- EN: This game is not a removable library document -->
+    <string name="game_not_removable">This game is not a removable library document</string>
+    <!-- EN: The document provider could not delete the game -->
+    <string name="game_delete_refused">The document provider could not delete the game</string>
+    <!-- EN: Game changed since it was scanned; use Recheck all files in Manage library -->
+    <string name="game_changed_since_scan">Game changed since it was scanned; use Recheck all files in Manage library</string>
+    <!-- EN: Game changed while preparing; use Recheck all files in Manage library -->
+    <string name="game_changed_while_preparing">Game changed while preparing; use Recheck all files in Manage library</string>
+    <!-- EN: Game changed while copying -->
+    <string name="game_changed_while_copying">Game changed while copying</string>
+    <!-- EN: Game changed while hashing -->
+    <string name="game_changed_while_hashing">Game changed while hashing</string>
+    <!-- EN: DOS game exceeds size limit -->
+    <string name="game_too_large">DOS game exceeds size limit</string>
+    <!-- EN: Unsafe game archive -->
+    <string name="game_archive_unsafe">Unsafe game archive</string>
+    <!-- A game's files as the library reads them. -->
+    <!-- EN: No game files in ZIP -->
+    <string name="zip_no_game_files">No game files in ZIP</string>
+    <!-- EN: Empty game folder -->
+    <string name="folder_empty">Empty game folder</string>
+    <!-- EN: No game files -->
+    <string name="no_game_files">No game files</string>
+    <!-- EN: Duplicate game file -->
+    <string name="duplicate_game_file">Duplicate game file</string>
+    <!-- EN: Game file is too large -->
+    <string name="game_file_too_large">Game file is too large</string>
+    <!-- EN: Missing ZIP member checksum -->
+    <string name="zip_missing_checksum">Missing ZIP member checksum</string>
+    <!-- EN: Game file changed while hashing -->
+    <string name="game_file_changed_while_hashing">Game file changed while hashing</string>
+    <!-- EN: Unsafe game file path -->
+    <string name="game_file_path_unsafe">Unsafe game file path</string>
+    <!-- Preparing a game's drive. -->
+    <!-- EN: This game\'s source changed -->
+    <string name="source_changed">This game\'s source changed</string>
+    <!-- EN: This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them. -->
+    <string name="source_changed_before_conversion">This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them.</string>
+    <!-- EN: This game has saved files from another copy of it. Its existing writable game files were preserved. -->
+    <string name="saves_from_another_copy">This game has saved files from another copy of it. Its existing writable game files were preserved.</string>
+    <!-- EN: Several legacy game saves were found. They were preserved; the import needs a save selection. -->
+    <string name="legacy_saves_several">Several legacy game saves were found. They were preserved; the import needs a save selection.</string>
+    <!-- EN: Checking changed game files… -->
+    <string name="checking_changed_files">Checking changed game files…</string>
+    <!-- EN: Preparing game files… -->
+    <string name="preparing_game_files">Preparing game files…</string>
+    <!-- EN: Converting saved game files… -->
+    <string name="converting_saved_files">Converting saved game files…</string>
+    <!-- %1$d is how many mebibytes have been written. -->
+    <!-- EN: Preparing writable game files: %1$d MiB -->
+    <string name="preparing_writable_files">Preparing writable game files: %1$d MiB</string>
+    <!-- EN: Importing existing game saves… -->
+    <string name="importing_legacy_saves">Importing existing game saves…</string>
+    <!-- EN: DOS archive contains too many files -->
+    <string name="archive_too_many_files">DOS archive contains too many files</string>
+    <!-- %1$s is the entry's path in the archive. -->
+    <!-- EN: Ambiguous duplicate DOS archive entry: %1$s -->
+    <string name="archive_duplicate_entry">Ambiguous duplicate DOS archive entry: %1$s</string>
+    <!-- EN: DOS archive is too large -->
+    <string name="archive_too_large">DOS archive is too large</string>
+    <!-- EN: Invalid DOS archive size -->
+    <string name="archive_invalid_size">Invalid DOS archive size</string>
+    <!-- EN: DOS archive verification failed: %1$s -->
+    <string name="archive_verification_failed">DOS archive verification failed: %1$s</string>
+    <!-- EN: DOS file is too large -->
+    <string name="file_too_large">DOS file is too large</string>
+    <!-- EN: Not enough storage for writable game files -->
+    <string name="not_enough_storage">Not enough storage for writable game files</string>
+    <!-- Starting a game. %1$s is the eXoDOS game folder a config names. -->
+    <!-- EN: Missing eXoDOS dependency: %1$s -->
+    <string name="exodos_dependency_missing">Missing eXoDOS dependency: %1$s</string>
+    <!-- %1$s is the emulator's name, DOSBox Staging; %2$s the media's file extension. -->
+    <!-- EN: %1$s does not support this standalone media type: %2$s -->
+    <string name="media_type_unsupported">%1$s does not support this standalone media type: %2$s</string>
+    <!-- EN: Mounted DOS drives are needed to run a command script -->
+    <string name="command_script_needs_drives">Mounted DOS drives are needed to run a command script</string>
+    <!-- EN: No free DOS drive for the command script -->
+    <string name="command_script_no_drive">No free DOS drive for the command script</string>
+</resources>
