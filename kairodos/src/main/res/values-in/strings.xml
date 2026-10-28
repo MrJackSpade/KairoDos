@@ -2,71 +2,71 @@
 <!-- Indonesian (in): the translation of values/strings.xml. Each EN comment is the English a string translates; update it with the translation. Check with shared/tools/translations.py check. -->
 <resources>
     <!-- EN: DOS folder -->
-    <string name="dos_folder">DOS folder</string>
+    <string name="dos_folder">Folder DOS</string>
     <!-- EN: No DOS folder selected -->
-    <string name="no_dos_folder">No DOS folder selected</string>
+    <string name="no_dos_folder">Belum ada folder DOS yang dipilih</string>
     <!-- %1$s is the app's name, KairoDos; %2$s the emulator it runs; %3$s its GitHub repository. -->
     <!-- EN: %1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s. -->
-    <string name="credits">%1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s.</string>
+    <string name="credits">%1$s menggunakan core emulator %2$s. Sumber dan asal-usul: github.com/%3$s.</string>
     <!-- EN: Choose a DOS folder to find games -->
-    <string name="library_empty">Choose a DOS folder to find games</string>
+    <string name="library_empty">Pilih folder DOS untuk menemukan game</string>
     <!-- EN: DOS folder needs read and write access. Select it again. -->
-    <string name="library_expired">DOS folder needs read and write access. Select it again.</string>
+    <string name="library_expired">Folder DOS memerlukan akses baca dan tulis. Pilih lagi.</string>
     <!-- EN: Choose a DOS folder -->
-    <string name="folder_title">Choose a DOS folder</string>
+    <string name="folder_title">Pilih folder DOS</string>
     <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Select a writable folder containing your DOS games and ZIP archives.</string>
+    <string name="folder_description">Pilih folder yang dapat ditulisi dan berisi game DOS serta arsip ZIP Anda.</string>
     <!-- EN: Choose DOS folder… -->
-    <string name="folder_button">Choose DOS folder…</string>
+    <string name="folder_button">Pilih folder DOS…</string>
     <!-- EN: SAVED GAMES -->
-    <string name="saves_group">SAVED GAMES</string>
+    <string name="saves_group">DATA SIMPANAN</string>
     <!-- EN: Saved files -->
-    <string name="saved_files">Saved files</string>
+    <string name="saved_files">File simpanan</string>
     <!-- EN: Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement. -->
-    <string name="direct_touch_explanation">Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.</string>
+    <string name="direct_touch_explanation">Touchpad menggerakkan mouse DOS dengan menyeret. Ketuk langsung menempatkannya di bawah jari Anda; beberapa game memerlukan gerakan relatif.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
-    <string name="reset_message">Game settings reset. Video changes apply the next time the game starts.</string>
+    <string name="reset_message">Setelan game direset. Perubahan video berlaku saat game dimulai berikutnya.</string>
     <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">Back, Mode or Home button, or a swipe from the left edge</string>
+    <string name="help_open_menu_how">Kembali, tombol Mode atau Home, atau geser dari tepi kiri</string>
     <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Tap a keyboard prompt or swipe in from the right edge</string>
+    <string name="help_open_keyboard_how">Ketuk prompt keyboard atau geser dari tepi kanan</string>
     <!-- EN: Second screen -->
-    <string name="help_second_screen">Second screen</string>
+    <string name="help_second_screen">Layar kedua</string>
     <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">On dual-screen devices, the keyboard appears on the other screen</string>
+    <string name="help_second_screen_how">Pada perangkat dua layar, keyboard muncul di layar lainnya</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">Joystick %1$d</string>
     <!-- EN: DOS game -->
-    <string name="dos_game">DOS game</string>
+    <string name="dos_game">Game DOS</string>
     <!-- EN: The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control. -->
-    <string name="joystick_help">The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.</string>
+    <string name="joystick_help">D-pad adalah tombol panah dan joystick 1; profil game dapat memetakan tombol apa pun ke kontrol joystick DOS.</string>
     <!-- A DOS joystick control: %1$d is the joystick's number. -->
     <!-- EN: %1$d up -->
-    <string name="joystick_up">%1$d up</string>
+    <string name="joystick_up">%1$d atas</string>
     <!-- EN: %1$d down -->
-    <string name="joystick_down">%1$d down</string>
+    <string name="joystick_down">%1$d bawah</string>
     <!-- EN: %1$d left -->
-    <string name="joystick_left">%1$d left</string>
+    <string name="joystick_left">%1$d kiri</string>
     <!-- EN: %1$d right -->
-    <string name="joystick_right">%1$d right</string>
+    <string name="joystick_right">%1$d kanan</string>
     <!-- %1$d is the joystick's number; %2$d the button's. -->
     <!-- EN: %1$d button %2$d -->
-    <string name="joystick_button">%1$d button %2$d</string>
+    <string name="joystick_button">%1$d tombol %2$d</string>
     <!-- EN: Symbols -->
-    <string name="keyboard_symbols">Symbols</string>
+    <string name="keyboard_symbols">Simbol</string>
     <!-- EN: Function -->
-    <string name="keyboard_function">Function</string>
+    <string name="keyboard_function">Fungsi</string>
     <!-- EN: Keypad -->
     <string name="keyboard_keypad">Keypad</string>
     <!-- EN: Loading -->
-    <string name="session_loading">Loading</string>
+    <string name="session_loading">Memuat</string>
     <!-- EN: Failed -->
-    <string name="session_failed">Failed</string>
+    <string name="session_failed">Gagal</string>
     <!-- EN: Core -->
     <string name="diagnostics_core">Core</string>
     <!-- EN: Touch input -->
-    <string name="diagnostics_touch">Touch input</string>
+    <string name="diagnostics_touch">Input sentuh</string>
     <!-- EN: Video -->
     <string name="diagnostics_video">Video</string>
     <!-- The DOS screen's width and height in pixels. -->
@@ -78,240 +78,240 @@
     <!-- EN: CPU -->
     <string name="machine_cpu_group">CPU</string>
     <!-- EN: DOS CPU speed -->
-    <string name="cpu_speed">DOS CPU speed</string>
+    <string name="cpu_speed">Kecepatan CPU DOS</string>
     <!-- EN: Maximum -->
-    <string name="cpu_maximum">Maximum</string>
+    <string name="cpu_maximum">Maksimum</string>
     <!-- EN: Games with their own speed keep it. -->
-    <string name="cpu_foot">Games with their own speed keep it.</string>
+    <string name="cpu_foot">Game dengan kecepatan sendiri tetap menggunakannya.</string>
     <!-- EN: VIDEO -->
     <string name="video_group">VIDEO</string>
     <!-- EN: Emulated video card -->
-    <string name="video_card">Emulated video card</string>
+    <string name="video_card">Kartu video yang diemulasikan</string>
     <!-- EN: Changes apply the next time a game starts. Games with their own setting keep it. -->
-    <string name="video_foot">Changes apply the next time a game starts. Games with their own setting keep it.</string>
+    <string name="video_foot">Perubahan berlaku saat game dimulai berikutnya. Game dengan setelan sendiri tetap menggunakannya.</string>
     <!-- EN: 3dfx rendering -->
-    <string name="voodoo">3dfx rendering</string>
+    <string name="voodoo">Rendering 3dfx</string>
     <!-- EN: Automatic CPU threads -->
-    <string name="voodoo_automatic">Automatic CPU threads</string>
+    <string name="voodoo_automatic">Thread CPU otomatis</string>
     <!-- EN: Single CPU thread -->
-    <string name="voodoo_single">Single CPU thread</string>
+    <string name="voodoo_single">Satu thread CPU</string>
     <!-- EN: Automatic (game profile) -->
-    <string name="video_automatic">Automatic (game profile)</string>
+    <string name="video_automatic">Otomatis (profil game)</string>
     <!-- EN: S3 (no linear framebuffer) -->
-    <string name="video_s3_no_lfb">S3 (no linear framebuffer)</string>
+    <string name="video_s3_no_lfb">S3 (tanpa framebuffer linear)</string>
     <!-- EN: CGA monochrome -->
-    <string name="video_cga_mono">CGA monochrome</string>
+    <string name="video_cga_mono">CGA monokrom</string>
     <!-- EN: Version -->
-    <string name="version">Version</string>
+    <string name="version">Versi</string>
     <!-- EN: Custom -->
-    <string name="version_custom">Custom</string>
+    <string name="version_custom">Kustom</string>
     <!-- EN: Standard -->
-    <string name="version_standard">Standard</string>
+    <string name="version_standard">Standar</string>
     <!-- EN: Tandy graphics -->
-    <string name="version_tandy_graphics">Tandy graphics</string>
+    <string name="version_tandy_graphics">Grafis Tandy</string>
     <!-- EN: Upgraded -->
-    <string name="version_upgraded">Upgraded</string>
+    <string name="version_upgraded">Ditingkatkan</string>
     <!-- EN: Mods -->
-    <string name="version_mods">Mods</string>
+    <string name="version_mods">Mod</string>
     <!-- EN: Fixed -->
-    <string name="version_fixed">Fixed</string>
+    <string name="version_fixed">Diperbaiki</string>
     <!-- EN: Alternate -->
-    <string name="version_alternate">Alternate</string>
+    <string name="version_alternate">Alternatif</string>
     <!-- EN: Changes apply the next time the game starts. -->
-    <string name="game_machine_foot">Changes apply the next time the game starts.</string>
+    <string name="game_machine_foot">Perubahan berlaku saat game dimulai berikutnya.</string>
     <!-- EN: DOS player name -->
-    <string name="player_name">DOS player name</string>
+    <string name="player_name">Nama pemain DOS</string>
     <!-- EN: Player name -->
-    <string name="player_name_short">Player name</string>
+    <string name="player_name_short">Nama pemain</string>
     <!-- EN: 1–8 letters, digits, or underscores -->
-    <string name="player_name_hint">1–8 letters, digits, or underscores</string>
+    <string name="player_name_hint">1–8 huruf, angka, atau garis bawah</string>
     <!-- EN: Choose on first play -->
-    <string name="player_name_empty">Choose on first play</string>
+    <string name="player_name_empty">Pilih saat pertama kali bermain</string>
     <!-- EN: Use 1–8 letters, digits, or underscores -->
-    <string name="player_name_invalid">Use 1–8 letters, digits, or underscores</string>
+    <string name="player_name_invalid">Gunakan 1–8 huruf, angka, atau garis bawah</string>
     <!-- EN: The game uses this name for its saves. -->
-    <string name="player_name_foot">The game uses this name for its saves.</string>
+    <string name="player_name_foot">Game menggunakan nama ini untuk data simpanannya.</string>
     <!-- EN: Play -->
-    <string name="play">Play</string>
+    <string name="play">Main</string>
     <!-- %1$s is the emulator's name, DOSBox. -->
     <!-- EN: %1$s settings -->
-    <string name="dosbox_settings">%1$s settings</string>
+    <string name="dosbox_settings">Setelan %1$s</string>
     <!-- %1$d is how many settings the player changed. -->
     <!-- EN: %1$d custom -->
-    <string name="dosbox_settings_custom">%1$d custom</string>
+    <string name="dosbox_settings_custom">%1$d kustom</string>
     <!-- EN: Startup commands -->
-    <string name="startup_commands">Startup commands</string>
+    <string name="startup_commands">Perintah startup</string>
     <!-- EN: One DOS command per line -->
-    <string name="startup_commands_hint">One DOS command per line</string>
+    <string name="startup_commands_hint">Satu perintah DOS per baris</string>
     <!-- EN: Not set -->
-    <string name="setting_not_set">Not set</string>
+    <string name="setting_not_set">Tidak disetel</string>
     <!-- EN: Add setting -->
-    <string name="setting_add">Add setting</string>
+    <string name="setting_add">Tambahkan setelan</string>
     <!-- EN: Add -->
-    <string name="add">Add</string>
+    <string name="add">Tambahkan</string>
     <!-- EN: Write the setting as section.key = value -->
-    <string name="setting_add_invalid">Write the setting as section.key = value</string>
+    <string name="setting_add_invalid">Tulis setelan sebagai bagian.kunci = nilai</string>
     <!-- EN: Choose a DOS folder for this game -->
-    <string name="choose_dos_folder_for_game">Choose a DOS folder for this game</string>
+    <string name="choose_dos_folder_for_game">Pilih folder DOS untuk game ini</string>
     <!-- EN: Preparing installer archive… -->
-    <string name="preparing_installer">Preparing installer archive…</string>
+    <string name="preparing_installer">Menyiapkan arsip penginstal…</string>
     <!-- %1$s is the folder name of the eXoDOS archive the game needs. -->
     <!-- EN: This game also needs the %1$s archive in your DOS library -->
-    <string name="dependency_missing">This game also needs the %1$s archive in your DOS library</string>
+    <string name="dependency_missing">Game ini juga memerlukan arsip %1$s di pustaka DOS Anda</string>
     <!-- %1$s is the emulator's name, DOSBox Staging. -->
     <!-- EN: %1$s could not start this game. -->
-    <string name="emulator_start_failed">%1$s could not start this game.</string>
+    <string name="emulator_start_failed">%1$s tidak dapat memulai game ini.</string>
     <!-- EN: Could not prepare this game -->
-    <string name="prepare_failed">Could not prepare this game</string>
+    <string name="prepare_failed">Tidak dapat menyiapkan game ini</string>
     <!-- EN: Saved copy -->
-    <string name="edited_saved_copy">Saved copy</string>
+    <string name="edited_saved_copy">Salinan tersimpan</string>
     <!-- EN: Edited file -->
-    <string name="edited_file">Edited file</string>
+    <string name="edited_file">File yang diedit</string>
     <!-- EN: Edited game files -->
-    <string name="edited_files">Edited game files</string>
+    <string name="edited_files">File game yang diedit</string>
     <!-- EN: KEEP -->
-    <string name="edited_keep_group">KEEP</string>
+    <string name="edited_keep_group">PERTAHANKAN</string>
     <!-- EN: DOS prompt or run program -->
-    <string name="program_picker_title">DOS prompt or run program</string>
+    <string name="program_picker_title">Prompt DOS atau jalankan program</string>
     <!-- EN: Launch -->
-    <string name="program_picker_launch">Launch</string>
+    <string name="program_picker_launch">Jalankan</string>
     <!-- EN: Prompt -->
     <string name="program_picker_prompt">Prompt</string>
     <!-- EN: Remove installer ZIP? -->
-    <string name="installer_remove_title">Remove installer ZIP?</string>
+    <string name="installer_remove_title">Hapus ZIP penginstal?</string>
     <!-- %1$s is the installer ZIP's file name. -->
     <!-- EN: The installed game archive is in your DOS folder. Remove %1$s now? -->
-    <string name="installer_remove_message">The installed game archive is in your DOS folder. Remove %1$s now?</string>
+    <string name="installer_remove_message">Arsip game yang terinstal ada di folder DOS Anda. Hapus %1$s sekarang?</string>
     <!-- EN: Keep -->
-    <string name="installer_keep">Keep</string>
+    <string name="installer_keep">Pertahankan</string>
     <!-- EN: Could not remove installer -->
-    <string name="installer_remove_failed">Could not remove installer</string>
+    <string name="installer_remove_failed">Tidak dapat menghapus penginstal</string>
     <!-- Saved files. %1$s and %2$s are the two folders holding them. -->
     <!-- EN: This game\'s saved files are in two places: %1$s and %2$s -->
-    <string name="saves_in_two_places">This game\'s saved files are in two places: %1$s and %2$s</string>
+    <string name="saves_in_two_places">File simpanan game ini ada di dua tempat: %1$s dan %2$s</string>
     <!-- EN: This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them. -->
-    <string name="saves_older_format">This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them.</string>
+    <string name="saves_older_format">File simpanan game ini menggunakan format lama. Pilih Penyimpanan pribadi aplikasi di Konfigurasi › Folder simpanan, lalu pilih folder itu lagi untuk memindahkannya.</string>
     <!-- EN: The save folder for these saved files is no longer selected -->
-    <string name="saves_folder_not_selected">The save folder for these saved files is no longer selected</string>
+    <string name="saves_folder_not_selected">Folder simpanan untuk file simpanan ini tidak lagi dipilih</string>
     <!-- EN: These saved files belong to a different save folder -->
-    <string name="saves_other_folder">These saved files belong to a different save folder</string>
+    <string name="saves_other_folder">File simpanan ini milik folder simpanan lain</string>
     <!-- EN: Saved files from an unfinished session are waiting for their game; add it to the library -->
-    <string name="saves_waiting_for_game">Saved files from an unfinished session are waiting for their game; add it to the library</string>
+    <string name="saves_waiting_for_game">File simpanan dari sesi yang belum selesai menunggu game-nya; tambahkan game ke pustaka</string>
     <!-- %1$s lists the games' titles. -->
     <!-- EN: These games\' saved files use an older format, and moving them needs their game files in the library: %1$s -->
-    <string name="saves_need_games">These games\' saved files use an older format, and moving them needs their game files in the library: %1$s</string>
+    <string name="saves_need_games">File simpanan game berikut menggunakan format lama, dan memindahkannya memerlukan file game-nya di pustaka: %1$s</string>
     <!-- %1$d is the game being converted; %2$d how many there are. -->
     <!-- EN: Converting %1$d of %2$d… -->
-    <string name="saves_converting">Converting %1$d of %2$d…</string>
+    <string name="saves_converting">Mengonversi %1$d dari %2$d…</string>
     <!-- The library. %1$s is a file's name. -->
     <!-- EN: Unsupported DOS game file: %1$s -->
-    <string name="unsupported_file">Unsupported DOS game file: %1$s</string>
+    <string name="unsupported_file">File game DOS tidak didukung: %1$s</string>
     <!-- %1$s says why the folder could not be read. -->
     <!-- EN: Unreadable folder: %1$s -->
-    <string name="unreadable_folder">Unreadable folder: %1$s</string>
+    <string name="unreadable_folder">Folder tidak dapat dibaca: %1$s</string>
     <!-- EN: Unreadable DOS game -->
-    <string name="unreadable_game">Unreadable DOS game</string>
+    <string name="unreadable_game">Game DOS tidak dapat dibaca</string>
     <!-- EN: Unreadable DOS folder -->
-    <string name="unreadable_game_folder">Unreadable DOS folder</string>
+    <string name="unreadable_game_folder">Folder DOS tidak dapat dibaca</string>
     <!-- EN: Game folder was moved; refresh the library -->
-    <string name="game_folder_moved">Game folder was moved; refresh the library</string>
+    <string name="game_folder_moved">Folder game telah dipindahkan; muat ulang pustaka</string>
     <!-- EN: Installer folder was moved; refresh the library -->
-    <string name="installer_folder_moved">Installer folder was moved; refresh the library</string>
+    <string name="installer_folder_moved">Folder penginstal telah dipindahkan; muat ulang pustaka</string>
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
-    <string name="installing_copied">Installing game: %1$d MiB copied</string>
+    <string name="installing_copied">Menginstal game: %1$d MiB disalin</string>
     <!-- EN: Verifying installed game archive… -->
-    <string name="installed_verifying">Verifying installed game archive…</string>
+    <string name="installed_verifying">Memverifikasi arsip game yang terinstal…</string>
     <!-- EN: Checking installed game archive… -->
-    <string name="installed_checking">Checking installed game archive…</string>
+    <string name="installed_checking">Memeriksa arsip game yang terinstal…</string>
     <!-- EN: Installed game archive failed verification -->
-    <string name="installed_verification_failed">Installed game archive failed verification</string>
+    <string name="installed_verification_failed">Verifikasi arsip game yang terinstal gagal</string>
     <!-- EN: An installed archive with this name already exists and differs -->
-    <string name="installed_name_taken">An installed archive with this name already exists and differs</string>
+    <string name="installed_name_taken">Arsip terinstal dengan nama ini sudah ada dan berbeda</string>
     <!-- EN: Installed game archive changed -->
-    <string name="installed_changed">Installed game archive changed</string>
+    <string name="installed_changed">Arsip game yang terinstal berubah</string>
     <!-- EN: Installed game is not available -->
-    <string name="installed_unavailable">Installed game is not available</string>
+    <string name="installed_unavailable">Game yang terinstal tidak tersedia</string>
     <!-- EN: Installed game could not be verified -->
-    <string name="installed_unverified">Installed game could not be verified</string>
+    <string name="installed_unverified">Game yang terinstal tidak dapat diverifikasi</string>
     <!-- EN: The document provider could not remove the installer -->
-    <string name="installer_remove_refused">The document provider could not remove the installer</string>
+    <string name="installer_remove_refused">Penyedia dokumen tidak dapat menghapus penginstal</string>
     <!-- EN: This game is not a removable library document -->
-    <string name="game_not_removable">This game is not a removable library document</string>
+    <string name="game_not_removable">Game ini bukan dokumen pustaka yang dapat dihapus</string>
     <!-- EN: The document provider could not delete the game -->
-    <string name="game_delete_refused">The document provider could not delete the game</string>
+    <string name="game_delete_refused">Penyedia dokumen tidak dapat menghapus game</string>
     <!-- EN: Game changed since it was scanned; use Recheck all files in Manage library -->
-    <string name="game_changed_since_scan">Game changed since it was scanned; use Recheck all files in Manage library</string>
+    <string name="game_changed_since_scan">Game berubah sejak dipindai; gunakan Periksa ulang semua file di Kelola pustaka</string>
     <!-- EN: Game changed while preparing; use Recheck all files in Manage library -->
-    <string name="game_changed_while_preparing">Game changed while preparing; use Recheck all files in Manage library</string>
+    <string name="game_changed_while_preparing">Game berubah saat disiapkan; gunakan Periksa ulang semua file di Kelola pustaka</string>
     <!-- EN: Game changed while copying -->
-    <string name="game_changed_while_copying">Game changed while copying</string>
+    <string name="game_changed_while_copying">Game berubah saat disalin</string>
     <!-- EN: Game changed while hashing -->
-    <string name="game_changed_while_hashing">Game changed while hashing</string>
+    <string name="game_changed_while_hashing">Game berubah saat dihitung hash-nya</string>
     <!-- EN: DOS game exceeds size limit -->
-    <string name="game_too_large">DOS game exceeds size limit</string>
+    <string name="game_too_large">Game DOS melebihi batas ukuran</string>
     <!-- EN: Unsafe game archive -->
-    <string name="game_archive_unsafe">Unsafe game archive</string>
+    <string name="game_archive_unsafe">Arsip game tidak aman</string>
     <!-- A game's files as the library reads them. -->
     <!-- EN: No game files in ZIP -->
-    <string name="zip_no_game_files">No game files in ZIP</string>
+    <string name="zip_no_game_files">Tidak ada file game di ZIP</string>
     <!-- EN: Empty game folder -->
-    <string name="folder_empty">Empty game folder</string>
+    <string name="folder_empty">Folder game kosong</string>
     <!-- EN: No game files -->
-    <string name="no_game_files">No game files</string>
+    <string name="no_game_files">Tidak ada file game</string>
     <!-- EN: Duplicate game file -->
-    <string name="duplicate_game_file">Duplicate game file</string>
+    <string name="duplicate_game_file">File game duplikat</string>
     <!-- EN: Game file is too large -->
-    <string name="game_file_too_large">Game file is too large</string>
+    <string name="game_file_too_large">File game terlalu besar</string>
     <!-- EN: Missing ZIP member checksum -->
-    <string name="zip_missing_checksum">Missing ZIP member checksum</string>
+    <string name="zip_missing_checksum">Checksum anggota ZIP tidak ada</string>
     <!-- EN: Game file changed while hashing -->
-    <string name="game_file_changed_while_hashing">Game file changed while hashing</string>
+    <string name="game_file_changed_while_hashing">File game berubah saat dihitung hash-nya</string>
     <!-- EN: Unsafe game file path -->
-    <string name="game_file_path_unsafe">Unsafe game file path</string>
+    <string name="game_file_path_unsafe">Jalur file game tidak aman</string>
     <!-- Preparing a game's drive. -->
     <!-- EN: This game\'s source changed -->
-    <string name="source_changed">This game\'s source changed</string>
+    <string name="source_changed">Sumber game ini berubah</string>
     <!-- EN: This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them. -->
-    <string name="source_changed_before_conversion">This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them.</string>
+    <string name="source_changed_before_conversion">Sumber game ini berubah sebelum file simpanannya dikonversi. File tersebut dipertahankan; pulihkan file asli game untuk mengonversinya.</string>
     <!-- EN: This game has saved files from another copy of it. Its existing writable game files were preserved. -->
-    <string name="saves_from_another_copy">This game has saved files from another copy of it. Its existing writable game files were preserved.</string>
+    <string name="saves_from_another_copy">Game ini memiliki file simpanan dari salinan lain. File game yang dapat ditulisi yang sudah ada dipertahankan.</string>
     <!-- EN: Several legacy game saves were found. They were preserved; the import needs a save selection. -->
-    <string name="legacy_saves_several">Several legacy game saves were found. They were preserved; the import needs a save selection.</string>
+    <string name="legacy_saves_several">Ditemukan beberapa simpanan game lama. Semuanya dipertahankan; impor memerlukan pilihan simpanan.</string>
     <!-- EN: Checking changed game files… -->
-    <string name="checking_changed_files">Checking changed game files…</string>
+    <string name="checking_changed_files">Memeriksa file game yang berubah…</string>
     <!-- EN: Preparing game files… -->
-    <string name="preparing_game_files">Preparing game files…</string>
+    <string name="preparing_game_files">Menyiapkan file game…</string>
     <!-- EN: Converting saved game files… -->
-    <string name="converting_saved_files">Converting saved game files…</string>
+    <string name="converting_saved_files">Mengonversi file simpanan game…</string>
     <!-- %1$d is how many mebibytes have been written. -->
     <!-- EN: Preparing writable game files: %1$d MiB -->
-    <string name="preparing_writable_files">Preparing writable game files: %1$d MiB</string>
+    <string name="preparing_writable_files">Menyiapkan file game yang dapat ditulisi: %1$d MiB</string>
     <!-- EN: Importing existing game saves… -->
-    <string name="importing_legacy_saves">Importing existing game saves…</string>
+    <string name="importing_legacy_saves">Mengimpor simpanan game yang ada…</string>
     <!-- EN: DOS archive contains too many files -->
-    <string name="archive_too_many_files">DOS archive contains too many files</string>
+    <string name="archive_too_many_files">Arsip DOS berisi terlalu banyak file</string>
     <!-- %1$s is the entry's path in the archive. -->
     <!-- EN: Ambiguous duplicate DOS archive entry: %1$s -->
-    <string name="archive_duplicate_entry">Ambiguous duplicate DOS archive entry: %1$s</string>
+    <string name="archive_duplicate_entry">Entri arsip DOS duplikat yang ambigu: %1$s</string>
     <!-- EN: DOS archive is too large -->
-    <string name="archive_too_large">DOS archive is too large</string>
+    <string name="archive_too_large">Arsip DOS terlalu besar</string>
     <!-- EN: Invalid DOS archive size -->
-    <string name="archive_invalid_size">Invalid DOS archive size</string>
+    <string name="archive_invalid_size">Ukuran arsip DOS tidak valid</string>
     <!-- EN: DOS archive verification failed: %1$s -->
-    <string name="archive_verification_failed">DOS archive verification failed: %1$s</string>
+    <string name="archive_verification_failed">Verifikasi arsip DOS gagal: %1$s</string>
     <!-- EN: DOS file is too large -->
-    <string name="file_too_large">DOS file is too large</string>
+    <string name="file_too_large">File DOS terlalu besar</string>
     <!-- EN: Not enough storage for writable game files -->
-    <string name="not_enough_storage">Not enough storage for writable game files</string>
+    <string name="not_enough_storage">Penyimpanan tidak cukup untuk file game yang dapat ditulisi</string>
     <!-- Starting a game. %1$s is the eXoDOS game folder a config names. -->
     <!-- EN: Missing eXoDOS dependency: %1$s -->
-    <string name="exodos_dependency_missing">Missing eXoDOS dependency: %1$s</string>
+    <string name="exodos_dependency_missing">Dependensi eXoDOS tidak ada: %1$s</string>
     <!-- %1$s is the emulator's name, DOSBox Staging; %2$s the media's file extension. -->
     <!-- EN: %1$s does not support this standalone media type: %2$s -->
-    <string name="media_type_unsupported">%1$s does not support this standalone media type: %2$s</string>
+    <string name="media_type_unsupported">%1$s tidak mendukung jenis media mandiri ini: %2$s</string>
     <!-- EN: Mounted DOS drives are needed to run a command script -->
-    <string name="command_script_needs_drives">Mounted DOS drives are needed to run a command script</string>
+    <string name="command_script_needs_drives">Drive DOS yang terpasang diperlukan untuk menjalankan skrip perintah</string>
     <!-- EN: No free DOS drive for the command script -->
-    <string name="command_script_no_drive">No free DOS drive for the command script</string>
+    <string name="command_script_no_drive">Tidak ada drive DOS kosong untuk skrip perintah</string>
 </resources>

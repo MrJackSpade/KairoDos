@@ -2,73 +2,73 @@
 <!-- Korean (ko): the translation of values/strings.xml. Each EN comment is the English a string translates; update it with the translation. Check with shared/tools/translations.py check. -->
 <resources>
     <!-- EN: DOS folder -->
-    <string name="dos_folder">DOS folder</string>
+    <string name="dos_folder">DOS 폴더</string>
     <!-- EN: No DOS folder selected -->
-    <string name="no_dos_folder">No DOS folder selected</string>
+    <string name="no_dos_folder">선택된 DOS 폴더 없음</string>
     <!-- %1$s is the app's name, KairoDos; %2$s the emulator it runs; %3$s its GitHub repository. -->
     <!-- EN: %1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s. -->
-    <string name="credits">%1$s uses the %2$s emulator core. Source and provenance: github.com/%3$s.</string>
+    <string name="credits">%1$s은(는) %2$s 에뮬레이터 코어를 사용합니다. 소스 및 출처: github.com/%3$s</string>
     <!-- EN: Choose a DOS folder to find games -->
-    <string name="library_empty">Choose a DOS folder to find games</string>
+    <string name="library_empty">게임을 찾으려면 DOS 폴더를 선택하세요</string>
     <!-- EN: DOS folder needs read and write access. Select it again. -->
-    <string name="library_expired">DOS folder needs read and write access. Select it again.</string>
+    <string name="library_expired">DOS 폴더에 읽기 및 쓰기 권한이 필요합니다. 다시 선택하세요.</string>
     <!-- EN: Choose a DOS folder -->
-    <string name="folder_title">Choose a DOS folder</string>
+    <string name="folder_title">DOS 폴더 선택</string>
     <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Select a writable folder containing your DOS games and ZIP archives.</string>
+    <string name="folder_description">DOS 게임과 ZIP 압축 파일이 들어 있는 쓰기 가능한 폴더를 선택하세요.</string>
     <!-- EN: Choose DOS folder… -->
-    <string name="folder_button">Choose DOS folder…</string>
+    <string name="folder_button">DOS 폴더 선택…</string>
     <!-- EN: SAVED GAMES -->
-    <string name="saves_group">SAVED GAMES</string>
+    <string name="saves_group">저장 데이터</string>
     <!-- EN: Saved files -->
-    <string name="saved_files">Saved files</string>
+    <string name="saved_files">저장 파일</string>
     <!-- EN: Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement. -->
-    <string name="direct_touch_explanation">Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.</string>
+    <string name="direct_touch_explanation">터치패드는 드래그로 DOS 마우스를 움직입니다. 직접 탭은 손가락 위치에 커서를 둡니다. 일부 게임은 상대 이동이 필요합니다.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
-    <string name="reset_message">Game settings reset. Video changes apply the next time the game starts.</string>
+    <string name="reset_message">게임 설정이 재설정되었습니다. 비디오 변경 사항은 다음에 게임을 시작할 때 적용됩니다.</string>
     <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">Back, Mode or Home button, or a swipe from the left edge</string>
+    <string name="help_open_menu_how">뒤로, Mode 또는 Home 버튼, 또는 왼쪽 가장자리에서 스와이프</string>
     <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Tap a keyboard prompt or swipe in from the right edge</string>
+    <string name="help_open_keyboard_how">키보드 안내를 탭하거나 오른쪽 가장자리에서 스와이프</string>
     <!-- EN: Second screen -->
-    <string name="help_second_screen">Second screen</string>
+    <string name="help_second_screen">두 번째 화면</string>
     <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">On dual-screen devices, the keyboard appears on the other screen</string>
+    <string name="help_second_screen_how">듀얼 스크린 기기에서는 다른 화면에 키보드가 표시됩니다</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
-    <string name="joystick_port">Joystick %1$d</string>
+    <string name="joystick_port">조이스틱 %1$d</string>
     <!-- EN: DOS game -->
-    <string name="dos_game">DOS game</string>
+    <string name="dos_game">DOS 게임</string>
     <!-- EN: The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control. -->
-    <string name="joystick_help">The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.</string>
+    <string name="joystick_help">D-pad는 화살표 키와 조이스틱 1입니다. 게임 프로필에서 어떤 버튼이든 DOS 조이스틱 컨트롤에 매핑할 수 있습니다.</string>
     <!-- A DOS joystick control: %1$d is the joystick's number. -->
     <!-- EN: %1$d up -->
-    <string name="joystick_up">%1$d up</string>
+    <string name="joystick_up">%1$d 위</string>
     <!-- EN: %1$d down -->
-    <string name="joystick_down">%1$d down</string>
+    <string name="joystick_down">%1$d 아래</string>
     <!-- EN: %1$d left -->
-    <string name="joystick_left">%1$d left</string>
+    <string name="joystick_left">%1$d 왼쪽</string>
     <!-- EN: %1$d right -->
-    <string name="joystick_right">%1$d right</string>
+    <string name="joystick_right">%1$d 오른쪽</string>
     <!-- %1$d is the joystick's number; %2$d the button's. -->
     <!-- EN: %1$d button %2$d -->
-    <string name="joystick_button">%1$d button %2$d</string>
+    <string name="joystick_button">%1$d 버튼 %2$d</string>
     <!-- EN: Symbols -->
-    <string name="keyboard_symbols">Symbols</string>
+    <string name="keyboard_symbols">기호</string>
     <!-- EN: Function -->
-    <string name="keyboard_function">Function</string>
+    <string name="keyboard_function">기능</string>
     <!-- EN: Keypad -->
-    <string name="keyboard_keypad">Keypad</string>
+    <string name="keyboard_keypad">키패드</string>
     <!-- EN: Loading -->
-    <string name="session_loading">Loading</string>
+    <string name="session_loading">불러오는 중</string>
     <!-- EN: Failed -->
-    <string name="session_failed">Failed</string>
+    <string name="session_failed">실패</string>
     <!-- EN: Core -->
-    <string name="diagnostics_core">Core</string>
+    <string name="diagnostics_core">코어</string>
     <!-- EN: Touch input -->
-    <string name="diagnostics_touch">Touch input</string>
+    <string name="diagnostics_touch">터치 입력</string>
     <!-- EN: Video -->
-    <string name="diagnostics_video">Video</string>
+    <string name="diagnostics_video">비디오</string>
     <!-- The DOS screen's width and height in pixels. -->
     <!-- EN: %1$d × %2$d -->
     <string name="diagnostics_video_size">%1$d × %2$d</string>
@@ -78,240 +78,240 @@
     <!-- EN: CPU -->
     <string name="machine_cpu_group">CPU</string>
     <!-- EN: DOS CPU speed -->
-    <string name="cpu_speed">DOS CPU speed</string>
+    <string name="cpu_speed">DOS CPU 속도</string>
     <!-- EN: Maximum -->
-    <string name="cpu_maximum">Maximum</string>
+    <string name="cpu_maximum">최대</string>
     <!-- EN: Games with their own speed keep it. -->
-    <string name="cpu_foot">Games with their own speed keep it.</string>
+    <string name="cpu_foot">자체 속도가 있는 게임은 그 속도를 유지합니다.</string>
     <!-- EN: VIDEO -->
-    <string name="video_group">VIDEO</string>
+    <string name="video_group">비디오</string>
     <!-- EN: Emulated video card -->
-    <string name="video_card">Emulated video card</string>
+    <string name="video_card">에뮬레이션 비디오 카드</string>
     <!-- EN: Changes apply the next time a game starts. Games with their own setting keep it. -->
-    <string name="video_foot">Changes apply the next time a game starts. Games with their own setting keep it.</string>
+    <string name="video_foot">변경 사항은 다음에 게임을 시작할 때 적용됩니다. 자체 설정이 있는 게임은 그 설정을 유지합니다.</string>
     <!-- EN: 3dfx rendering -->
-    <string name="voodoo">3dfx rendering</string>
+    <string name="voodoo">3dfx 렌더링</string>
     <!-- EN: Automatic CPU threads -->
-    <string name="voodoo_automatic">Automatic CPU threads</string>
+    <string name="voodoo_automatic">CPU 스레드 자동</string>
     <!-- EN: Single CPU thread -->
-    <string name="voodoo_single">Single CPU thread</string>
+    <string name="voodoo_single">CPU 단일 스레드</string>
     <!-- EN: Automatic (game profile) -->
-    <string name="video_automatic">Automatic (game profile)</string>
+    <string name="video_automatic">자동(게임 프로필)</string>
     <!-- EN: S3 (no linear framebuffer) -->
-    <string name="video_s3_no_lfb">S3 (no linear framebuffer)</string>
+    <string name="video_s3_no_lfb">S3(선형 프레임 버퍼 없음)</string>
     <!-- EN: CGA monochrome -->
-    <string name="video_cga_mono">CGA monochrome</string>
+    <string name="video_cga_mono">CGA 흑백</string>
     <!-- EN: Version -->
-    <string name="version">Version</string>
+    <string name="version">버전</string>
     <!-- EN: Custom -->
-    <string name="version_custom">Custom</string>
+    <string name="version_custom">사용자 지정</string>
     <!-- EN: Standard -->
-    <string name="version_standard">Standard</string>
+    <string name="version_standard">표준</string>
     <!-- EN: Tandy graphics -->
-    <string name="version_tandy_graphics">Tandy graphics</string>
+    <string name="version_tandy_graphics">Tandy 그래픽</string>
     <!-- EN: Upgraded -->
-    <string name="version_upgraded">Upgraded</string>
+    <string name="version_upgraded">업그레이드판</string>
     <!-- EN: Mods -->
-    <string name="version_mods">Mods</string>
+    <string name="version_mods">모드</string>
     <!-- EN: Fixed -->
-    <string name="version_fixed">Fixed</string>
+    <string name="version_fixed">수정판</string>
     <!-- EN: Alternate -->
-    <string name="version_alternate">Alternate</string>
+    <string name="version_alternate">대체판</string>
     <!-- EN: Changes apply the next time the game starts. -->
-    <string name="game_machine_foot">Changes apply the next time the game starts.</string>
+    <string name="game_machine_foot">변경 사항은 다음에 게임을 시작할 때 적용됩니다.</string>
     <!-- EN: DOS player name -->
-    <string name="player_name">DOS player name</string>
+    <string name="player_name">DOS 플레이어 이름</string>
     <!-- EN: Player name -->
-    <string name="player_name_short">Player name</string>
+    <string name="player_name_short">플레이어 이름</string>
     <!-- EN: 1–8 letters, digits, or underscores -->
-    <string name="player_name_hint">1–8 letters, digits, or underscores</string>
+    <string name="player_name_hint">영문자, 숫자 또는 밑줄 1~8자</string>
     <!-- EN: Choose on first play -->
-    <string name="player_name_empty">Choose on first play</string>
+    <string name="player_name_empty">처음 플레이할 때 선택</string>
     <!-- EN: Use 1–8 letters, digits, or underscores -->
-    <string name="player_name_invalid">Use 1–8 letters, digits, or underscores</string>
+    <string name="player_name_invalid">영문자, 숫자 또는 밑줄을 1~8자로 입력하세요</string>
     <!-- EN: The game uses this name for its saves. -->
-    <string name="player_name_foot">The game uses this name for its saves.</string>
+    <string name="player_name_foot">게임이 저장 데이터에 이 이름을 사용합니다.</string>
     <!-- EN: Play -->
-    <string name="play">Play</string>
+    <string name="play">플레이</string>
     <!-- %1$s is the emulator's name, DOSBox. -->
     <!-- EN: %1$s settings -->
-    <string name="dosbox_settings">%1$s settings</string>
+    <string name="dosbox_settings">%1$s 설정</string>
     <!-- %1$d is how many settings the player changed. -->
     <!-- EN: %1$d custom -->
-    <string name="dosbox_settings_custom">%1$d custom</string>
+    <string name="dosbox_settings_custom">%1$d개 사용자 지정</string>
     <!-- EN: Startup commands -->
-    <string name="startup_commands">Startup commands</string>
+    <string name="startup_commands">실행 명령</string>
     <!-- EN: One DOS command per line -->
-    <string name="startup_commands_hint">One DOS command per line</string>
+    <string name="startup_commands_hint">한 줄에 DOS 명령 하나</string>
     <!-- EN: Not set -->
-    <string name="setting_not_set">Not set</string>
+    <string name="setting_not_set">설정 안 됨</string>
     <!-- EN: Add setting -->
-    <string name="setting_add">Add setting</string>
+    <string name="setting_add">설정 추가</string>
     <!-- EN: Add -->
-    <string name="add">Add</string>
+    <string name="add">추가</string>
     <!-- EN: Write the setting as section.key = value -->
-    <string name="setting_add_invalid">Write the setting as section.key = value</string>
+    <string name="setting_add_invalid">설정을 section.key = value 형식으로 입력하세요</string>
     <!-- EN: Choose a DOS folder for this game -->
-    <string name="choose_dos_folder_for_game">Choose a DOS folder for this game</string>
+    <string name="choose_dos_folder_for_game">이 게임의 DOS 폴더를 선택하세요</string>
     <!-- EN: Preparing installer archive… -->
-    <string name="preparing_installer">Preparing installer archive…</string>
+    <string name="preparing_installer">설치 프로그램 압축 파일 준비 중…</string>
     <!-- %1$s is the folder name of the eXoDOS archive the game needs. -->
     <!-- EN: This game also needs the %1$s archive in your DOS library -->
-    <string name="dependency_missing">This game also needs the %1$s archive in your DOS library</string>
+    <string name="dependency_missing">이 게임에는 DOS 라이브러리에 %1$s 압축 파일도 있어야 합니다</string>
     <!-- %1$s is the emulator's name, DOSBox Staging. -->
     <!-- EN: %1$s could not start this game. -->
-    <string name="emulator_start_failed">%1$s could not start this game.</string>
+    <string name="emulator_start_failed">%1$s이(가) 이 게임을 시작할 수 없습니다.</string>
     <!-- EN: Could not prepare this game -->
-    <string name="prepare_failed">Could not prepare this game</string>
+    <string name="prepare_failed">이 게임을 준비할 수 없습니다</string>
     <!-- EN: Saved copy -->
-    <string name="edited_saved_copy">Saved copy</string>
+    <string name="edited_saved_copy">저장된 사본</string>
     <!-- EN: Edited file -->
-    <string name="edited_file">Edited file</string>
+    <string name="edited_file">편집된 파일</string>
     <!-- EN: Edited game files -->
-    <string name="edited_files">Edited game files</string>
+    <string name="edited_files">편집된 게임 파일</string>
     <!-- EN: KEEP -->
-    <string name="edited_keep_group">KEEP</string>
+    <string name="edited_keep_group">유지</string>
     <!-- EN: DOS prompt or run program -->
-    <string name="program_picker_title">DOS prompt or run program</string>
+    <string name="program_picker_title">DOS 프롬프트 또는 프로그램 실행</string>
     <!-- EN: Launch -->
-    <string name="program_picker_launch">Launch</string>
+    <string name="program_picker_launch">실행</string>
     <!-- EN: Prompt -->
-    <string name="program_picker_prompt">Prompt</string>
+    <string name="program_picker_prompt">프롬프트</string>
     <!-- EN: Remove installer ZIP? -->
-    <string name="installer_remove_title">Remove installer ZIP?</string>
+    <string name="installer_remove_title">설치 프로그램 ZIP을 삭제할까요?</string>
     <!-- %1$s is the installer ZIP's file name. -->
     <!-- EN: The installed game archive is in your DOS folder. Remove %1$s now? -->
-    <string name="installer_remove_message">The installed game archive is in your DOS folder. Remove %1$s now?</string>
+    <string name="installer_remove_message">설치된 게임 압축 파일이 DOS 폴더에 있습니다. 지금 %1$s을(를) 삭제할까요?</string>
     <!-- EN: Keep -->
-    <string name="installer_keep">Keep</string>
+    <string name="installer_keep">유지</string>
     <!-- EN: Could not remove installer -->
-    <string name="installer_remove_failed">Could not remove installer</string>
+    <string name="installer_remove_failed">설치 프로그램을 삭제할 수 없습니다</string>
     <!-- Saved files. %1$s and %2$s are the two folders holding them. -->
     <!-- EN: This game\'s saved files are in two places: %1$s and %2$s -->
-    <string name="saves_in_two_places">This game\'s saved files are in two places: %1$s and %2$s</string>
+    <string name="saves_in_two_places">이 게임의 저장 파일이 두 곳에 있습니다: %1$s, %2$s</string>
     <!-- EN: This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them. -->
-    <string name="saves_older_format">This game\'s saved files use an older format. Choose Private app storage in Configurations › Save folder, then choose the folder again to move them.</string>
+    <string name="saves_older_format">이 게임의 저장 파일은 이전 형식을 사용합니다. 구성 › 저장 폴더에서 앱 전용 저장소를 선택한 다음, 폴더를 다시 선택하면 이동됩니다.</string>
     <!-- EN: The save folder for these saved files is no longer selected -->
-    <string name="saves_folder_not_selected">The save folder for these saved files is no longer selected</string>
+    <string name="saves_folder_not_selected">이 저장 파일의 저장 폴더가 더 이상 선택되어 있지 않습니다</string>
     <!-- EN: These saved files belong to a different save folder -->
-    <string name="saves_other_folder">These saved files belong to a different save folder</string>
+    <string name="saves_other_folder">이 저장 파일은 다른 저장 폴더에 속합니다</string>
     <!-- EN: Saved files from an unfinished session are waiting for their game; add it to the library -->
-    <string name="saves_waiting_for_game">Saved files from an unfinished session are waiting for their game; add it to the library</string>
+    <string name="saves_waiting_for_game">완료되지 않은 세션의 저장 파일이 게임을 기다리고 있습니다. 게임을 라이브러리에 추가하세요</string>
     <!-- %1$s lists the games' titles. -->
     <!-- EN: These games\' saved files use an older format, and moving them needs their game files in the library: %1$s -->
-    <string name="saves_need_games">These games\' saved files use an older format, and moving them needs their game files in the library: %1$s</string>
+    <string name="saves_need_games">이 게임들의 저장 파일은 이전 형식을 사용하며, 이동하려면 게임 파일이 라이브러리에 있어야 합니다: %1$s</string>
     <!-- %1$d is the game being converted; %2$d how many there are. -->
     <!-- EN: Converting %1$d of %2$d… -->
-    <string name="saves_converting">Converting %1$d of %2$d…</string>
+    <string name="saves_converting">%1$d/%2$d 변환 중…</string>
     <!-- The library. %1$s is a file's name. -->
     <!-- EN: Unsupported DOS game file: %1$s -->
-    <string name="unsupported_file">Unsupported DOS game file: %1$s</string>
+    <string name="unsupported_file">지원되지 않는 DOS 게임 파일: %1$s</string>
     <!-- %1$s says why the folder could not be read. -->
     <!-- EN: Unreadable folder: %1$s -->
-    <string name="unreadable_folder">Unreadable folder: %1$s</string>
+    <string name="unreadable_folder">읽을 수 없는 폴더: %1$s</string>
     <!-- EN: Unreadable DOS game -->
-    <string name="unreadable_game">Unreadable DOS game</string>
+    <string name="unreadable_game">읽을 수 없는 DOS 게임</string>
     <!-- EN: Unreadable DOS folder -->
-    <string name="unreadable_game_folder">Unreadable DOS folder</string>
+    <string name="unreadable_game_folder">읽을 수 없는 DOS 폴더</string>
     <!-- EN: Game folder was moved; refresh the library -->
-    <string name="game_folder_moved">Game folder was moved; refresh the library</string>
+    <string name="game_folder_moved">게임 폴더가 이동되었습니다. 라이브러리를 새로고침하세요</string>
     <!-- EN: Installer folder was moved; refresh the library -->
-    <string name="installer_folder_moved">Installer folder was moved; refresh the library</string>
+    <string name="installer_folder_moved">설치 프로그램 폴더가 이동되었습니다. 라이브러리를 새로고침하세요</string>
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
-    <string name="installing_copied">Installing game: %1$d MiB copied</string>
+    <string name="installing_copied">게임 설치 중: %1$d MiB 복사됨</string>
     <!-- EN: Verifying installed game archive… -->
-    <string name="installed_verifying">Verifying installed game archive…</string>
+    <string name="installed_verifying">설치된 게임 압축 파일 검증 중…</string>
     <!-- EN: Checking installed game archive… -->
-    <string name="installed_checking">Checking installed game archive…</string>
+    <string name="installed_checking">설치된 게임 압축 파일 확인 중…</string>
     <!-- EN: Installed game archive failed verification -->
-    <string name="installed_verification_failed">Installed game archive failed verification</string>
+    <string name="installed_verification_failed">설치된 게임 압축 파일 검증 실패</string>
     <!-- EN: An installed archive with this name already exists and differs -->
-    <string name="installed_name_taken">An installed archive with this name already exists and differs</string>
+    <string name="installed_name_taken">같은 이름의 다른 설치된 압축 파일이 이미 있습니다</string>
     <!-- EN: Installed game archive changed -->
-    <string name="installed_changed">Installed game archive changed</string>
+    <string name="installed_changed">설치된 게임 압축 파일이 변경되었습니다</string>
     <!-- EN: Installed game is not available -->
-    <string name="installed_unavailable">Installed game is not available</string>
+    <string name="installed_unavailable">설치된 게임을 사용할 수 없습니다</string>
     <!-- EN: Installed game could not be verified -->
-    <string name="installed_unverified">Installed game could not be verified</string>
+    <string name="installed_unverified">설치된 게임을 검증할 수 없습니다</string>
     <!-- EN: The document provider could not remove the installer -->
-    <string name="installer_remove_refused">The document provider could not remove the installer</string>
+    <string name="installer_remove_refused">문서 제공자가 설치 프로그램을 삭제할 수 없습니다</string>
     <!-- EN: This game is not a removable library document -->
-    <string name="game_not_removable">This game is not a removable library document</string>
+    <string name="game_not_removable">이 게임은 삭제할 수 있는 라이브러리 문서가 아닙니다</string>
     <!-- EN: The document provider could not delete the game -->
-    <string name="game_delete_refused">The document provider could not delete the game</string>
+    <string name="game_delete_refused">문서 제공자가 게임을 삭제할 수 없습니다</string>
     <!-- EN: Game changed since it was scanned; use Recheck all files in Manage library -->
-    <string name="game_changed_since_scan">Game changed since it was scanned; use Recheck all files in Manage library</string>
+    <string name="game_changed_since_scan">스캔 후 게임이 변경되었습니다. 라이브러리 관리에서 모든 파일 다시 확인을 사용하세요</string>
     <!-- EN: Game changed while preparing; use Recheck all files in Manage library -->
-    <string name="game_changed_while_preparing">Game changed while preparing; use Recheck all files in Manage library</string>
+    <string name="game_changed_while_preparing">준비 중에 게임이 변경되었습니다. 라이브러리 관리에서 모든 파일 다시 확인을 사용하세요</string>
     <!-- EN: Game changed while copying -->
-    <string name="game_changed_while_copying">Game changed while copying</string>
+    <string name="game_changed_while_copying">복사 중에 게임이 변경되었습니다</string>
     <!-- EN: Game changed while hashing -->
-    <string name="game_changed_while_hashing">Game changed while hashing</string>
+    <string name="game_changed_while_hashing">해시 계산 중에 게임이 변경되었습니다</string>
     <!-- EN: DOS game exceeds size limit -->
-    <string name="game_too_large">DOS game exceeds size limit</string>
+    <string name="game_too_large">DOS 게임이 크기 제한을 초과합니다</string>
     <!-- EN: Unsafe game archive -->
-    <string name="game_archive_unsafe">Unsafe game archive</string>
+    <string name="game_archive_unsafe">안전하지 않은 게임 압축 파일</string>
     <!-- A game's files as the library reads them. -->
     <!-- EN: No game files in ZIP -->
-    <string name="zip_no_game_files">No game files in ZIP</string>
+    <string name="zip_no_game_files">ZIP에 게임 파일이 없습니다</string>
     <!-- EN: Empty game folder -->
-    <string name="folder_empty">Empty game folder</string>
+    <string name="folder_empty">빈 게임 폴더</string>
     <!-- EN: No game files -->
-    <string name="no_game_files">No game files</string>
+    <string name="no_game_files">게임 파일 없음</string>
     <!-- EN: Duplicate game file -->
-    <string name="duplicate_game_file">Duplicate game file</string>
+    <string name="duplicate_game_file">중복된 게임 파일</string>
     <!-- EN: Game file is too large -->
-    <string name="game_file_too_large">Game file is too large</string>
+    <string name="game_file_too_large">게임 파일이 너무 큽니다</string>
     <!-- EN: Missing ZIP member checksum -->
-    <string name="zip_missing_checksum">Missing ZIP member checksum</string>
+    <string name="zip_missing_checksum">ZIP 멤버 체크섬이 없습니다</string>
     <!-- EN: Game file changed while hashing -->
-    <string name="game_file_changed_while_hashing">Game file changed while hashing</string>
+    <string name="game_file_changed_while_hashing">해시 계산 중에 게임 파일이 변경되었습니다</string>
     <!-- EN: Unsafe game file path -->
-    <string name="game_file_path_unsafe">Unsafe game file path</string>
+    <string name="game_file_path_unsafe">안전하지 않은 게임 파일 경로</string>
     <!-- Preparing a game's drive. -->
     <!-- EN: This game\'s source changed -->
-    <string name="source_changed">This game\'s source changed</string>
+    <string name="source_changed">이 게임의 소스가 변경되었습니다</string>
     <!-- EN: This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them. -->
-    <string name="source_changed_before_conversion">This game\'s source changed before its saved files were converted. They were preserved; restore the game\'s original files to convert them.</string>
+    <string name="source_changed_before_conversion">저장 파일을 변환하기 전에 이 게임의 소스가 변경되었습니다. 저장 파일은 보존되었습니다. 변환하려면 게임의 원본 파일을 복원하세요.</string>
     <!-- EN: This game has saved files from another copy of it. Its existing writable game files were preserved. -->
-    <string name="saves_from_another_copy">This game has saved files from another copy of it. Its existing writable game files were preserved.</string>
+    <string name="saves_from_another_copy">이 게임에 다른 사본의 저장 파일이 있습니다. 기존의 쓰기 가능한 게임 파일은 보존되었습니다.</string>
     <!-- EN: Several legacy game saves were found. They were preserved; the import needs a save selection. -->
-    <string name="legacy_saves_several">Several legacy game saves were found. They were preserved; the import needs a save selection.</string>
+    <string name="legacy_saves_several">이전 방식의 게임 저장 데이터가 여러 개 있습니다. 보존되었으며, 가져오려면 저장 데이터를 선택해야 합니다.</string>
     <!-- EN: Checking changed game files… -->
-    <string name="checking_changed_files">Checking changed game files…</string>
+    <string name="checking_changed_files">변경된 게임 파일 확인 중…</string>
     <!-- EN: Preparing game files… -->
-    <string name="preparing_game_files">Preparing game files…</string>
+    <string name="preparing_game_files">게임 파일 준비 중…</string>
     <!-- EN: Converting saved game files… -->
-    <string name="converting_saved_files">Converting saved game files…</string>
+    <string name="converting_saved_files">게임 저장 파일 변환 중…</string>
     <!-- %1$d is how many mebibytes have been written. -->
     <!-- EN: Preparing writable game files: %1$d MiB -->
-    <string name="preparing_writable_files">Preparing writable game files: %1$d MiB</string>
+    <string name="preparing_writable_files">쓰기 가능한 게임 파일 준비 중: %1$d MiB</string>
     <!-- EN: Importing existing game saves… -->
-    <string name="importing_legacy_saves">Importing existing game saves…</string>
+    <string name="importing_legacy_saves">기존 게임 저장 데이터 가져오는 중…</string>
     <!-- EN: DOS archive contains too many files -->
-    <string name="archive_too_many_files">DOS archive contains too many files</string>
+    <string name="archive_too_many_files">DOS 압축 파일에 파일이 너무 많습니다</string>
     <!-- %1$s is the entry's path in the archive. -->
     <!-- EN: Ambiguous duplicate DOS archive entry: %1$s -->
-    <string name="archive_duplicate_entry">Ambiguous duplicate DOS archive entry: %1$s</string>
+    <string name="archive_duplicate_entry">모호한 중복 DOS 압축 파일 항목: %1$s</string>
     <!-- EN: DOS archive is too large -->
-    <string name="archive_too_large">DOS archive is too large</string>
+    <string name="archive_too_large">DOS 압축 파일이 너무 큽니다</string>
     <!-- EN: Invalid DOS archive size -->
-    <string name="archive_invalid_size">Invalid DOS archive size</string>
+    <string name="archive_invalid_size">잘못된 DOS 압축 파일 크기</string>
     <!-- EN: DOS archive verification failed: %1$s -->
-    <string name="archive_verification_failed">DOS archive verification failed: %1$s</string>
+    <string name="archive_verification_failed">DOS 압축 파일 검증 실패: %1$s</string>
     <!-- EN: DOS file is too large -->
-    <string name="file_too_large">DOS file is too large</string>
+    <string name="file_too_large">DOS 파일이 너무 큽니다</string>
     <!-- EN: Not enough storage for writable game files -->
-    <string name="not_enough_storage">Not enough storage for writable game files</string>
+    <string name="not_enough_storage">쓰기 가능한 게임 파일을 위한 저장 공간이 부족합니다</string>
     <!-- Starting a game. %1$s is the eXoDOS game folder a config names. -->
     <!-- EN: Missing eXoDOS dependency: %1$s -->
-    <string name="exodos_dependency_missing">Missing eXoDOS dependency: %1$s</string>
+    <string name="exodos_dependency_missing">eXoDOS 종속 항목 없음: %1$s</string>
     <!-- %1$s is the emulator's name, DOSBox Staging; %2$s the media's file extension. -->
     <!-- EN: %1$s does not support this standalone media type: %2$s -->
-    <string name="media_type_unsupported">%1$s does not support this standalone media type: %2$s</string>
+    <string name="media_type_unsupported">%1$s은(는) 이 단독 미디어 유형을 지원하지 않습니다: %2$s</string>
     <!-- EN: Mounted DOS drives are needed to run a command script -->
-    <string name="command_script_needs_drives">Mounted DOS drives are needed to run a command script</string>
+    <string name="command_script_needs_drives">명령 스크립트를 실행하려면 마운트된 DOS 드라이브가 필요합니다</string>
     <!-- EN: No free DOS drive for the command script -->
-    <string name="command_script_no_drive">No free DOS drive for the command script</string>
+    <string name="command_script_no_drive">명령 스크립트에 쓸 빈 DOS 드라이브가 없습니다</string>
 </resources>
