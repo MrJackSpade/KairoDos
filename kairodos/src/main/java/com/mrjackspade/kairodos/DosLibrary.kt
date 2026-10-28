@@ -17,6 +17,7 @@ import com.mrjackspade.kairo.frontend.writeText
 import org.json.JSONObject
 import com.mrjackspade.kairo.frontend.FolderListings
 import com.mrjackspade.kairo.frontend.ScanDepth
+import com.mrjackspade.kairo.frontend.UiText
 import java.io.File
 import java.security.MessageDigest
 import java.util.Locale
@@ -60,7 +61,7 @@ class DosLibrary(private val context: Context) {
         }
         val title: String get() = displayName
         override val playable: Boolean get() = contentId != null && error == null
-        override val mediaLabel: String get() = "DOS game"
+        override val mediaLabel: UiText get() = UiText.res(R.string.dos_game)
     }
 
     private val storeCache = VersionedLibraryCache(File(context.filesDir, "dos-library-v2.bin"), 4,

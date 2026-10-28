@@ -46,8 +46,8 @@ internal object DosControllerBindings {
         joystickTargets,
         UiText.res(R.string.joystick_help),
         ControllerGuestSpec.STANDARD_ACTIONS, DosKeyboardLayout.value,
-        listOf(JoystickPort("Joystick 1", "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
-            JoystickPort("Joystick 2", "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
+        listOf(JoystickPort(UiText.res(R.string.joystick_port, 1), "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
+            JoystickPort(UiText.res(R.string.joystick_port, 2), "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
     val codec = ControllerBindingsCodec({ it in storedKeyCodes }, joystick,
         spec.actions.map { it.first })
 

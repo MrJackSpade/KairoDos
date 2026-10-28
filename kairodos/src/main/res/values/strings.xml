@@ -20,6 +20,9 @@
     <string name="help_second_screen">Second screen</string>
     <string name="help_second_screen_how">On dual-screen devices, the keyboard appears on the other screen</string>
 
+    <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
+    <string name="joystick_port">Joystick %1$d</string>
+    <string name="dos_game">DOS game</string>
     <string name="joystick_help">The D-pad is the arrow keys and joystick 1; game profiles can map any button to a DOS joystick control.</string>
     <!-- A DOS joystick control: %1$d is the joystick's number. -->
     <string name="joystick_up">%1$d up</string>
