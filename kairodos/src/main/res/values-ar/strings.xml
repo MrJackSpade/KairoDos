@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">تحرّك لوحة اللمس ماوس DOS بالسحب. يضعه النقر المباشر تحت إصبعك؛ وتتطلب بعض الألعاب حركة نسبية.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">تمت إعادة تعيين إعدادات اللعبة. تُطبَّق تغييرات الفيديو في المرة التالية التي تبدأ فيها اللعبة.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">الرجوع، أو زر Mode أو Home، أو التمرير من الحافة اليسرى</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">انقر على مطالبة لوحة المفاتيح أو مرّر من الحافة اليمنى</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">الشاشة الثانية</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">في الأجهزة ذات الشاشتين، تظهر لوحة المفاتيح على الشاشة الأخرى</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">عصا الألعاب %1$d</string>

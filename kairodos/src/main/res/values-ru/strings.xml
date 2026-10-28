@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">Сенсорная панель перемещает мышь DOS при перетаскивании. Прямое касание ставит ее под палец; некоторым играм нужно относительное перемещение.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">Настройки игры сброшены. Изменения видео вступят в силу при следующем запуске игры.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">«Назад», кнопка Mode или Home или свайп от левого края</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Нажмите на подсказку клавиатуры или проведите от правого края</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">Второй экран</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">На устройствах с двумя экранами клавиатура появляется на другом экране</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">Джойстик %1$d</string>

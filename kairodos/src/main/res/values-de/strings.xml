@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">Das Touchpad bewegt die DOS-Maus durch Ziehen. „Direkt tippen“ setzt sie unter Ihren Finger; manche Spiele erfordern relative Bewegung.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">Spieleinstellungen zurückgesetzt. Videoänderungen gelten beim nächsten Spielstart.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">Zurück, Mode- oder Home-Taste oder Wischen vom linken Rand</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Tippen Sie auf eine Tastaturaufforderung oder wischen Sie vom rechten Rand hinein</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">Zweiter Bildschirm</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">Auf Geräten mit zwei Bildschirmen erscheint die Tastatur auf dem anderen Bildschirm</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">Joystick %1$d</string>

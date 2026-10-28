@@ -15,10 +15,6 @@
 
     <string name="direct_touch_explanation">Touchpad moves the DOS mouse by dragging. Direct tap positions it at your finger; some games require relative movement.</string>
     <string name="reset_message">Game settings reset. Video changes apply the next time the game starts.</string>
-    <string name="help_open_menu_how">Back, Mode or Home button, or a swipe from the left edge</string>
-    <string name="help_open_keyboard_how">Tap a keyboard prompt or swipe in from the right edge</string>
-    <string name="help_second_screen">Second screen</string>
-    <string name="help_second_screen_how">On dual-screen devices, the keyboard appears on the other screen</string>
 
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <string name="joystick_port">Joystick %1$d</string>

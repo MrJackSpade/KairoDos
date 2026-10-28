@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">Touchpad menggerakkan mouse DOS dengan menyeret. Ketuk langsung menempatkannya di bawah jari Anda; beberapa game memerlukan gerakan relatif.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">Setelan game direset. Perubahan video berlaku saat game dimulai berikutnya.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">Kembali, tombol Mode atau Home, atau geser dari tepi kiri</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Ketuk prompt keyboard atau geser dari tepi kanan</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">Layar kedua</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">Pada perangkat dua layar, keyboard muncul di layar lainnya</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">Joystick %1$d</string>

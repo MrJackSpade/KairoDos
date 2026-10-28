@@ -534,11 +534,6 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         return rows
     }
 
-    override val aboutHelp get() = listOf(
-        getString(FrontendR.string.kairo_help_open_menu) to getString(R.string.help_open_menu_how),
-        getString(FrontendR.string.kairo_help_open_keyboard) to getString(R.string.help_open_keyboard_how),
-        getString(R.string.help_second_screen) to getString(R.string.help_second_screen_how))
-
     // First run: one step, the DOS folder ------------------------------------------------------------
 
     override val firmware: MachineFirstRun.Firmware? = null

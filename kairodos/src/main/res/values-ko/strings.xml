@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">터치패드는 드래그로 DOS 마우스를 움직입니다. 직접 탭은 손가락 위치에 커서를 둡니다. 일부 게임은 상대 이동이 필요합니다.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">게임 설정이 재설정되었습니다. 비디오 변경 사항은 다음에 게임을 시작할 때 적용됩니다.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">뒤로, Mode 또는 Home 버튼, 또는 왼쪽 가장자리에서 스와이프</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">키보드 안내를 탭하거나 오른쪽 가장자리에서 스와이프</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">두 번째 화면</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">듀얼 스크린 기기에서는 다른 화면에 키보드가 표시됩니다</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">조이스틱 %1$d</string>

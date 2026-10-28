@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">タッチパッドではドラッグで DOS のマウスを動かします。「直接タップ」では指の位置に置きます。相対移動が必要なゲームもあります。</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">ゲーム設定をリセットしました。ビデオの変更は次にゲームを起動したときに反映されます。</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">戻る、Mode または Home ボタン、または左端からスワイプ</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">キーボードの案内をタップするか、右端からスワイプ</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">セカンド画面</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">2画面のデバイスでは、もう一方の画面にキーボードが表示されます</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">ジョイスティック %1$d</string>

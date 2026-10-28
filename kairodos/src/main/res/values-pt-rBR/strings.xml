@@ -26,14 +26,6 @@
     <string name="direct_touch_explanation">O touchpad move o mouse do DOS ao arrastar. O toque direto posiciona o mouse no seu dedo; alguns jogos exigem movimento relativo.</string>
     <!-- EN: Game settings reset. Video changes apply the next time the game starts. -->
     <string name="reset_message">Configurações do jogo redefinidas. As mudanças de vídeo valem na próxima vez que o jogo iniciar.</string>
-    <!-- EN: Back, Mode or Home button, or a swipe from the left edge -->
-    <string name="help_open_menu_how">Voltar, botão Mode ou Home, ou deslizar a partir da borda esquerda</string>
-    <!-- EN: Tap a keyboard prompt or swipe in from the right edge -->
-    <string name="help_open_keyboard_how">Toque em um aviso de teclado ou deslize a partir da borda direita</string>
-    <!-- EN: Second screen -->
-    <string name="help_second_screen">Segunda tela</string>
-    <!-- EN: On dual-screen devices, the keyboard appears on the other screen -->
-    <string name="help_second_screen_how">Em dispositivos com duas telas, o teclado aparece na outra tela</string>
     <!-- A joystick port's heading on the joystick page: %1$d is its number. -->
     <!-- EN: Joystick %1$d -->
     <string name="joystick_port">Joystick %1$d</string>
