@@ -48,7 +48,3 @@ PROVENANCE = {
     "source": "KairoDos research catalog: the owner's eXoDOS v6 import (tools/generate_dos_catalog.py), metadata review",
     "license": "Original descriptions; titles, tags, launch configurations and image references from eXoDOS and LaunchBox; artwork used under fair use",
     "attribution": "eXoDOS contributors; LaunchBox Games Database contributors; original descriptions"}
-
-# Released KairoDos versions read their own frozen catalog (MrJackSpade/Kairo catalog/dos/core-v2.zip),
-# not the v3 English pack the other apps keep for theirs.
-LEGACY_UPDATE = False
