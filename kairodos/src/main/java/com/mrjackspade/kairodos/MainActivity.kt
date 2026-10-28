@@ -134,7 +134,6 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override val keyboardHeightDp = 280
     override val keyboardHasTouchpad = true
     override fun touchpadReferenceSize() = 640 to 400
-    override val keepScreenOnInLibrary = false
 
     // The library and its catalog --------------------------------------------------------------------
 
