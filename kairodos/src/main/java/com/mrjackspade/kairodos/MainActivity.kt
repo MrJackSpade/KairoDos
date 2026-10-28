@@ -123,8 +123,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun guestKey(androidKey: Int) = mapKey(androidKey)
     override val controllerSpec = DosControllerBindings.spec
     override val bindingsCodec = DosControllerBindings.codec
-    private val systemBindings by lazy { DosControllerBindings.parse(catalog.systemControllerBindings().toString()) }
-    override fun systemControllerBindings() = systemBindings
+    // Read each time: a catalog update can bring a new system mapping while the app runs.
+    override fun systemControllerBindings() = DosControllerBindings.parse(catalog.systemControllerBindings().toString())
     override val joystickControls: List<String> get() = DosControllerBindings.joystick
     override fun sendKey(code: Int, down: Boolean) = nativeKey(code, down)
     override fun sendJoystick(control: Int, down: Boolean) = nativeJoypad(control, down)
