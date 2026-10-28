@@ -131,8 +131,6 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun sendMouseMove(dx: Int, dy: Int) = nativeMouseMove(dx, dy)
     override fun sendMouseButton(button: Int, down: Boolean) = nativeMouseButton(button, down)
     override fun inputTelemetry(): LongArray? = if (nativeStatus() == 2) nativeInputTelemetry() else null
-    override val keyboardHeightDp = 280
-    override val keyboardHasTouchpad = true
     override fun touchpadReferenceSize() = 640 to 400
 
     // The library and its catalog --------------------------------------------------------------------
