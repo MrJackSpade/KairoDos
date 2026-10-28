@@ -72,6 +72,10 @@ Run `pwsh tools/PrepareStagingDependencies.ps1` to verify sources and build stat
 
 Pure 1.0-preview6, commit `a4a0bab7f8931433588f2fcad9045c85b277373d`, remains in earlier revisions with corresponding source. Existing overlays/states on devices are preserved. Ordinary game file changes can be imported; Pure emulator states cannot be loaded by Staging.
 
+## Local changes
+
+The local changes below are recorded in `tools/patches.py`, which `shared/tools/local_patches.py .` applies to a fresh snapshot and checks in CI (`--check`: undoing and redoing them must give back the committed tree). Change the snapshot only through it: add or edit a group there, then apply it with `--group`.
+
 ## Local dynrec SETcc implementation
 
 The imported Staging decoder and opcode helper now translate generic SETcc (0F 90-9F), retaining flags and existing checked writes. Nonzero flag masks are normalized to byte 1. Original GPL notices are preserved. The change is core-specific and contains no game code.
