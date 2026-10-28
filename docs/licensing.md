@@ -15,7 +15,7 @@ Preserve Staging's LICENSE, licenses directory and per-file notices. These cover
 ## Distribution audit
 
 - ARM64 builds link copied Staging and static dependencies, with Android `c++_shared`.
-- `tools/GenerateStagingNotices.py` generates the offline About notice from copied license texts and embedded notices, dependency notices, Spleen and NDK notices.
+- `shared/tools/notices.py .` generates the offline About notice from `tools/notices_sources.py`: from copied license texts and embedded notices, dependency notices, Spleen and NDK notices.
 - Corresponding source must include the exact app revision, pinned shared revision, complete Staging/SDL trees, dependency/recipe archives, adapters and build scripts. A checkout without shared is incomplete.
 - No proprietary ROM, BIOS, operating system, soundfont or game is supplied. Freely licensed Staging keyboard/codepage resources and DOS utilities include notices and source.
 - Device boot acceptance and source/license checks are required before an APK is described as release-ready. Build success alone is insufficient.
