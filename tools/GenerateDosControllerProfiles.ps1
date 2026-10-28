@@ -2,9 +2,9 @@
 
 $ErrorActionPreference = 'Stop'
 $project = Split-Path -Parent $PSScriptRoot
-$catalog = Join-Path $project 'kairodos/src/main/assets/catalog/dos'
 $ledger = Join-Path $project 'catalog/controller-research/recommendations.json'
-$asset = Join-Path $catalog 'controller-profiles-v1.json'
+# The controller presets the import (tools/import_catalog.py) gives each game.
+$asset = Join-Path $project 'catalog/research/controller-profiles-v1.json'
 $recommendations = Get-Content -LiteralPath $ledger -Raw | ConvertFrom-Json
 if ($recommendations.schemaVersion -ne 1) { throw 'Unsupported controller recommendation schema.' }
 
@@ -79,10 +79,9 @@ function Test-Preset($preset, [string] $profileId, [switch] $AllowSticks) {
 }
 
 $currentIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-foreach ($prefix in 0..255) {
-    $name = '{0:x2}.json' -f $prefix
-    $shard = Get-Content -LiteralPath (Join-Path $catalog $name) -Raw | ConvertFrom-Json
-    foreach ($contentId in $shard.games.PSObject.Properties.Name) { [void]$currentIds.Add($contentId) }
+$research = Get-Content -LiteralPath (Join-Path $project 'catalog/research/games-v1.json') -Raw | ConvertFrom-Json
+foreach ($game in $research.games.PSObject.Properties.Value) {
+    foreach ($contentId in @($game.contentIds)) { if ($contentId) { [void]$currentIds.Add($contentId) } }
 }
 
 $excluded = (Get-Content (Join-Path $project 'catalog/core-review-v1.json') -Raw | ConvertFrom-Json -AsHashtable).excluded

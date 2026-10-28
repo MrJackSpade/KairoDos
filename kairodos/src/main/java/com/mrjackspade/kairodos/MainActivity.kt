@@ -13,6 +13,8 @@ import com.mrjackspade.kairo.frontend.ArtworkCoordinator
 import com.mrjackspade.kairo.frontend.ButtonTone
 import com.mrjackspade.kairo.frontend.CatalogArtworkDownloadController
 import com.mrjackspade.kairo.frontend.CatalogUpdateTask
+import com.mrjackspade.kairo.frontend.CatalogGame
+import com.mrjackspade.kairo.frontend.LayeredGameCatalog
 import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
 import com.mrjackspade.kairo.frontend.ChoicePage
@@ -137,7 +139,11 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     // The library and its catalog --------------------------------------------------------------------
 
     private val dosLibrary by lazy { DosLibrary(this) }
-    override val catalog by lazy { DosGameCatalog(this) }
+    override val catalog by lazy {
+        // Before KairoDos read the shared catalog its overrides and catalog file had their own names.
+        DosCatalogMigration.moveLocalFiles(filesDir)
+        LayeredGameCatalog(this, DosCatalog)
+    }
     override fun cachedLibrary(tree: Uri) = claimSavedData(tree, dosLibrary.cached(tree))
     override fun scanLibrary(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean, progress: (String) -> Unit) =
         claimSavedData(tree, dosLibrary.scan(tree, depth, cancelled, progress))
@@ -157,8 +163,9 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         return ArtworkCoordinator.Record(if (kind == "preview") record.preview else record.boxArt, null,
             catalog.sourceOf(entry, "artwork", kind))
     }
-    override fun validArtworkPath(path: String) = DosCatalogFields.safeArtPath(path) != null
-    override fun saveArtworkOverride(game: GameKey, kind: String, path: String?) = catalog.setArtworkOverride(game, kind, path)
+    override fun validArtworkPath(path: String) = DosCatalog.validArtPath(path)
+    override fun saveArtworkOverride(game: GameKey, kind: String, path: String?) =
+        if (path == null) catalog.resetArtworkOverride(game, kind) else catalog.setArtworkOverride(game, kind, path)
     override fun createArtworkDownloads(screen: LibraryScreen<DosLibrary.Game>, entries: () -> List<DosLibrary.Game>) =
         CatalogArtworkDownloadController(this, screen, entries, catalog::missingArtworkFor, catalog::downloadArtwork) {
             pages.refresh()
@@ -239,7 +246,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     private val dosGameSettings by lazy { DosPerGameSettings(preferences, settingScope) }
 
     override fun catalogControllerLayer(entry: DosLibrary.Game) =
-        catalog.gameControllerLayer(entry, controllerProfiles.configuration.layout)
+        catalog.resolve(entry).controllerLayer(controllerProfiles.configuration.layout)
     override fun playerControllerLayer(entry: DosLibrary.Game): List<ControllerBinding> {
         dosGameSettings.controllerLayer(entry.key)?.let { return DosControllerBindings.parse(it) }
         // Saved before mappings were layers: the whole mapping as it played.
@@ -262,8 +269,8 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     override fun controllerMappingStatus(entry: DosLibrary.Game?): String? {
         if (controllerProfiles.configuration.layout != ControllerLayout.WITH_STICKS) return null
         if (entry?.contentId == null || dosGameSettings.hasOwnController(entry.key)) return null
-        val profile = catalog.resolve(entry).controllerProfile ?: return null
-        return if (catalog.controllerFallback(profile)) getString(FrontendR.string.kairo_mapping_without_sticks_fallback) else null
+        val game = catalog.resolve(entry).takeIf { it.controllerProfile != null } ?: return null
+        return if (game.controllerFallsBack) getString(FrontendR.string.kairo_mapping_without_sticks_fallback) else null
     }
 
     override val touchModes = listOf(
@@ -394,7 +401,7 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
     }
 
     /** A game's versions, its catalog configs (eXoDOS presets), the standard one first. */
-    private fun versions(record: DosGameCatalog.Game) = record.launch?.configs?.keys.orEmpty()
+    private fun versions(record: CatalogGame) = record.launch?.configs?.keys.orEmpty()
         .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
 
     /** The catalog config the game starts with: the version the player picked, or its standard one. */
@@ -416,14 +423,15 @@ class MainActivity : KairoActivity<DosLibrary.Game>() {
         entry.contentId != null && catalog.sourceOf(entry, "title") == "User override"
     override fun titleSource(entry: DosLibrary.Game) =
         entry.key.takeIf { entry.contentId != null }?.let { GameSource.label(catalog.sourceOf(entry, "title")) } ?: "Filename"
-    override fun setTitle(game: GameKey, title: String?) = catalog.setTitle(game, title)
+    override fun setTitle(game: GameKey, title: String?) =
+        if (title == null) catalog.resetOverride(game, "title") else catalog.setOverride(game, "title", title)
 
     /** The game's own folder or archive; a frontend's file or the DOS folder itself is not the library's to delete. */
     override fun deletePrompt(entry: DosLibrary.Game) = if (entry.external || entry.rootFolder) null
         else GameDeletionFlow.Prompt(entry.path, entry.folder)
     override fun deleteSource(entry: DosLibrary.Game) = dosLibrary.deleteSource(entry)
     override fun resetGameSettings(game: GameKey) {
-        catalog.resetOverrides(game)
+        catalog.resetOverride(game)
         dosGameSettings.reset(game)
     }
     override val resetMessage = UiText.res(R.string.reset_message)

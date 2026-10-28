@@ -46,9 +46,9 @@ Duke bindings follow the installed game's original `DUKE3D.CFG` key definitions.
 ## How profiles are maintained
 
 Profiles are generated from `catalog/controller-defaults.json` by
-`tools/GenerateDosControllerProfiles.ps1` and published with
-`tools/BuildPublicDosCatalog.ps1`. A downloaded catalog replaces the bundled
-controller catalog. Only explicit per-game user mappings take precedence;
+`tools/GenerateDosControllerProfiles.ps1` into `catalog/research/controller-profiles-v1.json`,
+which the import gives each game as its controls (`tools/import_catalog.py`,
+`shared/tools/app_catalog.py .`). A downloaded catalog replaces the bundled controls. Only explicit per-game user mappings take precedence;
 there are no executable Doom/Duke default overrides. Catalog refresh also
 reloads the active game's mapping, releasing held inputs through the shared mapper.
 

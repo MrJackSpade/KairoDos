@@ -9,7 +9,7 @@ takes the LaunchBox DatabaseID eXoDOS's MS-DOS.xml records for it; a game withou
 LaunchBox game whose name equals its title and whose year agrees. Writes
 catalog/launchbox-artwork-v1.json: {"folders": {"<folder>": {"game": DatabaseID,
 "boxArt"|"preview": LaunchBox image URL}}}, by lower-case folder name, which
-tools/build_catalog_packages.py applies.
+tools/import_catalog.py applies.
 """
 
 import argparse

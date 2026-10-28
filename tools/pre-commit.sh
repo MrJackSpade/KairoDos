@@ -1,3 +1,5 @@
 #!/bin/sh
 set -eu
-exec pwsh -NoProfile -ExecutionPolicy Bypass -File tools/CheckGeneratedCatalog.ps1
+# The research catalog matches the eXoDOS import, and the generated catalog its research.
+python tools/import_catalog.py --check
+exec python shared/tools/app_catalog.py . --check

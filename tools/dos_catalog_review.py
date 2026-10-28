@@ -7,7 +7,6 @@ from dos_artwork import compact, transform
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW = ROOT / "catalog/metadata-review-v1.json"
-CATALOG = ROOT / "kairodos/src/main/assets/catalog/dos"
 
 
 def apply_review(games, review, *, require_all=True):
@@ -62,30 +61,16 @@ def read_review():
     return json.loads(REVIEW.read_text(encoding="utf-8"))
 
 
-def regenerate(catalog=CATALOG, *, check=False):
-    if catalog.resolve() == CATALOG.resolve():
-        from build_catalog_packages import generate
-        generate(check=check)
-        return
-    paths = sorted(catalog.glob("[0-9a-f][0-9a-f].json"))
-    shards = {p: json.loads(p.read_text(encoding="utf-8")) for p in paths}
-    original = {key: record for shard in shards.values() for key, record in shard["games"].items()}
-    reviewed = transform(apply_review(original, read_review()), compact)
-    changed = 0
-    for path, shard in shards.items():
-        games = {key: reviewed[key] for key in shard["games"]}
-        if games != shard["games"]:
-            if check:
-                raise ValueError(f"Regenerate reviewed catalog metadata: {path.name}")
-            shard["games"] = games
-            path.write_text(json.dumps(shard, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-            changed += 1
-    print(f"Reviewed DOS metadata: {len(read_review()['records'])} records, {changed} changed shards")
+def regenerate(*, check=False):
+    """The research catalog with the review applied (tools/import_catalog.py), and the catalog from it."""
+    import subprocess
+    import sys
+    for command in (["tools/import_catalog.py"], ["shared/tools/app_catalog.py", "."]):
+        subprocess.run([sys.executable, *command, *(["--check"] if check else [])], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--catalog", type=Path, default=CATALOG)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    regenerate(args.catalog, check=args.check)
+    regenerate(check=args.check)

@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""Turn the eXoDOS import (catalog/complete-input-v1.zip, from tools/generate_dos_catalog.py) into
+KairoDos's research catalog for the shared generator (shared/tools/app_catalog.py).
+
+Usage: import_catalog.py [--check]
+
+Writes catalog/research/games-v1.json and catalog/research/folders-v1.json. Each game is
+"dos:<first 16 hex digits of its content ID>"; an archive holding several games (its record's
+"variants", picked by the library file's name) keeps its own key and gives each of its games
+"<key>.<n>". A game's title, tags and artwork come from the import with the metadata review
+applied (catalog/metadata-review-v1.json); its LaunchBox images from
+catalog/launchbox-artwork-v1.json; its launch (folder, eXoDOS configs, exception) rides on its
+medium's record; its controls are its controller preset (catalog/research/controller-profiles-v1.json,
+which tools/GenerateDosControllerProfiles.ps1 maintains, with catalog/controller-defaults.json). Descriptions are original and come from the description files
+(shared catalog_descriptions.py); the import's eXoDOS text is never shipped. --check fails if a
+written file would change.
+"""
+
+import argparse
+import json
+import sys
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "shared/tools"))
+sys.path.insert(0, str(ROOT / "tools"))
+import catalog_descriptions
+from dos_artwork import with_launchbox
+from dos_catalog_review import apply_review, read_review
+
+PREFIX = "sha256-dos-manifest-v1:"
+HEART = "♥"
+
+
+def key_of(content_id):
+    return "dos:" + content_id.removeprefix(PREFIX)[:16]
+
+
+def controls(source, defaults):
+    """{content ID: {"profile", "defaults"}}: each game's preset, by assignment or profile list."""
+    presets = {**source["presets"], **defaults["presets"]}
+    assignments = {**source["assignments"], **defaults["assignments"]}
+    by_game = {}
+    for profile, ids in source.get("profiles", {}).items():
+        for content_id in ids:
+            by_game.setdefault(content_id, profile)
+    by_game.update(assignments)
+    result = {}
+    for content_id, profile in by_game.items():
+        preset = presets[profile]
+        layouts = preset.get("defaults") or {"withoutSticks": preset["bindings"]}
+        result[content_id] = {"profile": profile, "defaults": layouts}
+    return result
+
+
+def research_game(record, images):
+    """A game's shipped fields from an import record (or variant): title, tags, adult, artwork."""
+    tags = [tag for tag in record.get("tags", []) if tag != HEART]
+    game = {"title": record["title"]}
+    if tags:
+        game["tags"] = tags
+    if HEART in record.get("tags", []):
+        game["adult"] = True
+    art = record.get("artwork")
+    if art:
+        folder = record.get("launch", {}).get("folder", "").lower()
+        game["artwork"] = with_launchbox(art, images[folder]) if folder in images else art
+    return game
+
+
+def build():
+    with zipfile.ZipFile(ROOT / "catalog/complete-input-v1.zip") as archive:
+        files = {name: json.loads(archive.read(name)) for name in archive.namelist()}
+    records = apply_review({key: value for name, root in files.items() if len(name) == 7
+                            for key, value in root["games"].items()}, read_review())
+    images = json.loads((ROOT / "catalog/launchbox-artwork-v1.json").read_text(encoding="utf-8"))["folders"]
+    defaults = json.loads((ROOT / "catalog/controller-defaults.json").read_text(encoding="utf-8"))
+    profiles = json.loads((ROOT / "catalog/research/controller-profiles-v1.json").read_text(encoding="utf-8"))
+    controllers = controls(profiles, defaults)
+    games = {}
+    for content_id, record in sorted(records.items()):
+        key = key_of(content_id)
+        assert key not in games, f"two games share {key}"
+        game = {**research_game(record, images), "contentIds": [content_id]}
+        if record.get("hidden"):
+            game["hidden"] = True
+        if content_id in controllers:
+            game["controller"] = controllers[content_id]
+        if "launch" in record:
+            game["diskMachine"] = {content_id: {"launch": record["launch"]}}
+        variants = {}
+        for index, (name, variant) in enumerate(sorted(record.get("variants", {}).items()), 1):
+            variant_key = f"{key}.{index}"
+            games[variant_key] = research_game(variant, images)
+            variants[name] = {"game": variant_key, "launch": variant["launch"]}
+        if variants:
+            game["diskVariants"] = {content_id: variants}
+        games[key] = game
+    catalog_descriptions.apply(ROOT / "catalog/research", games)
+    folders = {"schemaVersion": 1, "folders": files["folders.json"]}
+    return {"catalog/research/games-v1.json": {"schemaVersion": 1, "games": games},
+            "catalog/research/folders-v1.json": folders}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    outputs = build()
+    for path, value in outputs.items():
+        content = json.dumps(value, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
+        target = ROOT / path
+        if args.check:
+            assert target.read_text(encoding="utf-8") == content, f"Stale {path}"
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content, encoding="utf-8")
+    print(f"KairoDos research: {len(outputs['catalog/research/games-v1.json']['games'])} games")
+
+
+if __name__ == "__main__":
+    main()

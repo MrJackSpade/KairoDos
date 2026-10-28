@@ -1,12 +1,12 @@
 #!/bin/sh
 # KairoDos's own checks and build preparation, after the shared checks (shared/tools/check-app.sh):
-# the public catalog, catalog review and artwork tests, the generated catalog matching its inputs,
+# catalog review and artwork tests, the research and generated catalog matching their inputs,
 # the catalog audit, the pinned DOSBox Staging dependencies and their notices.
 set -e
-pwsh ./tools/BuildPublicDosCatalog.ps1 -Check
 python3 -m unittest discover -s tools -p test_dos_catalog_review.py
 python3 -m unittest discover -s tools -p test_dos_artwork.py
-python3 tools/build_catalog_packages.py --check
+python3 tools/import_catalog.py --check
+python3 shared/tools/app_catalog.py . --check
 python3 shared/tools/audit_core_catalog.py dos
 pwsh ./tools/PrepareStagingDependencies.ps1
 python3 tools/GenerateStagingNotices.py

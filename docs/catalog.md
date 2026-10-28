@@ -45,17 +45,17 @@ Downloaded profiles replace bundled defaults; only explicitly saved user control
 
 `sha256-dos-manifest-v1` hashes a canonical list of normalized file paths, sizes, and CRC-32 values. A ZIP's central directory supplies those values without decompressing every file; an extracted folder computes them from its files. One common outer folder is stripped, ASCII case is folded, and eXoDOS `.exo` markers are excluded. Recompression and unpacking the outer folder therefore preserve a match. The CRC-32 manifest is a fast lookup identity, not cryptographic proof of file contents. Standalone files use `sha256-dos-file-v1` over their bytes.
 
-The catalog is sharded by content ID under `kairodos/src/main/assets/catalog/dos/`. A generated `hidden-index-v1.json` holds the visibility flags so opening the library does not parse every shard before its first frame.
+KairoDos reads the shared catalog (`LayeredGameCatalog` with the `DosCatalog` schema), as every Kairo app does. Each game is a name-index record (`dos:<first 16 hex digits of its content ID>`: title, tags, heart, artwork, controls) and its archive's record in a content-ID shard names that game and carries its launch (`folder`, the eXoDOS DOSBox `configs` per version, `exception`). An archive holding several games picks each by its file's name (`variants`). `folders-v1.json` lists which games provide a launch folder another game's configuration mounts.
 
 ### Update delivery
 
-The app fetches the small `Kairo/catalog/dos/online-v1.json` revision file first and skips the archive when its SHA-256 is unchanged. The public snapshot at `Kairo/catalog/dos/online-v1.zip` contains the 256 metadata shards, folder index, and controller profile index. The app verifies the downloaded archive against the revision file and checks the snapshot format before saving it.
+The app fetches `catalog/core-v4.meta.json` from this repository first and skips the archive when its SHA-256 is unchanged; `catalog/core-v4.zip` holds the catalog's documents, read one at a time, and each language's descriptions are a download of their own (`core-v4-<language>.zip`). Versions before the shared catalog keep reading the frozen `Kairo/catalog/dos/core-v2.zip`.
 
-The public export includes nonempty descriptions, reviewed titles, and heart tags. Descriptions are retained or rewritten case by case; they are no longer excluded as a category. The shared frontend owns download and atomic cache behavior; DOS-specific code reads ZIP records on demand. Run `pwsh -File tools/BuildPublicDosCatalog.ps1` after changing bundled metadata. CI checks that both public archives and revision files match the reviewed source. Source attribution and the separate artwork review remain recorded in [licensing](licensing.md).
+Descriptions are original (`catalog/research/descriptions-v1.json` and its translations); the eXoDOS text in the import is never shipped. Source attribution and the separate artwork review remain recorded in [licensing](licensing.md).
 
 ### Controller profile data
 
-The generated `catalog/dos/controller-profiles-v1.json` selects controller layouts by game content ID. Its `profiles` section preserves the Doom grouping; `assignments` selects researched per-game recommendations, and `presets` contains validated bindings.
+`catalog/research/controller-profiles-v1.json` selects controller layouts by game content ID. Its `profiles` section preserves the Doom grouping; `assignments` selects researched per-game recommendations, and `presets` contains validated bindings. The import gives each game its preset as its `controller` (`profile` and `defaults`).
 
 Catalog presets store bindings under `defaults` with `withoutSticks` and optional `withSticks` arrays. Missing With Sticks defaults fall back to Without Sticks; explicitly empty arrays disable bindings. Legacy catalog bindings migrate unchanged to Without Sticks, and user overrides retain precedence. Shared persistence and migration details are in `shared/docs/controller-configuration.md`.
 
@@ -68,10 +68,11 @@ To refresh the bundled index from the owner's current collection, first generate
 ```powershell
 python tools/generate_dos_catalog.py '<current eXoDOS root>' .tmp/catalog-refresh
 python tools/generate_dos_catalog.py '<current eXoDOS root>' .tmp/catalog-refresh --refresh-from-staging
-pwsh -File tools/BuildPublicDosCatalog.ps1
+python tools/import_catalog.py
+python shared/tools/app_catalog.py .
 ```
 
-The refresh rejects incomplete or changed scans and missing launch metadata. It removes identities absent from the current directory, refreshes descriptions, tags, and launch configurations, and preserves existing bundled artwork without importing new images. Unambiguous title or filename matches carry artwork and controller profiles to changed identities. Research assignments and presets from `catalog/controller-research/recommendations.json` are merged into the generated profile catalog; assignments follow unambiguous identity migrations and never override Doom's existing profile. Archives without LaunchBox records remain indexed by filename with launch settings from their source folder. `catalog/catalog-provenance.json` records every current archive and its resolved identity; `catalog/catalog-refresh.json` reports added and removed identities, identity migrations, and changed metadata fields. No game files are copied. Review both reports and the generated catalog before committing; the public export also updates the first-party `shared/catalog/dos/` snapshot.
+The refresh rejects incomplete or changed scans and missing launch metadata. It removes identities absent from the current directory, refreshes descriptions, tags, and launch configurations, and preserves existing bundled artwork without importing new images. Unambiguous title or filename matches carry artwork and controller profiles to changed identities. Research assignments and presets from `catalog/controller-research/recommendations.json` are merged into the generated profile catalog; assignments follow unambiguous identity migrations and never override Doom's existing profile. Archives without LaunchBox records remain indexed by filename with launch settings from their source folder. `catalog/catalog-provenance.json` records every current archive and its resolved identity; `catalog/catalog-refresh.json` reports added and removed identities, identity migrations, and changed metadata fields. No game files are copied. Review both reports and the generated catalog before committing.
 
 ### Reviewed display language
 
@@ -83,15 +84,13 @@ They never change archive names, content IDs, artwork paths, launch settings,
 controller profiles, or user overrides. Ordinary words and names such as
 "comic strip" and "Dick Tracy" are not subject to a runtime word filter.
 
-DOS already displays catalog tags, so its adult marker is emitted as a `♥` tag.
-This gives the same visible marker as Kairo98 without adding a field that older
-DOS update validators would reject. An absent heart is not an age rating.
+The import turns the `♥` tag into the shared catalog's `heart`, which shows the
+same marker in every app. An absent heart is not an age rating.
 
 To regenerate metadata-only edits without the private source collection:
 
 ```powershell
 python tools/dos_catalog_review.py
-pwsh -File tools/BuildPublicDosCatalog.ps1
 python -m unittest discover -s tools -p 'test_dos_catalog_review.py'
 ```
 

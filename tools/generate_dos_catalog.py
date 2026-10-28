@@ -558,8 +558,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.refresh_from_staging or args.folder_index_only or args.launch_only:
         import tempfile
-        from build_catalog_packages import generate, ROOT
         from catalog_package import write_zip
+        from dos_catalog_review import ROOT, regenerate
         with tempfile.TemporaryDirectory(prefix="dos-complete-input-") as temporary:
             catalog = Path(temporary)
             with zipfile.ZipFile(ROOT / "catalog/complete-input-v1.zip") as source:
@@ -572,7 +572,8 @@ def main() -> None:
             else: import_launch_only(args.root, catalog)
             write_zip(ROOT / "catalog/complete-input-v1.zip",
                       {path.name:path.read_bytes() for path in catalog.glob("*.json")})
-        generate()
+        # The research catalog from the new import, and the shared catalog from it.
+        regenerate()
         return
     args.output.mkdir(parents=True, exist_ok=True)
     previous_art = {}

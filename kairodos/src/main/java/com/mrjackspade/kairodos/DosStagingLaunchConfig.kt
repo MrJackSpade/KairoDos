@@ -70,7 +70,7 @@ internal object DosStagingLaunchConfig {
     private const val HOST_PATH_PREFIX = "kairo-host:"
 
     /** [context] puts a failure the player reads in their language. */
-    fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosGameCatalog.Launch?,
+    fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosLaunch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
               target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),

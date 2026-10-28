@@ -28,24 +28,27 @@ class ArtworkTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             compact(paths)
 
-    def test_generated_catalog_is_compact_and_all_assets_resolve(self):
+    def test_main_artwork_is_compact_and_every_image_resolves(self):
+        # The art part every build ships (shared catalog_parts): the reviewed main images alone.
         root = Path(__file__).resolve().parents[1]
-        assets = root / 'kairodos/src/main/assets'
+        parts = json.loads((root / 'catalog/parts/art.json').read_text(encoding='utf-8'))['documents']
         count = 0
-        for path in (assets / 'catalog/dos').glob('??.json'):
-            source = json.loads(path.read_text(encoding='utf-8'))
-            self.assertEqual(transform(source, compact), source)
-            def check(value):
-                nonlocal count
-                if isinstance(value, dict):
-                    for key, item in value.items():
-                        if key == 'artwork':
-                            # The bundled images; <kind>Url names the LaunchBox image each came from.
-                            for kind, asset in expand(item).items():
-                                if not kind.endswith('Url'):
-                                    self.assertTrue((root / 'catalog/artwork' / asset).is_file(), asset)
-                                    count += 1
-                        else:
-                            check(item)
-            check(source)
+        def check(value):
+            nonlocal count
+            if isinstance(value, dict):
+                for key, item in value.items():
+                    if key == 'artwork':
+                        self.assertEqual(compact(item), item)
+                        # <kind>Url names the LaunchBox image each came from.
+                        for kind, asset in expand(item).items():
+                            if not kind.endswith('Url'):
+                                self.assertTrue((root / 'catalog/artwork' / asset).is_file(), asset)
+                                count += 1
+                    else:
+                        check(item)
+        check(parts)
         self.assertEqual(count, len(json.loads((root / "catalog/core-review-v1.json").read_text("utf8"))["approvedArtwork"]))
+
+
+if __name__ == "__main__":
+    unittest.main()

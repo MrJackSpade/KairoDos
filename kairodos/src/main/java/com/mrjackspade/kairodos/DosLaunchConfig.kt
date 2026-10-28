@@ -12,7 +12,7 @@ internal object DosLaunchConfig {
     private val playerName = Regex("[A-Z0-9_]{1,8}")
     private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
 
-    fun needsPlayer(launch: DosGameCatalog.Launch?): Boolean =
+    fun needsPlayer(launch: DosLaunch?): Boolean =
         launch?.folder?.lowercase() in setOf("azalta", "dom_door", "legord")
 
     fun setupLines(folder: String, player: String?): List<String> {
@@ -44,7 +44,7 @@ internal object DosLaunchConfig {
             listOf("copy CHAIN.TXT 2.0\\DOMIN2\\CHAIN.TXT") else emptyList()
     }
 
-    fun mountsParent(launch: DosGameCatalog.Launch, name: String = "dosbox.conf"): Boolean {
+    fun mountsParent(launch: DosLaunch, name: String = "dosbox.conf"): Boolean {
         val config = launch.configs[name] ?: return false
         val marker = Regex("(?im)^\\s*\\[autoexec]\\s*$").find(config) ?: return false
         val autoexec = config.substring(marker.range.last + 1)
@@ -56,7 +56,7 @@ internal object DosLaunchConfig {
         }
     }
 
-    fun requiredFolders(launch: DosGameCatalog.Launch?, name: String): Set<String> {
+    fun requiredFolders(launch: DosLaunch?, name: String): Set<String> {
         val source = launch?.configs?.get(name) ?: return emptySet()
         val marker = Regex("(?im)^\\s*\\[autoexec]\\s*$").find(source) ?: return emptySet()
         return source.substring(marker.range.last + 1).lineSequence().mapNotNull { line ->

@@ -12,14 +12,14 @@ from generate_dos_catalog import apply_controller_recommendations  # noqa: E402
 
 class DosControllerRecommendationsTest(unittest.TestCase):
     def test_all_current_ledger_assignments_generate_without_replacing_doom(self):
-        catalog = ROOT / "kairodos/src/main/assets/catalog/dos"
+        research = ROOT / "catalog/research"
         recommendations = json.loads(
             (ROOT / "catalog/controller-research/recommendations.json").read_text("utf-8"))
-        base = json.loads((catalog / "controller-profiles-v1.json").read_text("utf-8"))
+        base = json.loads((research / "controller-profiles-v1.json").read_text("utf-8"))
         current_ids = {
             content_id
-            for path in catalog.glob("[0-9a-f][0-9a-f].json")
-            for content_id in json.loads(path.read_text("utf-8"))["games"]
+            for record in json.loads((research / "games-v1.json").read_text("utf-8"))["games"].values()
+            for content_id in record.get("contentIds", [])
         }
 
         # Recommendations cover both independently distributed partitions.

@@ -4,7 +4,7 @@ import json
 import unittest
 import zipfile
 
-from dos_catalog_review import CATALOG, ROOT, apply_review, read_review
+from dos_catalog_review import ROOT, apply_review, read_review
 
 
 class CatalogReviewTests(unittest.TestCase):
@@ -49,30 +49,15 @@ class CatalogReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Duplicate"):
             apply([item, item])
 
-    def test_bundled_and_public_catalog_retain_reviewed_descriptions(self):
-        games = {key: value for path in CATALOG.glob("[0-9a-f][0-9a-f].json")
-                 for key, value in json.loads(path.read_text(encoding="utf-8"))["games"].items()}
-        self.assertEqual(games, apply_review(games, read_review(), require_all=False))
-        excluded = json.loads((ROOT / "catalog/core-review-v1.json").read_text("utf8"))["excluded"]
-        self.assertTrue({x["contentId"] for x in read_review()["records"]} - games.keys() <= excluded.keys())
-        archive = ROOT / "catalog/online-v1.zip"
-        metadata = json.loads(archive.with_suffix(".json").read_text(encoding="utf-8"))
-        self.assertEqual(metadata["sha256"], hashlib.sha256(archive.read_bytes()).hexdigest())
-        self.assertEqual(metadata["size"], archive.stat().st_size)
-        descriptions = 0
-        with zipfile.ZipFile(archive) as source:
-            for path in CATALOG.glob("[0-9a-f][0-9a-f].json"):
-                public = json.loads(source.read(path.name))["games"]
-                for key, record in json.loads(path.read_text(encoding="utf-8"))["games"].items():
-                    self.assertEqual(public[key].get("title"), record.get("title"))
-                    for name, variant in record.get("variants", {"": record}).items():
-                        exported = public[key]["variants"][name] if name else public[key]
-                        if variant.get("description", "").strip():
-                            self.assertEqual(exported["description"], variant["description"])
-                            descriptions += 1
-                        else:
-                            self.assertNotIn("description", exported)
-                        self.assertEqual(exported.get("tags"), variant.get("tags"))
-                        self.assertEqual(exported.get("launch"), variant.get("launch"))
-                        self.assertNotIn("heart", exported)
-        self.assertGreater(descriptions, 7000)
+    def test_research_catalog_carries_reviewed_titles(self):
+        # The import (tools/import_catalog.py) names each game by its content ID's first 16 digits;
+        # a reviewed variant is that game's "<key>.<n>". Descriptions are original, never the review's.
+        games = json.loads((ROOT / "catalog/research/games-v1.json").read_text(encoding="utf-8"))["games"]
+        titles = {title for game in games.values() for title in [game["title"]]}
+        reviewed = [item["fields"]["title"] for item in read_review()["records"] if "title" in item["fields"]]
+        self.assertTrue(reviewed)
+        self.assertEqual([title for title in reviewed if title not in titles], [])
+
+
+if __name__ == "__main__":
+    unittest.main()
