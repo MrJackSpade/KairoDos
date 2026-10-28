@@ -2,7 +2,7 @@
 """Turn the eXoDOS import (catalog/complete-input-v1.zip, from tools/generate_dos_catalog.py) into
 KairoDos's research catalog for the shared generator (shared/tools/app_catalog.py).
 
-Usage: import_catalog.py [--check]
+Usage: import_catalog.py [--check] [--references <out.json>]
 
 Writes catalog/research/games-v1.json and catalog/research/folders-v1.json. Each game is
 "dos:<first 16 hex digits of its content ID>"; an archive holding several games (its record's
@@ -13,7 +13,9 @@ catalog/launchbox-artwork-v1.json; its launch (folder, eXoDOS configs, exception
 medium's record; its controls are its controller preset (catalog/research/controller-profiles-v1.json,
 which tools/GenerateDosControllerProfiles.ps1 maintains, with catalog/controller-defaults.json). Descriptions are original and come from the description files
 (shared catalog_descriptions.py); the import's eXoDOS text is never shipped. --check fails if a
-written file would change.
+written file would change. --references writes that text, {"<game key>": text}, as reference
+material for writing descriptions (shared descriptions.py worklist --references); keep it out of
+the repository (.downloads/).
 """
 
 import argparse
@@ -78,11 +80,13 @@ def build():
     defaults = json.loads((ROOT / "catalog/controller-defaults.json").read_text(encoding="utf-8"))
     profiles = json.loads((ROOT / "catalog/research/controller-profiles-v1.json").read_text(encoding="utf-8"))
     controllers = controls(profiles, defaults)
-    games = {}
+    games, references = {}, {}
     for content_id, record in sorted(records.items()):
         key = key_of(content_id)
         assert key not in games, f"two games share {key}"
         game = {**research_game(record, images), "contentIds": [content_id]}
+        if record.get("description", "").strip():
+            references[key] = record["description"]
         if record.get("hidden"):
             game["hidden"] = True
         if content_id in controllers:
@@ -93,6 +97,8 @@ def build():
         for index, (name, variant) in enumerate(sorted(record.get("variants", {}).items()), 1):
             variant_key = f"{key}.{index}"
             games[variant_key] = research_game(variant, images)
+            if variant.get("description", "").strip():
+                references[variant_key] = variant["description"]
             variants[name] = {"game": variant_key, "launch": variant["launch"]}
         if variants:
             game["diskVariants"] = {content_id: variants}
@@ -100,14 +106,18 @@ def build():
     catalog_descriptions.apply(ROOT / "catalog/research", games)
     folders = {"schemaVersion": 1, "folders": files["folders.json"]}
     return {"catalog/research/games-v1.json": {"schemaVersion": 1, "games": games},
-            "catalog/research/folders-v1.json": folders}
+            "catalog/research/folders-v1.json": folders}, references
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--references", type=Path)
     args = parser.parse_args()
-    outputs = build()
+    outputs, references = build()
+    if args.references:
+        args.references.parent.mkdir(parents=True, exist_ok=True)
+        args.references.write_text(json.dumps(references, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
     for path, value in outputs.items():
         content = json.dumps(value, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
         target = ROOT / path
