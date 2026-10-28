@@ -1,5 +1,6 @@
 package com.mrjackspade.kairodos
 
+import com.mrjackspade.kairo.frontend.R as FrontendR
 import com.mrjackspade.kairo.frontend.GuestKeyboardLayout
 import com.mrjackspade.kairo.frontend.GuestKeyboardPage
 import com.mrjackspade.kairo.frontend.UiText
@@ -50,7 +51,7 @@ internal object DosKeyboardLayout {
                     KeyboardKey("/", 47)),
                 listOf(KeyboardKey("Tab", 9), KeyboardKey("Space", 32, 5f),
                     KeyboardKey("Enter", 13))
-            ), pickerLabel = UiText.res(R.string.keyboard_symbols)),
+            ), pickerLabel = UiText.res(FrontendR.string.kairo_keyboard_symbols)),
             // The keys above and beside the IBM main block, with Shift for Shift+F-key commands.
             GuestKeyboardPage("FN", listOf(
                 (1..6).map { KeyboardKey("F$it", 281 + it) },

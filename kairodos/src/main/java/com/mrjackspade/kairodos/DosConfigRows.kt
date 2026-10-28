@@ -56,7 +56,7 @@ internal class DosConfigRows(
         value = { own().size.let { if (it == 0) "" else context.getString(R.string.dosbox_settings_custom, it) } },
         enabled = enabled, disabledReason = { GameSettingsRows.noHash(context) }) { open(page()) }
 
-    fun commandsRow() = GameSettingsRows.text(context, "startup-commands", context.getString(R.string.startup_commands),
+    fun commandsRow() = GameSettingsRows.text(context, "startup-commands", context.getString(FrontendR.string.kairo_startup_commands),
         context.getString(R.string.startup_commands_hint),
         { settings.autoexec(game) ?: config()?.autoexec?.joinToString("\n")?.takeIf(String::isNotBlank) },
         { settings.autoexec(game) != null }, source,

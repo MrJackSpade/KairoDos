@@ -45,8 +45,6 @@
     <!-- %1$d is the joystick's number; %2$d the button's. -->
     <!-- EN: %1$d button %2$d -->
     <string name="joystick_button">%1$d botón %2$d</string>
-    <!-- EN: Symbols -->
-    <string name="keyboard_symbols">Símbolos</string>
     <!-- EN: Function -->
     <string name="keyboard_function">Función</string>
     <!-- EN: Keypad -->
@@ -131,8 +129,6 @@
     <!-- %1$d is how many settings the player changed. -->
     <!-- EN: %1$d custom -->
     <string name="dosbox_settings_custom">%1$d personalizados</string>
-    <!-- EN: Startup commands -->
-    <string name="startup_commands">Comandos de inicio</string>
     <!-- EN: One DOS command per line -->
     <string name="startup_commands_hint">Un comando de DOS por línea</string>
     <!-- EN: Not set -->

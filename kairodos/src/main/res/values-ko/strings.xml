@@ -45,8 +45,6 @@
     <!-- %1$d is the joystick's number; %2$d the button's. -->
     <!-- EN: %1$d button %2$d -->
     <string name="joystick_button">%1$d 버튼 %2$d</string>
-    <!-- EN: Symbols -->
-    <string name="keyboard_symbols">기호</string>
     <!-- EN: Function -->
     <string name="keyboard_function">기능</string>
     <!-- EN: Keypad -->
@@ -131,8 +129,6 @@
     <!-- %1$d is how many settings the player changed. -->
     <!-- EN: %1$d custom -->
     <string name="dosbox_settings_custom">%1$d개 사용자 지정</string>
-    <!-- EN: Startup commands -->
-    <string name="startup_commands">실행 명령</string>
     <!-- EN: One DOS command per line -->
     <string name="startup_commands_hint">한 줄에 DOS 명령 하나</string>
     <!-- EN: Not set -->

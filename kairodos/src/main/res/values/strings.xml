@@ -27,7 +27,6 @@
     <string name="joystick_right">%1$d right</string>
     <!-- %1$d is the joystick's number; %2$d the button's. -->
     <string name="joystick_button">%1$d button %2$d</string>
-    <string name="keyboard_symbols">Symbols</string>
     <string name="keyboard_function">Function</string>
     <string name="keyboard_keypad">Keypad</string>
 
@@ -76,7 +75,6 @@
     <string name="dosbox_settings">%1$s settings</string>
     <!-- %1$d is how many settings the player changed. -->
     <string name="dosbox_settings_custom">%1$d custom</string>
-    <string name="startup_commands">Startup commands</string>
     <string name="startup_commands_hint">One DOS command per line</string>
     <string name="setting_not_set">Not set</string>
     <string name="setting_add">Add setting</string>
