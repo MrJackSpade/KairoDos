@@ -19,8 +19,8 @@ import java.util.Locale
  * shared/tools/app_catalog.py from tools/import_catalog.py's research): how a game starts
  * (`launch`: the `folder` its files are in, the eXoDOS DOSBox configuration of each of its
  * versions in `configs` by file name, and whether eXoDOS ships an `exception` for it). One archive
- * holding several games names each by its file's name (`variants`); an installer's file shows
- * "- Installer". Games are named by the manifest hash of their files.
+ * holding several games is a collection (`collection`), whose game the player picks when it starts;
+ * an installer's file shows "- Installer". Games are named by the manifest hash of their files.
  */
 object DosCatalog : LayeredGameCatalog.Schema {
     override val platform = "dos"
@@ -106,10 +106,6 @@ object DosCatalog : LayeredGameCatalog.Schema {
     }
 
     override fun validBindings(bindings: JSONArray) = DosControllerBindings.valid(bindings)
-
-    /** An installer's file is named after the game it installs, with " - Installer". */
-    override fun variantName(fileName: String) =
-        super.variantName(fileName.removeSuffix(INSTALLER)).removeSuffix(INSTALLER.lowercase(Locale.ROOT))
 
     override fun title(title: String, fileName: String) =
         if (fileName.endsWith(INSTALLER, true) && !title.endsWith(INSTALLER, true)) "$title$INSTALLER" else title

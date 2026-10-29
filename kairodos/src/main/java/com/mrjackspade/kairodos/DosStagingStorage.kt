@@ -209,16 +209,24 @@ internal object DosStagingStorage {
         if (archive.extension.equals("zip", true)) {
             progress(text(UiText.res(R.string.preparing_game_files)))
             extract(text, archive, into, cancelled, progress)
-            // Keep one layout for all catalog launch variants. A parent
-            // mount and a game-folder mount must share the same saves.
+            // Keep one layout for every launch of the game: its files in the folder its launch
+            // mounts. A parent mount and a game-folder mount must share the same saves.
             if (!gameFolder.isNullOrEmpty()) {
                 require('/' !in gameFolder && '\\' !in gameFolder)
                 val wrapper = path(into, gameFolder)
                 if (!wrapper.isDirectory) {
                     val children = into.listFiles().orEmpty()
-                    require(wrapper.mkdirs()) { "Could not create DOS game folder" }
-                    for (child in children) require(child.renameTo(File(wrapper, child.name))) {
-                        "Could not prepare DOS game folder"
+                    // One folder holding every game file is a wrapper the content ID leaves out
+                    // (DosContentHash), so its name is not the game's: a collection's games launch
+                    // from folders of their own over the same files.
+                    val root = children.filterNot { it.isFile && it.name.endsWith(".exo", true) }
+                        .singleOrNull()?.takeIf { it.isDirectory }
+                    if (root != null) require(root.renameTo(wrapper)) { "Could not prepare DOS game folder" }
+                    else {
+                        require(wrapper.mkdirs()) { "Could not create DOS game folder" }
+                        for (child in children) require(child.renameTo(File(wrapper, child.name))) {
+                            "Could not prepare DOS game folder"
+                        }
                     }
                 }
             }

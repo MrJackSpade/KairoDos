@@ -35,10 +35,10 @@ internal object DosArtworkReferences {
     fun record(source: JSONObject?): JSONObject? = source?.let {
         JsonCopy.shallow(it).apply {
             optJSONObject("artwork")?.let { art -> put("artwork", expand(art)) }
-            optJSONObject("variants")?.let { variants ->
-                put("variants", JsonCopy.shallow(variants).apply {
-                    for (key in variants.keys()) {
-                        variants.optJSONObject(key)?.let { value -> put(key, record(value)) }
+            optJSONObject("collection")?.let { members ->
+                put("collection", JsonCopy.shallow(members).apply {
+                    for (key in members.keys()) {
+                        members.optJSONObject(key)?.let { value -> put(key, record(value)) }
                     }
                 })
             }

@@ -128,6 +128,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             listOf(dosLibrary.inspectExternal(file, cancelled))
         override fun deleteSource(entry: DosLibrary.Game, entries: List<DosLibrary.Game>) = dosLibrary.deleteSource(entry)
         override fun hasWorkingImage(entry: DosLibrary.Game) = false
+        override fun withMember(entry: DosLibrary.Game, member: String) = entry.copy(member = member)
         override fun resetWorkingImage(entry: DosLibrary.Game) = error("A DOS game has no working disk image")
         override fun prepare(entry: DosLibrary.Game, cancelled: AtomicBoolean, progress: (String) -> Unit) =
             dosLibrary.prepare(entry, tree, cancelled)
@@ -657,7 +658,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             else dosLibrary.install(entry, selected!!, cancelled, progress).also { result ->
                 // The archive is in the folder now, whatever happens to this launch.
                 runOnUiThread { if (tree == selected) editLibrary { dosLibrary.withGame(it, result) } }
-            }
+            }.let { result -> entry.member?.let { result.copy(member = it) } ?: result }
         } else entry
         if (entry.installer) {
             moveGame(entry.key, playable.key)

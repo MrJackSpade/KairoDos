@@ -17575,9 +17575,9 @@
     "pt-BR": "Este arquivo reúne The New Print Shop, a reformulação de 1989 de The Print Shop pela Broderbund, e seu Companion, que acrescenta editores de gráficos e impressão de envelopes.",
     "ru": "В этом архиве The New Print Shop, обновление The Print Shop от Broderbund 1989 года, и его Companion, добавляющий графические редакторы и печать на конвертах."
    },
-   "diskVariants": {
+   "diskCollection": {
     "sha256-dos-manifest-v1:09d7bbe3f815361407f3436c3b1c8c181523e0da9c571adef1182ef31f18ccc7": {
-     "new print shop companion, the (1989)": {
+     "1": {
       "game": "dos:09d7bbe3f8153614.1",
       "launch": {
        "configs": {
@@ -17587,7 +17587,7 @@
        "folder": "newpsc"
       }
      },
-     "new print shop, the (1989)": {
+     "2": {
       "game": "dos:09d7bbe3f8153614.2",
       "launch": {
        "configs": {
@@ -27199,6 +27199,18 @@
    "title": "EGAWHEEL"
   },
   "dos:0efc7f00210a5d80": {
+   "artwork": {
+    "id": "0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520",
+    "kinds": 3,
+    "launchbox": {
+     "preview": {
+      "format": 1,
+      "id": "bb26e95d-c272-42e9-8726-44d21aa14b68",
+      "revision": 0
+     }
+    },
+    "variant": "527574cca0ea"
+   },
    "contentIds": [
     "sha256-dos-manifest-v1:0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520"
    ],
@@ -27229,56 +27241,6 @@
     },
     "profile": "dpad-mouse-point-and-select-v1"
    },
-   "description": "Two releases of A Clue's Solution, a shareware turn-based puzzle game for one to four players in the style of Wheel of Fortune, solved by picking letters.",
-   "descriptions": {
-    "ar": "إصداران من A Clue's Solution، لعبة ألغاز شيروير بالأدوار للاعب إلى أربعة لاعبين على طريقة Wheel of Fortune، تُحل باختيار الحروف.",
-    "de": "Zwei Veröffentlichungen von A Clue's Solution, einem rundenbasierten Shareware-Rätselspiel für einen bis vier Spieler im Stil von Wheel of Fortune, das durch Auswahl von Buchstaben gelöst wird.",
-    "es": "Dos versiones de A Clue's Solution, un juego shareware de lógica por turnos para uno a cuatro jugadores al estilo de La Rueda de la Fortuna, que se resuelve eligiendo letras.",
-    "id": "Dua rilis A Clue's Solution, game puzzle bergiliran shareware untuk satu sampai empat pemain bergaya Wheel of Fortune, diselesaikan dengan memilih huruf.",
-    "ja": "A Clue's Solutionの2つのリリース。ホイール・オブ・フォーチュン風の、1〜4人用のシェアウェアのターン制パズルゲームで、文字を選んで解く。",
-    "ko": "A Clue's Solution의 두 가지 릴리스로, Wheel of Fortune 스타일의 한 명에서 네 명이 즐기는 셰어웨어 턴제 퍼즐 게임이며 글자를 골라 정답을 맞힌다.",
-    "pt-BR": "Dois lançamentos de A Clue's Solution, um jogo de quebra-cabeça shareware por turnos para um a quatro jogadores no estilo de Wheel of Fortune, resolvido escolhendo letras.",
-    "ru": "Два выпуска A Clue's Solution, условно-бесплатной пошаговой игры-головоломки для одного-четырех игроков в стиле Wheel of Fortune, где нужно разгадывать слова, выбирая буквы."
-   },
-   "diskVariants": {
-    "sha256-dos-manifest-v1:0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520": {
-     "a clue's solution (1993)": {
-      "game": "dos:0efc7f00210a5d80.1",
-      "launch": {
-       "configs": {
-        "dosbox.conf": "# Config file for Dosbox-0.74\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=16\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=auto\r\n[mixer]\r\n[midi]\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\nmount c .\\eXoDOS\\ACluSol\r\nc:\r\n@cls\r\n@ACLUSL\r\nexit\r\n"
-       },
-       "exception": false,
-       "folder": "aclusol"
-      }
-     },
-     "clue's solution, a (1993)": {
-      "game": "dos:0efc7f00210a5d80.2",
-      "launch": {
-       "configs": {
-        "dosbox.conf": "# Config file for Dosbox-0.74\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=16\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=auto\r\n[mixer]\r\n[midi]\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\nmount c .\\eXoDOS\\ACluSol\r\nc:\r\n@cls\r\n@ACLUSL\r\nexit\r\n"
-       },
-       "exception": false,
-       "folder": "aclusol"
-      }
-     }
-    }
-   },
-   "title": "A Clue's Solution (1993) / A Clue's Solution"
-  },
-  "dos:0efc7f00210a5d80.1": {
-   "artwork": {
-    "id": "0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520",
-    "kinds": 3,
-    "launchbox": {
-     "preview": {
-      "format": 1,
-      "id": "bb26e95d-c272-42e9-8726-44d21aa14b68",
-      "revision": 0
-     }
-    },
-    "variant": "527574cca0ea"
-   },
    "description": "A shareware turn-based puzzle game for one to four people with elements of Wheel of Fortune: solve puzzles by picking letters, playable by keyboard or mouse.",
    "descriptions": {
     "ar": "لعبة ألغاز شيروير بالأدوار لشخص إلى أربعة أشخاص بعناصر من Wheel of Fortune: حُلّ الألغاز باختيار الحروف، وتُلعب بلوحة المفاتيح أو الفأرة.",
@@ -27289,42 +27251,23 @@
     "ko": "Wheel of Fortune의 요소가 있는 한 명에서 네 명이 즐기는 셰어웨어 턴제 퍼즐 게임이다. 글자를 골라 퍼즐을 풀며 키보드나 마우스로 즐길 수 있다.",
     "pt-BR": "Um jogo de quebra-cabeça shareware por turnos para uma a quatro pessoas com elementos de Wheel of Fortune: resolva os quebra-cabeças escolhendo letras, jogável pelo teclado ou mouse.",
     "ru": "Условно-бесплатная пошаговая игра-головоломка для одного-четырех человек с элементами Wheel of Fortune: разгадывайте загадки, выбирая буквы; играть можно с клавиатуры или мышью."
+   },
+   "diskMachine": {
+    "sha256-dos-manifest-v1:0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520": {
+     "launch": {
+      "configs": {
+       "dosbox.conf": "# Config file for Dosbox-0.74\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=16\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=auto\r\n[mixer]\r\n[midi]\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\nmount c .\\eXoDOS\\ACluSol\r\nc:\r\n@cls\r\n@ACLUSL\r\nexit\r\n"
+      },
+      "exception": false,
+      "folder": "aclusol"
+     }
+    }
    },
    "tags": [
     "1993",
     "Quiz; Strategy"
    ],
    "title": "A Clue's Solution (1993)"
-  },
-  "dos:0efc7f00210a5d80.2": {
-   "artwork": {
-    "id": "0efc7f00210a5d8094eca62127a72559eba5cfcaa7e1a2965522ec2bd05d4520",
-    "kinds": 3,
-    "launchbox": {
-     "preview": {
-      "format": 1,
-      "id": "bb26e95d-c272-42e9-8726-44d21aa14b68",
-      "revision": 0
-     }
-    },
-    "variant": "527574cca0ea"
-   },
-   "description": "A shareware turn-based puzzle game for one to four people with elements of Wheel of Fortune: solve puzzles by picking letters, playable by keyboard or mouse.",
-   "descriptions": {
-    "ar": "لعبة ألغاز شيروير بالأدوار لشخص إلى أربعة أشخاص بعناصر من Wheel of Fortune: حُلّ الألغاز باختيار الحروف، وتُلعب بلوحة المفاتيح أو الفأرة.",
-    "de": "Ein rundenbasiertes Shareware-Rätselspiel für einen bis vier Spieler mit Elementen von Wheel of Fortune: Man löst Rätsel durch Auswahl von Buchstaben, spielbar per Tastatur oder Maus.",
-    "es": "Un juego shareware de lógica por turnos para una a cuatro personas con elementos de La Rueda de la Fortuna: resuelve acertijos eligiendo letras, con control por teclado o mouse.",
-    "id": "Game puzzle bergiliran shareware untuk satu sampai empat orang dengan unsur Wheel of Fortune: pecahkan teka-teki dengan memilih huruf, bisa dimainkan dengan keyboard atau mouse.",
-    "ja": "ホイール・オブ・フォーチュンの要素を持つ、1〜4人用のシェアウェアのターン制パズルゲーム。文字を選んでパズルを解き、キーボードでもマウスでも遊べる。",
-    "ko": "Wheel of Fortune의 요소가 있는 한 명에서 네 명이 즐기는 셰어웨어 턴제 퍼즐 게임이다. 글자를 골라 퍼즐을 풀며 키보드나 마우스로 즐길 수 있다.",
-    "pt-BR": "Um jogo de quebra-cabeça shareware por turnos para uma a quatro pessoas com elementos de Wheel of Fortune: resolva os quebra-cabeças escolhendo letras, jogável pelo teclado ou mouse.",
-    "ru": "Условно-бесплатная пошаговая игра-головоломка для одного-четырех человек с элементами Wheel of Fortune: разгадывайте загадки, выбирая буквы; играть можно с клавиатуры или мышью."
-   },
-   "tags": [
-    "1993",
-    "Quiz; Strategy"
-   ],
-   "title": "A Clue's Solution"
   },
   "dos:0f03809b083d56b5": {
    "artwork": {
@@ -175478,47 +175421,6 @@
    "title": "Leather Goddesses of Phobos 2: Gas Pump Girls Meet the Pulsating Inconvenience from Planet X!"
   },
   "dos:75cf5de58a782412": {
-   "contentIds": [
-    "sha256-dos-manifest-v1:75cf5de58a7824129a0712312c6218f36c59804d113da633751b64f18ee19601"
-   ],
-   "description": "Two editions of the geography detective game Where in the World Is Carmen Sandiego?, the Deluxe Edition and the CD edition from 1995.",
-   "descriptions": {
-    "ar": "إصداران من لعبة المحقق الجغرافية Where in the World Is Carmen Sandiego?، Deluxe Edition ونسخة CD من عام 1995.",
-    "de": "Zwei Ausgaben des Geografie-Detektivspiels Where in the World Is Carmen Sandiego?, die Deluxe Edition und die CD-Ausgabe von 1995.",
-    "es": "Dos ediciones del juego de detectives de geografía Where in the World Is Carmen Sandiego?, la Deluxe Edition y la edición en CD de 1995.",
-    "id": "Dua edisi game detektif geografi Where in the World Is Carmen Sandiego?, Deluxe Edition dan edisi CD dari 1995.",
-    "ja": "地理探偵ゲームWhere in the World Is Carmen Sandiego?の2つのエディション、Deluxe Editionと1995年のCDエディション。",
-    "ko": "지리 탐정 게임 Where in the World Is Carmen Sandiego?의 두 가지 에디션, Deluxe Edition과 1995년 CD 에디션이다.",
-    "pt-BR": "Duas edições do jogo de detetive de geografia Where in the World Is Carmen Sandiego?, a Deluxe Edition e a edição em CD de 1995.",
-    "ru": "Два издания географической детективной игры Where in the World Is Carmen Sandiego?: Deluxe Edition и издание на CD 1995 года."
-   },
-   "diskVariants": {
-    "sha256-dos-manifest-v1:75cf5de58a7824129a0712312c6218f36c59804d113da633751b64f18ee19601": {
-     "where in the world is carmen sandiego cd (1993)": {
-      "game": "dos:75cf5de58a782412.1",
-      "launch": {
-       "configs": {
-        "dosbox.conf": "# Config file for Dosbox-ECE r4230\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=32\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=10000\r\n[pci]\r\n[mixer]\r\n[midi]\r\nmididevice=mt32\r\nfluid.soundfont=.\\mt32\\SoundCanvas.sf2\r\nmt32.romdir=.\\mt32\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\n@mount c .\\eXoDOS\\wwcscd\r\nimgmount d \".\\eXoDOS\\wwcscd\\cd\\CARMEN.CUE\" -t iso\r\n@c:\r\ncd deluxe\r\ncls\r\n@call run\r\nexit\r\n"
-       },
-       "exception": false,
-       "folder": "wwcscd"
-      }
-     },
-     "where in the world is carmen sandiego cd (1995)": {
-      "game": "dos:75cf5de58a782412.2",
-      "launch": {
-       "configs": {
-        "dosbox.conf": "# Config file for Dosbox-ECE r4230\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=32\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=10000\r\n[pci]\r\n[mixer]\r\n[midi]\r\nmididevice=mt32\r\nfluid.soundfont=.\\mt32\\SoundCanvas.sf2\r\nmt32.romdir=.\\mt32\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\n@mount c .\\eXoDOS\\wwcscd\r\nimgmount d \".\\eXoDOS\\wwcscd\\cd\\CARMEN.CUE\" -t iso\r\n@c:\r\ncd deluxe\r\ncls\r\n@call run\r\nexit\r\n"
-       },
-       "exception": false,
-       "folder": "wwcscd"
-      }
-     }
-    }
-   },
-   "title": "Where in the World Is Carmen Sandiego? Deluxe Edition / Where in the World is Carmen Sandiego CD (1995)"
-  },
-  "dos:75cf5de58a782412.1": {
    "artwork": {
     "id": "75cf5de58a7824129a0712312c6218f36c59804d113da633751b64f18ee19601",
     "kinds": 3,
@@ -175536,6 +175438,9 @@
     },
     "variant": "4762f218bbbc"
    },
+   "contentIds": [
+    "sha256-dos-manifest-v1:75cf5de58a7824129a0712312c6218f36c59804d113da633751b64f18ee19601"
+   ],
    "description": "As a rookie detective, identify the thief behind the theft of some of the world's most priceless treasures, obtain an arrest warrant and track down the crook before time runs out. Your rank rises as you solve cases.",
    "descriptions": {
     "ar": "بصفتك محققًا مبتدئًا، حدد اللص وراء سرقة بعض أثمن كنوز العالم، واحصل على أمر اعتقال وتعقب المحتال قبل انتهاء الوقت. ترتفع رتبتك كلما حللت قضايا.",
@@ -175547,26 +175452,23 @@
     "pt-BR": "Como detetive novato, identifique o ladrão por trás do roubo de alguns dos tesouros mais valiosos do mundo, obtenha um mandado de prisão e localize o bandido antes que o tempo acabe. Sua patente sobe conforme você resolve casos.",
     "ru": "Начинающим детективом определите вора, укравшего одни из самых бесценных сокровищ мира, получите ордер на арест и выследите преступника, пока не вышло время. Ваше звание растет по мере раскрытия дел."
    },
+   "diskMachine": {
+    "sha256-dos-manifest-v1:75cf5de58a7824129a0712312c6218f36c59804d113da633751b64f18ee19601": {
+     "launch": {
+      "configs": {
+       "dosbox.conf": "# Config file for Dosbox-ECE r4230\r\n[sdl]\r\nfullscreen=false\r\nfulldouble=false\r\nfullresolution=0x0\r\nwindowresolution=1280x960\r\noutput=openglnb\r\nmapperfile=mapper.map\r\n[dosbox]\r\nmachine=svga_s3\r\nmemsize=32\r\n[render]\r\naspect=true\r\nscaler=normal2x\r\n[cpu]\r\ncore=auto\r\ncputype=auto\r\ncycles=10000\r\n[pci]\r\n[mixer]\r\n[midi]\r\nmididevice=mt32\r\nfluid.soundfont=.\\mt32\\SoundCanvas.sf2\r\nmt32.romdir=.\\mt32\r\n[sblaster]\r\n[gus]\r\n[speaker]\r\n[joystick]\r\n[serial]\r\n[dos]\r\n[ipx]\r\n[autoexec]\r\n@mount c .\\eXoDOS\\wwcscd\r\nimgmount d \".\\eXoDOS\\wwcscd\\cd\\CARMEN.CUE\" -t iso\r\n@c:\r\ncd deluxe\r\ncls\r\n@call run\r\nexit\r\n"
+      },
+      "exception": false,
+      "folder": "wwcscd"
+     }
+    }
+   },
    "tags": [
     "1993",
     "Education",
     "Single Player"
    ],
    "title": "Where in the World Is Carmen Sandiego? Deluxe Edition"
-  },
-  "dos:75cf5de58a782412.2": {
-   "description": "The CD-ROM edition of the geography detective game Where in the World Is Carmen Sandiego?, in which you chase thieves around the globe.",
-   "descriptions": {
-    "ar": "نسخة CD-ROM من لعبة المحقق الجغرافية Where in the World Is Carmen Sandiego?، تطارد فيها اللصوص حول العالم.",
-    "de": "Die CD-ROM-Ausgabe des Geografie-Detektivspiels Where in the World Is Carmen Sandiego?, in der du Diebe rund um den Globus jagst.",
-    "es": "La edición en CD-ROM del juego de detectives de geografía Where in the World Is Carmen Sandiego?, en la que persigues ladrones por todo el planeta.",
-    "id": "Edisi CD-ROM dari game detektif geografi Where in the World Is Carmen Sandiego?, tempat Anda mengejar pencuri keliling dunia.",
-    "ja": "地理探偵ゲームWhere in the World Is Carmen Sandiego?のCD-ROM版。世界中で泥棒を追いかける。",
-    "ko": "세계를 돌며 도둑을 쫓는 지리 탐정 게임 Where in the World Is Carmen Sandiego?의 CD-ROM 에디션이다.",
-    "pt-BR": "A edição em CD-ROM do jogo de detetive de geografia Where in the World Is Carmen Sandiego?, em que você persegue ladrões pelo globo.",
-    "ru": "Издание на CD-ROM географической детективной игры Where in the World Is Carmen Sandiego?, в которой вы гоняетесь за ворами по всему земному шару."
-   },
-   "title": "Where in the World is Carmen Sandiego CD (1995)"
   },
   "dos:75d595d3521f21cf": {
    "contentIds": [
@@ -175583,9 +175485,9 @@
     "pt-BR": "Duas aventuras de texto com gráficos, Shard of Inovar e Venom.",
     "ru": "Два текстовых приключения с графикой: Shard of Inovar и Venom."
    },
-   "diskVariants": {
+   "diskCollection": {
     "sha256-dos-manifest-v1:75d595d3521f21cfa8f24704b95cf40f9d86d4b66ec0ca3349d32e59f8882a1a": {
-     "shard of inovar (1987)": {
+     "1": {
       "game": "dos:75d595d3521f21cf.1",
       "launch": {
        "configs": {
@@ -175595,7 +175497,7 @@
        "folder": "sharinov"
       }
      },
-     "venom (1987)": {
+     "2": {
       "game": "dos:75d595d3521f21cf.2",
       "launch": {
        "configs": {
@@ -177647,9 +177549,9 @@
     "pt-BR": "Dois jogos, Flashy Cars e Turbo Flashy Cars, que combinam quebra-cabeças de imagem com uma corrida de carros de desenho animado.",
     "ru": "Две игры, Flashy Cars и Turbo Flashy Cars, сочетающие картинки-головоломки с мультяшной автогонкой."
    },
-   "diskVariants": {
+   "diskCollection": {
     "sha256-dos-manifest-v1:776619dfc8095d3753f8fbd7672e5df05b0e87c5c9b1b83af574db525cc9abe3": {
-     "flashy cars (1992)": {
+     "1": {
       "game": "dos:776619dfc8095d37.1",
       "launch": {
        "configs": {
@@ -177659,7 +177561,7 @@
        "folder": "flshcars"
       }
      },
-     "turbo flashy cars (1992)": {
+     "2": {
       "game": "dos:776619dfc8095d37.2",
       "launch": {
        "configs": {
@@ -248622,9 +248524,9 @@
     "pt-BR": "Duas versões shareware de Damas Chinesas para até seis jogadores, cada um correndo para levar todas as suas bolinhas ao lado oposto do tabuleiro.",
     "ru": "Две условно-бесплатные версии китайских шашек для до шести игроков, в которых каждый стремится первым перевести все свои шарики на противоположную сторону доски."
    },
-   "diskVariants": {
+   "diskCollection": {
     "sha256-dos-manifest-v1:a883413316005494c5debe915a61ff9ef90d86279f919774a4e1e091dc763cfd": {
-     "chinese checkers (1991)": {
+     "1": {
       "game": "dos:a883413316005494.1",
       "launch": {
        "configs": {
@@ -248634,7 +248536,7 @@
        "folder": "chinchek"
       }
      },
-     "deluxe chinese checkers (1996)": {
+     "2": {
       "game": "dos:a883413316005494.2",
       "launch": {
        "configs": {
@@ -254168,9 +254070,9 @@
     "pt-BR": "O segundo e o terceiro episódios de Duke Nukum, Mission: Moonbase e Trapped in the Future, jogos de plataforma no motor de Crystal Caves em que Duke luta contra o Dr. Proton e seus Techbots.",
     "ru": "Второй и третий эпизоды Duke Nukum, Mission: Moonbase и Trapped in the Future, платформеры на движке Crystal Caves, в которых Duke сражается с Dr. Proton и его Techbots."
    },
-   "diskVariants": {
+   "diskCollection": {
     "sha256-dos-manifest-v1:ab186299ce9dd31ee4ee3fa94f069f16fad9aaa0fe32118a14fae7739b2a721e": {
-     "duke nukem - episode 2 - mission - moonbase (1991)": {
+     "1": {
       "game": "dos:ab186299ce9dd31e.1",
       "launch": {
        "configs": {
@@ -254180,7 +254082,7 @@
        "folder": "duken12"
       }
      },
-     "duke nukem - episode 3 - trapped in the future (1991)": {
+     "2": {
       "game": "dos:ab186299ce9dd31e.2",
       "launch": {
        "configs": {

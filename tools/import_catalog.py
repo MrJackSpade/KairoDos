@@ -5,9 +5,12 @@ KairoDos's research catalog for the shared generator (shared/tools/app_catalog.p
 Usage: import_catalog.py [--check] [--references <out.json>]
 
 Writes catalog/research/games-v1.json and catalog/research/folders-v1.json. Each game is
-"dos:<first 16 hex digits of its content ID>"; an archive holding several games (its record's
-"variants", picked by the library file's name) keeps its own key and gives each of its games
-"<key>.<n>". A game's title, tags and artwork come from the import with the metadata review
+"dos:<first 16 hex digits of its content ID>". An archive holding several games (its record's
+"variants", eXoDOS's entries named by their file names) is a collection: one library entry whose
+games the player picks between when it starts. It keeps its own key, gives each of its games
+"<key>.<n>", and names them with their launches in its "diskCollection", members "1", "2"... in
+name order. Entries that launch the same files the same way are one game eXoDOS lists twice, so
+they become one game, the first entry's. A game's title, tags and artwork come from the import with the metadata review
 applied (catalog/metadata-review-v1.json); its LaunchBox images from
 catalog/launchbox-artwork-v1.json; its launch (folder, eXoDOS configs, exception) rides on its
 medium's record; its controls are its controller preset (catalog/research/controller-profiles-v1.json,
@@ -84,6 +87,11 @@ def build():
     for content_id, record in sorted(records.items()):
         key = key_of(content_id)
         assert key not in games, f"two games share {key}"
+        variants = [variant for _, variant in sorted(record.get("variants", {}).items())]
+        if len({json.dumps(variant["launch"], sort_keys=True) for variant in variants}) == 1:
+            # One game that eXoDOS lists twice: the same files, launched the same way.
+            record = {**variants[0], **{field: record[field] for field in ("hidden",) if field in record}}
+            variants = []
         game = {**research_game(record, images), "contentIds": [content_id]}
         if record.get("description", "").strip():
             references[key] = record["description"]
@@ -93,15 +101,15 @@ def build():
             game["controller"] = controllers[content_id]
         if "launch" in record:
             game["diskMachine"] = {content_id: {"launch": record["launch"]}}
-        variants = {}
-        for index, (name, variant) in enumerate(sorted(record.get("variants", {}).items()), 1):
-            variant_key = f"{key}.{index}"
-            games[variant_key] = research_game(variant, images)
+        members = {}
+        for index, variant in enumerate(variants, 1):
+            member_key = f"{key}.{index}"
+            games[member_key] = research_game(variant, images)
             if variant.get("description", "").strip():
-                references[variant_key] = variant["description"]
-            variants[name] = {"game": variant_key, "launch": variant["launch"]}
-        if variants:
-            game["diskVariants"] = {content_id: variants}
+                references[member_key] = variant["description"]
+            members[str(index)] = {"game": member_key, "launch": variant["launch"]}
+        if members:
+            game["diskCollection"] = {content_id: members}
         games[key] = game
     catalog_descriptions.apply(ROOT / "catalog/research", games)
     folders = {"schemaVersion": 1, "folders": files["folders.json"]}

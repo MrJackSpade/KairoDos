@@ -48,7 +48,9 @@ class DosLibrary(private val context: Context) {
         override val error: String? = null,
         val installer: Boolean = false,
         val external: Boolean = false,
-        override val catalogId: String? = contentId
+        override val catalogId: String? = contentId,
+        /** The game picked from a collection; never cached, a launch picks it. */
+        override val member: String? = null
     ) : LibraryItem {
         override val zipEntry: String? = null
         // Rows, search and comparisons read the name constantly; it is derived once.

@@ -82,15 +82,10 @@ internal object DosCatalogMigration {
         android.system.Os.rename(temporary.absolutePath, file.absolutePath)
     }
 
-    /** A record's artwork and its variants' artwork, or null when it has none. */
-    private fun artworkOnly(record: JSONObject): JSONObject? {
-        val result = JSONObject()
-        record.optJSONObject("artwork")?.takeIf { it.length() > 0 }?.let { result.put("artwork", it) }
-        record.optJSONObject("variants")?.let { variants ->
-            val kept = JSONObject()
-            for (name in variants.keys()) artworkOnly(variants.getJSONObject(name))?.let { kept.put(name, it) }
-            if (kept.length() > 0) result.put("variants", kept)
-        }
-        return result.takeIf { it.length() > 0 }
-    }
+    /**
+     * A record's artwork, or null when it has none. The old format's file-name variants have no
+     * counterpart: the catalog never picks a game by its file's name, so their artwork is left behind.
+     */
+    private fun artworkOnly(record: JSONObject): JSONObject? =
+        record.optJSONObject("artwork")?.takeIf { it.length() > 0 }?.let { JSONObject().put("artwork", it) }
 }

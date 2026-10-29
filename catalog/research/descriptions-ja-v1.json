@@ -1789,14 +1789,6 @@
    "text": "1987年秋当時のテレビ番組の形式に沿った、1〜3人用のシェアウェアのホイール・オブ・フォーチュン。のちにVGAWHEELの元になった。"
   },
   "dos:0efc7f00210a5d80": {
-   "en": "Two releases of A Clue's Solution, a shareware turn-based puzzle game for one to four players in the style of Wheel of Fortune, solved by picking letters.",
-   "text": "A Clue's Solutionの2つのリリース。ホイール・オブ・フォーチュン風の、1〜4人用のシェアウェアのターン制パズルゲームで、文字を選んで解く。"
-  },
-  "dos:0efc7f00210a5d80.1": {
-   "en": "A shareware turn-based puzzle game for one to four people with elements of Wheel of Fortune: solve puzzles by picking letters, playable by keyboard or mouse.",
-   "text": "ホイール・オブ・フォーチュンの要素を持つ、1〜4人用のシェアウェアのターン制パズルゲーム。文字を選んでパズルを解き、キーボードでもマウスでも遊べる。"
-  },
-  "dos:0efc7f00210a5d80.2": {
    "en": "A shareware turn-based puzzle game for one to four people with elements of Wheel of Fortune: solve puzzles by picking letters, playable by keyboard or mouse.",
    "text": "ホイール・オブ・フォーチュンの要素を持つ、1〜4人用のシェアウェアのターン制パズルゲーム。文字を選んでパズルを解き、キーボードでもマウスでも遊べる。"
   },
@@ -13933,16 +13925,8 @@
    "text": "SFコメディのアドベンチャー。1958年にエイリアンがAtom Cityの近くに不時着し、占領された故郷の星のために助けを求める。Barth、ガソリンスタンドの店主Zeke、天文学者の娘Lydiaを演じる。"
   },
   "dos:75cf5de58a782412": {
-   "en": "Two editions of the geography detective game Where in the World Is Carmen Sandiego?, the Deluxe Edition and the CD edition from 1995.",
-   "text": "地理探偵ゲームWhere in the World Is Carmen Sandiego?の2つのエディション、Deluxe Editionと1995年のCDエディション。"
-  },
-  "dos:75cf5de58a782412.1": {
    "en": "As a rookie detective, identify the thief behind the theft of some of the world's most priceless treasures, obtain an arrest warrant and track down the crook before time runs out. Your rank rises as you solve cases.",
    "text": "新米刑事となって、世界で最も貴重な宝物の盗難事件の犯人を特定し、逮捕状を取り、時間切れになる前に犯人を追い詰める。事件を解決するたびに階級が上がる。"
-  },
-  "dos:75cf5de58a782412.2": {
-   "en": "The CD-ROM edition of the geography detective game Where in the World Is Carmen Sandiego?, in which you chase thieves around the globe.",
-   "text": "地理探偵ゲームWhere in the World Is Carmen Sandiego?のCD-ROM版。世界中で泥棒を追いかける。"
   },
   "dos:75d595d3521f21cf": {
    "en": "Two text adventures with graphics, Shard of Inovar and Venom.",
