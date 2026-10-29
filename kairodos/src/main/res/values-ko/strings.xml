@@ -166,7 +166,7 @@
     <!-- EN: Prompt -->
     <string name="program_picker_prompt">프롬프트</string>
     <!-- EN: Remove installer ZIP? -->
-    <string name="installer_remove_title">설치 프로그램 ZIP을 삭제할까요?</string>
+    <string name="installer_remove_title">설치 프로그램을 삭제할까요?</string>
     <!-- %1$s is the installer ZIP's file name. -->
     <!-- EN: The installed game archive is in your DOS folder. Remove %1$s now? -->
     <string name="installer_remove_message">설치된 게임 압축 파일이 DOS 폴더에 있습니다. 지금 %1$s을(를) 삭제할까요?</string>

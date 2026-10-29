@@ -166,7 +166,7 @@
     <!-- EN: Prompt -->
     <string name="program_picker_prompt">الموجّه</string>
     <!-- EN: Remove installer ZIP? -->
-    <string name="installer_remove_title">هل تريد إزالة ملف ZIP للمثبّت؟</string>
+    <string name="installer_remove_title">هل تريد إزالة المثبّت؟</string>
     <!-- %1$s is the installer ZIP's file name. -->
     <!-- EN: The installed game archive is in your DOS folder. Remove %1$s now? -->
     <string name="installer_remove_message">أرشيف اللعبة المثبّتة موجود في مجلد DOS. هل تريد إزالة %1$s الآن؟</string>

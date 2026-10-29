@@ -95,7 +95,7 @@
     <string name="program_picker_title">DOS prompt or run program</string>
     <string name="program_picker_launch">Launch</string>
     <string name="program_picker_prompt">Prompt</string>
-    <string name="installer_remove_title">Remove installer ZIP?</string>
+    <string name="installer_remove_title">Remove the installer?</string>
     <!-- %1$s is the installer ZIP's file name. -->
     <string name="installer_remove_message">The installed game archive is in your DOS folder. Remove %1$s now?</string>
     <string name="installer_keep">Keep</string>
