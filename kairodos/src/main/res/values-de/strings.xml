@@ -14,8 +14,8 @@
     <string name="library_expired">Der DOS-Ordner benötigt Lese- und Schreibzugriff. Wählen Sie ihn erneut aus.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">DOS-Ordner auswählen</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Wählen Sie einen beschreibbaren Ordner mit Ihren DOS-Spielen und ZIP-Archiven.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">Wählen Sie einen beschreibbaren Ordner mit Ihren DOS-Spielen und deren ZIP- und 7z-Archiven.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">DOS-Ordner auswählen…</string>
     <!-- EN: SAVED GAMES -->

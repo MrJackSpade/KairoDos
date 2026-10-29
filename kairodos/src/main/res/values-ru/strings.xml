@@ -14,8 +14,8 @@
     <string name="library_expired">Папке DOS нужен доступ на чтение и запись. Выберите ее снова.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">Выберите папку DOS</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Выберите папку с доступом на запись, где лежат ваши игры для DOS и ZIP-архивы.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">Выберите доступную для записи папку с вашими играми для DOS и их архивами ZIP и 7z.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">Выбрать папку DOS…</string>
     <!-- EN: SAVED GAMES -->

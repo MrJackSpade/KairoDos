@@ -14,8 +14,8 @@
     <string name="library_expired">يحتاج مجلد DOS إلى إذن القراءة والكتابة. اختره مرة أخرى.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">اختر مجلد DOS</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">اختر مجلدًا قابلًا للكتابة يحتوي على ألعاب DOS وأرشيفات ZIP.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">اختر مجلدًا قابلًا للكتابة يحتوي على ألعاب DOS وأرشيفات ZIP و7z الخاصة بها.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">اختيار مجلد DOS…</string>
     <!-- EN: SAVED GAMES -->

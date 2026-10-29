@@ -14,8 +14,8 @@
     <string name="library_expired">DOS 폴더에 읽기 및 쓰기 권한이 필요합니다. 다시 선택하세요.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">DOS 폴더 선택</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">DOS 게임과 ZIP 압축 파일이 들어 있는 쓰기 가능한 폴더를 선택하세요.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">DOS 게임과 그 ZIP 및 7z 압축 파일이 들어 있는 쓰기 가능한 폴더를 선택하세요.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">DOS 폴더 선택…</string>
     <!-- EN: SAVED GAMES -->

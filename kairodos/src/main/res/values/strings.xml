@@ -8,7 +8,7 @@
     <string name="library_empty">Choose a DOS folder to find games</string>
     <string name="library_expired">DOS folder needs read and write access. Select it again.</string>
     <string name="folder_title">Choose a DOS folder</string>
-    <string name="folder_description">Select a writable folder containing your DOS games and ZIP archives.</string>
+    <string name="folder_description">Select a writable folder containing your DOS games and their ZIP and 7z archives.</string>
     <string name="folder_button">Choose DOS folder…</string>
     <string name="saves_group">SAVED GAMES</string>
     <string name="saved_files">Saved files</string>

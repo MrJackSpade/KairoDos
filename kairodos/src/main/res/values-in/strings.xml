@@ -14,8 +14,8 @@
     <string name="library_expired">Folder DOS memerlukan akses baca dan tulis. Pilih lagi.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">Pilih folder DOS</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Pilih folder yang dapat ditulisi dan berisi game DOS serta arsip ZIP Anda.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">Pilih folder yang dapat ditulisi berisi game DOS Anda beserta arsip ZIP dan 7z-nya.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">Pilih folder DOS…</string>
     <!-- EN: SAVED GAMES -->

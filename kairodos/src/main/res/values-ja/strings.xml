@@ -14,8 +14,8 @@
     <string name="library_expired">DOSフォルダには読み書きのアクセスが必要です。もう一度選択してください。</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">DOSフォルダを選択</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">DOS ゲームと ZIP アーカイブが入っている書き込み可能なフォルダを選択してください。</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">DOS ゲームとその ZIP・7z アーカイブが入っている、書き込み可能なフォルダを選択してください。</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">DOSフォルダを選択…</string>
     <!-- EN: SAVED GAMES -->

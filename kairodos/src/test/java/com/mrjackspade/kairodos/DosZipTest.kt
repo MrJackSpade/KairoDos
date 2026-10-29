@@ -76,4 +76,26 @@ class DosZipTest {
         assertEquals(DosZip.members(zip), members)
         assertEquals(fromFile, DosContentHash.inspectZip(text, zip, AtomicBoolean(false)).contentId)
     }
+
+    /**
+     * The same game as [gameZip], as 7-Zip 24 wrote it (7z a -t7z -mx=9: LZMA2, a CRC for each file,
+     * backslashed paths): commons-compress's own writer leaves the CRCs out, which 7-Zip never does.
+     */
+    private fun game7z(): File = folder.newFile("game.7z").also { file ->
+        javaClass.getResourceAsStream("/game-7zip.7z")!!.use { input -> file.outputStream().use { input.copyTo(it) } }
+    }
+
+    @Test
+    fun aGameIn7zHasTheSameMembersAndContentIdAsInAZip() {
+        val sevenZ = game7z()
+        val zip = gameZip()
+        val fromZip = DosZip.members(zip).filterNot { it.directory }
+        val from7z = FileInputStream(sevenZ).channel.use { DosZip.sevenZMembers(it) }.filterNot { it.directory }
+        assertEquals(fromZip.map { Triple(it.name, it.size, it.crc) }.sortedBy { it.first },
+            from7z.map { Triple(it.name, it.size, it.crc) }.sortedBy { it.first })
+        val converted = folder.newFile("converted.zip")
+        DosZip.sevenZToZip(sevenZ, converted, AtomicBoolean(false))
+        assertEquals(DosContentHash.zip(text, zip, AtomicBoolean(false)),
+            DosContentHash.zip(text, converted, AtomicBoolean(false)))
+    }
 }

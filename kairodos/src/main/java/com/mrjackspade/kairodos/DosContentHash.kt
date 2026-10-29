@@ -19,12 +19,15 @@ object DosContentHash {
     private const val PREFIX = "sha256-dos-manifest-v1:"
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
-    /** Reads a ZIP document in place, through its own file descriptor; nothing is copied. */
+    /**
+     * Reads a ZIP document, or a 7z one with [sevenZ], in place through its own file descriptor;
+     * nothing is copied. Both give one manifest of their members, so the same game has one ID.
+     */
     fun inspectZipDocument(context: Context, uri: Uri,
-                           cancelled: AtomicBoolean): ZipInspection =
+                           cancelled: AtomicBoolean, sevenZ: Boolean = false): ZipInspection =
         (context.contentResolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
             FileInputStream(descriptor.fileDescriptor).channel.use { channel ->
-                inspect({ context.text(it) }, DosZip.members(channel), cancelled)
+                inspect({ context.text(it) }, if (sevenZ) DosZip.sevenZMembers(channel) else DosZip.members(channel), cancelled)
             }
         }
 

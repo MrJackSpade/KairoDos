@@ -14,8 +14,8 @@
     <string name="library_expired">La carpeta DOS necesita acceso de lectura y escritura. Vuelve a seleccionarla.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">Elige una carpeta DOS</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Selecciona una carpeta con permiso de escritura que contenga tus juegos de DOS y archivos ZIP.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">Selecciona una carpeta con permiso de escritura que contenga tus juegos de DOS y sus archivos ZIP y 7z.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">Elegir carpeta DOS…</string>
     <!-- EN: SAVED GAMES -->

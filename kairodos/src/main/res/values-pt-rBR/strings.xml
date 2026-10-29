@@ -14,8 +14,8 @@
     <string name="library_expired">A pasta DOS precisa de acesso de leitura e gravação. Selecione-a de novo.</string>
     <!-- EN: Choose a DOS folder -->
     <string name="folder_title">Escolha uma pasta DOS</string>
-    <!-- EN: Select a writable folder containing your DOS games and ZIP archives. -->
-    <string name="folder_description">Selecione uma pasta gravável com seus jogos de DOS e arquivos ZIP.</string>
+    <!-- EN: Select a writable folder containing your DOS games and their ZIP and 7z archives. -->
+    <string name="folder_description">Selecione uma pasta gravável com seus jogos de DOS e os arquivos ZIP e 7z deles.</string>
     <!-- EN: Choose DOS folder… -->
     <string name="folder_button">Escolher pasta DOS…</string>
     <!-- EN: SAVED GAMES -->

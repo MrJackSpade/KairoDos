@@ -77,7 +77,8 @@ class DosLibrary(private val context: Context) {
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
-    private val archiveExtensions = setOf("zip", "dosz")
+    // A 7z archive is listed as a ZIP is, and runs from a ZIP made from it (prepare).
+    private val archiveExtensions = setOf("zip", "dosz", "7z")
     private val executableExtensions = setOf("exe", "com", "bat")
     private val otherExtensions = setOf("iso", "chd", "img", "ima", "vhd", "jrc")
 
@@ -98,7 +99,7 @@ class DosLibrary(private val context: Context) {
         }
         val source = DocumentTreeWalker.FileEntry(file.uri, file.name, file.size, file.modified)
         val inspection = if (type in archiveExtensions) {
-            DosContentHash.inspectZipDocument(context, file.uri, cancelled)
+            DosContentHash.inspectZipDocument(context, file.uri, cancelled, sevenZ = type == "7z")
         } else null
         val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
         val installer = inspection?.exodosSource == true &&
@@ -192,7 +193,7 @@ class DosLibrary(private val context: Context) {
             scan.hashStarted(item.path)
             if (extension(item.path) in archiveExtensions) {
                 val inspection = DosContentHash.inspectZipDocument(
-                    context, item.uri, scan.cancelled)
+                    context, item.uri, scan.cancelled, sevenZ = extension(item.path) == "7z")
                 installer = inspection.exodosSource &&
                     !isInstalledArchive(item.path.substringAfterLast('/'))
                 inspection.contentId
@@ -440,7 +441,18 @@ class DosLibrary(private val context: Context) {
         cache.listFiles()?.filter { it.name != target.name && !it.name.endsWith(".part") }?.forEach { it.delete() }
         try { if (!game.folder) {
             val source = DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0)
-            val copied = copySource(source, cancelled)
+            val copied = copySource(source, cancelled).let { copy ->
+                if (type != "7z") copy else {
+                    val zip = File.createTempFile("dos-", ".zip.part", cache)
+                    try {
+                        DosZip.sevenZToZip(copy, zip, cancelled)
+                    } catch (failure: Throwable) {
+                        zip.delete()
+                        throw failure
+                    } finally { copy.delete() }
+                    zip
+                }
+            }
             try {
                 require(if (extension(game.path) in archiveExtensions)
                     DosContentHash.zip({ context.text(it) }, copied, cancelled) == game.contentId
