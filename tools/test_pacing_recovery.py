@@ -15,7 +15,6 @@ def method(text,signature):
 methods={
  'increase_ticks':method(sources['dosbox.cpp'],'static void increase_ticks()\n{'),
  'normal_loop':method(sources['dosbox.cpp'],'static Bitu normal_loop()'),
- 'reset':method(sources['dosbox.cpp'],'void KairoResetHostTiming()'),
  'tick':method(sources['hardware/pic.cpp'],'void TIMER_AddTick(void)'),
  'diff':method(sources['hardware/timer.h'],'static inline int64_t GetTicksDiff('),
  'since':method(sources['hardware/timer.h'],'static inline int64_t GetTicksUsSince(')}
@@ -26,7 +25,7 @@ state=sources['dosbox.cpp'][start:end]
 assert methods['increase_ticks'].count('std::this_thread::sleep_for(sleep_duration);')==1
 body=methods['increase_ticks'].replace('std::this_thread::sleep_for(sleep_duration);','host_sleep(sleep_duration);')
 template=pathlib.Path('tools/pacing_recovery_fixture.cpp.in').read_text()
-source=template.replace('/* EXTRACTED */','\n'.join([state,methods['diff'],methods['since'],methods['reset'],methods['tick'],body,methods['normal_loop']]))
+source=template.replace('/* EXTRACTED */','\n'.join([state,methods['diff'],methods['since'],methods['tick'],body,methods['normal_loop']]))
 cpp=a.output/'pacing-recovery.cpp';cpp.write_text(source)
 compiler=a.ndk/'toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe'
 subprocess.run([str(compiler),'--target=aarch64-linux-android26','-std=c++17','-O2','-static-libstdc++',str(cpp),'-o',str(a.output/'pacing-recovery')],check=True)

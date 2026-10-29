@@ -17,7 +17,7 @@ The shared frontend also supplies RetroArch Slang support from a pinned librasha
 Android changes are guarded by `KAIRO_STAGING`:
 
 - `src/main.cpp`: callable entry, no process exit/signal handlers, cleanup on failure.
-- `src/dosbox.cpp`: frontend restart instead of fork/exec; reset host timing after pause; the host fast-forward button runs the fast-forward hotkey's switch.
+- `src/dosbox.cpp`: frontend restart instead of fork/exec; the host fast-forward button runs the fast-forward hotkey's switch; the time the shared machine host holds the emulation thread between frames (its turn, KairoDos#124) counts as slept in the tick accounting (`KairoHostHeld`), so automatic cycles do not take it for work.
 - `src/gui/sdl_gui.cpp`: frontend renderer/event polling and Android mouse capture routing.
 - `src/cpu/cpu.cpp`: `KairoRunningDecoder`, the core the CPU runs or, while halted, resumes with, for the CPU telemetry.
 - `src/hardware/video/vga_draw.cpp`: a count of every emulated frame, changed or not (`VGA_VerticalTimer` calls `KairoStagingFrameEnd`).

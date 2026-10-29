@@ -35,11 +35,17 @@ internal object DosStagingLaunchConfig {
     }
 
     /**
+     * A game's machine settings (DosCatalog.options and its touch): CPU speed as fast as the device
+     * runs it, 3dfx rendering on one thread, the mouse following direct touch, and the video card's
+     * DOSBox machine (DosVideoHardware), null for the configuration's own.
+     */
+    data class Machine(val maxCycles: Boolean, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?)
+
+    /**
      * The settings the app gives every game over its catalog config, by section in the order
      * written; a game's own DOSBox settings follow them.
      */
-    fun hostSettings(source: String?, singleVoodooThread: Boolean, directTouch: Boolean,
-                     videoHardware: Int): List<Pair<String, List<Pair<String, String>>>> = listOfNotNull(
+    fun hostSettings(source: String?, machine: Machine): List<Pair<String, List<Pair<String, String>>>> = listOfNotNull(
         // Product-owned host settings override desktop settings in the source
         // profile. They do not change the emulated VGA refresh rate.
         // Disable CPU pixel/scan doubling: Android scales the native-size surface.
@@ -47,17 +53,18 @@ internal object DosStagingLaunchConfig {
         "sdl" to listOf("output" to "texturenb", "vsync" to "off", "presentation_mode" to "dos-rate",
             "window_size" to "800x600", "fullscreen" to "false", "pause_when_inactive" to "false"),
         "mixer" to listOf("rate" to "48000", "blocksize" to "512", "prebuffer" to "30", "negotiate" to "false"),
-        "mouse" to listOf("mouse_capture" to if (directTouch) "seamless" else "onstart", "mouse_raw_input" to "false"),
+        "mouse" to listOf("mouse_capture" to if (machine.directTouch) "seamless" else "onstart", "mouse_raw_input" to "false"),
         "joystick" to listOf("joysticktype" to "2axis"),
         // Desktop catalog cycle counts can exceed the handheld's capacity and
         // slow the DOS clock itself. Auto keeps real-mode compatibility and
         // adapts protected-mode cycles to the host instead of inheriting those
-        // fixed desktop budgets. Keep this after the imported CPU settings.
-        "cpu" to listOf("core" to cpuCore(source), "cycles" to "auto"),
-        "voodoo" to listOf("voodoo_threads" to if (singleVoodooThread) "1" else "auto"),
+        // fixed desktop budgets. Keep this after the imported CPU settings. Maximum runs the
+        // CPU as fast as the device can.
+        "cpu" to listOf("core" to cpuCore(source), "cycles" to if (machine.maxCycles) "max" else "auto"),
+        "voodoo" to listOf("voodoo_threads" to if (machine.singleVoodooThread) "1" else "auto"),
         // Automatic preserves the catalog's machine (Staging defaults to S3).
         // Explicit user choices follow imported settings so they take precedence.
-        DosVideoHardware.machine(videoHardware)?.let { "dosbox" to listOf("machine" to it) })
+        machine.video?.let { "dosbox" to listOf("machine" to it) })
 
     /**
      * A launch configuration and the host paths it names: AUTOEXEC.BAT is read in the DOS code
@@ -72,8 +79,7 @@ internal object DosStagingLaunchConfig {
     /** [context] puts a failure the player reads in their language. */
     fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosLaunch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
-              singleVoodooThread: Boolean, directTouch: Boolean, videoHardware: Int = 0,
-              target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
+              machine: Machine, target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
               autoexec: String? = null): Written {
         val hostPaths = ArrayList<String>()
         // A mount operand: a host path by reference, quoted; a DOS path as it is.
@@ -255,7 +261,7 @@ internal object DosStagingLaunchConfig {
                 lines += "call $letter:\\KAIRO.BAT"
             } else lines += program.replace("%", "%%")
         }
-        hostSettings(source, singleVoodooThread, directTouch, videoHardware).forEach { (section, values) ->
+        hostSettings(source, machine).forEach { (section, values) ->
             lines += "[$section]"
             values.forEach { (key, value) -> lines += "$key = $value" }
         }

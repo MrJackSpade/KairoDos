@@ -2,7 +2,6 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import com.mrjackspade.kairo.frontend.ButtonTone
-import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.GameSettingsRows
 import com.mrjackspade.kairo.frontend.GameSource
 import com.mrjackspade.kairo.frontend.GroupsPage
@@ -15,13 +14,18 @@ import com.mrjackspade.kairo.frontend.R as FrontendR
 
 /**
  * A game's DOSBox settings and startup commands, shown when it runs its Custom version: each
- * starts as its preset's (or the app's), and the player's own value replaces it the next time
- * the game starts.
+ * starts as its preset's (or the app's), and the player's own value (DosCatalog.dosboxSettings and
+ * DosCatalog.startupCommands, kept as catalog overrides) replaces it the next time the game starts.
  */
 internal class DosConfigRows(
     private val context: Context,
-    private val game: GameKey,
-    private val settings: DosPerGameSettings,
+    /** The player's own DOSBox settings: {"section.key": value}. */
+    private val own: () -> Map<String, String>,
+    /** Sets section.key for the game, or with null goes back to its catalog config's value. */
+    private val setOwn: (section: String, key: String, value: String?) -> Unit,
+    /** The player's own startup commands, or null. */
+    private val autoexec: () -> String?,
+    private val setAutoexec: (String?) -> Unit,
     /** The catalog config of the version the game starts, or null when the catalog has none. */
     private val config: () -> DosConfig?,
     /** What the app sets over the catalog config for every game (DosStagingLaunchConfig.hostSettings). */
@@ -32,8 +36,6 @@ internal class DosConfigRows(
     /** Tells the player what is wrong with a setting they typed. */
     private val complain: (String) -> Unit
 ) {
-    private fun own() = settings.configSettings(game)
-
     /**
      * The page's sections: the catalog config's, then the app's (so a game without a preset still
      * shows what it runs with), then any the player added.
@@ -58,9 +60,9 @@ internal class DosConfigRows(
 
     fun commandsRow() = GameSettingsRows.text(context, "startup-commands", context.getString(FrontendR.string.kairo_startup_commands),
         context.getString(R.string.startup_commands_hint),
-        { settings.autoexec(game) ?: config()?.autoexec?.joinToString("\n")?.takeIf(String::isNotBlank) },
-        { settings.autoexec(game) != null }, source,
-        { settings.setAutoexec(game, it) }, { settings.setAutoexec(game, null) },
+        { autoexec() ?: config()?.autoexec?.joinToString("\n")?.takeIf(String::isNotBlank) },
+        { autoexec() != null }, source,
+        { setAutoexec(it) }, { setAutoexec(null) },
         enabled = enabled, disabledReason = { GameSettingsRows.noHash(context) }, multiline = true)
 
     private fun page() = GroupsPage(title, scope, {
@@ -75,8 +77,8 @@ internal class DosConfigRows(
         return GameSettingsRows.text(context, "$section.$key", key, "$section $key",
             { own()["$section.$key"] ?: app() ?: config()?.value(section, key) }, custom,
             { if (app() != null) GameSource.BUILT_IN else source() },
-            { settings.setConfigSetting(game, section, key, it) },
-            { settings.setConfigSetting(game, section, key, null) }, empty = context.getString(R.string.setting_not_set), enabled = enabled)
+            { setOwn(section, key, it) },
+            { setOwn(section, key, null) }, empty = context.getString(R.string.setting_not_set), enabled = enabled)
     }
 
     /** A setting the catalog config does not have, written as section.key = value. */
@@ -87,8 +89,7 @@ internal class DosConfigRows(
 
     private fun add(text: String) {
         val match = ADDED.matchEntire(text.trim()) ?: return complain(context.getString(R.string.setting_add_invalid))
-        settings.setConfigSetting(game, match.groupValues[1].lowercase(), match.groupValues[2].lowercase(),
-            match.groupValues[3].trim())
+        setOwn(match.groupValues[1].lowercase(), match.groupValues[2].lowercase(), match.groupValues[3].trim())
     }
 
     private companion object {

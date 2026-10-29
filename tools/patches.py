@@ -473,6 +473,57 @@ void DOSBOX_SetMachineTypeFromConfig(SectionProp& section)
 {
 	const auto arguments = &control->arguments;
 '''),
+        ('dosbox-staging/src/dosbox.cpp',
+         '''	int64_t scheduled = {};
+	bool locked       = {};
+} ticks = {};
+''',
+         '''	int64_t scheduled = {};
+	bool locked       = {};
+#ifdef KAIRO_STAGING
+	// The host's turns since increase_ticks last counted (KairoHostHeld), in microseconds.
+	int64_t held_us = {};
+#endif
+} ticks = {};
+'''),
+        ('dosbox-staging/src/dosbox.cpp',
+         '''	// ticks_new > ticks.last
+	ticks.remain = GetTicksDiff(ticks_new, ticks.last);
+	ticks.last   = ticks_new;
+	ticks.done += ticks.remain;
+''',
+         '''	// ticks_new > ticks.last
+	ticks.remain = GetTicksDiff(ticks_new, ticks.last);
+	ticks.last   = ticks_new;
+	ticks.done += ticks.remain;
+#ifdef KAIRO_STAGING
+	// The host's turns passed as sleep does: not work done (KairoHostHeld).
+	ticks.done = std::max<int64_t>(ticks.done - ticks.held_us / MicrosInMillisecond, 0);
+	ticks.held_us %= MicrosInMillisecond;
+#endif
+'''),
+        ('dosbox-staging/src/dosbox.cpp',
+         '''// The fast-forward hotkey's own switch, for the host's fast-forward button (emulation thread).
+void KairoSetFastForward(bool enabled)
+{
+	if (enabled != ticks.locked) DOSBOX_UnlockSpeed(enabled);
+}
+#endif
+''',
+         '''// The fast-forward hotkey's own switch, for the host's fast-forward button (emulation thread).
+void KairoSetFastForward(bool enabled)
+{
+	if (enabled != ticks.locked) DOSBOX_UnlockSpeed(enabled);
+}
+
+// The host held the emulation thread for its turn between frames (KairoDos#124): time the guest
+// did not run, which auto cycles counts as slept rather than as work.
+void KairoHostHeld(const int64_t micros)
+{
+	if (!ticks.locked) ticks.held_us += micros;
+}
+#endif
+'''),
     ],
     'dosbox-staging/src/gui/render/render.cpp': [
         ('dosbox-staging/src/gui/render/render.cpp',

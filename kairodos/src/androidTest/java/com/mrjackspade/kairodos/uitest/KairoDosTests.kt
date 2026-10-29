@@ -82,16 +82,18 @@ class DosTests : KairoUiTest() {
             .find(com.mrjackspade.kairo.uitest.By.item("video")).find(com.mrjackspade.kairo.uitest.By.id("value")).text())
     }
 
-    /** The ARM64 dynamic recompiler is built in, selected, and runs code it generated. */
+    /**
+     * The ARM64 dynamic recompiler (which staging_bridge.cpp requires at build time) is selected and
+     * runs code it generated, as the core reports it (dos_core.cpp details).
+     */
     @Test
     fun theDynamicCoreRunsGeneratedCode() {
         screens.completeFirstRun().open(KairoDosApp.bootGame).play()
         driver.waitFrames(120)
         val probe = driver.probe()
-        expect.equal("dynrec built in", "1", probe.details["cpu.dynrec"])
-        expect.equal("the dynamic core selected", "1", probe.details["cpu.dynamic"])
-        expect.that("generated blocks have run", (probe.details["cpu.executed"]?.toLongOrNull() ?: 0) > 0) {
-            probe.details["cpu.executed"].orEmpty()
+        expect.equal("the dynamic core selected", "1", probe.details["core.dynamic"])
+        expect.that("generated blocks have run", (probe.details["core.executed"]?.toLongOrNull() ?: 0) > 0) {
+            probe.details["core.executed"].orEmpty()
         }
     }
 }

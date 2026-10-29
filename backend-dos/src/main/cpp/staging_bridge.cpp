@@ -11,6 +11,9 @@
 #include "misc/unicode.h"
 #include "hardware/input/joystick.h"
 #include "hardware/input/mouse.h"
+#include "hardware/memory.h"
+#include "hardware/timer.h"
+#include "hardware/video/vga.h"
 #include "libs/loguru/loguru.hpp"
 #include <android/log.h>
 #include <algorithm>
@@ -23,8 +26,8 @@
 #include <vector>
 
 int KairoStagingMain(int argc, char** argv);
-void KairoResetHostTiming();
 void KairoSetFastForward(bool enabled);  // dosbox.cpp (Kairo)
+void KairoHostHeld(int64_t micros);       // dosbox.cpp (Kairo)
 
 static_assert(C_DYNREC && C_TARGET_CPU_ARM,
     "KairoDos requires the ARM64 dynamic recompiler");
@@ -99,11 +102,16 @@ uint64_t keyboard_waits = 0, keyboard_polls = 0, mouse_reads = 0;
 // Written on the emulation thread, read by the host's probe.
 std::atomic<uint64_t> guest_frames{0};
 int keyboard_waiting = 0;
-bool last_left = false, last_right = false, last_pointer = false;
-int last_cycles = 0, last_mouse = -1;
-bool settings_captured = false;
+// Whether the mouse follows direct touch (seamless capture), once input chose: the launch
+// configuration sets the first mode.
+int mouse_absolute = -1;
 float cursor_x = 400.0f, cursor_y = 300.0f;
-std::string original_cycles, original_real_cycles, original_protected_cycles;
+
+void set_mouse_absolute(bool absolute) {
+    if (int(absolute) == mouse_absolute) return;
+    set_section_property_value("mouse", "mouse_capture", absolute ? "seamless" : "onstart");
+    mouse_absolute = absolute;
+}
 
 SDL_Scancode scancode(int code) {
     if (code >= 282 && code <= 293) return SDL_Scancode(SDL_SCANCODE_F1 + code - 282);
@@ -148,7 +156,7 @@ SDL_Scancode scancode(int code) {
 
 extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     const char* resources, const char* const* paths, size_t path_count, const KairoStagingCallbacks* cb) {
-    if (!cb || cb->version != 2 || !config || !config_dir || !resources || (path_count && !paths)) return 1;
+    if (!cb || cb->version != 3 || !cb->video || !cb->poll || !cb->restart || !cb->frame || !config || !config_dir || !resources || (path_count && !paths)) return 1;
     host_paths.assign(paths, paths + path_count);
 #ifdef KAIRO_GUEST_PROFILE
     kairo_guest_profile::open(config_dir);
@@ -156,6 +164,9 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     callbacks = *cb;
     kairo_staging_cpu_counters = {};
     guest_frames = 0;
+    keyboard_waits = keyboard_polls = mouse_reads = 0;
+    keyboard_waiting = 0;
+    mouse_absolute = -1;
     std::filesystem::create_directories(config_dir);
     SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
     SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
@@ -203,27 +214,31 @@ bool KairoStagingPoll() {
 #ifdef KAIRO_GUEST_PROFILE
     kairo_guest_profile::flush();
 #endif
-    if (callbacks.telemetry)
-        callbacks.telemetry(keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting);
-    if (callbacks.cpu_telemetry) {
-        // A game waiting for a key spends most of its time halted, in DOSBox's halt decoder.
-        CPU_Decoder* const decoder = KairoRunningDecoder();
-        callbacks.cpu_telemetry(1,
-            decoder == &CPU_Core_Dynrec_Run || decoder == &CPU_Core_Dynrec_Trap_Run,
-            kairo_staging_cpu_counters.translated_blocks,
-            kairo_staging_cpu_counters.executed_blocks);
-    }
-    const int result = callbacks.poll ? callbacks.poll() : 1;
-    if (result == 2) KairoResetHostTiming();
-    if (result) return true;
+    if (callbacks.poll()) return true;
     DOSBOX_RequestShutdown();
     return false;
 }
-void KairoStagingFrameEnd() { guest_frames.fetch_add(1, std::memory_order_relaxed); }
+void KairoStagingFrameEnd() {
+    guest_frames.fetch_add(1, std::memory_order_relaxed);
+    const auto held = GetTicksUs();
+    callbacks.frame(VGA_GetRefreshRate());
+    // The host's turn is not the emulator's work: auto cycles must not count it.
+    KairoHostHeld(GetTicksUsSince(held));
+}
 extern "C" void kairo_staging_fast_forward(bool enabled) { KairoSetFastForward(enabled); }
 extern "C" uint64_t kairo_staging_guest_frames() { return guest_frames.load(std::memory_order_relaxed); }
+extern "C" void kairo_staging_guest_input(KairoStagingGuestInput* input) {
+    *input = {keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting};
+}
+extern "C" void kairo_staging_cpu(KairoStagingCpu* cpu) {
+    // A game waiting for a key spends most of its time halted, in DOSBox's halt decoder.
+    CPU_Decoder* const decoder = KairoRunningDecoder();
+    *cpu = {decoder == &CPU_Core_Dynrec_Run || decoder == &CPU_Core_Dynrec_Trap_Run,
+        kairo_staging_cpu_counters.translated_blocks, kairo_staging_cpu_counters.executed_blocks};
+}
+extern "C" int kairo_staging_lock_flags() { return mem_readb(0x417); }
 void KairoStagingVideo(const uint32_t* pixels, int w, int h, int pitch, double aspect) {
-    if (callbacks.video) callbacks.video(pixels, w, h, pitch, aspect);
+    callbacks.video(pixels, w, h, pitch, aspect);
 }
 void KairoStagingKeyboardWait(bool waiting) {
     if (waiting) ++keyboard_waits;
@@ -232,7 +247,7 @@ void KairoStagingKeyboardWait(bool waiting) {
 void KairoStagingKeyboardPoll() { ++keyboard_polls; }
 void KairoStagingMouseRead() { ++mouse_reads; }
 void KairoStagingRestart() {
-    if (callbacks.restart) callbacks.restart();
+    callbacks.restart();
     DOSBOX_RequestShutdown();
 }
 
@@ -272,48 +287,30 @@ extern "C" void kairo_staging_joypad(const uint8_t* buttons, size_t count) {
     }
 }
 
-extern "C" void kairo_staging_configure(bool absolute, int cycles) {
-    if (!settings_captured) {
-        auto* cpu = get_section("cpu");
-        original_cycles = cpu->GetString("cycles");
-        original_real_cycles = cpu->GetString("cpu_cycles");
-        original_protected_cycles = cpu->GetString("cpu_cycles_protected");
-        settings_captured = true;
-    }
-    if (cycles != last_cycles) {
-        if (cycles == 1) set_section_property_value("cpu", "cycles", "max");
-        else if (!original_cycles.empty()) set_section_property_value("cpu", "cycles", original_cycles);
-        else {
-            set_section_property_value("cpu", "cpu_cycles", original_real_cycles);
-            set_section_property_value("cpu", "cpu_cycles_protected", original_protected_cycles);
-        }
-        last_cycles = cycles;
-    }
-    if (int(absolute) != last_mouse) {
-        set_section_property_value("mouse", "mouse_capture", absolute ? "seamless" : "onstart");
-        last_mouse = absolute;
-    }
+extern "C" void kairo_staging_mouse_move(int dx, int dy) {
+    set_mouse_absolute(false);
+    const auto viewport = GFX_GetViewportSizeInPixels();
+    const auto width = viewport.w - 1;
+    const auto height = viewport.h - 1;
+    if (width <= 0 || height <= 0 || (!dx && !dy)) return;
+    cursor_x = std::clamp(cursor_x + dx, 0.0f, float(width));
+    cursor_y = std::clamp(cursor_y + dy, 0.0f, float(height));
+    MOUSE_EventMoved(float(dx), float(dy), viewport.x + cursor_x, viewport.y + cursor_y);
 }
 
-extern "C" void kairo_staging_mouse(int dx, int dy, bool left, bool right,
-    int x, int y, bool pointer, bool absolute) {
+extern "C" void kairo_staging_mouse_point(int x, int y) {
+    set_mouse_absolute(true);
     const auto viewport = GFX_GetViewportSizeInPixels();
     const auto width = viewport.w - 1;
     const auto height = viewport.h - 1;
     if (width <= 0 || height <= 0) return;
-    if (absolute && pointer) {
-        const auto next_x = float(x + 32767) * width / 65534.0f;
-        const auto next_y = float(y + 32767) * height / 65534.0f;
-        MOUSE_EventMoved(last_pointer ? next_x - cursor_x : 0, last_pointer ? next_y - cursor_y : 0,
-            viewport.x + next_x, viewport.y + next_y);
-        cursor_x = next_x; cursor_y = next_y;
-    } else if (dx || dy) {
-        cursor_x = std::clamp(cursor_x + dx, 0.0f, float(width));
-        cursor_y = std::clamp(cursor_y + dy, 0.0f, float(height));
-        MOUSE_EventMoved(float(dx), float(dy), viewport.x + cursor_x, viewport.y + cursor_y);
-    }
-    left = left || (absolute && pointer);
-    if (left != last_left) MOUSE_EventButton(MouseButtonId::Left, left);
-    if (right != last_right) MOUSE_EventButton(MouseButtonId::Right, right);
-    last_left = left; last_right = right; last_pointer = pointer;
+    const auto next_x = std::clamp(float(x) * width / 65536.0f, 0.0f, float(width));
+    const auto next_y = std::clamp(float(y) * height / 65536.0f, 0.0f, float(height));
+    MOUSE_EventMoved(next_x - cursor_x, next_y - cursor_y, viewport.x + next_x, viewport.y + next_y);
+    cursor_x = next_x; cursor_y = next_y;
+}
+
+extern "C" void kairo_staging_mouse_button(int button, bool down) {
+    if (button == 1) MOUSE_EventButton(MouseButtonId::Left, down);
+    else if (button == 2) MOUSE_EventButton(MouseButtonId::Right, down);
 }

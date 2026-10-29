@@ -2,11 +2,10 @@ package com.mrjackspade.kairodos
 
 import com.mrjackspade.kairo.frontend.UiText
 
-/** Staging machine types, not Android GPU drivers. Indices are persisted: append only. */
+/** Staging machine types, not Android GPU drivers: each choice by DOSBox's machine name (DosCatalog.video). */
 internal object DosVideoHardware {
-    const val setting = "dos_video_hardware"
     val choices = listOf(
-        null to UiText.res(R.string.video_automatic),
+        DosCatalog.AUTO to UiText.res(R.string.video_automatic),
         "svga_s3" to UiText.fixed("S3 Trio64 (VGA / SVGA)"),
         "svga_et4000" to UiText.fixed("Tseng ET4000"),
         "svga_et3000" to UiText.fixed("Tseng ET3000"),
@@ -20,7 +19,13 @@ internal object DosVideoHardware {
         "tandy" to UiText.fixed("Tandy"),
         "pcjr" to UiText.fixed("IBM PCjr")
     )
-    fun normalize(index: Int) = index.takeIf { it in choices.indices } ?: 0
-    fun machine(index: Int) = choices[normalize(index)].first
-    fun label(index: Int) = choices[normalize(index)].second
+
+    /** The machine DOSBox runs for [id]; null for Automatic, which keeps the configuration's. */
+    fun machine(id: String): String? = id.takeIf { it != DosCatalog.AUTO }
+
+    /**
+     * The choice KairoDos stored by its place in [choices] before games' settings were catalog
+     * overrides (DosSettingsMigration); an unknown place is Automatic, as it was read then.
+     */
+    fun fromIndex(index: Int): String = choices.getOrNull(index)?.first ?: DosCatalog.AUTO
 }

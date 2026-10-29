@@ -6,7 +6,7 @@ import com.mrjackspade.kairo.frontend.R as FrontendR
 /**
  * A catalog DOSBox config as the game's settings show it: every `key = value` of each section, in
  * order, and the [autoexec] lines, which DOS runs to start the game. A game's own settings replace
- * any of them (DosPerGameSettings), so whatever a catalog config sets the player can change.
+ * any of them (DosCatalog.dosboxSettings), so whatever a catalog config sets the player can change.
  */
 internal class DosConfig private constructor(
     /** Each section by name (lower case, without brackets): its settings, by key, in the order written. */

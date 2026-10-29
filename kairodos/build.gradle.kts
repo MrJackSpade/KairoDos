@@ -6,21 +6,11 @@ plugins {
 extra["kairoProduct"] = "kairodos"
 extra["kairoLabel"] = "KairoDos"
 extra["kairoLauncherBackground"] = "#00110A"
-extra["kairoCatalogRules"] = "com.mrjackspade.kairodos.DosCatalogSettings"
+extra["kairoCatalogRules"] = "com.mrjackspade.kairodos.DosCatalog"
 apply(from = rootProject.file("shared/gradle/kairo-app.gradle"))
 
-android {
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                arguments += "-DKAIRO_OPTIMIZED_PROFILE=" +
-                    if (providers.gradleProperty("presentationProfile").orNull == "true") "ON" else "OFF"
-            }
-        }
-    }
-    // DOSBox Staging's runtime resources, beside the shared catalog assets.
-    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/staging-assets"))
-}
+// DOSBox Staging's runtime resources, beside the shared catalog assets.
+android.sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/staging-assets"))
 
 val stagingResources by tasks.registering(Sync::class) {
     from(rootProject.file("third_party/dosbox-staging/resources"))
