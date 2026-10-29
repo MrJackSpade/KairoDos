@@ -352,8 +352,9 @@ Java_com_mrjackspade_kairodos_MainActivity_nativeLastError(JNIEnv* env, jobject)
 }
 extern "C" JNIEXPORT jlongArray JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeInputTelemetry(JNIEnv* env, jobject) {
-    jlong values[]{jlong(guest_keyboard_waits), jlong(guest_keyboard_polls), jlong(guest_mouse_reads), jlong(guest_keyboard_waiting)};
-    jlongArray result = env->NewLongArray(4); if (result) env->SetLongArrayRegion(result, 0, 4, values); return result;
+    // DOSBox sees the guest's mouse reads themselves, so it never reports the mouse as set up instead.
+    jlong values[]{jlong(guest_keyboard_waits), jlong(guest_keyboard_polls), jlong(guest_mouse_reads), jlong(guest_keyboard_waiting), 0};
+    jlongArray result = env->NewLongArray(5); if (result) env->SetLongArrayRegion(result, 0, 5, values); return result;
 }
 extern "C" JNIEXPORT jlongArray JNICALL
 Java_com_mrjackspade_kairodos_MainActivity_nativeCpuTelemetry(JNIEnv* env, jobject) {
