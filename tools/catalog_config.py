@@ -48,3 +48,7 @@ PROVENANCE = {
     "source": "KairoDos research catalog: the owner's eXoDOS v6 import (tools/generate_dos_catalog.py), metadata review",
     "license": "Original descriptions; titles, tags, launch configurations and image references from eXoDOS and LaunchBox; artwork used under fair use",
     "attribution": "eXoDOS contributors; LaunchBox Games Database contributors; original descriptions"}
+
+# The extensions the app removes from a file's name before looking it up (the catalog schema's
+# mediaExtensions); the name index is built the same way (shared app_catalog.lookup_name).
+MEDIA_EXTENSIONS = r"\.(?:zip|dosz)$"
