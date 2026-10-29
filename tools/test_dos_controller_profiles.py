@@ -1,5 +1,6 @@
 """Check that every cataloged classic Doom release gets its controller profile."""
 
+import gzip
 import json
 import unittest
 from pathlib import Path
@@ -21,7 +22,7 @@ class DosControllerProfilesTest(unittest.TestCase):
         self.assertEqual(asset["schemaVersion"], 1)
         ids = asset["profiles"]["doom-v1"]
         self.assertEqual(len(ids), len(set(ids)))
-        games = json.loads((RESEARCH / "games-v1.json").read_text("utf-8"))["games"]
+        games = json.loads(gzip.decompress((RESEARCH / "games-v1.json.gz").read_bytes()))["games"]
         expected = {content_id for record in games.values() if record.get("title") in DOOM_ENGINE_TITLES
                     for content_id in record.get("contentIds", [])}
         self.assertEqual(set(ids), expected)

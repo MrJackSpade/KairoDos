@@ -79,7 +79,10 @@ function Test-Preset($preset, [string] $profileId, [switch] $AllowSticks) {
 }
 
 $currentIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-$research = Get-Content -LiteralPath (Join-Path $project 'catalog/research/games-v1.json') -Raw | ConvertFrom-Json
+# The research is gzipped (shared/tools/catalog_files.py).
+$gzip = [IO.Compression.GZipStream]::new([IO.File]::OpenRead((Join-Path $project 'catalog/research/games-v1.json.gz')), [IO.Compression.CompressionMode]::Decompress)
+$reader = [IO.StreamReader]::new($gzip, [Text.UTF8Encoding]::new($false))
+try { $research = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
 foreach ($game in $research.games.PSObject.Properties.Value) {
     foreach ($contentId in @($game.contentIds)) { if ($contentId) { [void]$currentIds.Add($contentId) } }
 }

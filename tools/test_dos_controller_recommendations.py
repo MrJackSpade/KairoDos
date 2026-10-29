@@ -1,4 +1,5 @@
 """Verify ledger recommendations flow through the generated DOS profile catalog."""
+import gzip
 import json
 from pathlib import Path
 import sys
@@ -18,7 +19,7 @@ class DosControllerRecommendationsTest(unittest.TestCase):
         base = json.loads((research / "controller-profiles-v1.json").read_text("utf-8"))
         current_ids = {
             content_id
-            for record in json.loads((research / "games-v1.json").read_text("utf-8"))["games"].values()
+            for record in json.loads(gzip.decompress((research / "games-v1.json.gz").read_bytes()))["games"].values()
             for content_id in record.get("contentIds", [])
         }
 

@@ -51,7 +51,7 @@ KairoDos reads the shared catalog (`LayeredGameCatalog` with the `DosCatalog` sc
 
 The app fetches `catalog/core-v4.meta.json` from this repository first and skips the archive when its SHA-256 is unchanged; `catalog/core-v4.zip` holds the catalog's documents, read one at a time, and each language's descriptions are a download of their own (`core-v4-<language>.zip`). Versions before the shared catalog keep reading the frozen `Kairo/catalog/dos/core-v2.zip`.
 
-Descriptions are original (`catalog/research/descriptions-v1.json` and its translations); the eXoDOS text in the import is never shipped. Source attribution and the separate artwork review remain recorded in [licensing](licensing.md).
+Descriptions are original (`catalog/research/descriptions-v1.json.gz` and its translations, gzipped by shared `catalog_files.py`); the eXoDOS text in the import is never shipped. Source attribution and the separate artwork review remain recorded in [licensing](licensing.md).
 
 ### Controller profile data
 

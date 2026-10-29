@@ -4,7 +4,7 @@ KairoDos's research catalog for the shared generator (shared/tools/app_catalog.p
 
 Usage: import_catalog.py [--check] [--references <out.json>]
 
-Writes catalog/research/games-v1.json and catalog/research/folders-v1.json. Each game is
+Writes catalog/research/games-v1.json.gz (gzipped, shared catalog_files.py) and catalog/research/folders-v1.json. Each game is
 "dos:<first 16 hex digits of its content ID>". An archive holding several games (its record's
 "variants", eXoDOS's entries named by their file names) is a collection: one library entry whose
 games the player picks between when it starts. It keeps its own key, gives each of its games
@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "shared/tools"))
 sys.path.insert(0, str(ROOT / "tools"))
 import catalog_descriptions
+import catalog_files
 from dos_artwork import with_launchbox
 from dos_catalog_review import apply_review, read_review
 
@@ -113,7 +114,7 @@ def build():
         games[key] = game
     catalog_descriptions.apply(ROOT / "catalog/research", games)
     folders = {"schemaVersion": 1, "folders": files["folders.json"]}
-    return {"catalog/research/games-v1.json": {"schemaVersion": 1, "games": games},
+    return {"catalog/research/games-v1.json.gz": {"schemaVersion": 1, "games": games},
             "catalog/research/folders-v1.json": folders}, references
 
 
@@ -129,12 +130,18 @@ def main():
     for path, value in outputs.items():
         content = json.dumps(value, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
         target = ROOT / path
-        if args.check:
+        if path.endswith(".gz"):
+            # The research holds descriptions: gzipped (shared catalog_files.py).
+            if args.check:
+                assert catalog_files.same(target, content.encode("utf-8")), f"Stale {path}"
+            else:
+                catalog_files.write_text(target, content)
+        elif args.check:
             assert target.read_text(encoding="utf-8") == content, f"Stale {path}"
         else:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content, encoding="utf-8")
-    print(f"KairoDos research: {len(outputs['catalog/research/games-v1.json']['games'])} games")
+    print(f"KairoDos research: {len(outputs['catalog/research/games-v1.json.gz']['games'])} games")
 
 
 if __name__ == "__main__":

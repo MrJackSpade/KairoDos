@@ -1,4 +1,5 @@
 import copy
+import gzip
 import hashlib
 import json
 import unittest
@@ -52,7 +53,7 @@ class CatalogReviewTests(unittest.TestCase):
     def test_research_catalog_carries_reviewed_titles(self):
         # The import (tools/import_catalog.py) names each game by its content ID's first 16 digits;
         # a reviewed variant is that game's "<key>.<n>". Descriptions are original, never the review's.
-        games = json.loads((ROOT / "catalog/research/games-v1.json").read_text(encoding="utf-8"))["games"]
+        games = json.loads(gzip.decompress((ROOT / "catalog/research/games-v1.json.gz").read_bytes()))["games"]
         titles = {title for game in games.values() for title in [game["title"]]}
         reviewed = [item["fields"]["title"] for item in read_review()["records"] if "title" in item["fields"]]
         self.assertTrue(reviewed)
