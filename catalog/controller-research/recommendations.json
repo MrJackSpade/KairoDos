@@ -557,13 +557,13 @@
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         },
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         }
       ]
@@ -1290,13 +1290,13 @@
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         },
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         }
       ]
@@ -5255,13 +5255,13 @@
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         },
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         }
       ]
@@ -14980,13 +14980,13 @@
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         },
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         }
       ]

@@ -14,7 +14,9 @@ they become one game, the first entry's. A game's title, tags and artwork come f
 applied (catalog/metadata-review-v1.json); its LaunchBox images from
 catalog/launchbox-artwork-v1.json; its launch (folder, eXoDOS configs, exception) rides on its
 medium's record; its controls are its controller preset (catalog/research/controller-profiles-v1.json,
-which tools/GenerateDosControllerProfiles.ps1 maintains, with catalog/controller-defaults.json). Descriptions are original and come from the description files
+which tools/GenerateDosControllerProfiles.ps1 maintains, with catalog/controller-defaults.json); its
+machine settings, each with the reason it needs them, from catalog/research/machine-v1.json
+({"<game key>": {"<option>": value, "reason": text}}, catalog_config.MACHINE_OPTIONS). Descriptions are original and come from the description files
 (shared catalog_descriptions.py); the import's eXoDOS text is never shipped. --check fails if a
 written file would change. --references writes that text, {"<game key>": text}, as reference
 material for writing descriptions (shared descriptions.py worklist --references); keep it out of
@@ -32,6 +34,7 @@ sys.path.insert(0, str(ROOT / "shared/tools"))
 sys.path.insert(0, str(ROOT / "tools"))
 import catalog_descriptions
 import catalog_files
+from catalog_config import MACHINE_OPTIONS
 from dos_artwork import with_launchbox
 from dos_catalog_review import apply_review, read_review
 
@@ -75,6 +78,19 @@ def research_game(record, images):
     return game
 
 
+def apply_machine(games):
+    """Each game's reviewed machine settings (catalog/research/machine-v1.json) as its "machine"."""
+    review = json.loads((ROOT / "catalog/research/machine-v1.json").read_text(encoding="utf-8"))
+    assert review.get("schemaVersion") == 1 and isinstance(review.get("games"), dict), "invalid machine-v1.json"
+    for key, fields in review["games"].items():
+        assert key in games, f"machine-v1.json: unknown game {key}"
+        assert isinstance(fields.get("reason"), str) and fields["reason"].strip(), f"machine-v1.json: {key} gives no reason"
+        settings = {option: value for option, value in fields.items() if option != "reason"}
+        assert settings and all(value in MACHINE_OPTIONS.get(option, ()) for option, value in settings.items()), \
+            f"machine-v1.json: {key} has settings the catalog does not offer"
+        games[key]["machine"] = settings
+
+
 def build():
     with zipfile.ZipFile(ROOT / "catalog/complete-input-v1.zip") as archive:
         files = {name: json.loads(archive.read(name)) for name in archive.namelist()}
@@ -112,6 +128,7 @@ def build():
         if members:
             game["diskCollection"] = {content_id: members}
         games[key] = game
+    apply_machine(games)
     catalog_descriptions.apply(ROOT / "catalog/research", games)
     folders = {"schemaVersion": 1, "folders": files["folders.json"]}
     return {"catalog/research/games-v1.json.gz": {"schemaVersion": 1, "games": games},

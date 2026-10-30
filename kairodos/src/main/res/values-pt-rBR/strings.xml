@@ -81,6 +81,8 @@
     <string name="video_foot">As mudanças valem na próxima vez que um jogo iniciar. Jogos com configuração própria a mantêm.</string>
     <!-- EN: 3dfx rendering -->
     <string name="voodoo">Renderização 3dfx</string>
+    <!-- EN: DOS joystick -->
+    <string name="dos_joystick">Joystick do DOS</string>
     <!-- EN: Automatic CPU threads -->
     <string name="voodoo_automatic">Threads de CPU automáticas</string>
     <!-- EN: Single CPU thread -->

@@ -27,6 +27,9 @@ object DosCatalog : LayeredGameCatalog.Schema {
     override val catalogUrl = "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/catalog/"
     override val selfHostedArt = "/MrJackSpade/KairoDos/main/catalog/artwork/art/catalog/"
     override val contentId = Regex("sha256-dos-manifest-v1:[0-9a-f]{64}")
+    /** The PC keyboard's Esc, and its Enter and keypad Enter (DosKeyboardLayout). */
+    override val escapeKeys = setOf(27)
+    override val enterKeys = setOf(13, 271)
     override val mediaExtensions = Regex("\\.(?:zip|dosz)$", RegexOption.IGNORE_CASE)
     /** The DOS CPU's speed: the configuration's own (Automatic), or as fast as the device can run it. */
     val cpu = MachineOption("cpu", UiText.res(R.string.cpu_speed), listOf(
@@ -39,7 +42,15 @@ object DosCatalog : LayeredGameCatalog.Schema {
     val voodoo = MachineOption("voodoo", UiText.res(R.string.voodoo), listOf(
         ChoiceOption(AUTO, UiText.res(R.string.voodoo_automatic)),
         ChoiceOption(VOODOO_SINGLE, UiText.res(R.string.voodoo_single))), AUTO)
-    val options = listOf(cpu, video, voodoo)
+    /**
+     * Whether DOS sees a joystick. A game that reads one by fixed poll counts tuned to its era's
+     * hardware sees an emulated stick off centre and moves on its own, so its record turns it off
+     * and the game plays from the keyboard (The Adventure of Tipi, KairoDos#142).
+     */
+    val joystick = MachineOption("joystick", UiText.res(R.string.dos_joystick), listOf(
+        ChoiceOption(ON, UiText.res(FrontendR.string.kairo_on)),
+        ChoiceOption(OFF, UiText.res(FrontendR.string.kairo_off))), ON)
+    val options = listOf(cpu, video, voodoo, joystick)
 
     /**
      * The game's version (`launch.version`, one of its catalog `configs`), or its Custom version
@@ -137,6 +148,8 @@ object DosCatalog : LayeredGameCatalog.Schema {
     const val AUTO = "auto"
     const val CPU_MAX = "max"
     const val VOODOO_SINGLE = "single"
+    const val ON = "on"
+    const val OFF = "off"
     val PLAYER_NAME = Regex("[A-Z0-9_]{1,8}")
     private val SETTING_KEY = Regex("[a-z0-9_]+\\.[a-z0-9_]+")
     private val CONFIG_SECTION = Regex("^\\s*\\[[^]]+]\\s*$")

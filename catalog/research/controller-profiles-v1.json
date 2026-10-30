@@ -530,7 +530,8 @@
     "sha256-dos-manifest-v1:fe99ee25bf71440c2f01fb154909e57fcd3842973eaaceab59661f8d3c8d4848": "cannon-fodder-mouse-v1",
     "sha256-dos-manifest-v1:ff30f385ad1705926c8baca048d6803cd86efd1cba8103e77c5f0a7ecaf9d477": "dangerous-dave-risky-rescue-native-joystick-v1",
     "sha256-dos-manifest-v1:ffeeb3d68a03006a46fb7f9b2f26a1d461058472d5d04ec4466187cdfe5c10ff": "dpad-mouse-left-right-v1",
-    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1"
+    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1",
+    "sha256-dos-manifest-v1:a4a4c6b0fcee960c5e69905f30d05159973e69424bf1db151d4a4bf6da4f3236": "adventure-of-tipi-keyboard-v1"
   },
   "presets": {
     "1000-miglia-native-joystick-dpad-inferred-v1": {
@@ -1957,13 +1958,13 @@
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         },
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         }
       ],
@@ -2028,13 +2029,13 @@
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           },
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           }
         ]
@@ -3164,13 +3165,13 @@
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         },
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         }
       ],
@@ -3247,13 +3248,13 @@
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           },
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           }
         ]
@@ -4622,6 +4623,269 @@
             "keys": [
               27
             ]
+          }
+        ]
+      }
+    },
+    "adventure-of-tipi-keyboard-v1": {
+      "description": "The Adventure of Tipi from the keyboard: D-pad and left stick are the arrow keys, B (and A, R1) jumps with Up, Y (and X, L1) attacks with Alt, Start is Esc and Select is Enter.",
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
           }
         ]
       }
@@ -12329,13 +12593,13 @@
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         },
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         }
       ],
@@ -12416,13 +12680,13 @@
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           },
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           }
         ]
@@ -13383,13 +13647,13 @@
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           },
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           },
           {
@@ -20899,13 +21163,13 @@
         {
           "input": "virtual:select",
           "keys": [
-            13
+            27
           ]
         },
         {
           "input": "virtual:start",
           "keys": [
-            27
+            13
           ]
         }
       ],
@@ -20944,13 +21208,13 @@
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           },
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           }
         ]

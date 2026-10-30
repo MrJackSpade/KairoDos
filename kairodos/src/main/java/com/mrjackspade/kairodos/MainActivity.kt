@@ -334,7 +334,8 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         val options = optionValues(game)
         return DosStagingLaunchConfig.Machine(options.getValue(DosCatalog.cpu.id) == DosCatalog.CPU_MAX,
             options.getValue(DosCatalog.voodoo.id) == DosCatalog.VOODOO_SINGLE, touchSelection(entry).directTouch,
-            DosVideoHardware.machine(options.getValue(DosCatalog.video.id)))
+            DosVideoHardware.machine(options.getValue(DosCatalog.video.id)),
+            options.getValue(DosCatalog.joystick.id) == DosCatalog.ON)
     }
 
     /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */

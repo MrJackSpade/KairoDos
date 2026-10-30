@@ -81,6 +81,8 @@
     <string name="video_foot">تُطبَّق التغييرات في المرة التالية التي تبدأ فيها لعبة. تحتفظ الألعاب التي لها إعدادها الخاص به.</string>
     <!-- EN: 3dfx rendering -->
     <string name="voodoo">عرض 3dfx</string>
+    <!-- EN: DOS joystick -->
+    <string name="dos_joystick">عصا تحكم DOS</string>
     <!-- EN: Automatic CPU threads -->
     <string name="voodoo_automatic">سلاسل معالجة تلقائية</string>
     <!-- EN: Single CPU thread -->

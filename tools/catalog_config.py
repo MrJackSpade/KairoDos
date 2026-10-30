@@ -32,6 +32,10 @@ def _configs(value):
                 isinstance(text, str) and len(text) <= 256 * 1024 for name, text in value.items()))
 
 
+# The machine settings a record can give its game (DosCatalog.options), each a per-game setting the
+# player can change: whether DOS sees a joystick (catalog/research/machine-v1.json).
+MACHINE_OPTIONS = {"joystick": {"on", "off"}}
+
 LAUNCH_FIELDS = {"folder": lambda value: isinstance(value, str) and bool(FOLDER.fullmatch(value)),
                  "configs": _configs,
                  "exception": lambda value: type(value) is bool}

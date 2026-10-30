@@ -3,7 +3,8 @@
   "assignments": {
     "sha256-dos-manifest-v1:05cc07a7f13a69cf5e086b682cbac39a9f95c9b89c25571bd5d54e349a611158": "duke3d-fps-v1",
     "sha256-dos-manifest-v1:6fcc94dd920a5592e6780333f129931477d8496e2c41a0b2522cd553bb4264c6": "duke3d-fps-v1",
-    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1"
+    "sha256-dos-manifest-v1:33274f9bb838839e73d3b96d9d48d49c08c94c77c96d56b991f454bc33c755f3": "batman-the-movie-keyboard-v1",
+    "sha256-dos-manifest-v1:a4a4c6b0fcee960c5e69905f30d05159973e69424bf1db151d4a4bf6da4f3236": "adventure-of-tipi-keyboard-v1"
   },
   "presets": {
     "doom-v1": {
@@ -322,13 +323,13 @@
           {
             "input": "virtual:start",
             "keys": [
-              27
+              13
             ]
           },
           {
             "input": "virtual:select",
             "keys": [
-              13
+              27
             ]
           },
           {
@@ -775,6 +776,269 @@
             "keys": [
               32
             ]
+          }
+        ]
+      }
+    },
+    "adventure-of-tipi-keyboard-v1": {
+      "description": "The Adventure of Tipi from the keyboard: D-pad and left stick are the arrow keys, B (and A, R1) jumps with Up, Y (and X, L1) attacks with Alt, Start is Esc and Select is Enter.",
+      "bindings": [
+        {
+          "input": "virtual:up",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:down",
+          "keys": [
+            274
+          ]
+        },
+        {
+          "input": "virtual:left",
+          "keys": [
+            276
+          ]
+        },
+        {
+          "input": "virtual:right",
+          "keys": [
+            275
+          ]
+        },
+        {
+          "input": "virtual:a",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:b",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:r1",
+          "keys": [
+            273
+          ]
+        },
+        {
+          "input": "virtual:x",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:y",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:l1",
+          "keys": [
+            308
+          ]
+        },
+        {
+          "input": "virtual:start",
+          "keys": [
+            13
+          ]
+        },
+        {
+          "input": "virtual:select",
+          "keys": [
+            27
+          ]
+        },
+        {
+          "input": "virtual:menu",
+          "action": "menu"
+        }
+      ],
+      "defaults": {
+        "withoutSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
+          }
+        ],
+        "withSticks": [
+          {
+            "input": "virtual:up",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:down",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:left",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:right",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:lsup",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:lsdown",
+            "keys": [
+              274
+            ]
+          },
+          {
+            "input": "virtual:lsleft",
+            "keys": [
+              276
+            ]
+          },
+          {
+            "input": "virtual:lsright",
+            "keys": [
+              275
+            ]
+          },
+          {
+            "input": "virtual:a",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:b",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:r1",
+            "keys": [
+              273
+            ]
+          },
+          {
+            "input": "virtual:x",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:y",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:l1",
+            "keys": [
+              308
+            ]
+          },
+          {
+            "input": "virtual:start",
+            "keys": [
+              13
+            ]
+          },
+          {
+            "input": "virtual:select",
+            "keys": [
+              27
+            ]
+          },
+          {
+            "input": "virtual:menu",
+            "action": "menu"
           }
         ]
       }

@@ -81,6 +81,8 @@
     <string name="video_foot">변경 사항은 다음에 게임을 시작할 때 적용됩니다. 자체 설정이 있는 게임은 그 설정을 유지합니다.</string>
     <!-- EN: 3dfx rendering -->
     <string name="voodoo">3dfx 렌더링</string>
+    <!-- EN: DOS joystick -->
+    <string name="dos_joystick">DOS 조이스틱</string>
     <!-- EN: Automatic CPU threads -->
     <string name="voodoo_automatic">CPU 스레드 자동</string>
     <!-- EN: Single CPU thread -->

@@ -1,0 +1,9 @@
+{
+ "games": {
+  "dos:a4a4c6b0fcee960c": {
+   "joystick": "off",
+   "reason": "Reads the joystick by fixed poll counts (100 to 399 is centred), which no emulated stick meets: it walked right on its own (KairoDos#142). Plays from the keyboard, as on a PC with no joystick."
+  }
+ },
+ "schemaVersion": 1
+}

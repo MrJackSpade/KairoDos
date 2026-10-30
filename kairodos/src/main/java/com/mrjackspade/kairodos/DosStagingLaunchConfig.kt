@@ -36,10 +36,11 @@ internal object DosStagingLaunchConfig {
 
     /**
      * A game's machine settings (DosCatalog.options and its touch): CPU speed as fast as the device
-     * runs it, 3dfx rendering on one thread, the mouse following direct touch, and the video card's
-     * DOSBox machine (DosVideoHardware), null for the configuration's own.
+     * runs it, 3dfx rendering on one thread, the mouse following direct touch, the video card's
+     * DOSBox machine (DosVideoHardware), null for the configuration's own, and whether DOS sees a joystick.
      */
-    data class Machine(val maxCycles: Boolean, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?)
+    data class Machine(val maxCycles: Boolean, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?,
+                       val joystick: Boolean)
 
     /**
      * The settings the app gives every game over its catalog config, by section in the order
@@ -54,7 +55,7 @@ internal object DosStagingLaunchConfig {
             "window_size" to "800x600", "fullscreen" to "false", "pause_when_inactive" to "false"),
         "mixer" to listOf("rate" to "48000", "blocksize" to "512", "prebuffer" to "30", "negotiate" to "false"),
         "mouse" to listOf("mouse_capture" to if (machine.directTouch) "seamless" else "onstart", "mouse_raw_input" to "false"),
-        "joystick" to listOf("joysticktype" to "2axis"),
+        "joystick" to listOf("joysticktype" to if (machine.joystick) "2axis" else "none"),
         // Desktop catalog cycle counts can exceed the handheld's capacity and
         // slow the DOS clock itself. Auto keeps real-mode compatibility and
         // adapts protected-mode cycles to the host instead of inheriting those

@@ -81,6 +81,8 @@
     <string name="video_foot">変更は次にゲームを起動したときに反映されます。独自の設定を持つゲームはそれを使います。</string>
     <!-- EN: 3dfx rendering -->
     <string name="voodoo">3dfx レンダリング</string>
+    <!-- EN: DOS joystick -->
+    <string name="dos_joystick">DOS のジョイスティック</string>
     <!-- EN: Automatic CPU threads -->
     <string name="voodoo_automatic">CPU スレッド自動</string>
     <!-- EN: Single CPU thread -->

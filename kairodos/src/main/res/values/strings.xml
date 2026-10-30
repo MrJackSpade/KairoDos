@@ -48,6 +48,7 @@
     <string name="video_card">Emulated video card</string>
     <string name="video_foot">Changes apply the next time a game starts. Games with their own setting keep it.</string>
     <string name="voodoo">3dfx rendering</string>
+    <string name="dos_joystick">DOS joystick</string>
     <string name="voodoo_automatic">Automatic CPU threads</string>
     <string name="voodoo_single">Single CPU thread</string>
     <string name="video_automatic">Automatic (game profile)</string>
