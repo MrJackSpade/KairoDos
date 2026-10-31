@@ -141,6 +141,7 @@ The full list is in the [documentation index](docs/index.md).
 - [FPS controller defaults](docs/fps-controller-profiles.md): Doom and Duke Nukem 3D control layouts
 - [Run a setup program](docs/dos-program-picker.md): launching another executable from a game's drives
 - [Boot to DOS prompt](docs/dos-prompt.md): opening a DOS prompt with the game mounted
+- [Add a game](docs/add-a-game.md): setting up a game the catalog doesn't know, with its disc in its drive
 - [Create a game](docs/create-a-game.md): installing a game from its installer disks onto a new C: drive
 - [Release notes](docs/releases/README.md): changes in every version
 - [Licensing and credits](docs/licensing.md): code license and third-party components
