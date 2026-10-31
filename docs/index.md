@@ -11,6 +11,7 @@
 | [FPS controller defaults](fps-controller-profiles.md) | Doom and Duke Nukem 3D control layouts |
 | [Run a setup program](dos-program-picker.md) | Launching another executable from a game's drives |
 | [Boot to DOS prompt](dos-prompt.md) | Opening a DOS prompt with the game mounted |
+| [Create a game](create-a-game.md) | Installing a game from its installer disks onto a new C: drive |
 | [Release notes](releases/README.md) | Changes in every version |
 
 ## Game catalog
