@@ -81,7 +81,7 @@ internal object DosStagingLaunchConfig {
     fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosLaunch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               machine: Machine, target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
-              autoexec: String? = null): Written {
+              autoexec: String? = null, drives: List<File?> = emptyList()): Written {
         val hostPaths = ArrayList<String>()
         // A mount operand: a host path by reference, quoted; a DOS path as it is.
         fun operand(path: String): String {
@@ -166,6 +166,10 @@ internal object DosStagingLaunchConfig {
         if (marker != null) lines += source!!.substring(0, marker.range.first).trimEnd()
         lines += "[autoexec]"
         lines += "@echo off"
+        // The game's own drives ([drives]: A:, B:, D:) go in before anything runs.
+        drives.getOrNull(0)?.let { lines += "imgmount A ${operand(it.absolutePath)} -t floppy" }
+        drives.getOrNull(1)?.let { lines += "imgmount B ${operand(it.absolutePath)} -t floppy" }
+        drives.getOrNull(2)?.let { lines += "imgmount D ${operand(it.absolutePath)} -t iso" }
         // This is a one-session launch choice, not a saved startup variant.
         // Do not execute catalog setup scripts, BOOT, or a lone executable.
         if (target == DosLaunchTarget.Prompt) {

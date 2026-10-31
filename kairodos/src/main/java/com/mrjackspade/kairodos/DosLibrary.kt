@@ -3,7 +3,10 @@ package com.mrjackspade.kairodos
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
+import com.mrjackspade.kairo.frontend.DiscDescriptors
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
+import com.mrjackspade.kairo.frontend.DurableFiles
+import com.mrjackspade.kairo.frontend.R as FrontendR
 import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.GameKey
 import com.mrjackspade.kairo.frontend.LibraryScanPipeline
@@ -89,7 +92,9 @@ class DosLibrary(private val context: Context) {
     /** A [blank] game's content: none. */
     private val BLANK_CONTENT = "sha256-dos-manifest-v1:" + "0".repeat(64)
     private val executableExtensions = setOf("exe", "com", "bat")
-    private val otherExtensions = setOf("iso", "chd", "img", "ima", "vhd", "jrc")
+    private val otherExtensions = setOf("iso", "cue", "chd", "img", "ima", "vhd", "jrc")
+    /** A CUE sheet's track data is the BIN beside it under its name; the sheet's content ID hashes it. */
+    private val discs = DiscDescriptors(mapOf("cue" to listOf("bin")))
 
     fun cached(tree: Uri): List<Game> = scanPipeline.cached(tree)
 
@@ -105,6 +110,9 @@ class DosLibrary(private val context: Context) {
         val type = extension(file.name)
         require(type in archiveExtensions + executableExtensions + otherExtensions) {
             context.getString(R.string.unsupported_file, file.name)
+        }
+        require(!discs.isDescriptor(file.name)) {
+            context.getString(FrontendR.string.kairo_disk_needs_track_data, file.name)
         }
         val source = DocumentTreeWalker.FileEntry(file.uri, file.name, file.size, file.modified)
         val inspection = if (type in archiveExtensions) {
@@ -166,6 +174,8 @@ class DosLibrary(private val context: Context) {
         require(game.playable) { "Game is not ready" }
         val type = extension(game.path)
         val image = !game.folder && type in otherExtensions
+        if (image && discs.isDescriptor(game.path)) return prepareDisc(game, tree,
+            File(mediaCache, "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}-disc"), cancelled)
         val target = File(mediaCache, "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}" +
             if (image) ".$type" else "")
         if (target.exists()) return target
@@ -228,7 +238,9 @@ class DosLibrary(private val context: Context) {
     }
 
     private sealed interface ScanWork {
-        data class Archive(val file: DocumentTreeWalker.FileEntry) : ScanWork
+        /** A file game; a CUE sheet's [data] is its track data, null when it is not there. */
+        data class Archive(val file: DocumentTreeWalker.FileEntry,
+                           val data: DocumentTreeWalker.FileEntry? = null) : ScanWork
         data class Folder(val tree: Uri, val root: String,
                           val members: List<DocumentTreeWalker.FileEntry>) : ScanWork
     }
@@ -262,7 +274,10 @@ class DosLibrary(private val context: Context) {
                 (!item.path.contains('/') || item.path.substringBefore('/') !in folderGroups)
         }
         val work = ArrayList<ScanWork>()
-        work.addAll(archives.map(ScanWork::Archive))
+        val byPath = all.associateBy { it.path.lowercase(Locale.ROOT) }
+        work.addAll(archives.map { item ->
+            ScanWork.Archive(item, if (discs.isDescriptor(item.path)) discs.dataOf(item.path, byPath) else null)
+        })
         folderGroups.toSortedMap(String.CASE_INSENSITIVE_ORDER).forEach { (root, members) ->
             work.add(ScanWork.Folder(tree, root, members))
         }
@@ -295,7 +310,8 @@ class DosLibrary(private val context: Context) {
     private fun inspectScanWork(work: ScanWork,
                                 scan: LibraryScanPipeline.ScanContext<Game>): List<Game> =
         when (work) {
-            is ScanWork.Archive -> inspectArchive(work.file, scan)
+            is ScanWork.Archive -> if (discs.isDescriptor(work.file.path)) inspectDisc(work, scan)
+                else inspectArchive(work.file, scan)
             is ScanWork.Folder -> inspectFolder(work, scan)
         }
 
@@ -319,6 +335,66 @@ class DosLibrary(private val context: Context) {
         }
         return listOf(Game(id, item.uri.toString(), item.path, false, false,
             fingerprint, contentId, null, installer, catalogId = catalogId(scan, id, contentId)))
+    }
+
+    /** A CUE sheet, named by its track data's content; an error entry when the data is not beside it. */
+    private fun inspectDisc(work: ScanWork.Archive, scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
+        val item = work.file
+        val data = work.data ?: return listOf(Game(item.path, item.uri.toString(), item.path, false, false, "", null,
+            context.getString(FrontendR.string.kairo_disk_needs_track_data, item.path.substringAfterLast('/'))))
+        val fingerprint = "${item.size}:${item.modified}:${data.size}:${data.modified}"
+        val contentId = knownContent(scan.prior[item.path], fingerprint, "sha256-dos-file-v1:") ?: run {
+            scan.hashStarted(item.path)
+            hashDocument(data, scan.cancelled)
+        }
+        return listOf(Game(item.path, item.uri.toString(), item.path, false, false,
+            fingerprint, contentId, null, catalogId = catalogId(scan, item.path, contentId)))
+    }
+
+    /**
+     * [game]'s CUE sheet and its track data, copied into [target] under their own names, where the
+     * sheet's FILE line finds the data; returns the sheet. The data is verified against the content ID.
+     */
+    private fun prepareDisc(game: Game, tree: Uri?, target: File, cancelled: AtomicBoolean): File {
+        val sheetName = game.path.substringAfterLast('/')
+        if (target.isDirectory) return File(target, sheetName)
+        val (dataPath, dataUri) = trackData(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)), game.path)
+        val pending = File(target.parentFile, target.name + ".part")
+        pending.deleteRecursively()
+        try {
+            pending.mkdirs()
+            val data = copySource(DocumentTreeWalker.FileEntry(dataUri, dataPath, -1, 0), cancelled)
+            try {
+                require(hashFile(data, cancelled) == game.contentId) { context.getString(R.string.game_changed_since_scan) }
+                require(data.renameTo(File(pending, dataPath.substringAfterLast('/')))) { "Could not prepare $dataPath" }
+            } finally { data.delete() }
+            val sheet = copySource(DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0), cancelled)
+            try {
+                require(sheet.renameTo(File(pending, sheetName))) { "Could not prepare ${game.path}" }
+            } finally { sheet.delete() }
+            DurableFiles.sync(pending)
+            require(pending.renameTo(target)) { "Could not prepare ${game.path}" }
+        } finally { pending.deleteRecursively() }
+        return File(target, sheetName)
+    }
+
+    /** The track data beside the CUE sheet at [sheet] in the games folder [tree]: its path and document. */
+    private fun trackData(tree: Uri, sheet: String): Pair<String, Uri> {
+        val folder = sheet.substringBeforeLast('/', "")
+        var parent = DocumentsContract.getTreeDocumentId(tree)
+        if (folder.isNotEmpty()) folder.split('/').forEach { name ->
+            parent = childId(tree, parent, name, true) ?: error(context.getString(R.string.game_folder_moved))
+        }
+        val children = HashMap<String, Pair<String, String>>()
+        context.contentResolver.query(DocumentsContract.buildChildDocumentsUriUsingTree(tree, parent),
+            arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+            null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) children[cursor.getString(1).lowercase(Locale.ROOT)] = cursor.getString(1) to cursor.getString(0)
+        } ?: error(context.getString(R.string.game_folder_moved))
+        val sheetName = sheet.substringAfterLast('/')
+        val (name, id) = discs.dataOf(sheetName, children)
+            ?: error(context.getString(FrontendR.string.kairo_disk_needs_track_data, sheetName))
+        return (if (folder.isEmpty()) name else "$folder/$name") to DocumentsContract.buildDocumentUriUsingTree(tree, id)
     }
 
     /** A folder game's key is its folder; a game that is the whole library folder has the empty path. */
@@ -554,9 +630,14 @@ class DosLibrary(private val context: Context) {
         val wrapping = if (wrapFolder != null) "-parent" else ""
         val target = File(cache,
             "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
+        val disc = !game.folder && discs.isDescriptor(game.path)
+        val discTarget = File(cache, target.name.substringBeforeLast('.') + "-disc")
         if (target.isFile) return target
+        if (disc && discTarget.isDirectory) return File(discTarget, game.path.substringAfterLast('/'))
         // Only the game being started keeps a prepared copy; every other one is made again when played.
-        cache.listFiles()?.filter { it.name != target.name && !it.name.endsWith(".part") }?.forEach { it.delete() }
+        cache.listFiles()?.filter { it.name != target.name && it.name != discTarget.name && !it.name.endsWith(".part") }
+            ?.forEach { it.deleteRecursively() }
+        if (disc) return prepareDisc(game, tree, discTarget, cancelled)
         try { if (!game.folder) {
             val source = DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0)
             val copied = copySource(source, cancelled).let { copy ->

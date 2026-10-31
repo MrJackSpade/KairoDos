@@ -32,6 +32,9 @@ import com.mrjackspade.kairo.frontend.MachineFirstRun
 import com.mrjackspade.kairo.frontend.MachineLibrary
 import com.mrjackspade.kairo.frontend.MachineOption
 import com.mrjackspade.kairo.frontend.MachineStatus
+import com.mrjackspade.kairo.frontend.MissingDisk
+import com.mrjackspade.kairo.frontend.mediaFor
+import com.mrjackspade.kairo.frontend.missingDisk
 import com.mrjackspade.kairo.frontend.NativeMachine
 import com.mrjackspade.kairo.frontend.Page
 import com.mrjackspade.kairo.frontend.RowGroup
@@ -264,7 +267,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     override val mediaSlots = listOf(
         MediaSlot<DosLibrary.Game>(UiText.res(FrontendR.string.kairo_drive_a), true) { takesFolder(it) || isImage(it, "img", "ima") },
         MediaSlot(UiText.res(FrontendR.string.kairo_drive_b), true) { takesFolder(it) || isImage(it, "img", "ima") },
-        MediaSlot(UiText.res(FrontendR.string.kairo_cd_rom), true) { takesFolder(it) || isImage(it, "iso") })
+        MediaSlot(UiText.res(FrontendR.string.kairo_cd_rom), true) { takesFolder(it) || isImage(it, "iso", "cue") })
     // DOS does not boot from the Disks drives, and Staging's restart mounts only its configuration's
     // drives: the kept disks go back in without starting the machine again.
     override val resetWithKeptMedia = false
@@ -324,6 +327,13 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             if (tree == folder) editLibrary { dosLibrary.withGame(it, saved) }
             libraryScreen.showStatus(getString(R.string.blank_game_saved, saved.path))
         }
+    }
+
+    /** A game's set and drives take disk and disc images; archives and folders are games of their own. */
+    override fun isDisk(entry: DosLibrary.Game, role: String?) = when (role) {
+        DosCatalog.CD_ROM -> isImage(entry, "iso", "cue")
+        DosCatalog.FLOPPY_A, DosCatalog.FLOPPY_B -> isImage(entry, "img", "ima")
+        else -> isImage(entry, "img", "ima", "iso", "cue")
     }
 
     private fun takesFolder(entry: DosLibrary.Game) =
@@ -825,11 +835,19 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             { conflicts -> chooseEditedFiles(playable, conflicts) }, progress)
         overlays[drive.directory] = drive.overlay
         sessionDirs = sessions
+        // The game's own drives (Game settings › Machine), in the Disks page's order: A:, B:, D:.
+        val drives = DosCatalog.drives.map { setting ->
+            record.mediaId(setting.role)?.let { id ->
+                mediaFor(id, playable, availableGames) { isDisk(it, setting.role) }
+                    ?: throw MissingDisk(missingDisk(setting.label))
+            }
+        }
+        val driveFiles = drives.map { it?.let { disk -> dosLibrary.prepareMedia(disk, selected, cancelled) } }
         val resources = DosStagingResources.prepare(this, cancelled)
         val customized = custom(playable)
         val configuration = DosStagingLaunchConfig.write(this, File(saveDir, "staging/launch.conf"),
             drive, launch, configName, dependencies, overlays, player, machineSettings(playable, record), target,
-            if (customized) ownSettings(playable) else emptyMap(), if (customized) ownAutoexec(playable) else null)
+            if (customized) ownSettings(playable) else emptyMap(), if (customized) ownAutoexec(playable) else null, driveFiles)
         check(!cancelled.get()) { getString(R.string.prepare_failed) }
         // dos_core.cpp's launch: the game's working folder, the host paths its configuration names, and Staging's files.
         check(bridge.start("", saveDir.absolutePath, configuration.hostPaths,
@@ -837,6 +855,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             "Another machine is still running"
         }
         awaitRunning()
+        mediaStarted(drives)
         if (target == DosLaunchTarget.Browse) browsing = true
     }
 

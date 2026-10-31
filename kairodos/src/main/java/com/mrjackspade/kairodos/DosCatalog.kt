@@ -26,7 +26,8 @@ object DosCatalog : LayeredGameCatalog.Schema {
     override val platform = "dos"
     override val catalogUrl = "https://raw.githubusercontent.com/MrJackSpade/KairoDos/main/catalog/"
     override val selfHostedArt = "/MrJackSpade/KairoDos/main/catalog/artwork/art/catalog/"
-    override val contentId = Regex("sha256-dos-manifest-v1:[0-9a-f]{64}")
+    /** A game's files (manifest), or a single disk or disc image (file), as a set's disks and drives name it. */
+    override val contentId = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
     /** The PC keyboard's Esc, and its Enter and keypad Enter (DosKeyboardLayout). */
     override val escapeKeys = setOf(27)
     override val enterKeys = setOf(13, 271)
@@ -65,8 +66,17 @@ object DosCatalog : LayeredGameCatalog.Schema {
     /** The DOS player name a game asks for (DosLaunchConfig.needsPlayer), `launch.player`. */
     val player = CatalogSetting.Custom("player", LAUNCH, setOf(PLAYER))
 
+    const val FLOPPY_A = "floppyA"
+    const val FLOPPY_B = "floppyB"
+    const val CD_ROM = "cdrom"
+    /** The disk or disc image a game starts with in each of the Disks page's drives (A:, B:, D:). */
+    val drives = listOf(
+        CatalogSetting.Drive(FLOPPY_A, UiText.res(FrontendR.string.kairo_drive_a)),
+        CatalogSetting.Drive(FLOPPY_B, UiText.res(FrontendR.string.kairo_drive_b)),
+        CatalogSetting.Drive(CD_ROM, UiText.res(FrontendR.string.kairo_cd_rom)))
+
     override val settings: List<CatalogSetting> = options.map(CatalogSetting::Choice) +
-        listOf(version, dosboxSettings, startupCommands, player)
+        listOf(version, dosboxSettings, startupCommands, player) + drives
     override val fields: Map<String, Set<String>?> = CatalogSetting.fields(settings).let { fields ->
         fields + (LAUNCH to fields.getValue(LAUNCH)!! + setOf(FOLDER, EXCEPTION))
     }
@@ -75,7 +85,9 @@ object DosCatalog : LayeredGameCatalog.Schema {
     /** DOSBox places its pointer where the screen is touched (seamless mouse capture). */
     override val directTouch = true
 
-    override fun validMedia(role: String, contentId: String) = false
+    /** A drive holds a disk or disc image, a single file. */
+    override fun validMedia(role: String, contentId: String) =
+        drives.any { it.role == role } && contentId.startsWith("sha256-dos-file-v1:")
 
     override fun validField(field: String, value: Any): Boolean = when (field) {
         MachineOption.SECTION -> CatalogSetting.valid(settings, contentId, field, value)
