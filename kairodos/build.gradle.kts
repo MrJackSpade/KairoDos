@@ -7,6 +7,7 @@ extra["kairoProduct"] = "kairodos"
 extra["kairoLabel"] = "KairoDos"
 extra["kairoLauncherBackground"] = "#00110A"
 extra["kairoCatalogRules"] = "com.mrjackspade.kairodos.DosCatalog"
+extra["kairoChd"] = true
 apply(from = rootProject.file("shared/gradle/kairo-app.gradle"))
 
 // DOSBox Staging's runtime resources, beside the shared catalog assets.

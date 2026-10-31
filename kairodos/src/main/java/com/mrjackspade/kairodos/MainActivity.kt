@@ -267,7 +267,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     override val mediaSlots = listOf(
         MediaSlot<DosLibrary.Game>(UiText.res(FrontendR.string.kairo_drive_a), true) { takesFolder(it) || isImage(it, "img", "ima") },
         MediaSlot(UiText.res(FrontendR.string.kairo_drive_b), true) { takesFolder(it) || isImage(it, "img", "ima") },
-        MediaSlot(UiText.res(FrontendR.string.kairo_cd_rom), true) { takesFolder(it) || isImage(it, "iso", "cue") })
+        MediaSlot(UiText.res(FrontendR.string.kairo_cd_rom), true) { takesFolder(it) || isImage(it, "iso", "cue", "chd") })
     // DOS does not boot from the Disks drives, and Staging's restart mounts only its configuration's
     // drives: the kept disks go back in without starting the machine again.
     override val resetWithKeptMedia = false
@@ -331,9 +331,9 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
 
     /** A game's set and drives take disk and disc images; archives and folders are games of their own. */
     override fun isDisk(entry: DosLibrary.Game, role: String?) = when (role) {
-        DosCatalog.CD_ROM -> isImage(entry, "iso", "cue")
+        DosCatalog.CD_ROM -> isImage(entry, "iso", "cue", "chd")
         DosCatalog.FLOPPY_A, DosCatalog.FLOPPY_B -> isImage(entry, "img", "ima")
-        else -> isImage(entry, "img", "ima", "iso", "cue")
+        else -> isImage(entry, "img", "ima", "iso", "cue", "chd")
     }
 
     private fun takesFolder(entry: DosLibrary.Game) =

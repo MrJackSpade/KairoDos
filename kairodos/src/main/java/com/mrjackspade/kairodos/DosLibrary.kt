@@ -2,7 +2,9 @@ package com.mrjackspade.kairodos
 
 import android.content.Context
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import com.mrjackspade.kairo.frontend.ChdImage
 import com.mrjackspade.kairo.frontend.DiscDescriptors
 import com.mrjackspade.kairo.frontend.DocumentTreeWalker
 import com.mrjackspade.kairo.frontend.DurableFiles
@@ -118,7 +120,7 @@ class DosLibrary(private val context: Context) {
         val inspection = if (type in archiveExtensions) {
             DosContentHash.inspectZipDocument(context, file.uri, cancelled, sevenZ = type == "7z")
         } else null
-        val contentId = inspection?.contentId ?: hashDocument(source, cancelled)
+        val contentId = inspection?.contentId ?: hashSource(source, cancelled)
         val installer = inspection?.exodosSource == true &&
             !isInstalledArchive(file.name)
         // Keyed by its path relative to the library folder, or its URI where it has none (Kairo#56).
@@ -174,7 +176,7 @@ class DosLibrary(private val context: Context) {
         require(game.playable) { "Game is not ready" }
         val type = extension(game.path)
         val image = !game.folder && type in otherExtensions
-        if (image && discs.isDescriptor(game.path)) return prepareDisc(game, tree,
+        if (image && isDisc(game.path)) return prepareDisc(game, tree,
             File(mediaCache, "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}-disc"), cancelled)
         val target = File(mediaCache, "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}" +
             if (image) ".$type" else "")
@@ -331,7 +333,7 @@ class DosLibrary(private val context: Context) {
                 installer = inspection.exodosSource &&
                     !isInstalledArchive(item.path.substringAfterLast('/'))
                 inspection.contentId
-            } else hashDocument(item, scan.cancelled)
+            } else hashSource(item, scan.cancelled)
         }
         return listOf(Game(id, item.uri.toString(), item.path, false, false,
             fingerprint, contentId, null, installer, catalogId = catalogId(scan, id, contentId)))
@@ -356,6 +358,7 @@ class DosLibrary(private val context: Context) {
      * sheet's FILE line finds the data; returns the sheet. The data is verified against the content ID.
      */
     private fun prepareDisc(game: Game, tree: Uri?, target: File, cancelled: AtomicBoolean): File {
+        if (isChd(game.path)) return prepareChd(game, target, cancelled)
         val sheetName = game.path.substringAfterLast('/')
         if (target.isDirectory) return File(target, sheetName)
         val (dataPath, dataUri) = trackData(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)), game.path)
@@ -377,6 +380,50 @@ class DosLibrary(private val context: Context) {
         } finally { pending.deleteRecursively() }
         return File(target, sheetName)
     }
+
+    /** A disc: a CUE sheet with its track data, or a CD kept as a CHD (KairoDos#146). */
+    private fun isDisc(path: String) = discs.isDescriptor(path) || isChd(path)
+
+    private fun isChd(path: String) = extension(path) == "chd"
+
+    /** The cue sheet a disc's prepared folder holds: its own, or the one written for a CHD. */
+    private fun sheetName(path: String) = path.substringAfterLast('/').let { name ->
+        if (isChd(name)) name.substringBeforeLast('.') + ".cue" else name
+    }
+
+    /**
+     * [game], a CHD, as the disc image it was made from (the BIN its content ID hashes, shared
+     * ChdImage) and that image's cue sheet in [target], which DOSBox mounts as it mounts a BIN/CUE;
+     * returns the sheet. The image is verified against the content ID as it is written.
+     */
+    private fun prepareChd(game: Game, target: File, cancelled: AtomicBoolean): File {
+        val sheet = File(target, sheetName(game.path))
+        if (target.isDirectory) return sheet
+        val binName = sheet.name.substringBeforeLast('.') + ".bin"
+        val pending = File(target.parentFile, target.name + ".part")
+        pending.deleteRecursively()
+        try {
+            pending.mkdirs()
+            openChd(Uri.parse(game.uri), game.path) { chd ->
+                val written = File(pending, binName).outputStream().use { output -> fileId(chd.inputStream(), cancelled, output) }
+                require(written.first == game.contentId) { context.getString(R.string.game_changed_since_scan) }
+                File(pending, sheet.name).writeText(chd.cue(binName))
+            }
+            DurableFiles.sync(pending)
+            require(pending.renameTo(target)) { "Could not prepare ${game.path}" }
+        } finally { pending.deleteRecursively() }
+        return sheet
+    }
+
+    private fun <T> openChd(uri: Uri, path: String, read: (ChdImage) -> T): T =
+        (context.contentResolver.openFileDescriptor(uri, "r") ?: error("Unable to read $path")).use { document ->
+            ChdImage.open(document).use(read)
+        }
+
+    /** A source's content ID: its bytes, or a CHD's disc image, which its BIN/CUE has too. */
+    private fun hashSource(source: DocumentTreeWalker.FileEntry, cancelled: AtomicBoolean): String =
+        if (isChd(source.path)) openChd(source.uri, source.path) { fileId(it.inputStream(), cancelled).first }
+        else hashDocument(source, cancelled)
 
     /** The track data beside the CUE sheet at [sheet] in the games folder [tree]: its path and document. */
     private fun trackData(tree: Uri, sheet: String): Pair<String, Uri> {
@@ -630,10 +677,10 @@ class DosLibrary(private val context: Context) {
         val wrapping = if (wrapFolder != null) "-parent" else ""
         val target = File(cache,
             "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}$wrapping.$outputType")
-        val disc = !game.folder && discs.isDescriptor(game.path)
+        val disc = !game.folder && isDisc(game.path)
         val discTarget = File(cache, target.name.substringBeforeLast('.') + "-disc")
         if (target.isFile) return target
-        if (disc && discTarget.isDirectory) return File(discTarget, game.path.substringAfterLast('/'))
+        if (disc && discTarget.isDirectory) return File(discTarget, sheetName(game.path))
         // Only the game being started keeps a prepared copy; every other one is made again when played.
         cache.listFiles()?.filter { it.name != target.name && it.name != discTarget.name && !it.name.endsWith(".part") }
             ?.forEach { it.deleteRecursively() }
@@ -781,38 +828,34 @@ class DosLibrary(private val context: Context) {
         }
     }
 
-    private fun hashFile(file: File, cancelled: AtomicBoolean): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        file.inputStream().use { input ->
-            val buffer = ByteArray(65536)
-            while (true) {
-                if (cancelled.get()) error("Cancelled")
-                val count = input.read(buffer)
-                if (count < 0) break
-                digest.update(buffer, 0, count)
-            }
-        }
-        return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
-    }
+    private fun hashFile(file: File, cancelled: AtomicBoolean): String =
+        file.inputStream().use { fileId(it, cancelled).first }
 
     private fun hashDocument(source: DocumentTreeWalker.FileEntry,
                              cancelled: AtomicBoolean): String {
         require(source.size <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
-        val digest = MessageDigest.getInstance("SHA-256")
-        var total = 0L
-        context.contentResolver.openInputStream(source.uri)?.use { input ->
-            val buffer = ByteArray(65536)
-            while (true) {
-                require(!cancelled.get()) { "Cancelled" }
-                val count = input.read(buffer)
-                if (count < 0) break
-                total += count
-                require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
-                digest.update(buffer, 0, count)
-            }
-        } ?: error("Unable to read ${source.path}")
+        val (id, total) = context.contentResolver.openInputStream(source.uri)?.use { fileId(it, cancelled) }
+            ?: error("Unable to read ${source.path}")
         if (source.size >= 0) require(total == source.size) { context.getString(R.string.game_changed_while_hashing) }
-        return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
+        return id
+    }
+
+    /** The `sha256-dos-file-v1` ID of [input]'s bytes and their count, written to [output] as they are read. */
+    private fun fileId(input: java.io.InputStream, cancelled: AtomicBoolean,
+                       output: java.io.OutputStream? = null): Pair<String, Long> {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val buffer = ByteArray(65536)
+        var total = 0L
+        while (true) {
+            require(!cancelled.get()) { "Cancelled" }
+            val count = input.read(buffer)
+            if (count < 0) break
+            total += count
+            require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
+            digest.update(buffer, 0, count)
+            output?.write(buffer, 0, count)
+        }
+        return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}" to total
     }
 
     private fun writeCacheRecord(output: java.io.DataOutputStream, game: Game) = with(output) {

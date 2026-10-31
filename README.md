@@ -76,7 +76,7 @@ Games and proprietary operating system files are not included. Your original fil
 
 Known games get a title, description, tags, and artwork from a catalog seeded from eXoDOS metadata. Your games do not need to be laid out like an eXoDOS collection, and unknown games still appear by filename and still launch. Details: [game catalog](docs/catalog.md).
 
-Coming from DOSBox Pure: its CHD/JRC formats are not supported, but existing Pure overlay files are preserved and in-game saves are imported once.
+Coming from DOSBox Pure: CHD discs mount as the disc image they were made from; its JRC format is not supported, but existing Pure overlay files are preserved and in-game saves are imported once.
 
 ARM64 dynamic recompilation is used for default and auto CPU profiles in both real and protected mode. Games configured for interpreter or prefetch CPU compatibility keep those settings.
 
