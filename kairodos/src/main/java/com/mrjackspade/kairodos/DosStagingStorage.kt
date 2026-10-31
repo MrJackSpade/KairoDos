@@ -230,6 +230,13 @@ internal object DosStagingStorage {
                     }
                 }
             }
+        } else if (archive.extension.equals("cue", true)) {
+            // A disc's sheet comes with the track data beside it in its prepared folder
+            // (DosLibrary.prepareDisc, KairoDos#147).
+            for (file in archive.parentFile!!.listFiles().orEmpty().filter { it.isFile }) {
+                require(!cancelled.get()) { "Cancelled" }
+                copy(text, file, File(into, file.name), cancelled)
+            }
         } else {
             require(!cancelled.get()) { "Cancelled" }
             copy(text, archive, File(into, archive.name), cancelled)

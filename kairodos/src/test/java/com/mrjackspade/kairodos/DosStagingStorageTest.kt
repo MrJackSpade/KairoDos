@@ -37,6 +37,16 @@ class DosStagingStorageTest {
 
     private val original = mapOf("GAME.EXE" to "game", "SOUND.CFG" to "sb", "DATA/LEVEL1.DAT" to "one")
 
+    @Test fun aDiscSheetComesWithItsTrackData() {
+        // DosLibrary.prepareDisc's folder: the sheet the game starts from and the data it names (KairoDos#147).
+        val disc = File(root, "game-disc").apply { mkdirs() }
+        File(disc, "GAME.bin").writeText("track data")
+        val sheet = File(disc, "GAME.cue").apply { writeText("FILE \"GAME.bin\" BINARY") }
+        val drive = prepare(sheet, "c1")
+        assertEquals(File(drive.directory, "GAME.cue"), drive.media)
+        assertEquals("track data", File(drive.directory, "GAME.bin").readText())
+    }
+
     @Test fun anAddedFileRebuildsTheBaseWithoutAsking() {
         prepare(archive("v1.zip", original), "v1")
         saved("SAVE1.SAV", "progress")
