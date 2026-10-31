@@ -3,6 +3,7 @@ package com.mrjackspade.kairodos
 import android.net.Uri
 import android.view.KeyEvent
 import android.view.MotionEvent
+import com.mrjackspade.kairo.frontend.BlankDisk
 import com.mrjackspade.kairo.frontend.ButtonTone
 import com.mrjackspade.kairo.frontend.CatalogGame
 import com.mrjackspade.kairo.frontend.CatalogSetting
@@ -10,6 +11,7 @@ import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
 import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.ChoiceSpec
+import com.mrjackspade.kairo.frontend.CreateGameFlow
 import com.mrjackspade.kairo.frontend.DirectoryPicker
 import com.mrjackspade.kairo.frontend.ExternalGameFile
 import com.mrjackspade.kairo.frontend.FooterButton
@@ -23,6 +25,7 @@ import com.mrjackspade.kairo.frontend.GameSource
 import com.mrjackspade.kairo.frontend.GameValue
 import com.mrjackspade.kairo.frontend.GroupsPage
 import com.mrjackspade.kairo.frontend.LayeredGameCatalog
+import com.mrjackspade.kairo.frontend.LibraryScreen
 import com.mrjackspade.kairo.frontend.LibraryStrings
 import com.mrjackspade.kairo.frontend.MachineActivity
 import com.mrjackspade.kairo.frontend.MachineFirstRun
@@ -59,6 +62,8 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         private const val EDITED_FILE = "edited"
         private const val WORKING_OVERLAY = "staging/overlay-working"
         private const val UNSAVED_OVERLAY = "staging/overlay-working.unsaved"
+        /** A new game's working folder (startBlankGame) until it is saved: its file name in the games folder. */
+        private const val NEW_GAME = "staging/new-game.txt"
         /** The Version choice that runs the preset with the player's own DOSBox settings and startup commands. */
         private const val CUSTOM_VERSION = "custom"
         /** The lock keys' codes (mapKey), in the order dos_core.cpp reports them. */
@@ -126,6 +131,9 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         override fun store(tree: Uri, entries: List<DosLibrary.Game>) = dosLibrary.store(tree, entries)
         override fun inspectExternal(file: ExternalGameFile, cancelled: AtomicBoolean) =
             listOf(dosLibrary.inspectExternal(file, cancelled))
+        override fun inspectExternalFolder(tree: Uri, cancelled: AtomicBoolean) = dosLibrary.inspectExternalFolder(tree, cancelled)
+        override fun prepareMedia(entry: DosLibrary.Game, cancelled: AtomicBoolean, progress: (String) -> Unit) =
+            dosLibrary.prepareMedia(entry, tree, cancelled)
         override fun deleteSource(entry: DosLibrary.Game, entries: List<DosLibrary.Game>) = dosLibrary.deleteSource(entry)
         override fun hasWorkingImage(entry: DosLibrary.Game) = false
         override fun withMember(entry: DosLibrary.Game, member: String) = entry.copy(member = member)
@@ -150,6 +158,27 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     override fun libraryLoaded(entries: List<DosLibrary.Game>) {
         super.libraryLoaded(entries)
         DosSettingsMigration.run(preferences, catalog)
+        recoverNewGames()
+    }
+
+    /**
+     * New games whose session ended without the app seeing it (it was stopped or updated) are
+     * saved now, from their overlay, as their session's end would have saved them.
+     */
+    private fun recoverNewGames() {
+        val pending = saveDirs().filter { File(it, NEW_GAME).isFile && it != blankSession?.saveDir }
+        if (pending.isEmpty() || tree == null) return
+        Thread {
+            try {
+                for (dir in pending) {
+                    val game = dosLibrary.blank(File(dir, NEW_GAME).readText().removeSuffix(".zip"))
+                    saveBlankGame(BlankSession(game, dir, beginOverlay(dir, game.key)))
+                    if (dir.isDirectory) publishOverlay(dir, game.key)
+                }
+            } catch (failure: Exception) {
+                runOnUiThread { toast(failure.message ?: getString(R.string.prepare_failed), long = true) }
+            }
+        }.apply { name = "KairoDos-new-game-recovery"; start() }
     }
 
     override fun validArtworkPath(path: String) = DosCatalog.validArtPath(path)
@@ -226,6 +255,81 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
      * all-games default of its option ([DosCatalog.options]).
      */
     override val machineOptions = DosCatalog.options
+
+    /**
+     * The Disks page's drives, in dos_core.cpp's order (A:, B:, D:). Each takes a folder, or an
+     * archive as the folder of its files, from the library or anywhere on the device; a floppy
+     * drive also takes a floppy image, the CD-ROM a CD image.
+     */
+    override val mediaSlots = listOf(
+        MediaSlot<DosLibrary.Game>(UiText.res(FrontendR.string.kairo_drive_a), true) { takesFolder(it) || isImage(it, "img", "ima") },
+        MediaSlot(UiText.res(FrontendR.string.kairo_drive_b), true) { takesFolder(it) || isImage(it, "img", "ima") },
+        MediaSlot(UiText.res(FrontendR.string.kairo_cd_rom), true) { takesFolder(it) || isImage(it, "iso") })
+    // DOS does not boot from the Disks drives, and Staging's restart mounts only its configuration's
+    // drives: the kept disks go back in without starting the machine again.
+    override val resetWithKeptMedia = false
+
+    /** Manage library › New game: an empty C: drive (startBlankGame). */
+    override val blankDisks = listOf(BlankDisk.Drive("c-drive", UiText.res(R.string.blank_c_drive), ::startBlankGame))
+
+    /**
+     * Starts a new game [name] on an empty C: drive, at the DOS prompt, with Disks for its installer.
+     * It is written to the games folder as `<name>.zip` when its session ends holding a file (publishSession).
+     */
+    private fun startBlankGame(name: String) {
+        val folder = tree ?: return
+        Thread {
+            val result = runCatching {
+                val game = dosLibrary.blank(name)
+                check(game.path !in CreateGameFlow.rootNames(contentResolver, folder)) { getString(R.string.blank_game_exists, game.path) }
+                game
+            }
+            runOnUiThread {
+                result.onFailure { toast(it.message ?: getString(R.string.blank_game_not_saved, "$name.zip"), long = true) }
+                result.onSuccess { game ->
+                    // The game takes the screen, as Play does: Manage library closes.
+                    pages.closeAll()
+                    launchTarget = DosLaunchTarget.Prompt
+                    startSession(game, catalog.resolve(game), false)
+                }
+            }
+        }.apply { this.name = "KairoDos-new-game"; start() }
+    }
+
+    /** The new game ([DosLibrary.Game.blank]) the session running plays, with its save folder and C: drive's overlay. */
+    private class BlankSession(val game: DosLibrary.Game, val saveDir: File, val overlay: File)
+    @Volatile private var blankSession: BlankSession? = null
+
+    /**
+     * The ended session's new game goes to the games folder as its zip, the drive's files moving
+     * from its overlay into the zip, which is the game's drive from now on; an empty drive leaves nothing.
+     */
+    private fun saveBlankGame(session: BlankSession) {
+        val folder = checkNotNull(tree) { getString(R.string.choose_dos_folder_for_game) }
+        runOnUiThread { libraryScreen.showStatus(getString(R.string.blank_game_saving, session.game.path), LibraryScreen.StatusKind.TASK) }
+        val saved = dosLibrary.saveBlank(session.game, session.overlay, folder, AtomicBoolean(false))
+        session.overlay.listFiles()?.forEach { check(it.deleteRecursively()) { "Could not clear ${session.game.path}'s drive" } }
+        // A drive left empty leaves no game: its working folder goes too, so nothing is published for it.
+        if (saved == null) check(session.saveDir.deleteRecursively() && session.overlay.deleteRecursively()) {
+            "Could not clear ${session.game.path}'s drive"
+        }
+        check(!File(session.saveDir, "staging").exists() || File(session.saveDir, "staging").deleteRecursively()) {
+            "Could not clear ${session.game.path}'s drive"
+        }
+        runOnUiThread {
+            if (saved == null) {
+                libraryScreen.showStatus("", LibraryScreen.StatusKind.SUMMARY)
+                return@runOnUiThread
+            }
+            if (tree == folder) editLibrary { dosLibrary.withGame(it, saved) }
+            libraryScreen.showStatus(getString(R.string.blank_game_saved, saved.path))
+        }
+    }
+
+    private fun takesFolder(entry: DosLibrary.Game) =
+        entry.folder || entry.path.substringAfterLast('.').lowercase() in setOf("zip", "dosz", "7z")
+    private fun isImage(entry: DosLibrary.Game, vararg types: String) =
+        !entry.folder && entry.path.substringAfterLast('.').lowercase() in types
 
     /** Machine: the DOS CPU speed for all games. */
     override fun machinePage(): Page = GroupsPage(getString(FrontendR.string.kairo_machine), { GameSource.ALL_GAMES }, {
@@ -515,7 +619,17 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     private fun publishSession() {
         val dirs = sessionDirs
         sessionDirs = emptyList()
+        val blank = blankSession
+        blankSession = null
+        // A new game is zipped and read back before its overlay goes: its own thread, never the UI's.
+        if (blank != null && android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            Thread { publish(dirs, blank) }.apply { name = "KairoDos-new-game-save"; start() }
+        } else publish(dirs, blank)
+    }
+
+    private fun publish(dirs: List<File>, blank: BlankSession?) {
         try {
+            blank?.let(::saveBlankGame)
             dirs.forEach { publishOverlay(it, null) }
         } catch (failure: Exception) {
             runOnUiThread { toast(failure.message ?: getString(R.string.prepare_failed), long = true) }
@@ -696,10 +810,18 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
                     it.isDirectory && it.name.equals(folder, true)
                 } ?: stored.directory
             }
-        val file = dosLibrary.prepare(playable, selected, cancelled)
         progress(getString(FrontendR.string.kairo_launch_starting, "DOSBox Staging"))
-        val drive = DosStagingStorage.prepare({ text(it) }, file, saveDir, playable.contentId!!,
-            overlayFor(saveDir, playable), cancelled, launch?.folder,
+        val drive = if (playable.blank) {
+            // A new game's C: is empty: its base holds nothing, and everything the session writes is in its overlay.
+            val base = File(saveDir, "staging/blank")
+            require(base.isDirectory || base.mkdirs()) { "Could not create the game's drive" }
+            // Marked, so a session the app never saw end (stopped, updated) is saved later (recoverNewGames).
+            File(saveDir, NEW_GAME).writeText(playable.path)
+            DosStagingStorage.Drive(base, null, overlayFor(saveDir, playable)).also {
+                blankSession = BlankSession(playable, saveDir, it.overlay)
+            }
+        } else DosStagingStorage.prepare({ text(it) }, dosLibrary.prepare(playable, selected, cancelled), saveDir,
+            playable.contentId!!, overlayFor(saveDir, playable), cancelled, launch?.folder,
             { conflicts -> chooseEditedFiles(playable, conflicts) }, progress)
         overlays[drive.directory] = drive.overlay
         sessionDirs = sessions

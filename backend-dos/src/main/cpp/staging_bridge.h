@@ -78,6 +78,10 @@ void kairo_staging_fast_forward(bool enabled);
 // until the next call: OK or ERROR on the first line, followed by D/F, a tab, and an absolute
 // UTF-8 DOS path.
 const char* kairo_staging_list_directory(const char* path);
+// Puts the host path [path] in drive [letter] (A, B or D), as MOUNT and IMGMOUNT would, between
+// frames: a folder, a CD image (.iso) on D, or a floppy image on A or B. An empty path
+// empties the drive. "" when done, else why not; the result lives until the next call.
+const char* kairo_staging_media(char letter, const char* path);
 }
 
 // The host path [reference] names, or null when it is not a reference. Emulation thread.

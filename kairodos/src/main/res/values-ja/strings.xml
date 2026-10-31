@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">コマンドスクリプトの実行にはマウントされた DOS ドライブが必要です</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">コマンドスクリプト用の空き DOS ドライブがありません</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">空の C: ドライブ</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s はすでにゲームフォルダーにあります</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">%1$s をゲームフォルダーに保存できませんでした</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s をゲームフォルダーに保存しました</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">%1$s をゲームフォルダーに保存中…</string>
 </resources>

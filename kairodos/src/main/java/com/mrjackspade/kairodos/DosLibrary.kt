@@ -50,7 +50,9 @@ class DosLibrary(private val context: Context) {
         val external: Boolean = false,
         override val catalogId: String? = contentId,
         /** The game picked from a collection; never cached, a launch picks it. */
-        override val member: String? = null
+        override val member: String? = null,
+        /** A new game on an empty C: drive (MainActivity.startBlankGame), not in the games folder until it holds a file. */
+        val blank: Boolean = false
     ) : LibraryItem {
         override val zipEntry: String? = null
         // Rows, search and comparisons read the name constantly; it is derived once.
@@ -79,8 +81,13 @@ class DosLibrary(private val context: Context) {
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
+    // The Disks page's drives (prepareMedia), beside the game's own prepared copy: kept, as other
+    // apps keep a disk's working copy, so a disk keeps what a game writes to it.
+    private val mediaCache = File(context.filesDir, "dos-media")
     // A 7z archive is listed as a ZIP is, and runs from a ZIP made from it (prepare).
     private val archiveExtensions = setOf("zip", "dosz", "7z")
+    /** A [blank] game's content: none. */
+    private val BLANK_CONTENT = "sha256-dos-manifest-v1:" + "0".repeat(64)
     private val executableExtensions = setOf("exe", "com", "bat")
     private val otherExtensions = setOf("iso", "chd", "img", "ima", "vhd", "jrc")
 
@@ -109,6 +116,115 @@ class DosLibrary(private val context: Context) {
         // Keyed by its path relative to the library folder, or its URI where it has none (Kairo#56).
         return Game(file.key, file.uri.toString(), file.name,
             false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
+    }
+
+    /** A new game [name] on an empty C: drive, which [saveBlank] writes to the games folder as `<name>.zip`. */
+    fun blank(name: String) = Game("$name.zip", "", "$name.zip", folder = false, fingerprint = "",
+        contentId = BLANK_CONTENT, blank = true)
+
+    /**
+     * Writes the files a [blank] game's C: drive holds ([drive], its overlay) to the games folder
+     * as its `<name>.zip`, the game the library lists from now on; null when the drive holds none.
+     */
+    fun saveBlank(game: Game, drive: File, tree: Uri, cancelled: AtomicBoolean): Game? {
+        require(game.blank) { "${game.path} is not a new game" }
+        val files = drive.walkTopDown().filter { it.isFile && !it.name.startsWith("DBOVERLAY", true) }.toList()
+        if (files.isEmpty()) return null
+        val root = DocumentsContract.getTreeDocumentId(tree)
+        check(childId(tree, root, game.path, false) == null) { context.getString(R.string.blank_game_exists, game.path) }
+        val created = DocumentsContract.createDocument(context.contentResolver,
+            DocumentsContract.buildDocumentUriUsingTree(tree, root), "application/zip", game.path)
+            ?: error(context.getString(R.string.blank_game_not_saved, game.path))
+        val uri = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getDocumentId(created))
+        context.contentResolver.openOutputStream(uri, "wt")?.use { output ->
+            ZipOutputStream(output).use { zip ->
+                files.sortedBy { it.path }.forEach { file ->
+                    zip.putNextEntry(ZipEntry(file.relativeTo(drive).invariantSeparatorsPath))
+                    file.inputStream().use { copyChecked(it, zip, cancelled) }
+                    zip.closeEntry()
+                }
+            }
+        } ?: error(context.getString(R.string.blank_game_not_saved, game.path))
+        return Game(game.path, uri.toString(), game.path, folder = false, fingerprint = "",
+            contentId = DosContentHash.zipDocument(context, uri, cancelled))
+    }
+
+    /** A folder the player picked for a Disks drive (MainActivity.mediaSlots), read as a folder game is. */
+    fun inspectExternalFolder(tree: Uri, cancelled: AtomicBoolean): Game {
+        val files = walker.scan(tree, cancelled, { true }, {}).files
+        val name = DocumentsContract.getTreeDocumentId(tree).substringAfterLast(':').substringAfterLast('/')
+            .ifEmpty { DocumentsContract.getTreeDocumentId(tree) }
+        return Game(tree.toString(), tree.toString(), name, folder = true, fingerprint = "",
+            contentId = DosContentHash.documents(context, files, cancelled), external = true)
+    }
+
+    /**
+     * What a Disks drive opens for [game], kept apart from the running game's copy (prepare): an
+     * image as itself, an archive or a folder as a folder of its files. Made again when its source changed.
+     */
+    fun prepareMedia(game: Game, tree: Uri?, cancelled: AtomicBoolean): File {
+        require(game.playable) { "Game is not ready" }
+        val type = extension(game.path)
+        val image = !game.folder && type in otherExtensions
+        val target = File(mediaCache, "${game.key.hashName}-${game.contentId!!.substringAfter(':').take(16)}" +
+            if (image) ".$type" else "")
+        if (target.exists()) return target
+        target.parentFile!!.mkdirs()
+        if (image) {
+            val copied = copySource(DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0), cancelled)
+            try {
+                require(hashFile(copied, cancelled) == game.contentId) { context.getString(R.string.game_changed_since_scan) }
+                require(copied.renameTo(target)) { "Could not prepare ${game.path}" }
+            } finally { copied.delete() }
+            return target
+        }
+        val pending = File(mediaCache, target.name + ".part")
+        pending.deleteRecursively()
+        try {
+            if (game.folder) {
+                val files = if (game.external) walker.scan(Uri.parse(game.uri), cancelled, { true }, {}).files
+                    else walker.scan(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)),
+                        cancelled, { true }, {}).files.filter { game.rootFolder || it.path.startsWith("${game.path}/") }
+                require(DosContentHash.documents(context, files, cancelled) == game.contentId) {
+                    context.getString(R.string.game_changed_since_scan)
+                }
+                val prefix = files.map { it.path.substringBefore('/') }.distinct().singleOrNull()
+                    ?.takeIf { root -> files.all { it.path.startsWith("$root/") } }?.plus("/") ?: ""
+                files.forEach { item ->
+                    val file = File(pending, item.path.removePrefix(prefix))
+                    require(file.canonicalPath.startsWith(pending.canonicalPath + File.separator)) {
+                        context.getString(R.string.game_archive_unsafe)
+                    }
+                    file.parentFile!!.mkdirs()
+                    context.contentResolver.openInputStream(item.uri)?.use { input ->
+                        file.outputStream().use { copyChecked(input, it, cancelled) }
+                    } ?: error("Unable to read ${item.path}")
+                }
+            } else {
+                // Not through prepare, which keeps only one prepared copy: the running game's.
+                val copied = copySource(DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0), cancelled)
+                val archive = if (type != "7z") copied else File.createTempFile("dos-", ".zip.part", mediaCache).also { zip ->
+                    try { DosZip.sevenZToZip(copied, zip, cancelled) } finally { copied.delete() }
+                }
+                try {
+                    require(DosContentHash.zip({ context.text(it) }, archive, cancelled) == game.contentId) {
+                        context.getString(R.string.game_changed_since_scan)
+                    }
+                    DosZip.open(archive).use { zip ->
+                        zip.entries().asSequence().filterNot { it.isDirectory }.forEach { entry ->
+                            val file = File(pending, entry.name.replace('\\', '/'))
+                            require(file.canonicalPath.startsWith(pending.canonicalPath + File.separator)) {
+                                context.getString(R.string.game_archive_unsafe)
+                            }
+                            file.parentFile!!.mkdirs()
+                            zip.getInputStream(entry).use { input -> file.outputStream().use { copyChecked(input, it, cancelled) } }
+                        }
+                    }
+                } finally { archive.delete() }
+            }
+            require(pending.renameTo(target)) { "Could not prepare ${game.path}" }
+        } finally { pending.deleteRecursively() }
+        return target
     }
 
     private sealed interface ScanWork {

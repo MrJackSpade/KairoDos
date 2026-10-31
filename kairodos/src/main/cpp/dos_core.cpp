@@ -5,6 +5,7 @@
 // at the start of every emulated frame, so the host runs it a frame at a time, and every call into
 // it below is made while the host has the turn.
 
+#include <android/log.h>
 #include <dlfcn.h>
 
 #include <array>
@@ -59,7 +60,8 @@ public:
             !staging->bind(staging->cpu, "kairo_staging_cpu", error) ||
             !staging->bind(staging->lock_flags, "kairo_staging_lock_flags", error) ||
             !staging->bind(staging->fast_forward, "kairo_staging_fast_forward", error) ||
-            !staging->bind(staging->list_directory, "kairo_staging_list_directory", error))
+            !staging->bind(staging->list_directory, "kairo_staging_list_directory", error) ||
+            !staging->bind(staging->media, "kairo_staging_media", error))
             return nullptr;
         return staging;
     }
@@ -83,6 +85,7 @@ public:
     decltype(&kairo_staging_lock_flags) lock_flags = nullptr;
     decltype(&kairo_staging_fast_forward) fast_forward = nullptr;
     decltype(&kairo_staging_list_directory) list_directory = nullptr;
+    decltype(&kairo_staging_media) media = nullptr;
 
 private:
     Staging() = default;
@@ -95,6 +98,9 @@ private:
 
     void *handle_ = nullptr;
 };
+
+// The Disks page's drives, by media slot (MainActivity.mediaSlots).
+constexpr std::array<char, 3> kMediaDrives = {'A', 'B', 'D'};
 
 class DosCore;
 // The running core, for Staging's callbacks, which carry no context: one machine runs at a time.
@@ -212,8 +218,25 @@ public:
         return staging_->list_directory(line.c_str() + kList.size());
     }
 
-    // Staging starts again from its configuration.
-    void reset() override { restart_ = true; }
+    // The Disks page's drives (MainActivity.mediaSlots): A:, B: and D:.
+    int media(int slot, const std::string &path) override {
+        if (slot < 0 || slot >= int(kMediaDrives.size())) return kUnsupported;
+        const std::string failure = staging_->media(kMediaDrives[slot], path.c_str());
+        if (!failure.empty()) {
+            // The machine runs on with the drive as it was; the Disks page says the change failed.
+            __android_log_print(ANDROID_LOG_ERROR, "KairoDos", "Disks: %s", failure.c_str());
+            return kFailed;
+        }
+        media_[slot] = path;
+        return 0;
+    }
+    std::vector<std::string> media_paths() override { return {media_.begin(), media_.end()}; }
+
+    // Staging starts again from its configuration, which mounts none of the Disks page's drives.
+    void reset() override {
+        media_.fill("");
+        restart_ = true;
+    }
 
     std::string close() override {
         stopping_ = true;
@@ -303,6 +326,8 @@ private:
 
     std::array<bool, kKeyCodes> keys_{};
     std::array<uint8_t, kJoystickControls> joypad_{};
+    // What the Disks page put in each of kMediaDrives, "" for none.
+    std::array<std::string, 3> media_{};
 };
 
 } // namespace
@@ -315,4 +340,10 @@ std::unique_ptr<kairo::MachineCore> kairo::create_core(const kairo::Launch &laun
         return nullptr;
     }
     return core;
+}
+
+// KairoDos makes a new game on an empty C: drive (MainActivity.blankDisks), never a disk image.
+std::string kairo::create_blank_disk(const std::string &kind, const std::string &path) {
+    (void) path;
+    return "KairoDos makes no blank disk " + kind;
 }

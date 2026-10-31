@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">Для выполнения командного скрипта нужны подключенные диски DOS</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">Нет свободного диска DOS для командного скрипта</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">Пустой диск C:</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s уже есть в папке игр</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">Не удалось сохранить %1$s в папку игр</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s сохранён в папку игр</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">Сохранение %1$s в папку игр…</string>
 </resources>

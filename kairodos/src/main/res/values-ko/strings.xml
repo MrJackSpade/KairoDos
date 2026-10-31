@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">명령 스크립트를 실행하려면 마운트된 DOS 드라이브가 필요합니다</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">명령 스크립트에 쓸 빈 DOS 드라이브가 없습니다</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">빈 C: 드라이브</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s이(가) 이미 게임 폴더에 있습니다</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">%1$s을(를) 게임 폴더에 저장할 수 없습니다</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s을(를) 게임 폴더에 저장했습니다</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">%1$s을(를) 게임 폴더에 저장하는 중…</string>
 </resources>

@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">Hacen falta unidades de DOS montadas para ejecutar un script de comandos</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">No hay ninguna unidad de DOS libre para el script de comandos</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">Unidad C: vacía</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s ya está en la carpeta de juegos</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">No se pudo guardar %1$s en la carpeta de juegos</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s se guardó en la carpeta de juegos</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">Guardando %1$s en la carpeta de juegos…</string>
 </resources>

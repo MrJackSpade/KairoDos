@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">Drive DOS yang terpasang diperlukan untuk menjalankan skrip perintah</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">Tidak ada drive DOS kosong untuk skrip perintah</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">Drive C: kosong</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s sudah ada di folder game</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">Tidak dapat menyimpan %1$s ke folder game</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s disimpan ke folder game</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">Menyimpan %1$s ke folder game…</string>
 </resources>

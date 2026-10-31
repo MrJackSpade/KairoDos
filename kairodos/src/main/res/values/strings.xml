@@ -176,4 +176,9 @@
     <string name="media_type_unsupported">%1$s does not support this standalone media type: %2$s</string>
     <string name="command_script_needs_drives">Mounted DOS drives are needed to run a command script</string>
     <string name="command_script_no_drive">No free DOS drive for the command script</string>
+    <string name="blank_c_drive">Empty C: drive</string>
+    <string name="blank_game_exists">%1$s is already in the games folder</string>
+    <string name="blank_game_not_saved">Could not save %1$s to the games folder</string>
+    <string name="blank_game_saved">Saved %1$s to the games folder</string>
+    <string name="blank_game_saving">Saving %1$s to the games folder…</string>
 </resources>

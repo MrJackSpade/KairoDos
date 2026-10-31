@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">يلزم وجود محركات DOS محمّلة لتشغيل نص أوامر</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">لا يوجد محرك DOS فارغ لنص الأوامر</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">محرك C: فارغ</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s موجود بالفعل في مجلد الألعاب</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">تعذّر حفظ %1$s في مجلد الألعاب</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">تم حفظ %1$s في مجلد الألعاب</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">جارٍ حفظ %1$s في مجلد الألعاب…</string>
 </resources>

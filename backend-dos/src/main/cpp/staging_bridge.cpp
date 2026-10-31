@@ -7,6 +7,8 @@
 #include "config/setup.h"
 #include "cpu/cpu.h"
 #include "dos/dos.h"
+#include "dos/drives.h"
+#include "ints/bios_disk.h"
 #include "shell/shell.h"
 #include "misc/unicode.h"
 #include "hardware/input/joystick.h"
@@ -89,6 +91,77 @@ extern "C" const char* kairo_staging_list_directory(const char* input) {
             result += dos_to_utf8(prefix + entry.name, DosStringConvertMode::NoSpecialCharacters) + "\n";
         }
         found = DOS_FindNext();
+    }
+    return result.c_str();
+}
+
+// The Disks page's drives (MainActivity.mediaSlots), mounted the way Staging's own MOUNT and
+// IMGMOUNT mount them (dos/programs/mount.cpp), without their console messages: a game is running.
+extern "C" const char* kairo_staging_media(char letter, const char* input) {
+    static std::string result;
+    result.clear();
+    if (!DOS_GetFirstShell()) return (result = "DOS is not ready").c_str();
+    const char drive_letter = static_cast<char>(std::toupper(static_cast<unsigned char>(letter)));
+    if (drive_letter != 'A' && drive_letter != 'B' && drive_letter != 'D')
+        return (result = std::string("Drive ") + drive_letter + ": is not a Disks drive").c_str();
+    const int drive = drive_letter - 'A';
+    const bool floppy = drive_letter != 'D';
+    if (Drives.at(drive)) {
+        if (DriveManager::UnmountDrive(drive) != 0)
+            return (result = std::string("Could not empty drive ") + drive_letter + ":").c_str();
+        if (floppy) {
+            imageDiskList.at(drive) = nullptr;
+            updateDPT();
+        }
+    }
+    const std::string path = input ? input : "";
+    if (path.empty()) return result.c_str();
+    std::error_code error;
+    const std::filesystem::path host(path);
+    const auto media_id = floppy ? MediaId::Floppy1_44MB : MediaId::HardDisk;
+    if (std::filesystem::is_directory(host, error)) {
+        const std::string base = path.back() == CROSS_FILESPLIT ? path : path + CROSS_FILESPLIT;
+        std::shared_ptr<DOS_Drive> folder;
+        if (floppy) {
+            folder = std::make_shared<localDrive>(base.c_str(), 512, 1, 2880, 2880, media_id, false);
+        } else {
+            int cd_error = 0;
+            folder = std::make_shared<cdromDrive>(drive_letter, base.c_str(), 2048, 1, 65535, 0, media_id, cd_error);
+            // 5 is limited support for a folder below a drive's root, which still mounts.
+            if (cd_error && cd_error != 5)
+                return (result = "Staging could not use " + path + " as a CD (MSCDEX error " +
+                                 std::to_string(cd_error) + ")").c_str();
+        }
+        DriveManager::RegisterFilesystemImage(drive, folder);
+        Drives.at(drive) = folder;
+        mem_writeb(RealToPhysical(dos.tables.mediaid) + drive * 9, folder->GetMediaByte());
+        return result.c_str();
+    }
+    if (!std::filesystem::is_regular_file(host, error)) return (result = path + " is not there").c_str();
+    std::string extension = host.extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
+    const bool disc = extension == ".iso";
+    if (disc != !floppy)
+        return (result = std::string("Drive ") + drive_letter + (floppy ? ": takes a floppy image, not " : ": takes a CD image, not ") +
+                         host.filename().string()).c_str();
+    if (disc) {
+        int cd_error = -1;
+        auto image = std::make_shared<isoDrive>(drive_letter, path.c_str(), media_id, cd_error);
+        if (cd_error) return (result = "Staging could not open the CD image " + path + " (MSCDEX error " +
+                                       std::to_string(cd_error) + ")").c_str();
+        DriveManager::AppendFilesystemImages(drive, {image});
+        DriveManager::InitializeDrive(drive);
+        mem_writeb(RealToPhysical(dos.tables.mediaid) + drive * 9, media_id);
+        return result.c_str();
+    }
+    auto image = std::make_shared<fatDrive>(path.c_str(), 512, 1, 2880, 2880, media_id, false);
+    if (!image->created_successfully) return (result = "Staging could not read the floppy image " + path).c_str();
+    DriveManager::AppendFilesystemImages(drive, {image});
+    DriveManager::InitializeDrive(drive);
+    mem_writeb(RealToPhysical(dos.tables.mediaid) + drive * 9, media_id);
+    if (image->loadedDisk && !image->loadedDisk->hardDrive) {
+        imageDiskList.at(drive) = image->loadedDisk;
+        updateDPT();
     }
     return result.c_str();
 }

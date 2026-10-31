@@ -304,4 +304,14 @@
     <string name="command_script_needs_drives">Zum Ausführen eines Befehlsskripts werden eingebundene DOS-Laufwerke benötigt</string>
     <!-- EN: No free DOS drive for the command script -->
     <string name="command_script_no_drive">Kein freies DOS-Laufwerk für das Befehlsskript</string>
+    <!-- EN: Empty C: drive -->
+    <string name="blank_c_drive">Leeres Laufwerk C:</string>
+    <!-- EN: %1$s is already in the games folder -->
+    <string name="blank_game_exists">%1$s ist bereits im Spieleordner</string>
+    <!-- EN: Could not save %1$s to the games folder -->
+    <string name="blank_game_not_saved">%1$s konnte nicht im Spieleordner gespeichert werden</string>
+    <!-- EN: Saved %1$s to the games folder -->
+    <string name="blank_game_saved">%1$s wurde im Spieleordner gespeichert</string>
+    <!-- EN: Saving %1$s to the games folder… -->
+    <string name="blank_game_saving">%1$s wird im Spieleordner gespeichert…</string>
 </resources>
