@@ -5,7 +5,9 @@ KairoDos's research catalog for the shared generator (shared/tools/app_catalog.p
 Usage: import_catalog.py [--check] [--references <out.json>]
 
 Writes catalog/research/games-v1.json.gz (gzipped, shared catalog_files.py) and catalog/research/folders-v1.json. Each game is
-"dos:<first 16 hex digits of its content ID>". An archive holding several games (its record's
+"dos:<first 16 hex digits of its content ID>"; the manifest it has with its CDs kept as CHDs
+(catalog/chd-manifests-v1.json, tools/chd_manifests.py) is another of its media, launched the
+same way. An archive holding several games (its record's
 "variants", eXoDOS's entries named by their file names) is a collection: one library entry whose
 games the player picks between when it starts. It keeps its own key, gives each of its games
 "<key>.<n>", and names them with their launches in its "diskCollection", members "1", "2"... in
@@ -100,6 +102,7 @@ def build():
     defaults = json.loads((ROOT / "catalog/controller-defaults.json").read_text(encoding="utf-8"))
     profiles = json.loads((ROOT / "catalog/research/controller-profiles-v1.json").read_text(encoding="utf-8"))
     controllers = controls(profiles, defaults)
+    chd_ids = json.loads((ROOT / "catalog/chd-manifests-v1.json").read_text(encoding="utf-8"))["games"]
     games, references = {}, {}
     for content_id, record in sorted(records.items()):
         key = key_of(content_id)
@@ -109,7 +112,9 @@ def build():
             # One game that eXoDOS lists twice: the same files, launched the same way.
             record = {**variants[0], **{field: record[field] for field in ("hidden",) if field in record}}
             variants = []
-        game = {**research_game(record, images), "contentIds": [content_id]}
+        # The same game with its CDs kept as CHDs (chd_manifests.py) is another of its media.
+        media = [content_id] + ([chd_ids[content_id]] if content_id in chd_ids else [])
+        game = {**research_game(record, images), "contentIds": media}
         if record.get("description", "").strip():
             references[key] = record["description"]
         if record.get("hidden"):
@@ -117,7 +122,7 @@ def build():
         if content_id in controllers:
             game["controller"] = controllers[content_id]
         if "launch" in record:
-            game["diskMachine"] = {content_id: {"launch": record["launch"]}}
+            game["diskMachine"] = {medium: {"launch": record["launch"]} for medium in media}
         members = {}
         for index, variant in enumerate(variants, 1):
             member_key = f"{key}.{index}"
@@ -126,7 +131,7 @@ def build():
                 references[member_key] = variant["description"]
             members[str(index)] = {"game": member_key, "launch": variant["launch"]}
         if members:
-            game["diskCollection"] = {content_id: members}
+            game["diskCollection"] = {medium: members for medium in media}
         games[key] = game
     apply_machine(games)
     catalog_descriptions.apply(ROOT / "catalog/research", games)

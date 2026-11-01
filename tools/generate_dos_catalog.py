@@ -41,31 +41,41 @@ def ascii_lower(value: str) -> str:
 
 def hash_zip(path: Path) -> str:
     with zipfile.ZipFile(path) as archive:
-        members = [(item, safe_path(item.filename)) for item in archive.infolist()
-                   if not item.is_dir()]
-        members = [(item, name) for item, name in members if not name.lower().endswith(".exo")]
-        if not members:
-            raise ValueError("no game files in ZIP")
-        roots = {name.split("/", 1)[0] for _, name in members}
-        strip = next(iter(roots)) + "/" if len(roots) == 1 and all(
-            name.startswith(next(iter(roots)) + "/") for _, name in members) else ""
-        normalized = sorted(((item, ascii_lower(name.removeprefix(strip))) for item, name in members),
-                            key=lambda pair: pair[1])
-        if len({name for _, name in normalized}) != len(normalized):
-            raise ValueError("duplicate game file")
-        digest = hashlib.sha256(HEADER)
-        for item, name in normalized:
-            if not 0 <= item.file_size <= MAX_FILE:
-                raise ValueError("game file is too large")
-            digest.update(name.encode("utf-8"))
-            digest.update(b"\0")
-            digest.update(str(item.file_size).encode("ascii"))
-            digest.update(b"\0")
-            if not 0 <= item.CRC <= 0xffffffff:
-                raise ValueError("missing ZIP member checksum")
-            digest.update(f"{item.CRC:08x}".encode("ascii"))
-            digest.update(b"\0")
-        return PREFIX + digest.hexdigest()
+        return manifest(zip_files(archive))
+
+
+def zip_files(archive: zipfile.ZipFile) -> list[tuple[str, int, int, zipfile.ZipInfo]]:
+    """A ZIP's game files as the manifest names them: (normalized path, size, CRC-32, member), the
+    eXoDOS .exo markers and one common outer folder left out, ASCII case folded."""
+    members = [(item, safe_path(item.filename)) for item in archive.infolist()
+               if not item.is_dir()]
+    members = [(item, name) for item, name in members if not name.lower().endswith(".exo")]
+    if not members:
+        raise ValueError("no game files in ZIP")
+    roots = {name.split("/", 1)[0] for _, name in members}
+    strip = next(iter(roots)) + "/" if len(roots) == 1 and all(
+        name.startswith(next(iter(roots)) + "/") for _, name in members) else ""
+    return [(ascii_lower(name.removeprefix(strip)), item.file_size, item.CRC, item) for item, name in members]
+
+
+def manifest(files) -> str:
+    """The sha256-dos-manifest-v1 ID of (normalized path, size, CRC-32, ...) entries."""
+    normalized = sorted(files, key=lambda entry: entry[0])
+    if len({entry[0] for entry in normalized}) != len(normalized):
+        raise ValueError("duplicate game file")
+    digest = hashlib.sha256(HEADER)
+    for name, size, crc, *_ in normalized:
+        if not 0 <= size <= MAX_FILE:
+            raise ValueError("game file is too large")
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(str(size).encode("ascii"))
+        digest.update(b"\0")
+        if not 0 <= crc <= 0xffffffff:
+            raise ValueError("missing ZIP member checksum")
+        digest.update(f"{crc:08x}".encode("ascii"))
+        digest.update(b"\0")
+    return PREFIX + digest.hexdigest()
 
 
 def game_records(metadata: zipfile.ZipFile) -> dict[str, ET.Element]:

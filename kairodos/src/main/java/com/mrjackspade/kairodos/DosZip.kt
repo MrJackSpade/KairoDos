@@ -2,6 +2,7 @@ package com.mrjackspade.kairodos
 
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import java.io.File
+import java.io.InputStream
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.util.concurrent.CancellationException
@@ -23,29 +24,46 @@ object DosZip {
 
     fun open(file: File): ZipFile = ZipFile(file, ZipFile.OPEN_READ, DOS_NAMES)
 
-    fun members(file: File): List<Member> = open(file).use { zip ->
-        zip.entries().asSequence().map { Member(it.name, it.size, it.crc, it.isDirectory) }.toList()
+    /** Opens one member of the archive being read, for the members whose bytes are needed (a CHD's). */
+    fun interface Opener {
+        fun open(member: Member): InputStream
+    }
+
+    fun members(file: File): List<Member> = read(file) { members, _ -> members }
+
+    fun members(channel: FileChannel): List<Member> = read(channel) { members, _ -> members }
+
+    fun sevenZMembers(channel: FileChannel): List<Member> = readSevenZ(channel) { members, _ -> members }
+
+    /** [block] with the ZIP [file]'s members and a way to open each, while it is open. */
+    fun <T> read(file: File, block: (List<Member>, Opener) -> T): T = open(file).use { zip ->
+        block(zip.entries().asSequence().map { Member(it.name, it.size, it.crc, it.isDirectory) }.toList(),
+            Opener { member -> zip.getInputStream(zip.getEntry(member.name)) })
     }
 
     /**
-     * The members of the ZIP open on [channel], read in place. A document from a storage provider
-     * is read through its own descriptor: opening its /proc/self/fd path again is refused on
-     * removable storage. Names are read as [open] reads them; Unicode extra fields are ignored,
-     * as java.util.zip ignores them.
+     * [block] with the members of the ZIP open on [channel], read in place, and a way to open each.
+     * A document from a storage provider is read through its own descriptor: opening its
+     * /proc/self/fd path again is refused on removable storage. Names are read as [open] reads
+     * them; Unicode extra fields are ignored, as java.util.zip ignores them.
      */
-    fun members(channel: FileChannel): List<Member> =
+    fun <T> read(channel: FileChannel, block: (List<Member>, Opener) -> T): T =
         org.apache.commons.compress.archivers.zip.ZipFile.builder().setSeekableByteChannel(channel)
             .setCharset(DOS_NAMES).setUseUnicodeExtraFields(false).get().use { zip ->
-                zip.entries.asSequence().map { Member(it.name, it.size, it.crc, it.isDirectory) }.toList()
+                block(zip.entries.asSequence().map { Member(it.name, it.size, it.crc, it.isDirectory) }.toList(),
+                    Opener { member -> zip.getInputStream(zip.getEntry(member.name)) })
             }
 
     /**
-     * The members of the 7z archive open on [channel], as its headers record them, read in place. A
-     * member without a CRC gets -1, which the content hash refuses (it needs one, as a ZIP has).
+     * [block] with the members of the 7z archive open on [channel], as its headers record them, read
+     * in place, and a way to open each. A member without a CRC gets -1, which the content hash
+     * refuses (it needs one, as a ZIP has).
      */
-    fun sevenZMembers(channel: FileChannel): List<Member> =
+    fun <T> readSevenZ(channel: FileChannel, block: (List<Member>, Opener) -> T): T =
         SevenZFile.builder().setSeekableByteChannel(channel).get().use { archive ->
-            archive.entries.map { Member(it.name, it.size, if (it.hasCrc) it.crcValue else -1L, it.isDirectory) }
+            val entries = archive.entries.associateBy { it.name }
+            block(entries.values.map { Member(it.name, it.size, if (it.hasCrc) it.crcValue else -1L, it.isDirectory) },
+                Opener { member -> archive.getInputStream(entries.getValue(member.name)) })
         }
 
     /**

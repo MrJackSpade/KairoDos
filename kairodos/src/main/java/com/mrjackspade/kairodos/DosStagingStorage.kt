@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 package com.mrjackspade.kairodos
 
+import android.os.ParcelFileDescriptor
+import com.mrjackspade.kairo.frontend.ChdImage
 import com.mrjackspade.kairo.frontend.UiText
 import java.io.File
 import java.util.Locale
@@ -395,12 +397,52 @@ internal object DosStagingStorage {
                 require(count == entry.size && crc.value == entry.crc) { text(UiText.res(R.string.archive_verification_failed, name)) }
                 if (entry.time > 0) target.setLastModified(entry.time)
                 total += count
+                if (name.endsWith(".chd", true)) {
+                    // A CD kept as a CHD is laid out as the sheet and image Staging mounts, under the
+                    // CHD's name, where the game's own mount line finds its CUE (KairoDos#146).
+                    val stem = name.substringBeforeLast('.')
+                    for (expanded in listOf("$stem.bin", "$stem.cue")) {
+                        require(names.put(expanded.lowercase(Locale.ROOT), false) == null) {
+                            text(UiText.res(R.string.archive_duplicate_entry, expanded))
+                        }
+                    }
+                    total += expandChd(text, target, path(root, "$stem.bin"), path(root, "$stem.cue"), MAX_BYTES - total, cancelled)
+                }
                 if (total - reported >= 64L * 1024 * 1024) {
                     progress(text(UiText.res(R.string.preparing_writable_files, total / (1024 * 1024))))
                     reported = total
                 }
             }
         }
+    }
+
+    /**
+     * Writes the disc image the CHD [chd] holds to [bin] and the reader's cue sheet for it to [cue]
+     * (shared ChdImage), then removes the CHD, which Staging cannot read; returns the image's size,
+     * at most [limit].
+     */
+    private fun expandChd(text: (UiText) -> String, chd: File, bin: File, cue: File, limit: Long,
+                          cancelled: AtomicBoolean): Long {
+        var count = 0L
+        ParcelFileDescriptor.open(chd, ParcelFileDescriptor.MODE_READ_ONLY).use { document ->
+            ChdImage.open(document).use { image ->
+                require(image.size <= limit) { text(UiText.res(R.string.archive_too_large)) }
+                require(chd.parentFile!!.usableSpace > image.size + 16L * 1024 * 1024) { text(UiText.res(R.string.not_enough_storage)) }
+                image.inputStream().use { input -> bin.outputStream().use { output ->
+                    val buffer = ByteArray(65536)
+                    while (true) {
+                        require(!cancelled.get()) { "Cancelled" }
+                        val read = input.read(buffer)
+                        if (read < 0) break
+                        count += read
+                        output.write(buffer, 0, read)
+                    }
+                } }
+                cue.writeText(image.cue(bin.name))
+            }
+        }
+        require(chd.delete()) { "Could not prepare ${chd.name}" }
+        return count
     }
 
     private fun importPureSave(text: (UiText) -> String, archive: File, saveDir: File, root: File,

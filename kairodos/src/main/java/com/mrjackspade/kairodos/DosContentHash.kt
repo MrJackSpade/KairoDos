@@ -5,6 +5,8 @@ import android.content.Context
 import com.mrjackspade.kairo.frontend.UiText
 import com.mrjackspade.kairo.frontend.text
 import android.net.Uri
+import android.os.ParcelFileDescriptor
+import com.mrjackspade.kairo.frontend.ChdImage
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -27,7 +29,10 @@ object DosContentHash {
                            cancelled: AtomicBoolean, sevenZ: Boolean = false): ZipInspection =
         (context.contentResolver.openFileDescriptor(uri, "r") ?: error("Unable to open the game archive")).use { descriptor ->
             FileInputStream(descriptor.fileDescriptor).channel.use { channel ->
-                inspect({ context.text(it) }, if (sevenZ) DosZip.sevenZMembers(channel) else DosZip.members(channel), cancelled)
+                val inspectMembers = { members: List<DosZip.Member>, opener: DosZip.Opener ->
+                    inspect({ context.text(it) }, members, { member -> chdMember(opener.open(member), context.cacheDir, cancelled) }, cancelled)
+                }
+                if (sevenZ) DosZip.readSevenZ(channel, inspectMembers) else DosZip.read(channel, inspectMembers)
             }
         }
 
@@ -40,9 +45,17 @@ object DosContentHash {
         inspectZip(text, file, cancelled).contentId
 
     fun inspectZip(text: (UiText) -> String, file: File, cancelled: AtomicBoolean): ZipInspection =
-        inspect(text, DosZip.members(file), cancelled)
+        DosZip.read(file) { members, opener ->
+            inspect(text, members, { member -> chdMember(opener.open(member), file.absoluteFile.parentFile!!, cancelled) }, cancelled)
+        }
 
-    private fun inspect(text: (UiText) -> String, members: List<DosZip.Member>, cancelled: AtomicBoolean): ZipInspection {
+    /**
+     * [members]' manifest. A CHD (a CD kept as chdman's image, KairoDos#146) counts as the disc image
+     * it holds, under its own name: [chd] gives that image's size and CRC-32, so a game whose CUE
+     * sheet and track files became a CHD has the manifest the catalog lists for it (chd_manifests.py).
+     */
+    private fun inspect(text: (UiText) -> String, members: List<DosZip.Member>, chd: (DosZip.Member) -> Pair<Long, Long>,
+                        cancelled: AtomicBoolean): ZipInspection {
         if (cancelled.get()) throw CancellationException("Cancelled")
         val entries = members.filterNot { it.directory }
         val exodosSource = entries.any { entry ->
@@ -64,12 +77,50 @@ object DosContentHash {
         digest.update(HEADER)
         sorted.forEach { (item, path) ->
             if (cancelled.get()) throw CancellationException("Cancelled")
-            require(item.size in 0..MAX_FILE_BYTES) { text(UiText.res(R.string.game_file_too_large)) }
-            require(item.crc in 0..0xffffffffL) { text(UiText.res(R.string.zip_missing_checksum)) }
-            frame(digest, path, item.size, item.crc)
+            val (size, crc) = if (path.endsWith(".chd")) chd(item) else item.size to item.crc
+            require(size in 0..MAX_FILE_BYTES) { text(UiText.res(R.string.game_file_too_large)) }
+            require(crc in 0..0xffffffffL) { text(UiText.res(R.string.zip_missing_checksum)) }
+            frame(digest, path, size, crc)
         }
         return ZipInspection(PREFIX + hex(digest.digest()), exodosSource)
     }
+
+    /** A CHD member's disc image size and CRC-32, read from a copy of it in [scratch]: the reader needs a file. */
+    private fun chdMember(input: InputStream, scratch: File, cancelled: AtomicBoolean): Pair<Long, Long> {
+        val copy = File.createTempFile("chd-", ".part", scratch)
+        try {
+            input.use { source -> copy.outputStream().use { target ->
+                val buffer = ByteArray(65536)
+                while (true) {
+                    if (cancelled.get()) throw CancellationException("Cancelled")
+                    val read = source.read(buffer)
+                    if (read < 0) break
+                    target.write(buffer, 0, read)
+                }
+            } }
+            return ParcelFileDescriptor.open(copy, ParcelFileDescriptor.MODE_READ_ONLY).use { chdImage(it, cancelled) }
+        } finally {
+            copy.delete()
+        }
+    }
+
+    /** The size and CRC-32 of the disc image the CHD open on [document] holds (shared ChdImage). */
+    private fun chdImage(document: ParcelFileDescriptor, cancelled: AtomicBoolean): Pair<Long, Long> =
+        ChdImage.open(document).use { image ->
+            val crc = CRC32()
+            var size = 0L
+            image.inputStream().use { input ->
+                val buffer = ByteArray(65536)
+                while (true) {
+                    if (cancelled.get()) throw CancellationException("Cancelled")
+                    val read = input.read(buffer)
+                    if (read < 0) break
+                    size += read
+                    crc.update(buffer, 0, read)
+                }
+            }
+            size to crc.value
+        }
 
     fun documents(context: Context, files: List<DocumentTreeWalker.FileEntry>,
                   cancelled: AtomicBoolean): String {
@@ -85,6 +136,13 @@ object DosContentHash {
         digest.update(HEADER)
         sorted.forEach { (item, path) ->
             require(item.size in 0..MAX_FILE_BYTES) { context.getString(R.string.game_file_too_large) }
+            if (path.endsWith(".chd")) {
+                // A CD kept as a CHD counts as its disc image, as in an archive (inspect).
+                val (size, crc) = (context.contentResolver.openFileDescriptor(item.uri, "r") ?: error("Unable to open $path"))
+                    .use { chdImage(it, cancelled) }
+                frame(digest, path, size, crc)
+                return@forEach
+            }
             val crc = CRC32()
             context.contentResolver.openInputStream(item.uri)?.use { input ->
                 stream({ context.text(it) }, crc, input, item.size, cancelled)
