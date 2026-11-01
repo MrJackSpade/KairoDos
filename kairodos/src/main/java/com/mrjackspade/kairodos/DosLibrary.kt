@@ -240,9 +240,9 @@ class DosLibrary(private val context: Context) {
     }
 
     private sealed interface ScanWork {
-        /** A file game; a CUE sheet's [data] is its track data, null when it is not there. */
+        /** A file game; a CUE sheet's [data] is its track data in order, empty when it is not there. */
         data class Archive(val file: DocumentTreeWalker.FileEntry,
-                           val data: DocumentTreeWalker.FileEntry? = null) : ScanWork
+                           val data: List<DocumentTreeWalker.FileEntry> = emptyList()) : ScanWork
         data class Folder(val tree: Uri, val root: String,
                           val members: List<DocumentTreeWalker.FileEntry>) : ScanWork
     }
@@ -278,7 +278,7 @@ class DosLibrary(private val context: Context) {
         val work = ArrayList<ScanWork>()
         val byPath = all.associateBy { it.path.lowercase(Locale.ROOT) }
         work.addAll(archives.map { item ->
-            ScanWork.Archive(item, if (discs.isDescriptor(item.path)) discs.dataOf(item.path, byPath) else null)
+            ScanWork.Archive(item, if (discs.isDescriptor(item.path)) trackData(item, byPath) else emptyList())
         })
         folderGroups.toSortedMap(String.CASE_INSENSITIVE_ORDER).forEach { (root, members) ->
             work.add(ScanWork.Folder(tree, root, members))
@@ -342,12 +342,12 @@ class DosLibrary(private val context: Context) {
     /** A CUE sheet, named by its track data's content; an error entry when the data is not beside it. */
     private fun inspectDisc(work: ScanWork.Archive, scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
         val item = work.file
-        val data = work.data ?: return listOf(Game(item.path, item.uri.toString(), item.path, false, false, "", null,
+        if (work.data.isEmpty()) return listOf(Game(item.path, item.uri.toString(), item.path, false, false, "", null,
             context.getString(FrontendR.string.kairo_disk_needs_track_data, item.path.substringAfterLast('/'))))
-        val fingerprint = "${item.size}:${item.modified}:${data.size}:${data.modified}"
+        val fingerprint = "${item.size}:${item.modified}" + work.data.joinToString("") { ":${it.size}:${it.modified}" }
         val contentId = knownContent(scan.prior[item.path], fingerprint, "sha256-dos-file-v1:") ?: run {
             scan.hashStarted(item.path)
-            hashDocument(data, scan.cancelled)
+            hashDocuments(work.data, scan.cancelled)
         }
         return listOf(Game(item.path, item.uri.toString(), item.path, false, false,
             fingerprint, contentId, null, catalogId = catalogId(scan, item.path, contentId)))
@@ -355,22 +355,24 @@ class DosLibrary(private val context: Context) {
 
     /**
      * [game]'s CUE sheet and its track data, copied into [target] under their own names, where the
-     * sheet's FILE line finds the data; returns the sheet. The data is verified against the content ID.
+     * sheet's FILE lines find the data; returns the sheet. The data is verified against the content ID.
      */
     private fun prepareDisc(game: Game, tree: Uri?, target: File, cancelled: AtomicBoolean): File {
         if (isChd(game.path)) return prepareChd(game, target, cancelled)
         val sheetName = game.path.substringAfterLast('/')
         if (target.isDirectory) return File(target, sheetName)
-        val (dataPath, dataUri) = trackData(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)), game.path)
+        val data = trackData(tree ?: error(context.getString(R.string.choose_dos_folder_for_game)), game.path)
         val pending = File(target.parentFile, target.name + ".part")
         pending.deleteRecursively()
         try {
             pending.mkdirs()
-            val data = copySource(DocumentTreeWalker.FileEntry(dataUri, dataPath, -1, 0), cancelled)
-            try {
-                require(hashFile(data, cancelled) == game.contentId) { context.getString(R.string.game_changed_since_scan) }
-                require(data.renameTo(File(pending, dataPath.substringAfterLast('/')))) { "Could not prepare $dataPath" }
-            } finally { data.delete() }
+            val hash = FileHash(cancelled)
+            data.forEach { (dataPath, dataUri) ->
+                context.contentResolver.openInputStream(dataUri)?.use { input ->
+                    File(pending, dataPath.substringAfterLast('/')).outputStream().use { hash.add(input, it) }
+                } ?: error("Unable to read $dataPath")
+            }
+            require(hash.id() == game.contentId) { context.getString(R.string.game_changed_since_scan) }
             val sheet = copySource(DocumentTreeWalker.FileEntry(Uri.parse(game.uri), game.path, -1, 0), cancelled)
             try {
                 require(sheet.renameTo(File(pending, sheetName))) { "Could not prepare ${game.path}" }
@@ -425,8 +427,20 @@ class DosLibrary(private val context: Context) {
         if (isChd(source.path)) openChd(source.uri, source.path) { fileId(it.inputStream(), cancelled).first }
         else hashDocument(source, cancelled)
 
-    /** The track data beside the CUE sheet at [sheet] in the games folder [tree]: its path and document. */
-    private fun trackData(tree: Uri, sheet: String): Pair<String, Uri> {
+    /**
+     * A CUE sheet's track data among the scanned files [byPath] (lower-case paths): the BIN under its
+     * own name, else the files its FILE lines name, in order; empty when it has none, which fails its entry alone.
+     */
+    private fun trackData(sheet: DocumentTreeWalker.FileEntry,
+                          byPath: Map<String, DocumentTreeWalker.FileEntry>): List<DocumentTreeWalker.FileEntry> {
+        discs.dataOf(sheet.path, byPath)?.let { return listOf(it) }
+        if (!discs.isCue(sheet.path)) return emptyList()
+        val text = context.contentResolver.openInputStream(sheet.uri)?.use { String(it.readBytes()) } ?: return emptyList()
+        return discs.filesOf(sheet.path, text, byPath).orEmpty()
+    }
+
+    /** The track data of the CUE sheet at [sheet] in the games folder [tree], in order: each one's path and document. */
+    private fun trackData(tree: Uri, sheet: String): List<Pair<String, Uri>> {
         val folder = sheet.substringBeforeLast('/', "")
         var parent = DocumentsContract.getTreeDocumentId(tree)
         if (folder.isNotEmpty()) folder.split('/').forEach { name ->
@@ -439,9 +453,15 @@ class DosLibrary(private val context: Context) {
             while (cursor.moveToNext()) children[cursor.getString(1).lowercase(Locale.ROOT)] = cursor.getString(1) to cursor.getString(0)
         } ?: error(context.getString(R.string.game_folder_moved))
         val sheetName = sheet.substringAfterLast('/')
-        val (name, id) = discs.dataOf(sheetName, children)
-            ?: error(context.getString(FrontendR.string.kairo_disk_needs_track_data, sheetName))
-        return (if (folder.isEmpty()) name else "$folder/$name") to DocumentsContract.buildDocumentUriUsingTree(tree, id)
+        val files = discs.dataOf(sheetName, children)?.let { listOf(it) } ?: if (!discs.isCue(sheetName)) null else {
+            val (_, sheetId) = children[sheetName.lowercase(Locale.ROOT)] ?: error(context.getString(R.string.game_folder_moved))
+            val text = context.contentResolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree, sheetId))
+                ?.use { String(it.readBytes()) } ?: error(context.getString(R.string.game_folder_moved))
+            discs.filesOf(sheetName, text, children)
+        } ?: error(context.getString(FrontendR.string.kairo_disk_needs_track_data, sheetName))
+        return files.map { (name, id) ->
+            (if (folder.isEmpty()) name else "$folder/$name") to DocumentsContract.buildDocumentUriUsingTree(tree, id)
+        }
     }
 
     /** A folder game's key is its folder; a game that is the whole library folder has the empty path. */
@@ -832,30 +852,51 @@ class DosLibrary(private val context: Context) {
         file.inputStream().use { fileId(it, cancelled).first }
 
     private fun hashDocument(source: DocumentTreeWalker.FileEntry,
-                             cancelled: AtomicBoolean): String {
-        require(source.size <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
-        val (id, total) = context.contentResolver.openInputStream(source.uri)?.use { fileId(it, cancelled) }
-            ?: error("Unable to read ${source.path}")
-        if (source.size >= 0) require(total == source.size) { context.getString(R.string.game_changed_while_hashing) }
-        return id
+                             cancelled: AtomicBoolean): String = hashDocuments(listOf(source), cancelled)
+
+    /** The content ID of [sources]' bytes joined in order: a CUE's track files (KairoTowns#100). */
+    private fun hashDocuments(sources: List<DocumentTreeWalker.FileEntry>, cancelled: AtomicBoolean): String {
+        require(sources.sumOf { it.size } <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
+        val hash = FileHash(cancelled)
+        sources.forEach { source ->
+            val read = context.contentResolver.openInputStream(source.uri)?.use { hash.add(it) }
+                ?: error("Unable to read ${source.path}")
+            if (source.size >= 0) require(read == source.size) { context.getString(R.string.game_changed_while_hashing) }
+        }
+        return hash.id()
     }
 
     /** The `sha256-dos-file-v1` ID of [input]'s bytes and their count, written to [output] as they are read. */
     private fun fileId(input: java.io.InputStream, cancelled: AtomicBoolean,
                        output: java.io.OutputStream? = null): Pair<String, Long> {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val buffer = ByteArray(65536)
-        var total = 0L
-        while (true) {
-            require(!cancelled.get()) { "Cancelled" }
-            val count = input.read(buffer)
-            if (count < 0) break
-            total += count
-            require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
-            digest.update(buffer, 0, count)
-            output?.write(buffer, 0, count)
+        val hash = FileHash(cancelled)
+        val total = hash.add(input, output)
+        return hash.id() to total
+    }
+
+    /** A `sha256-dos-file-v1` ID over the streams [add]ed, read one after another as one file. */
+    private inner class FileHash(private val cancelled: AtomicBoolean) {
+        private val digest = MessageDigest.getInstance("SHA-256")
+        private val buffer = ByteArray(65536)
+        private var total = 0L
+
+        /** Reads [input] into the ID, writing it to [output] as it is read; returns its byte count. */
+        fun add(input: java.io.InputStream, output: java.io.OutputStream? = null): Long {
+            var read = 0L
+            while (true) {
+                require(!cancelled.get()) { "Cancelled" }
+                val count = input.read(buffer)
+                if (count < 0) break
+                read += count
+                total += count
+                require(total <= MAX_ARCHIVE_BYTES) { context.getString(R.string.game_too_large) }
+                digest.update(buffer, 0, count)
+                output?.write(buffer, 0, count)
+            }
+            return read
         }
-        return "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}" to total
+
+        fun id() = "sha256-dos-file-v1:${digest.digest().joinToString("") { "%02x".format(it) }}"
     }
 
     private fun writeCacheRecord(output: java.io.DataOutputStream, game: Game) = with(output) {
