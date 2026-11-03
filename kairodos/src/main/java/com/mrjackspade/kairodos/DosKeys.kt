@@ -9,13 +9,23 @@ import com.mrjackspade.kairo.frontend.PcKeyboard
  * DOSBox Staging bridge turns into IBM PC keys.
  */
 internal object DosKeys {
-    val layout: GuestKeyboardLayout = PcKeyboard.layout("KAIRODOS") { it.retroKey }
+    val layout: GuestKeyboardLayout = PcKeyboard.layout("KAIRODOS") {
+        checkNotNull(it.retroKey) { "The ANSI keyboard's $it has no key in DOSBox Staging" }
+    }
 
-    /** The RETROK code an Android key event types, or null for one the PC has no key for. */
+    /** The RETROK code an Android key event types, or null for one the PC or Staging has no key for. */
     fun fromAndroid(androidKey: Int): Int? = PcKey.fromAndroid(androidKey)?.retroKey
 
-    val PcKey.retroKey: Int
+    /**
+     * The key's RETROK code (400: Staging's abnt1, which RETROK has none for), or null for a key
+     * DOSBox Staging's keyboard does not have (the Japanese and Korean keyboards' own, SysRq).
+     */
+    val PcKey.retroKey: Int?
         get() = when (this) {
+            PcKey.ISO_BACKSLASH -> 323
+            PcKey.RO -> 400
+            PcKey.SYS_REQ, PcKey.KANA, PcKey.HENKAN, PcKey.MUHENKAN, PcKey.YEN, PcKey.PAD_SEPARATOR,
+            PcKey.HANJA, PcKey.HANGUL -> null
             PcKey.ESCAPE -> 27
             PcKey.D1, PcKey.D2, PcKey.D3, PcKey.D4, PcKey.D5, PcKey.D6, PcKey.D7, PcKey.D8, PcKey.D9, PcKey.D0,
             PcKey.Q, PcKey.W, PcKey.E, PcKey.R, PcKey.T, PcKey.Y, PcKey.U, PcKey.I, PcKey.O, PcKey.P,
