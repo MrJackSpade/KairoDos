@@ -143,6 +143,78 @@
           "expect": "mouse"
         }
       }
+    },
+    {
+      "name": "Lemmings 2",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/lemmings2.conf": "app:core/test/dos/lemmings2.conf"
+      },
+      "media": [
+        "games/Lemmings 2 - The Tribes (1993)/lemm2"
+      ],
+      "settings": {
+        "config": "home:dos/lemmings2.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "boot": {
+          "frames": 2400
+        },
+        "guestInput": {
+          "frames": 3600,
+          "expect": "mouse"
+        },
+        "directTap": {
+          "frames": 2400,
+          "warpBy": 600,
+          "points": [
+            {
+              "x": 4,
+              "y": 4,
+              "screens": [
+                "38758880d4c4038f"
+              ],
+              "selectedBy": 120
+            },
+            {
+              "x": 315,
+              "y": 4,
+              "screens": [
+                "36f6bda4583e35aa"
+              ],
+              "selectedBy": 120
+            },
+            {
+              "x": 4,
+              "y": 195,
+              "screens": [
+                "c2a45b060402eb37"
+              ],
+              "selectedBy": 120
+            },
+            {
+              "x": 160,
+              "y": 100,
+              "screens": [
+                "d5d4115885178f10"
+              ],
+              "selectedBy": 120
+            },
+            {
+              "x": 315,
+              "y": 195,
+              "screens": [
+                "400b80bff67d08fd"
+              ],
+              "selectedBy": 120
+            }
+          ],
+          "tolerance": 0,
+          "ownPointer": true
+        }
+      }
     }
   ]
 }

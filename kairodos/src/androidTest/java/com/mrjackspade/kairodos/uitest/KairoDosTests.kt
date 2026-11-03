@@ -27,6 +27,11 @@ object KairoDosApp : AppUnderTest() {
     override val biosTitle: String? = null
     override val biosResource: String? = null
     override val bootGame = "Digger (1983) - Installer"
+    // Lemmings 2 reads the DOS mouse driver; Digger reads the keyboard (Kairo#104).
+    override val mouseGame = "Lemmings 2 - The Tribes (1993) - Installer"
+    // Its launch menu (run.bat) waits for a sound card: 2 is the Sound Blaster.
+    override val mouseGameKeys = listOf(android.view.KeyEvent.KEYCODE_2)
+    override val keyboardGame = "Digger (1983) - Installer"
     // Its first launch installs it; it runs as the installed game.
     override val runningTitle = "Digger (1983)"
     override val separateGames = listOf("Digger (1983) - Installer", "Alley Cat - Installer")
