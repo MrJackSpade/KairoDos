@@ -89,6 +89,39 @@
           "state": false
         }
       }
+    },
+    {
+      "name": "DOS clock",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/digger.conf": "app:core/test/dos/digger.conf",
+        "dos/prompt.conf": "app:core/test/dos/prompt.conf",
+        "dos/clock-auto.conf": "app:core/test/dos/clock-auto.conf",
+        "dos/clock-max.conf": "app:core/test/dos/clock-max.conf"
+      },
+      "media": [
+        "app:core/test/dos/timing"
+      ],
+      "settings": {
+        "config": "home:dos/clock-auto.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "clock": {
+          "setting": "config",
+          "values": [
+            "home:dos/clock-auto.conf",
+            "home:dos/clock-max.conf"
+          ],
+          "doneBy": 7200,
+          "ratio": 0.45,
+          "margin": 0.45,
+          "screens": [
+            "7d84972bd008a9e7"
+          ]
+        }
+      }
     }
   ]
 }
