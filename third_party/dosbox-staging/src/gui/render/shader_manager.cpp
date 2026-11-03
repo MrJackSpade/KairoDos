@@ -7,6 +7,7 @@
 #include <cassert>
 #include <fstream>
 #include <regex>
+#include <sstream>
 #include <unordered_map>
 
 #include <SDL.h>

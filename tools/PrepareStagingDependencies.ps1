@@ -1,6 +1,9 @@
 # Builds pinned Android libraries from the corresponding source shipped with KairoDos, for -Abi:
-# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114).
-param([string] $AndroidSdk, [switch] $VerifyOnly, [ValidateSet('arm64-v8a', 'x86_64')][string] $Abi = 'arm64-v8a')
+# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114);
+# windows-host is the shared PC boot test's Windows build (KairoDos#140), with llvm-mingw.
+param([string] $AndroidSdk, [switch] $VerifyOnly,
+    [ValidateSet('arm64-v8a', 'x86_64', 'windows-host')][string] $Abi = 'arm64-v8a',
+    [string] $LlvmMingw = 'F:/tools/llvm-mingw-20261006-ucrt-x86_64')
 $ErrorActionPreference = 'Stop'
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $sourceRoot = Join-Path $projectRoot 'third_party/staging-deps'
@@ -24,14 +27,20 @@ if (-not $AndroidSdk) {
     if (-not $AndroidSdk) { $AndroidSdk = $env:ANDROID_SDK_ROOT }
     if (-not $AndroidSdk -and $IsWindows) { $AndroidSdk = 'D:\android-sdk' }
 }
-$ndk = Join-Path $AndroidSdk "ndk/$($versions.ndk)"
-if (-not (Test-Path -LiteralPath $ndk)) { throw "Android NDK not found: $ndk" }
+if ($Abi -eq 'windows-host') {
+    $mingwBin = Join-Path $LlvmMingw 'bin'
+    if (-not (Test-Path -LiteralPath (Join-Path $mingwBin 'x86_64-w64-mingw32-gcc.exe'))) { throw "llvm-mingw not found: $LlvmMingw" }
+    $env:PATH = "$mingwBin;$env:PATH"
+} else {
+    $ndk = Join-Path $AndroidSdk "ndk/$($versions.ndk)"
+    if (-not (Test-Path -LiteralPath $ndk)) { throw "Android NDK not found: $ndk" }
+}
 $buildRoot = Join-Path $projectRoot '.downloads/staging-deps'
 $toolRoot = Join-Path $buildRoot 'vcpkg'
 $downloads = Join-Path $buildRoot 'downloads'
 $prefix = Join-Path $buildRoot 'installed'
 # The triplet of each ABI (third_party/staging-deps/triplets); backend-dos reads installed/<triplet>.
-$triplet = @{ 'arm64-v8a' = 'arm64-kairo-android'; 'x86_64' = 'x64-kairo-android' }[$Abi]
+$triplet = @{ 'arm64-v8a' = 'arm64-kairo-android'; 'x86_64' = 'x64-kairo-android'; 'windows-host' = 'x64-kairo-mingw' }[$Abi]
 New-Item -ItemType Directory -Force -Path $toolRoot, $downloads | Out-Null
 if (-not (Test-Path -LiteralPath (Join-Path $toolRoot 'scripts/vcpkg-tools.json'))) {
     & tar -xzf (Join-Path $sourceRoot 'sources/vcpkg-6283825.tar.gz') -C $toolRoot --strip-components 1
@@ -50,7 +59,7 @@ if (-not (Test-Path -LiteralPath $executable) -or (Get-Sha256 $executable) -ne $
     if ((Get-Sha256 $executable) -ne $tool.digest.Substring(7)) { throw 'Build tool digest mismatch' }
 }
 if (-not $IsWindows) { & chmod +x $executable }
-$env:ANDROID_NDK_HOME = $ndk
+if ($ndk) { $env:ANDROID_NDK_HOME = $ndk }
 $env:VCPKG_ROOT = $toolRoot
 $env:VCPKG_DOWNLOADS = $downloads
 # Classic mode otherwise reports an already-installed port as satisfied even
@@ -71,4 +80,4 @@ if (-not (Test-Path -LiteralPath $speexStamp) -or
     --overlay-ports (Join-Path $sourceRoot 'ports') --x-install-root $prefix
 if ($LASTEXITCODE -ne 0) { throw "Staging dependency build failed ($LASTEXITCODE)" }
 Set-Content -LiteralPath $speexStamp -Value $speexSignature
-Write-Host "Android dependency prefix: $prefix/$triplet"
+Write-Host "Dependency prefix: $prefix/$triplet"

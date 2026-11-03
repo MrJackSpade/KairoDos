@@ -5,10 +5,12 @@
 // at the start of every emulated frame, so the host runs it a frame at a time, and every call into
 // it below is made while the host has the turn.
 
+#if defined(__ANDROID__)
 #include <android/log.h>
-#include <dlfcn.h>
+#endif
 
 #include <array>
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <memory>
@@ -16,6 +18,7 @@
 #include <vector>
 
 #include "kairo/emulator_turns.h"
+#include "kairo/fresh_library.h"
 #include "kairo/machine_core.h"
 #include "kairo/thread_priority.h"
 #include "staging_bridge.h"
@@ -36,15 +39,24 @@ constexpr int kJoystickControls = 24;
 // NativeMachine lists the lock keys: Caps Lock, Num Lock, Scroll Lock.
 constexpr std::array<int, 3> kLockFlags = {0x40, 0x20, 0x10};
 
+// Staging's library as the app packages it, and as the shared PC boot test's Windows build puts it
+// beside the test (KairoDos#140).
+#if defined(_WIN32)
+constexpr const char *kStagingLibrary = "libdosbox_staging.dll";
+#else
+constexpr const char *kStagingLibrary = "libdosbox_staging.so";
+#endif
+
 // One run of Staging's library. Each run loads its own copy, and unloads it after, so a restart or
-// the next game starts from Staging's initial globals (its shutdown flag among them).
+// the next game starts from Staging's initial globals (its shutdown flag among them)
+// (kairo/fresh_library.h).
 class Staging {
 public:
     static std::unique_ptr<Staging> open(std::string &error) {
         std::unique_ptr<Staging> staging(new Staging());
-        staging->handle_ = dlopen("libdosbox_staging.so", RTLD_NOW | RTLD_LOCAL);
-        if (!staging->handle_) {
-            error = std::string("Could not load DOSBox Staging: ") + dlerror();
+        staging->library_ = kairo::FreshLibrary::load(kStagingLibrary, error);
+        if (!staging->library_) {
+            error = "Could not load DOSBox Staging: " + error;
             return nullptr;
         }
         if (!staging->bind(staging->run, "kairo_staging_run", error) ||
@@ -66,10 +78,8 @@ public:
         return staging;
     }
 
-    ~Staging() {
-        // Staging joins its own threads before kairo_staging_run returns.
-        if (handle_) dlclose(handle_);
-    }
+    // The library unloads with this object: Staging joins its own threads before kairo_staging_run
+    // returns.
 
     decltype(&kairo_staging_run) run = nullptr;
     decltype(&kairo_staging_key) key = nullptr;
@@ -91,12 +101,12 @@ private:
     Staging() = default;
 
     template <typename T> bool bind(T &target, const char *name, std::string &error) {
-        target = reinterpret_cast<T>(dlsym(handle_, name));
+        target = reinterpret_cast<T>(library_->symbol(name));
         if (!target) error = std::string("Missing DOSBox Staging symbol: ") + name;
         return target != nullptr;
     }
 
-    void *handle_ = nullptr;
+    std::unique_ptr<kairo::FreshLibrary> library_;
 };
 
 // The Disks page's drives, by media slot (MainActivity.mediaSlots).
@@ -224,7 +234,11 @@ public:
         const std::string failure = staging_->media(kMediaDrives[slot], path.c_str());
         if (!failure.empty()) {
             // The machine runs on with the drive as it was; the Disks page says the change failed.
+#if defined(__ANDROID__)
             __android_log_print(ANDROID_LOG_ERROR, "KairoDos", "Disks: %s", failure.c_str());
+#else
+            std::fprintf(stderr, "KairoDos: Disks: %s\n", failure.c_str());
+#endif
             return kFailed;
         }
         media_[slot] = path;

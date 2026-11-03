@@ -4883,7 +4883,8 @@ extern "C" {
 // !
 // =======================================================================//
 
-    #ifdef _WIN32
+    // KairoDos: mingw's time.h has clock_gettime (the shared PC boot test's Windows build).
+    #if defined(_WIN32) && !defined(__MINGW32__)
         static LARGE_INTEGER getFILETIMEoffset() {
             SYSTEMTIME s;
             FILETIME f;

@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(kairo_staging VERSION 0.83.0 LANGUAGES C CXX)
 
-# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114).
-if(NOT ANDROID OR NOT (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
-    message(FATAL_ERROR "KairoDos builds for Android arm64-v8a, or x86_64 for the test emulator")
+# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114); a Windows
+# host build is the shared PC boot test's (KairoDos#140), which kairodos's CMake adds.
+if(ANDROID)
+    if(NOT (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+        message(FATAL_ERROR "KairoDos builds for Android arm64-v8a, or x86_64 for the test emulator")
+    endif()
+elseif(NOT (WIN32 AND CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64|x86_64"))
+    message(FATAL_ERROR "KairoDos's host build is the shared PC boot test's, on x86-64 Windows")
 endif()
 option(KAIRO_GUEST_PROFILE "Record translated guest code metadata (Debug only)" OFF)
 option(KAIRO_OPL_WORKER "Ordered catch-up synthesis for ordinary OPL modes" ON)
@@ -67,6 +72,15 @@ set(C_OPENGL ON)
 set(OPT_TESTS OFF)
 set(OPT_MANYMOUSE OFF)
 set(HAS_STACK_INCLUDES OFF CACHE BOOL "Android API 26 lacks execinfo backtrace" FORCE)
+if(WIN32)
+    # The shared PC boot test's Windows build (KairoDos#140): what Staging's own CMake sets for
+    # Windows (dosbox_config.h), Windows 10's API, which cpp-httplib and its file calls need, and a
+    # 64-bit off_t (misc/cross.h).
+    set(DOSBOX_PLATFORM_WINDOWS ON)
+    set(NOMINMAX ON)
+    set(_USE_MATH_DEFINES ON)
+    add_compile_definitions(_WIN32_WINNT=0x0A00 WINVER=0x0A00 _FILE_OFFSET_BITS=64)
+endif()
 
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
@@ -111,7 +125,9 @@ set(SDL_MISC OFF CACHE BOOL "" FORCE)
 set(SDL_KAIRO_EMBEDDED ON)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/staging-deps/sdl2" sdl2)
 target_compile_definitions(SDL2-static PRIVATE SDL_KAIRO_EMBEDDED)
-target_sources(SDL2-static PRIVATE src/main/cpp/sdl_embedded_android.c)
+if(ANDROID)
+    target_sources(SDL2-static PRIVATE src/main/cpp/sdl_embedded_android.c)
+endif()
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(iir CONFIG REQUIRED)
 find_package(PNG REQUIRED)
@@ -153,12 +169,26 @@ set_target_properties(dosbox PROPERTIES OUTPUT_NAME dosbox_staging)
 # stubs. Retain weak/data binding for C++ object identity and shared dependencies
 # except the explicitly core-owned paging object in paging.h;
 # do not replace this with broad -Bsymbolic. See docs/symbol-binding-evaluation.md.
-target_link_options(dosbox PRIVATE "-Wl,-Bsymbolic-non-weak-functions")
+if(ANDROID)
+    target_link_options(dosbox PRIVATE "-Wl,-Bsymbolic-non-weak-functions")
+endif()
 add_library(libdosboxcommon STATIC)
 add_subdirectory("${STAGING_SOURCE}/src" staging)
+if(WIN32)
+    # Staging's Windows program resources (its icon and manifest, platform/windows): the shared PC
+    # boot test loads this as a library, which takes neither.
+    get_target_property(dosbox_sources dosbox SOURCES)
+    list(FILTER dosbox_sources EXCLUDE REGEX "winres\\.rc$|dosbox\\.manifest$")
+    set_property(TARGET dosbox PROPERTY SOURCES ${dosbox_sources})
+    # The host API's exports, listed (staging_exports.def).
+    target_sources(dosbox PRIVATE src/main/cpp/staging_exports.def)
+endif()
 target_link_libraries(libdosboxcommon PRIVATE
     $<IF:$<TARGET_EXISTS:iir::iir>,iir::iir,iir::iir_static>
     loguru libdecoders libglad PkgConfig::SPEEXDSP
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
-target_link_libraries(dosbox PRIVATE libdosboxcommon libglad dl log
+target_link_libraries(dosbox PRIVATE libdosboxcommon libglad
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+if(ANDROID)
+    target_link_libraries(dosbox PRIVATE dl log)
+endif()

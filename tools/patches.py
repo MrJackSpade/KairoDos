@@ -381,7 +381,13 @@ static void cache_close(void) {
 		delete page;
 	}
 	if (cache_code_start_ptr) {
-#if defined(HAVE_MMAP)
+		// Released as cache_init allocated it: VirtualAlloc on Windows (the shared PC boot
+		// test's build, KairoDos#140), mmap, or malloc.
+#if defined(WIN32)
+		if (!VirtualFree(cache_code_start_ptr, 0, MEM_RELEASE)) {
+			LOG_WARNING("DYNCACHE: Could not release session cache: Windows error %lu", GetLastError());
+		}
+#elif defined(HAVE_MMAP)
 		if (munmap(cache_code_start_ptr, cache_code_size) != 0) {
 			LOG_WARNING("DYNCACHE: Could not release session cache: %s", strerror(errno));
 		}
@@ -1348,5 +1354,21 @@ std_fs::path resolve_home(const std::string &str) noexcept
 		return str;
 
 '''),
+    ],
+    # The shared PC boot test's Windows build (KairoDos#140): mingw's own clock_gettime, and the
+    # standard headers Android's libc++ reached through others.
+    'staging-windows-host': [
+        ('dosbox-staging/src/libs/enet/include/enet.h',
+         '    #ifdef _WIN32\n        static LARGE_INTEGER getFILETIMEoffset() {\n',
+         "    // KairoDos: mingw's time.h has clock_gettime (the shared PC boot test's Windows build).\n    #if defined(_WIN32) && !defined(__MINGW32__)\n        static LARGE_INTEGER getFILETIMEoffset() {\n"),
+        ('dosbox-staging/src/dosbox.h',
+         '#include <functional>\n#include <memory>\n',
+         '#include <functional>\n#include <memory>\n#include <string>\n#include <vector>\n'),
+        ('dosbox-staging/src/dos/dos_code_page.cpp',
+         '#include <fstream>\n#include <optional>\n',
+         '#include <fstream>\n#include <iterator>\n#include <optional>\n'),
+        ('dosbox-staging/src/gui/render/shader_manager.cpp',
+         '#include <regex>\n#include <unordered_map>\n',
+         '#include <regex>\n#include <sstream>\n#include <unordered_map>\n'),
     ],
 }

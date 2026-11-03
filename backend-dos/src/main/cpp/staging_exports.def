@@ -1,0 +1,19 @@
+; The backend library's host API (staging_bridge.h) on Windows, the shared PC boot test's build
+; (KairoDos#140): two of its functions are defined in Staging's mixer, an archive member whose own
+; export directives the linker does not take, so the exports are listed here.
+EXPORTS
+    kairo_staging_run
+    kairo_staging_key
+    kairo_staging_joypad
+    kairo_staging_mouse_move
+    kairo_staging_mouse_point
+    kairo_staging_mouse_button
+    kairo_staging_read_audio
+    kairo_staging_audio_rate
+    kairo_staging_guest_frames
+    kairo_staging_guest_input
+    kairo_staging_cpu
+    kairo_staging_lock_flags
+    kairo_staging_fast_forward
+    kairo_staging_list_directory
+    kairo_staging_media

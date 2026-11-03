@@ -17,7 +17,9 @@
 #include "hardware/timer.h"
 #include "hardware/video/vga.h"
 #include "libs/loguru/loguru.hpp"
+#if defined(__ANDROID__)
 #include <android/log.h>
+#endif
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -223,6 +225,10 @@ SDL_Scancode scancode(int code) {
         case 316: return SDL_SCANCODE_PRINTSCREEN;
         case 318: case 19: return SDL_SCANCODE_PAUSE;
         case 319: return SDL_SCANCODE_APPLICATION;
+        // The ISO keyboard's key beside left Shift (RETROK_OEM_102), and the Brazilian and Japanese
+        // keyboards' key beside right Shift (Staging's abnt1; KairoDos's own code, DosKeys).
+        case 323: return SDL_SCANCODE_NONUSBACKSLASH;
+        case 400: return SDL_SCANCODE_INTERNATIONAL1;
         default: return SDL_GetScancodeFromKey(code);
     }
 }
@@ -248,11 +254,13 @@ extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     SDL_setenv("XDG_DATA_HOME", resources, 1);
     SDL_SetMainReady();
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+#if defined(__ANDROID__)
     loguru::add_callback("android", [](void*, const loguru::Message& message) {
         __android_log_print(message.verbosity <= loguru::Verbosity_ERROR ? ANDROID_LOG_ERROR :
             message.verbosity == loguru::Verbosity_WARNING ? ANDROID_LOG_WARN : ANDROID_LOG_INFO,
             "DOSBoxStaging", "%s%s", message.prefix, message.message);
     }, nullptr, loguru::Verbosity_INFO);
+#endif
     std::vector<std::string> args{"dosbox-staging", "--noprimaryconf", "--nolocalconf",
         "--working-dir", resources, "--conf", config};
     std::vector<char*> argv;

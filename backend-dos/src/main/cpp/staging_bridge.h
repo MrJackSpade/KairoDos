@@ -48,40 +48,49 @@ struct KairoStagingCpu {
 // character outside that code page; MOUNT, IMGMOUNT and BOOT resolve a reference instead.
 #define KAIRO_HOST_PATH_PREFIX "kairo-host:"
 
+// The host API (dos_core.cpp loads it by name): exported from the backend library. On Windows (the
+// shared PC boot test, KairoDos#140) a DLL exports only what is marked dllexport once a library
+// linked into it (static SDL) marks its own.
+#if defined(_WIN32)
+#define KAIRO_STAGING_API __declspec(dllexport)
+#else
+#define KAIRO_STAGING_API __attribute__((visibility("default")))
+#endif
+
 extern "C" {
 // Runs DOSBox Staging on the calling thread until it ends: 0 when it ended cleanly.
 // [host_paths]: UTF-8 host paths the configuration's references name, [host_path_count] of them.
-int kairo_staging_run(const char* config, const char* config_dir,
+KAIRO_STAGING_API int kairo_staging_run(const char* config, const char* config_dir,
     const char* resources, const char* const* host_paths, size_t host_path_count,
     const KairoStagingCallbacks* callbacks);
-void kairo_staging_key(int code, bool pressed);
+KAIRO_STAGING_API void kairo_staging_key(int code, bool pressed);
 // Kairo's 24 joystick controls (JoystickInputRouter's order), 1 for each held.
-void kairo_staging_joypad(const uint8_t* buttons, size_t count);
+KAIRO_STAGING_API void kairo_staging_joypad(const uint8_t* buttons, size_t count);
 // Relative movement, by mouse counts.
-void kairo_staging_mouse_move(int dx, int dy);
+KAIRO_STAGING_API void kairo_staging_mouse_move(int dx, int dy);
 // Moves the pointer to (x, y) in 1/65536ths of the picture's width and height (direct touch).
-void kairo_staging_mouse_point(int x, int y);
+KAIRO_STAGING_API void kairo_staging_mouse_point(int x, int y);
 // Button 1 (left) or 2 (right).
-void kairo_staging_mouse_button(int button, bool down);
-int kairo_staging_read_audio(int16_t* samples, int frames);
-int kairo_staging_audio_rate();
+KAIRO_STAGING_API void kairo_staging_mouse_button(int button, bool down);
+KAIRO_STAGING_API int kairo_staging_read_audio(int16_t* samples, int frames);
+KAIRO_STAGING_API int kairo_staging_audio_rate();
 // Emulated frames since the run started, whether or not the picture changed: the
 // video callback sees only frames whose picture changed.
-uint64_t kairo_staging_guest_frames();
-void kairo_staging_guest_input(KairoStagingGuestInput* input);
-void kairo_staging_cpu(KairoStagingCpu* cpu);
+KAIRO_STAGING_API uint64_t kairo_staging_guest_frames();
+KAIRO_STAGING_API void kairo_staging_guest_input(KairoStagingGuestInput* input);
+KAIRO_STAGING_API void kairo_staging_cpu(KairoStagingCpu* cpu);
 // The BIOS keyboard flags at 0040:0017: bit 4 Scroll Lock, 5 Num Lock, 6 Caps Lock.
-int kairo_staging_lock_flags();
+KAIRO_STAGING_API int kairo_staging_lock_flags();
 /** Runs the guest as fast as it can while [enabled], as Staging's fast-forward hotkey does. */
-void kairo_staging_fast_forward(bool enabled);
+KAIRO_STAGING_API void kairo_staging_fast_forward(bool enabled);
 // Empty path lists mounted user drives; otherwise an absolute UTF-8 DOS directory. Result lives
 // until the next call: OK or ERROR on the first line, followed by D/F, a tab, and an absolute
 // UTF-8 DOS path.
-const char* kairo_staging_list_directory(const char* path);
+KAIRO_STAGING_API const char* kairo_staging_list_directory(const char* path);
 // Puts the host path [path] in drive [letter] (A, B or D), as MOUNT and IMGMOUNT would, between
 // frames: a folder, a CD image (.iso) on D, or a floppy image on A or B. An empty path
 // empties the drive. "" when done, else why not; the result lives until the next call.
-const char* kairo_staging_media(char letter, const char* path);
+KAIRO_STAGING_API const char* kairo_staging_media(char letter, const char* path);
 }
 
 // The host path [reference] names, or null when it is not a reference. Emulation thread.

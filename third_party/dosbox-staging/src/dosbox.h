@@ -12,6 +12,8 @@
 
 #include <functional>
 #include <memory>
+#include <string>
+#include <vector>
 
 // Project name, lower-case and without spaces
 #define DOSBOX_PROJECT_NAME "dosbox-staging"

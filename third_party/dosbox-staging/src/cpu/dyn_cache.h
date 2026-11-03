@@ -1084,7 +1084,13 @@ static void cache_close(void) {
 		delete page;
 	}
 	if (cache_code_start_ptr) {
-#if defined(HAVE_MMAP)
+		// Released as cache_init allocated it: VirtualAlloc on Windows (the shared PC boot
+		// test's build, KairoDos#140), mmap, or malloc.
+#if defined(WIN32)
+		if (!VirtualFree(cache_code_start_ptr, 0, MEM_RELEASE)) {
+			LOG_WARNING("DYNCACHE: Could not release session cache: Windows error %lu", GetLastError());
+		}
+#elif defined(HAVE_MMAP)
 		if (munmap(cache_code_start_ptr, cache_code_size) != 0) {
 			LOG_WARNING("DYNCACHE: Could not release session cache: %s", strerror(errno));
 		}

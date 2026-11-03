@@ -2730,6 +2730,9 @@ static void set_mixer_state(const MixerState new_state)
 }
 
 #ifdef KAIRO_STAGING
+// The host API's declarations (exported from the backend library, KAIRO_STAGING_API).
+#include "staging_bridge.h"
+
 // AudioTrack is the only consumer. SDL's dummy device remains paused, so its
 // timer cannot drain this queue or add a second, unsynchronised playback clock.
 static std::mutex kairo_audio_mutex;

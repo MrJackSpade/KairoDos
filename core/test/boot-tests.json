@@ -1,0 +1,52 @@
+{
+  "tests": [
+    {
+      "name": "Digger",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/digger.conf": "app:core/test/dos/digger.conf"
+      },
+      "media": [
+        "games/Digger (1983)/Digger83"
+      ],
+      "settings": {
+        "config": "home:dos/digger.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "boot": {
+          "frames": 1200,
+          "audio": true
+        },
+        "guestInput": {
+          "frames": 1800,
+          "expect": "keyboard"
+        },
+        "sessions": {
+          "frames": 600
+        }
+      }
+    },
+    {
+      "name": "Alley Cat",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/alley-cat.conf": "app:core/test/dos/alley-cat.conf"
+      },
+      "media": [
+        "games/Alley Cat (1984)/AlleyCat"
+      ],
+      "settings": {
+        "config": "home:dos/alley-cat.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "boot": {
+          "frames": 1200
+        }
+      }
+    }
+  ]
+}
