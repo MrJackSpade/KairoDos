@@ -5,7 +5,8 @@
       "firmware": {},
       "home": {
         "staging/resources": "app:third_party/dosbox-staging/resources",
-        "dos/digger.conf": "app:core/test/dos/digger.conf"
+        "dos/digger.conf": "app:core/test/dos/digger.conf",
+        "dos/prompt.conf": "app:core/test/dos/prompt.conf"
       },
       "media": [
         "games/Digger (1983)/Digger83"
@@ -24,7 +25,12 @@
           "expect": "keyboard"
         },
         "sessions": {
-          "frames": 600
+          "frames": 600,
+          "prompt": {
+            "settings": {
+              "config": "home:dos/prompt.conf"
+            }
+          }
         }
       }
     },
@@ -45,6 +51,42 @@
       "checks": {
         "boot": {
           "frames": 1200
+        }
+      }
+    },
+    {
+      "name": "DOS prompt locks",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/digger.conf": "app:core/test/dos/digger.conf",
+        "dos/prompt.conf": "app:core/test/dos/prompt.conf"
+      },
+      "media": [
+        "games/Digger (1983)/Digger83"
+      ],
+      "settings": {
+        "config": "home:dos/prompt.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "locks": {
+          "at": 600,
+          "keys": [
+            {
+              "code": 301,
+              "bit": 0
+            },
+            {
+              "code": 300,
+              "bit": 1
+            },
+            {
+              "code": 302,
+              "bit": 2
+            }
+          ],
+          "state": false
         }
       }
     }
