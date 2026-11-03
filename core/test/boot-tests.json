@@ -122,6 +122,27 @@
           ]
         }
       }
+    },
+    {
+      "name": "DOS mouse program",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/mouse.conf": "app:core/test/dos/mouse.conf"
+      },
+      "media": [
+        "app:core/test/dos/mouse"
+      ],
+      "settings": {
+        "config": "home:dos/mouse.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "guestInput": {
+          "frames": 600,
+          "expect": "mouse"
+        }
+      }
     }
   ]
 }
