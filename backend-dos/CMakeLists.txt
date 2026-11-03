@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(kairo_staging VERSION 0.83.0 LANGUAGES C CXX)
 
-if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
-    message(FATAL_ERROR "KairoDos currently supports Android ARM64")
+# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114).
+if(NOT ANDROID OR NOT (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+    message(FATAL_ERROR "KairoDos builds for Android arm64-v8a, or x86_64 for the test emulator")
 endif()
 option(KAIRO_GUEST_PROFILE "Record translated guest code metadata (Debug only)" OFF)
 option(KAIRO_OPL_WORKER "Ordered catch-up synthesis for ordinary OPL modes" ON)
@@ -49,7 +50,14 @@ add_compile_definitions(NDEBUG SDL_MAIN_HANDLED KAIRO_STAGING)
 set(STAGING_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dosbox-staging")
 set(DOSBOX_VERSION "0.83.0")
 set(BUILD_GIT_HASH "7b40053-kairo")
-set(C_TARGET_CPU_ARM ON)
+# The device's recompiler, DYNREC, on either ABI: the emulator runs the same translation (with its
+# x86-64 backend) and the same portable FPU and aligned memory paths as the device, not Staging's
+# x86-only dynamic core, so what the emulator checks is what players run.
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+    set(C_TARGET_CPU_ARM ON)
+else()
+    set(C_TARGET_CPU_X86 ON)
+endif()
 set(C_DYNREC ON)
 set(C_PER_PAGE_W_OR_X ON)
 set(C_MT32EMU ON)

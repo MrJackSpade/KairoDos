@@ -31,8 +31,9 @@ int KairoStagingMain(int argc, char** argv);
 void KairoSetFastForward(bool enabled);  // dosbox.cpp (Kairo)
 void KairoHostHeld(int64_t micros);       // dosbox.cpp (Kairo)
 
-static_assert(C_DYNREC && C_TARGET_CPU_ARM,
-    "KairoDos requires the ARM64 dynamic recompiler");
+// The device's ARM64 recompiler, or the same DYNREC on x86-64 for the test emulator (Kairo#114).
+static_assert(C_DYNREC && (C_TARGET_CPU_ARM || C_TARGET_CPU_X86),
+    "KairoDos requires the DYNREC dynamic recompiler");
 KairoStagingCpuCounters kairo_staging_cpu_counters{};
 
 // Read the guest filesystem, rather than the archive's host paths: this also

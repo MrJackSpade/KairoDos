@@ -1,5 +1,6 @@
-# Builds pinned Android libraries from the corresponding source shipped with KairoDos.
-param([string] $AndroidSdk, [switch] $VerifyOnly)
+# Builds pinned Android libraries from the corresponding source shipped with KairoDos, for -Abi:
+# arm64-v8a ships; x86_64 is for the test emulator (shared tools/emulator.ps1, Kairo#114).
+param([string] $AndroidSdk, [switch] $VerifyOnly, [ValidateSet('arm64-v8a', 'x86_64')][string] $Abi = 'arm64-v8a')
 $ErrorActionPreference = 'Stop'
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $sourceRoot = Join-Path $projectRoot 'third_party/staging-deps'
@@ -29,6 +30,8 @@ $buildRoot = Join-Path $projectRoot '.downloads/staging-deps'
 $toolRoot = Join-Path $buildRoot 'vcpkg'
 $downloads = Join-Path $buildRoot 'downloads'
 $prefix = Join-Path $buildRoot 'installed'
+# The triplet of each ABI (third_party/staging-deps/triplets); backend-dos reads installed/<triplet>.
+$triplet = @{ 'arm64-v8a' = 'arm64-kairo-android'; 'x86_64' = 'x64-kairo-android' }[$Abi]
 New-Item -ItemType Directory -Force -Path $toolRoot, $downloads | Out-Null
 if (-not (Test-Path -LiteralPath (Join-Path $toolRoot 'scripts/vcpkg-tools.json'))) {
     & tar -xzf (Join-Path $sourceRoot 'sources/vcpkg-6283825.tar.gz') -C $toolRoot --strip-components 1
@@ -54,18 +57,18 @@ $env:VCPKG_DOWNLOADS = $downloads
 # when its overlay changed. Remove only this generated package before rebuilding;
 # vcpkg's binary cache still keys the replacement on the complete recipe ABI.
 $speexPort = Join-Path $sourceRoot 'ports/speexdsp'
-$speexStamp = Join-Path $buildRoot 'speex-overlay.sha256'
+$speexStamp = Join-Path $buildRoot $(if ($Abi -eq 'arm64-v8a') { 'speex-overlay.sha256' } else { "speex-overlay-$triplet.sha256" })
 $speexSignature = (Get-ChildItem -LiteralPath $speexPort -File | Sort-Object Name |
     ForEach-Object { "$($_.Name):$(Get-Sha256 $_.FullName)" }) -join "`n"
 if (-not (Test-Path -LiteralPath $speexStamp) -or
     (Get-Content -LiteralPath $speexStamp -Raw).TrimEnd() -ne $speexSignature) {
-    & $executable remove 'speexdsp:arm64-kairo-android' --classic --disable-metrics --x-install-root $prefix
+    & $executable remove "speexdsp:$triplet" --classic --disable-metrics --x-install-root $prefix
     if ($LASTEXITCODE -ne 0) { throw 'Could not refresh the generated SpeexDSP overlay package' }
 }
 & $executable install asio iir1 libmt32emu libpng opusfile fluidsynth sdl2 sdl2-image speexdsp zlib-ng `
-    --classic --disable-metrics --triplet arm64-kairo-android `
+    --classic --disable-metrics --triplet $triplet `
     --overlay-triplets (Join-Path $sourceRoot 'triplets') `
     --overlay-ports (Join-Path $sourceRoot 'ports') --x-install-root $prefix
 if ($LASTEXITCODE -ne 0) { throw "Staging dependency build failed ($LASTEXITCODE)" }
 Set-Content -LiteralPath $speexStamp -Value $speexSignature
-Write-Host "Android dependency prefix: $prefix/arm64-kairo-android"
+Write-Host "Android dependency prefix: $prefix/$triplet"
