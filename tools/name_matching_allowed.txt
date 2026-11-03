@@ -1,0 +1,2 @@
+# Run-time uses of a game's name that only show it (shared/tools/check_name_matching.py, Kairo#105).
+kairodos/src/main/java/com/mrjackspade/kairodos/DosCatalog.kt|if (fileName.endsWith(INSTALLER, true) && !title.endsWith(INSTALLER, true))|an eXoDOS installer's title says it is the installer, as its file name does; nothing is picked by it
