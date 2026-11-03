@@ -46,9 +46,7 @@
     <!-- EN: %1$d button %2$d -->
     <string name="joystick_button">%1$d, кнопка %2$d</string>
     <!-- EN: Function -->
-    <string name="keyboard_function">Функции</string>
     <!-- EN: Keypad -->
-    <string name="keyboard_keypad">Цифровой блок</string>
     <!-- EN: Loading -->
     <string name="session_loading">Загрузка</string>
     <!-- EN: Failed -->

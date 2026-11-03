@@ -21,7 +21,7 @@ internal object DosControllerBindings {
                 id to UiText.res(R.string.joystick_button, stick, index + 1)
             }
     }
-    private val keys = DosKeyboardLayout.value.pages.flatMap { it.rows }
+    private val keys = DosKeys.layout.pages.flatMap { it.rows }
         .flatten().distinctBy { it.code }.sortedBy { it.code }
     private val keyCodes = keys.map { it.code }
     // Keypad = (272) has no IBM key and reaches no guest key, so it is not offered. Earlier
@@ -42,10 +42,10 @@ internal object DosControllerBindings {
             316 -> "Print Screen"
             else -> keys.firstOrNull { it.code == code }?.label ?: "Key $code"
         }
-    }, DosKeyboardLayout.value.modifiers,
+    }, DosKeys.layout.modifiers,
         joystickTargets,
         UiText.res(R.string.joystick_help),
-        ControllerGuestSpec.STANDARD_ACTIONS, DosKeyboardLayout.value,
+        ControllerGuestSpec.STANDARD_ACTIONS, DosKeys.layout,
         listOf(JoystickPort(UiText.res(R.string.joystick_port, 1), "joy1up", "joy1down", "joy1left", "joy1right", listOf("b", "y")),
             JoystickPort(UiText.res(R.string.joystick_port, 2), "joy2up", "joy2down", "joy2left", "joy2right", listOf("a", "x"))))
     val codec = ControllerBindingsCodec({ it in storedKeyCodes }, joystick,

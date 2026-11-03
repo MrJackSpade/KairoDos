@@ -69,7 +69,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         private const val NEW_GAME = "staging/new-game.txt"
         /** The Version choice that runs the preset with the player's own DOSBox settings and startup commands. */
         private const val CUSTOM_VERSION = "custom"
-        /** The lock keys' codes (mapKey), in the order dos_core.cpp reports them. */
+        /** The lock keys' codes (DosKeys), in the order dos_core.cpp reports them. */
         private val LOCK_KEYS = listOf(301, 300, 302)
         /**
          * How often a session checks its picture's size (followVideoSize) and a Browse launch whether
@@ -101,9 +101,9 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
 
     // Input ------------------------------------------------------------------------------------------
 
-    override val keyboard = DosKeyboardLayout.value
+    override val keyboard = DosKeys.layout
     override val maxKeyCode = 341
-    override fun guestKey(androidKey: Int) = mapKey(androidKey)
+    override fun guestKey(androidKey: Int) = DosKeys.fromAndroid(androidKey)
     override val controllerSpec = DosControllerBindings.spec
     override val bindingsCodec = DosControllerBindings.codec
     override val joystickControls: List<String> get() = DosControllerBindings.joystick
@@ -1079,65 +1079,4 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         }
     }
 
-    private fun mapKey(code: Int): Int? = when (code) {
-        in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> 'a'.code + code - KeyEvent.KEYCODE_A
-        in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9 -> '0'.code + code - KeyEvent.KEYCODE_0
-        KeyEvent.KEYCODE_ENTER -> 13
-        KeyEvent.KEYCODE_DEL -> 8
-        KeyEvent.KEYCODE_ESCAPE -> 27
-        KeyEvent.KEYCODE_TAB -> 9
-        KeyEvent.KEYCODE_SPACE -> 32
-        KeyEvent.KEYCODE_APOSTROPHE -> 39
-        KeyEvent.KEYCODE_BACKSLASH -> 92
-        KeyEvent.KEYCODE_COMMA -> 44
-        KeyEvent.KEYCODE_EQUALS -> 61
-        KeyEvent.KEYCODE_GRAVE -> 96
-        KeyEvent.KEYCODE_LEFT_BRACKET -> 91
-        KeyEvent.KEYCODE_MINUS -> 45
-        KeyEvent.KEYCODE_PERIOD -> 46
-        KeyEvent.KEYCODE_RIGHT_BRACKET -> 93
-        KeyEvent.KEYCODE_SEMICOLON -> 59
-        KeyEvent.KEYCODE_SLASH -> 47
-        KeyEvent.KEYCODE_FORWARD_DEL -> 127
-        KeyEvent.KEYCODE_INSERT -> 277
-        KeyEvent.KEYCODE_MOVE_HOME -> 278
-        KeyEvent.KEYCODE_MOVE_END -> 279
-        KeyEvent.KEYCODE_PAGE_UP -> 280
-        KeyEvent.KEYCODE_PAGE_DOWN -> 281
-        KeyEvent.KEYCODE_DPAD_UP -> 273
-        KeyEvent.KEYCODE_DPAD_DOWN -> 274
-        KeyEvent.KEYCODE_DPAD_RIGHT -> 275
-        KeyEvent.KEYCODE_DPAD_LEFT -> 276
-        KeyEvent.KEYCODE_SHIFT_LEFT -> 304
-        KeyEvent.KEYCODE_SHIFT_RIGHT -> 303
-        KeyEvent.KEYCODE_CTRL_LEFT -> 306
-        KeyEvent.KEYCODE_CTRL_RIGHT -> 305
-        KeyEvent.KEYCODE_ALT_LEFT -> 308
-        KeyEvent.KEYCODE_ALT_RIGHT -> 307
-        KeyEvent.KEYCODE_F1 -> 282
-        KeyEvent.KEYCODE_F2 -> 283
-        KeyEvent.KEYCODE_F3 -> 284
-        KeyEvent.KEYCODE_F4 -> 285
-        KeyEvent.KEYCODE_F5 -> 286
-        KeyEvent.KEYCODE_F6 -> 287
-        KeyEvent.KEYCODE_F7 -> 288
-        KeyEvent.KEYCODE_F8 -> 289
-        KeyEvent.KEYCODE_F9 -> 290
-        KeyEvent.KEYCODE_F10 -> 291
-        KeyEvent.KEYCODE_F11 -> 292
-        KeyEvent.KEYCODE_F12 -> 293
-        in KeyEvent.KEYCODE_NUMPAD_0..KeyEvent.KEYCODE_NUMPAD_9 -> 256 + code - KeyEvent.KEYCODE_NUMPAD_0
-        KeyEvent.KEYCODE_NUMPAD_DOT -> 266
-        KeyEvent.KEYCODE_NUMPAD_DIVIDE -> 267
-        KeyEvent.KEYCODE_NUMPAD_MULTIPLY -> 268
-        KeyEvent.KEYCODE_NUMPAD_SUBTRACT -> 269
-        KeyEvent.KEYCODE_NUMPAD_ADD -> 270
-        KeyEvent.KEYCODE_NUMPAD_ENTER -> 271
-        KeyEvent.KEYCODE_NUM_LOCK -> 300
-        KeyEvent.KEYCODE_CAPS_LOCK -> 301
-        KeyEvent.KEYCODE_SCROLL_LOCK -> 302
-        KeyEvent.KEYCODE_SYSRQ -> 316
-        KeyEvent.KEYCODE_BREAK -> 19
-        else -> null
-    }
 }

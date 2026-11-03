@@ -46,9 +46,7 @@
     <!-- EN: %1$d button %2$d -->
     <string name="joystick_button">%1$d ボタン %2$d</string>
     <!-- EN: Function -->
-    <string name="keyboard_function">ファンクション</string>
     <!-- EN: Keypad -->
-    <string name="keyboard_keypad">テンキー</string>
     <!-- EN: Loading -->
     <string name="session_loading">読み込み中</string>
     <!-- EN: Failed -->

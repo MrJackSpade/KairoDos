@@ -28,7 +28,7 @@ object DosCatalog : LayeredGameCatalog.Schema {
     override val selfHostedArt = "/MrJackSpade/KairoDos/main/catalog/artwork/art/catalog/"
     /** A game's files (manifest), or a single disk or disc image (file), as a set's disks and drives name it. */
     override val contentId = Regex("sha256-dos-(?:manifest|file)-v1:[0-9a-f]{64}")
-    /** The PC keyboard's Esc, and its Enter and keypad Enter (DosKeyboardLayout). */
+    /** The PC keyboard's Esc, and its Enter and keypad Enter (DosKeys). */
     override val escapeKeys = setOf(27)
     override val enterKeys = setOf(13, 271)
     override val mediaExtensions = Regex("\\.(?:zip|dosz)$", RegexOption.IGNORE_CASE)

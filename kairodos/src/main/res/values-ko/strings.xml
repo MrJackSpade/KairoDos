@@ -46,9 +46,7 @@
     <!-- EN: %1$d button %2$d -->
     <string name="joystick_button">%1$d 버튼 %2$d</string>
     <!-- EN: Function -->
-    <string name="keyboard_function">기능</string>
     <!-- EN: Keypad -->
-    <string name="keyboard_keypad">키패드</string>
     <!-- EN: Loading -->
     <string name="session_loading">불러오는 중</string>
     <!-- EN: Failed -->
