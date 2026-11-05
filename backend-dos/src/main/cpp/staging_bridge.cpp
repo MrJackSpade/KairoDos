@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -395,4 +396,10 @@ extern "C" void kairo_staging_mouse_point(int x, int y) {
 extern "C" void kairo_staging_mouse_button(int button, bool down) {
     if (button == 1) MOUSE_EventButton(MouseButtonId::Left, down);
     else if (button == 2) MOUSE_EventButton(MouseButtonId::Right, down);
+    else if (button == 3) MOUSE_EventButton(MouseButtonId::Middle, down);
+    else throw std::invalid_argument("No mouse button " + std::to_string(button));
+}
+
+extern "C" void kairo_staging_mouse_wheel(int notches) {
+    MOUSE_EventWheel(float(notches));
 }

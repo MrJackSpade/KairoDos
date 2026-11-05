@@ -70,8 +70,10 @@ KAIRO_STAGING_API void kairo_staging_joypad(const uint8_t* buttons, size_t count
 KAIRO_STAGING_API void kairo_staging_mouse_move(int dx, int dy);
 // Moves the pointer to (x, y) in 1/65536ths of the picture's width and height (direct touch).
 KAIRO_STAGING_API void kairo_staging_mouse_point(int x, int y);
-// Button 1 (left) or 2 (right).
+// Button 1 (left), 2 (right) or 3 (middle).
 KAIRO_STAGING_API void kairo_staging_mouse_button(int button, bool down);
+// Wheel notches: positive toward the player (down), negative away from the player (up).
+KAIRO_STAGING_API void kairo_staging_mouse_wheel(int notches);
 KAIRO_STAGING_API int kairo_staging_read_audio(int16_t* samples, int frames);
 KAIRO_STAGING_API int kairo_staging_audio_rate();
 // Emulated frames since the run started, whether or not the picture changed: the

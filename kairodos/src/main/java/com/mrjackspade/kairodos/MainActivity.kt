@@ -104,6 +104,9 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     override val keyboard = DosKeys.layout
     override val maxKeyCode = 341
     override fun guestKey(androidKey: Int) = DosKeys.fromAndroid(androidKey)
+    // Staging's PS/2 and serial mice have three buttons, and a wheel for a guest driver that reads one.
+    override val mouseHasMiddleButton = true
+    override val mouseHasWheel = true
     override val controllerSpec = DosControllerBindings.spec
     override val bindingsCodec = DosControllerBindings.codec
     override val joystickControls: List<String> get() = DosControllerBindings.joystick

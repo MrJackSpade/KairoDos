@@ -65,6 +65,7 @@ public:
             !staging->bind(staging->mouse_move, "kairo_staging_mouse_move", error) ||
             !staging->bind(staging->mouse_point, "kairo_staging_mouse_point", error) ||
             !staging->bind(staging->mouse_button, "kairo_staging_mouse_button", error) ||
+            !staging->bind(staging->mouse_wheel, "kairo_staging_mouse_wheel", error) ||
             !staging->bind(staging->read_audio, "kairo_staging_read_audio", error) ||
             !staging->bind(staging->audio_rate, "kairo_staging_audio_rate", error) ||
             !staging->bind(staging->guest_frames, "kairo_staging_guest_frames", error) ||
@@ -87,6 +88,7 @@ public:
     decltype(&kairo_staging_mouse_move) mouse_move = nullptr;
     decltype(&kairo_staging_mouse_point) mouse_point = nullptr;
     decltype(&kairo_staging_mouse_button) mouse_button = nullptr;
+    decltype(&kairo_staging_mouse_wheel) mouse_wheel = nullptr;
     decltype(&kairo_staging_read_audio) read_audio = nullptr;
     decltype(&kairo_staging_audio_rate) audio_rate = nullptr;
     decltype(&kairo_staging_guest_frames) guest_frames = nullptr;
@@ -183,6 +185,7 @@ public:
 
     void mouse_move(int dx, int dy) override { staging_->mouse_move(dx, dy); }
     void mouse_button(int button, bool down) override { staging_->mouse_button(button, down); }
+    void mouse_wheel(int notches) override { staging_->mouse_wheel(notches); }
     // Staging places its pointer at once (seamless capture).
     void mouse_warp(int x, int y) override {
         uint32_t width = 0, height = 0;

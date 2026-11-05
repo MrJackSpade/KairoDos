@@ -8,6 +8,7 @@ EXPORTS
     kairo_staging_mouse_move
     kairo_staging_mouse_point
     kairo_staging_mouse_button
+    kairo_staging_mouse_wheel
     kairo_staging_read_audio
     kairo_staging_audio_rate
     kairo_staging_guest_frames
