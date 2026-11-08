@@ -276,7 +276,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     override val resetWithKeptMedia = false
 
     /** Manage library › New game: an empty C: drive (startBlankGame). */
-    override val blankDisks = listOf(BlankDisk.Drive("c-drive", UiText.res(R.string.blank_c_drive), ::startBlankGame))
+    override val blankDisks = listOf(BlankDisk.Drive("c-drive", UiText.res(R.string.blank_c_drive), { name -> DosLibrary.blankPath(name) }, ::startBlankGame))
 
     /**
      * Starts a new game [name] on an empty C: drive, at the DOS prompt, with Disks for its installer.
@@ -324,6 +324,8 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         }
         runOnUiThread {
             if (saved == null) {
+                // No game: the settings its New game page chose for it (Kairo#181) go with it.
+                catalog.resetOverride(session.game.key)
                 libraryScreen.showStatus("", LibraryScreen.StatusKind.SUMMARY)
                 return@runOnUiThread
             }

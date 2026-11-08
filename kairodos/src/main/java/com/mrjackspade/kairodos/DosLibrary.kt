@@ -34,6 +34,9 @@ import java.util.zip.ZipOutputStream
 class DosLibrary(private val context: Context) {
     val hashCount: Int get() = scanPipeline.hashCount
     companion object {
+        /** A new game's path in the games folder: the zip its drive is saved to (saveBlank). */
+        fun blankPath(name: String) = "$name.zip"
+
         private val installedSuffix = Regex(" - Installed(?:\\.zip)?$", RegexOption.IGNORE_CASE)
 
         private fun archiveStem(name: String) = name.substringBeforeLast('.')
@@ -129,7 +132,7 @@ class DosLibrary(private val context: Context) {
     }
 
     /** A new game [name] on an empty C: drive, which [saveBlank] writes to the games folder as `<name>.zip`. */
-    fun blank(name: String) = Game("$name.zip", "", "$name.zip", folder = false, fingerprint = "",
+    fun blank(name: String) = Game(blankPath(name), "", blankPath(name), folder = false, fingerprint = "",
         contentId = BLANK_CONTENT, blank = true)
 
     /**
