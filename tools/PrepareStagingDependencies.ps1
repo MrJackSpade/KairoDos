@@ -74,7 +74,8 @@ if (-not (Test-Path -LiteralPath $speexStamp) -or
     & $executable remove "speexdsp:$triplet" --classic --disable-metrics --x-install-root $prefix
     if ($LASTEXITCODE -ne 0) { throw 'Could not refresh the generated SpeexDSP overlay package' }
 }
-& $executable install asio iir1 libmt32emu libpng opusfile fluidsynth sdl2 sdl2-image speexdsp zlib-ng `
+# Munt and FluidSynth are shared's (shared/cmake/KairoMidi.cmake), built with the core.
+& $executable install asio iir1 libpng opusfile sdl2 sdl2-image speexdsp zlib-ng `
     --classic --disable-metrics --triplet $triplet `
     --overlay-triplets (Join-Path $sourceRoot 'triplets') `
     --overlay-ports (Join-Path $sourceRoot 'ports') --x-install-root $prefix

@@ -39,13 +39,12 @@ Optional measurement builds additionally define `KAIRO_GUEST_PROFILE`: `src/cpu/
 
 Complete original archives and recipe sources are in `third_party/staging-deps/sources/`. `sources.json` records every SHA-256, recipe commit `6283825b81bb60f952af1d0703638df1de611243` and verified tool release. Archives are corresponding source, not APK assets.
 
+The MIDI synths, Munt libmt32emu 2.7.3 and FluidSynth 2.5.2 (LGPL-2.1-or-later, FluidSynth with GCEM 1.18.0, Apache-2.0), are shared's: `shared/cmake/KairoMidi.cmake` builds them with the core from `shared/third_party/` (shared's `docs/source-import.md`), one version for every Kairo app (KairoX86#306).
+
 | Component | Version | License |
 | --- | --- | --- |
 | Asio | 1.32.0 | Boost 1.0 |
-| FluidSynth | 2.5.2 | LGPL-2.1-or-later |
-| GCEM | 1.18.0 | Apache-2.0 |
 | iir1 | 1.10.0 | MIT |
-| Munt/libmt32emu | 2.7.3 | LGPL-2.1-or-later |
 | libogg | 1.3.6 | BSD-3-Clause |
 | libpng | 1.6.54 | libpng license |
 | Opus | 1.5.2 | BSD-3-Clause and source notices |

@@ -131,8 +131,8 @@ endif()
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(iir CONFIG REQUIRED)
 find_package(PNG REQUIRED)
-find_package(MT32Emu CONFIG REQUIRED)
-find_package(FluidSynth CONFIG REQUIRED)
+# MT32Emu::mt32emu and FluidSynth::libfluidsynth: the MIDI synths every Kairo core shares (KairoX86#306).
+include("${CMAKE_CURRENT_SOURCE_DIR}/../shared/cmake/KairoMidi.cmake")
 find_package(OpusFile CONFIG REQUIRED)
 
 # The Android presenter supplies the render backend; desktop OpenGL is unused.
