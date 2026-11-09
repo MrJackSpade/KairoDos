@@ -8,6 +8,7 @@ import com.mrjackspade.kairo.frontend.ControllerLayout
 import com.mrjackspade.kairo.frontend.LayeredGameCatalog
 import com.mrjackspade.kairo.frontend.MachineOption
 import com.mrjackspade.kairo.frontend.ChoiceOption
+import com.mrjackspade.kairo.frontend.CustomValue
 import com.mrjackspade.kairo.frontend.UiText
 import com.mrjackspade.kairo.frontend.R as FrontendR
 import org.json.JSONArray
@@ -32,10 +33,14 @@ object DosCatalog : LayeredGameCatalog.Schema {
     override val escapeKeys = setOf(27)
     override val enterKeys = setOf(13, 271)
     override val mediaExtensions = Regex("\\.(?:zip|dosz)$", RegexOption.IGNORE_CASE)
-    /** The DOS CPU's speed: the configuration's own (Automatic), or as fast as the device can run it. */
-    val cpu = MachineOption("cpu", UiText.res(R.string.cpu_speed), listOf(
-        ChoiceOption(AUTO, UiText.res(FrontendR.string.kairo_auto)),
-        ChoiceOption(CPU_MAX, UiText.res(R.string.cpu_maximum))), AUTO)
+    /**
+     * The DOS CPU's speed: the configuration's own (Automatic), as fast as the device can run it, or a
+     * fixed number of cycles a millisecond, typed (Kairo#183), from DOSBox Staging's least to its most
+     * (cpu.h: 50 to 2,000,000).
+     */
+    val cpu = MachineOption("cpu", UiText.res(R.string.cpu_speed), {
+        listOf(ChoiceOption(AUTO, UiText.res(FrontendR.string.kairo_auto)), ChoiceOption(CPU_MAX, UiText.res(R.string.cpu_maximum)))
+    }, AUTO, customWith = { CustomValue.range(50, 2_000_000, 1) { UiText.res(R.string.cpu_cycles, it) } })
     /** The emulated video card, by DOSBox's machine name (DosVideoHardware); Automatic keeps the configuration's. */
     val video = MachineOption("video", UiText.res(R.string.video_card),
         DosVideoHardware.choices.map { (id, label) -> ChoiceOption(id, label) }, AUTO)

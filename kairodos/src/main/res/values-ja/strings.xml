@@ -69,6 +69,7 @@
     <string name="cpu_speed">DOS の CPU 速度</string>
     <!-- EN: Maximum -->
     <string name="cpu_maximum">最大</string>
+    <string name="cpu_cycles">%1$d サイクル</string>
     <!-- EN: Games with their own speed keep it. -->
     <string name="cpu_foot">独自の速度を持つゲームはそれを使います。</string>
     <!-- EN: VIDEO -->

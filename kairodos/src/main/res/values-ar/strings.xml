@@ -69,6 +69,7 @@
     <string name="cpu_speed">سرعة معالج DOS</string>
     <!-- EN: Maximum -->
     <string name="cpu_maximum">القصوى</string>
+    <string name="cpu_cycles">%1$d دورة</string>
     <!-- EN: Games with their own speed keep it. -->
     <string name="cpu_foot">تحتفظ الألعاب التي لها سرعتها الخاصة بها.</string>
     <!-- EN: VIDEO -->

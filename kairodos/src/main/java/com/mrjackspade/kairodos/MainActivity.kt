@@ -451,7 +451,13 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     /** What the game's machine options and touch give the launch configuration. */
     private fun machineSettings(entry: DosLibrary.Game, game: CatalogGame): DosStagingLaunchConfig.Machine {
         val options = optionValues(game)
-        return DosStagingLaunchConfig.Machine(options.getValue(DosCatalog.cpu.id) == DosCatalog.CPU_MAX,
+        // Automatic, Maximum, or the fixed cycles the player typed (Kairo#183)
+        val cycles = when (val cpu = options.getValue(DosCatalog.cpu.id)) {
+            DosCatalog.AUTO -> "auto"
+            DosCatalog.CPU_MAX -> "max"
+            else -> "fixed ${cpu.toInt()}"
+        }
+        return DosStagingLaunchConfig.Machine(cycles,
             options.getValue(DosCatalog.voodoo.id) == DosCatalog.VOODOO_SINGLE, touchSelection(entry).directTouch,
             DosVideoHardware.machine(options.getValue(DosCatalog.video.id)),
             options.getValue(DosCatalog.joystick.id) == DosCatalog.ON)

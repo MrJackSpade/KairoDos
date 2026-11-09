@@ -41,6 +41,7 @@
     <string name="machine_cpu_group">CPU</string>
     <string name="cpu_speed">DOS CPU speed</string>
     <string name="cpu_maximum">Maximum</string>
+    <string name="cpu_cycles">%1$d cycles</string>
     <string name="cpu_foot">Games with their own speed keep it.</string>
     <string name="video_group">VIDEO</string>
     <string name="video_card">Emulated video card</string>

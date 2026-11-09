@@ -69,6 +69,7 @@
     <string name="cpu_speed">DOS CPU 속도</string>
     <!-- EN: Maximum -->
     <string name="cpu_maximum">최대</string>
+    <string name="cpu_cycles">%1$d 사이클</string>
     <!-- EN: Games with their own speed keep it. -->
     <string name="cpu_foot">자체 속도가 있는 게임은 그 속도를 유지합니다.</string>
     <!-- EN: VIDEO -->

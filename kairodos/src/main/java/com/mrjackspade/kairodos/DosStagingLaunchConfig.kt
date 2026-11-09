@@ -39,7 +39,8 @@ internal object DosStagingLaunchConfig {
      * runs it, 3dfx rendering on one thread, the mouse following direct touch, the video card's
      * DOSBox machine (DosVideoHardware), null for the configuration's own, and whether DOS sees a joystick.
      */
-    data class Machine(val maxCycles: Boolean, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?,
+    /** [cycles]: DOSBox's cycles setting, "auto", "max" or "fixed <n>". */
+    data class Machine(val cycles: String, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?,
                        val joystick: Boolean)
 
     /**
@@ -61,7 +62,7 @@ internal object DosStagingLaunchConfig {
         // adapts protected-mode cycles to the host instead of inheriting those
         // fixed desktop budgets. Keep this after the imported CPU settings. Maximum runs the
         // CPU as fast as the device can.
-        "cpu" to listOf("core" to cpuCore(source), "cycles" to if (machine.maxCycles) "max" else "auto"),
+        "cpu" to listOf("core" to cpuCore(source), "cycles" to machine.cycles),
         "voodoo" to listOf("voodoo_threads" to if (machine.singleVoodooThread) "1" else "auto"),
         // Automatic preserves the catalog's machine (Staging defaults to S3).
         // Explicit user choices follow imported settings so they take precedence.

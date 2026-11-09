@@ -69,6 +69,7 @@
     <string name="cpu_speed">Kecepatan CPU DOS</string>
     <!-- EN: Maximum -->
     <string name="cpu_maximum">Maksimum</string>
+    <string name="cpu_cycles">%1$d siklus</string>
     <!-- EN: Games with their own speed keep it. -->
     <string name="cpu_foot">Game dengan kecepatan sendiri tetap menggunakannya.</string>
     <!-- EN: VIDEO -->

@@ -69,6 +69,7 @@
     <string name="cpu_speed">Скорость ЦП DOS</string>
     <!-- EN: Maximum -->
     <string name="cpu_maximum">Максимальная</string>
+    <string name="cpu_cycles">%1$d циклов</string>
     <!-- EN: Games with their own speed keep it. -->
     <string name="cpu_foot">Игры с собственной скоростью сохраняют ее.</string>
     <!-- EN: VIDEO -->
