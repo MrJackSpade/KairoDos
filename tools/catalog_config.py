@@ -35,6 +35,9 @@ def _configs(value):
 # The machine settings a record can give its game (DosCatalog.options), each a per-game setting the
 # player can change: whether DOS sees a joystick (catalog/research/machine-v1.json).
 MACHINE_OPTIONS = {"joystick": {"on", "off"}}
+# The SDL modifier keys (right/left Shift, Ctrl, Alt): a preset's Ctrl+P is the one keystroke a game
+# reads, so a key with these held is one output per press (shared app_catalog.single_output).
+MODIFIER_KEYS = frozenset({303, 304, 305, 306, 307, 308})
 
 LAUNCH_FIELDS = {"folder": lambda value: isinstance(value, str) and bool(FOLDER.fullmatch(value)),
                  "configs": _configs,

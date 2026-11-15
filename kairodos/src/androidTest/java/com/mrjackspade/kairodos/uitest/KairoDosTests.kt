@@ -43,7 +43,6 @@ object KairoDosApp : AppUnderTest() {
     private fun appText(id: Int): String =
         androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
     // SDL key codes: the cursor keys, Return and Space (DosControllerBindings).
-    override val arrowKeys = listOf(273, 274, 276, 275)
     override val returnKey = 13
     override val spaceKey = 32
     override val bootGameFile = "games/Digger (1983).zip"

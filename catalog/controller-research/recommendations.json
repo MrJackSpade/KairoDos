@@ -12480,33 +12480,29 @@
       ]
     },
     "wizards-crown-keyboard-command-pad-v1": {
-      "description": "Keyboard recommendation for the documented DOS controls. D-pad emits both arrow keys for menu navigation and cardinal numeric-keypad movement. A/B/X send common visible commands S/C/M; Y opens the help command; R1 returns from help; Start sends Space to begin. Diagonal keypad movement is not mapped.",
+      "description": "Keyboard recommendation for the documented DOS controls. D-pad sends the cardinal numeric-keypad keys, which the game reads for movement and its menus (the PC keyboard of its day had no separate arrow keys). A/B/X send common visible commands S/C/M; Y opens the help command; R1 returns from help; Start sends Space to begin. Diagonal keypad movement is not mapped.",
       "bindings": [
         {
           "input": "virtual:up",
           "keys": [
-            273,
             264
           ]
         },
         {
           "input": "virtual:down",
           "keys": [
-            274,
             258
           ]
         },
         {
           "input": "virtual:left",
           "keys": [
-            276,
             260
           ]
         },
         {
           "input": "virtual:right",
           "keys": [
-            275,
             262
           ]
         },
@@ -13557,7 +13553,7 @@
       ]
     },
     "yo_joe_beat_ghosts-dos-keyboard-dpad-v1": {
-      "description": "Keyboard-only DOS controls on the physical pad: D-pad arrows move/jump/crouch and pick up; A=Space action/hit; X=Down+Space changes weapon; Start=F9 main menu; Select=Esc exit. No analog stick.",
+      "description": "Keyboard-only DOS controls on the physical pad: D-pad arrows move/jump/crouch and pick up; A=Space action/hit; Down and A together change weapon; Start=F9 main menu; Select=Esc exit. No analog stick.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -13586,13 +13582,6 @@
         {
           "input": "virtual:a",
           "keys": [
-            32
-          ]
-        },
-        {
-          "input": "virtual:x",
-          "keys": [
-            274,
             32
           ]
         },
