@@ -37,6 +37,7 @@
 ## Contents
 
 - [Download](#download)
+- [Screenshots](#screenshots)
 - [Quick start](#quick-start)
 - [Supported game formats](#supported-game-formats)
 - [eXoDOS archives](#exodos-archives)
@@ -58,6 +59,14 @@
 
 Both editions are built from the same source and have the same features. Requires an ARM64 device running Android 8.0 or newer.
 <!-- /kairo:download -->
+
+## Screenshots
+
+| Library | Details | Playing |
+| --- | --- | --- |
+| ![KairoDos game library](docs/screenshots/library.png) | ![Game details in KairoDos](docs/screenshots/game-details.png) | ![DOOM II running in KairoDos](docs/screenshots/running-game.png) |
+
+Games shown in screenshots are user-provided and are not bundled with the app.
 
 ## Quick start
 
