@@ -14,6 +14,8 @@
 #include "hardware/input/joystick.h"
 #include "hardware/input/mouse.h"
 #include "hardware/memory.h"
+#include "hardware/pic.h"
+#include "misc/cross.h"
 #include "hardware/timer.h"
 #include "hardware/video/vga.h"
 #include "libs/loguru/loguru.hpp"
@@ -23,6 +25,8 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <chrono>
+#include <ctime>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -311,6 +315,28 @@ void KairoStagingFrameEnd() {
     KairoHostHeld(GetTicksUsSince(held));
 }
 extern "C" void kairo_staging_fast_forward(bool enabled) { KairoSetFastForward(enabled); }
+
+// KairoDos#156 (staging_bridge.h): -1 for the host's time.
+static int64_t fixed_clock = -1;
+extern "C" void kairo_staging_fixed_clock(int64_t start_utc) { fixed_clock = start_utc; }
+
+struct tm KairoStagingClock(uint32_t* milliseconds) {
+    struct tm result {};
+    if (fixed_clock < 0) {
+        const auto now = std::chrono::system_clock::now();
+        const time_t seconds = std::chrono::system_clock::to_time_t(now);
+        if (milliseconds)
+            *milliseconds = uint32_t(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count() % 1000);
+        cross::localtime_r(&seconds, &result);
+        return result;
+    }
+    // The emulated milliseconds since the run began.
+    const auto elapsed = int64_t(PIC_FullIndex());
+    const time_t seconds = time_t(fixed_clock + elapsed / 1000);
+    if (milliseconds) *milliseconds = uint32_t(elapsed % 1000);
+    result = *std::gmtime(&seconds);
+    return result;
+}
 extern "C" uint64_t kairo_staging_guest_frames() { return guest_frames.load(std::memory_order_relaxed); }
 extern "C" void kairo_staging_guest_input(KairoStagingGuestInput* input) {
     *input = {keyboard_waits, keyboard_polls, mouse_reads, keyboard_waiting};

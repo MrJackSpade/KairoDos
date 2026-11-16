@@ -18,3 +18,4 @@ EXPORTS
     kairo_staging_fast_forward
     kairo_staging_list_directory
     kairo_staging_media
+    kairo_staging_fixed_clock

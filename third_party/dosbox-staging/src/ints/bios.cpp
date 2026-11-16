@@ -26,6 +26,9 @@
 #include "int10.h"
 #include "utils/bitops.h"
 #include "utils/math_utils.h"
+#ifdef KAIRO_STAGING
+#include "staging_bridge.h"
+#endif
 
 // Constants
 constexpr uint32_t BiosMachineSignatureAddress = 0xfffff;
@@ -390,9 +393,11 @@ static Bitu INT11_Handler(void) {
 
 static void BIOS_HostTimeSync() {
 	uint32_t milli = 0;
-	// TODO investigate if clock_gettime and ftime can be replaced
-	// by using C++11 chrono
-#if defined(HAVE_CLOCK_GETTIME) && !defined(WIN32)
+#ifdef KAIRO_STAGING
+	// KairoDos#156: the host's time, or a repeatable run's fixed clock.
+	struct tm kairo_time = KairoStagingClock(&milli);
+	struct tm *loctime = &kairo_time;
+#elif defined(HAVE_CLOCK_GETTIME) && !defined(WIN32)
 	struct timespec tp;
 	clock_gettime(CLOCK_REALTIME,&tp);
 

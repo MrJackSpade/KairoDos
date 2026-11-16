@@ -75,7 +75,8 @@ public:
             !staging->bind(staging->lock_flags, "kairo_staging_lock_flags", error) ||
             !staging->bind(staging->fast_forward, "kairo_staging_fast_forward", error) ||
             !staging->bind(staging->list_directory, "kairo_staging_list_directory", error) ||
-            !staging->bind(staging->media, "kairo_staging_media", error))
+            !staging->bind(staging->media, "kairo_staging_media", error) ||
+            !staging->bind(staging->fixed_clock, "kairo_staging_fixed_clock", error))
             return nullptr;
         return staging;
     }
@@ -99,6 +100,7 @@ public:
     decltype(&kairo_staging_fast_forward) fast_forward = nullptr;
     decltype(&kairo_staging_list_directory) list_directory = nullptr;
     decltype(&kairo_staging_media) media = nullptr;
+    decltype(&kairo_staging_fixed_clock) fixed_clock = nullptr;
 
 private:
     Staging() = default;
@@ -121,9 +123,10 @@ DosCore *running = nullptr;
 
 class DosCore : public kairo::MachineCore {
 public:
-    DosCore(std::string config, std::string config_dir, std::string resources, std::vector<std::string> host_paths)
+    DosCore(std::string config, std::string config_dir, std::string resources, std::vector<std::string> host_paths,
+            bool repeatable)
         : config_(std::move(config)), config_dir_(std::move(config_dir)), resources_(std::move(resources)),
-          host_paths_(std::move(host_paths)) {}
+          host_paths_(std::move(host_paths)), repeatable_(repeatable) {}
 
     ~DosCore() override {
         // close() ended Staging, or it ended itself.
@@ -274,6 +277,8 @@ private:
             polled_ = false;
             staging_ = Staging::open(error_);
             if (!staging_) return;
+            // A repeatable run's guest clock starts at 1993-01-01 00:00:00 UTC (KairoDos#156).
+            staging_->fixed_clock(repeatable_ ? 725846400 : -1);
             const KairoStagingCallbacks callbacks{4, on_video, on_poll, on_restart, on_frame, on_midi_byte};
             int result;
             try {
@@ -332,6 +337,7 @@ private:
 
     const std::string config_, config_dir_, resources_;
     const std::vector<std::string> host_paths_;
+    const bool repeatable_;
     kairo::EmulatorTurns turns_;
     // The run's library; replaced on Staging's thread only during its turn.
     std::unique_ptr<Staging> staging_;
@@ -357,7 +363,7 @@ private:
 
 std::unique_ptr<kairo::MachineCore> kairo::create_core(const kairo::Launch &launch, std::string &error) {
     auto core = std::make_unique<DosCore>(launch.settings.at(kConfig), launch.home + "/staging/config",
-                                          launch.settings.at(kResources), launch.media);
+                                          launch.settings.at(kResources), launch.media, launch.repeatable);
     if (!core->start()) {
         error = core->error();
         return nullptr;

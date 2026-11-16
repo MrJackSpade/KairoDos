@@ -14,6 +14,9 @@
 #include "hardware/timer.h"
 #include "ints/bios_disk.h"
 #include "misc/cross.h"
+#ifdef KAIRO_STAGING
+#include "staging_bridge.h"
+#endif
 
 static struct {
 	uint8_t regs[0x40];
@@ -123,9 +126,14 @@ static uint8_t cmos_readreg(io_port_t, io_width_t)
 	Bitu drive_a, drive_b;
 	uint8_t hdparm;
 
+#ifdef KAIRO_STAGING
+	// KairoDos#156: the host's time, or a repeatable run's fixed clock.
+	const struct tm datetime = KairoStagingClock(nullptr);
+#else
 	const time_t curtime = time(nullptr);
 	struct tm datetime;
 	cross::localtime_r(&curtime, &datetime);
+#endif
 
 	switch (cmos.reg) {
 	case 0x00:		/* Seconds */

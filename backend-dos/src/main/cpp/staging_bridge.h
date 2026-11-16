@@ -2,6 +2,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 
 // Versioned C boundary: the Android frontend never depends on SDL types.
 //
@@ -99,7 +100,16 @@ KAIRO_STAGING_API const char* kairo_staging_list_directory(const char* path);
 // frames: a folder, a CD image (.iso) on D, or a floppy image on A or B. An empty path
 // empties the drive. "" when done, else why not; the result lives until the next call.
 KAIRO_STAGING_API const char* kairo_staging_media(char letter, const char* path);
+// A run that must repeat exactly (kairo::Launch::repeatable, KairoDos#156): the guest's clock starts
+// at [start_utc] (seconds since 1970, UTC) and moves with the emulated time; -1, the default, is the
+// host's time. Before kairo_staging_run.
+KAIRO_STAGING_API void kairo_staging_fixed_clock(int64_t start_utc);
 }
+
+// What the guest's clock reads now (the BIOS's time at boot, the CMOS clock): the host's local time,
+// or the fixed start plus the emulated time since the run began (kairo_staging_fixed_clock), with the
+// milliseconds into [milliseconds] when it is not null. Emulation thread.
+struct tm KairoStagingClock(uint32_t* milliseconds);
 
 // The host path [reference] names, or null when it is not a reference. Emulation thread.
 const char* KairoStagingHostPath(const char* reference);

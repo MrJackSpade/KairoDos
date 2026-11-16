@@ -110,6 +110,10 @@ itself; Staging's default, `port`, still opens no device on Android. `MIDI_RawOu
 callback to the port the player picked; the messages Staging sends of its own (`MIDI_Reset`) go to it
 whole. Every other device is unchanged. Original GPL notices are preserved.
 
+## Repeatable guest clock
+
+Group `staging-fixed-clock` (KairoDos#156). Under `KAIRO_STAGING`, `src/ints/bios.cpp` (`BIOS_HostTimeSync`, the DOS date and BIOS tick count at boot) and `src/hardware/cmos.cpp` (the CMOS clock, which Staging reads from the host's time at every read) take the time from `KairoStagingClock` (`backend-dos/src/main/cpp/staging_bridge.h`): the host's local time, as before, or for a run that must repeat exactly (`kairo::Launch::repeatable`, the shared tests) a fixed start, 1993-01-01 00:00:00 UTC (`kairo_staging_fixed_clock`), plus the emulated time since the run began. The app keeps the host's time. Original GPL notices are preserved.
+
 ## Ordered OPL worker
 
 `src/hardware/audio/opl.cpp` and `opl.h` contain ordered catch-up synthesis

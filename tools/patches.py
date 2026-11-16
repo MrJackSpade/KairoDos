@@ -1394,4 +1394,24 @@ std_fs::path resolve_home(const std::string &str) noexcept
          '#include <regex>\n#include <unordered_map>\n',
          '#include <regex>\n#include <sstream>\n#include <unordered_map>\n'),
     ],
+    # A repeatable run's guest clock (KairoDos#156): the BIOS's time at boot and the CMOS clock read
+    # KairoStagingClock (backend-dos staging_bridge.h), the host's local time, or the fixed start the
+    # shared tests ask for (kairo_staging_fixed_clock) plus the emulated time since the run began.
+    'staging-fixed-clock': [
+        ('dosbox-staging/src/ints/bios.cpp',
+         '#include "utils/math_utils.h"\n\n',
+         '#include "utils/math_utils.h"\n#ifdef KAIRO_STAGING\n#include "staging_bridge.h"\n#endif\n\n'),
+        ('dosbox-staging/src/ints/bios.cpp',
+         '\tuint32_t milli = 0;\n\t// TODO investigate if clock_gettime and ftime can be replaced\n\t// by using C++11 chrono\n#if defined(HAVE_CLOCK_GETTIME) && !defined(WIN32)\n\tstruct timespec tp;\n',
+         "\tuint32_t milli = 0;\n#ifdef KAIRO_STAGING\n\t// KairoDos#156: the host's time, or a repeatable run's fixed clock.\n\tstruct tm kairo_time = KairoStagingClock(&milli);\n\tstruct tm *loctime = &kairo_time;\n#elif defined(HAVE_CLOCK_GETTIME) && !defined(WIN32)\n\tstruct timespec tp;\n"),
+        ('dosbox-staging/src/hardware/cmos.cpp',
+         '#include "misc/cross.h"\n\n',
+         '#include "misc/cross.h"\n#ifdef KAIRO_STAGING\n#include "staging_bridge.h"\n#endif\n\n'),
+        ('dosbox-staging/src/hardware/cmos.cpp',
+         '\n\tconst time_t curtime = time(nullptr);\n',
+         "\n#ifdef KAIRO_STAGING\n\t// KairoDos#156: the host's time, or a repeatable run's fixed clock.\n\tconst struct tm datetime = KairoStagingClock(nullptr);\n#else\n\tconst time_t curtime = time(nullptr);\n"),
+        ('dosbox-staging/src/hardware/cmos.cpp',
+         '\tcross::localtime_r(&curtime, &datetime);\n\n',
+         '\tcross::localtime_r(&curtime, &datetime);\n#endif\n\n'),
+    ],
 }
