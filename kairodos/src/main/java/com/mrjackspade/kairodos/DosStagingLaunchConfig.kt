@@ -41,7 +41,7 @@ internal object DosStagingLaunchConfig {
      */
     /** [cycles]: DOSBox's cycles setting, "auto", "max" or "fixed <n>". */
     data class Machine(val cycles: String, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?,
-                       val joystick: Boolean)
+                       val joystick: Boolean, val midiPort: Boolean)
 
     /**
      * The settings the app gives every game over its catalog config, by section in the order
@@ -66,7 +66,10 @@ internal object DosStagingLaunchConfig {
         "voodoo" to listOf("voodoo_threads" to if (machine.singleVoodooThread) "1" else "auto"),
         // Automatic preserves the catalog's machine (Staging defaults to S3).
         // Explicit user choices follow imported settings so they take precedence.
-        machine.video?.let { "dosbox" to listOf("machine" to it) })
+        machine.video?.let { "dosbox" to listOf("machine" to it) },
+        // The MIDI port (KairoDos#150): Staging's port device sends the guest's MIDI to the port picked under
+        // Configurations; otherwise the game's own MIDI device stays.
+        if (machine.midiPort) "midi" to listOf("mididevice" to "port") else null)
 
     /**
      * A launch configuration and the host paths it names: AUTOEXEC.BAT is read in the DOS code

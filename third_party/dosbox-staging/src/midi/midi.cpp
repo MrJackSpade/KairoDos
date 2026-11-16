@@ -17,6 +17,10 @@
 #include "private/mt32.h"
 #include "private/soundcanvas.h"
 
+#if defined(KAIRO_STAGING)
+#include "kairo_midi_port.h" // KairoDos
+#endif
+
 #if defined(MACOSX)
 #include "private/coreaudio.h"
 #include "private/coremidi.h"
@@ -363,6 +367,10 @@ void MIDI_RawOutByte(const uint8_t data)
 	if (!MIDI_IsAvailable()) {
 		return;
 	}
+#if defined(KAIRO_STAGING)
+	// KairoDos: the byte as the guest wrote it, to the MIDI port when it is the device
+	const KairoMidiRawByte kairo_raw(data);
+#endif
 
 	if (midi.sysex.start_ms) {
 		const auto passed_ticks = GetTicksSince(midi.sysex.start_ms);
@@ -639,7 +647,10 @@ public:
 
 		if (device_pref == MidiDevicePortPref) {
 			// Use system-level MIDI interface of the host OS
-#if C_COREMIDI
+#if defined(KAIRO_STAGING)
+			// KairoDos: the MIDI port the player picked (kairo_midi_port.h)
+			midi.device = KAIRO_CreateMidiPort();
+#elif C_COREMIDI
 			// macOS
 			midi.device = create_device(MidiDeviceName::CoreMidi,
 			                            midiconfig_prefs);

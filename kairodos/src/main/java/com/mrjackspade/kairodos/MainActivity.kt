@@ -261,6 +261,8 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
      * all-games default of its option ([DosCatalog.options]).
      */
     override val machineOptions = DosCatalog.options
+    // A game set to the MIDI port sends its MIDI music to the port picked under Configurations (KairoDos#150).
+    override val guestMidiOut = true
 
     /**
      * The Disks page's drives, in dos_core.cpp's order (A:, B:, D:). Each takes a folder, or an
@@ -460,7 +462,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         return DosStagingLaunchConfig.Machine(cycles,
             options.getValue(DosCatalog.voodoo.id) == DosCatalog.VOODOO_SINGLE, touchSelection(entry).directTouch,
             DosVideoHardware.machine(options.getValue(DosCatalog.video.id)),
-            options.getValue(DosCatalog.joystick.id) == DosCatalog.ON)
+            options.getValue(DosCatalog.joystick.id) == DosCatalog.ON, options.getValue(DosCatalog.midiOut.id) == "port")
     }
 
     /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */

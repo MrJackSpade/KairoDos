@@ -163,7 +163,7 @@ include_directories("${STAGING_SOURCE}/include" "${STAGING_SOURCE}/src"
     "${KAIRO_STAGING_DEPS}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp")
 add_library(dosbox SHARED "${STAGING_SOURCE}/src/main.cpp"
     "${STAGING_SOURCE}/src/dosbox.cpp" src/main/cpp/staging_bridge.cpp
-    src/main/cpp/kairo_renderer.cpp)
+    src/main/cpp/kairo_renderer.cpp src/main/cpp/kairo_midi_port.cpp)
 set_target_properties(dosbox PROPERTIES OUTPUT_NAME dosbox_staging)
 # Keep strong core function calls local instead of routing them through PLT
 # stubs. Retain weak/data binding for C++ object identity and shared dependencies
@@ -182,6 +182,8 @@ if(WIN32)
     set_property(TARGET dosbox PROPERTY SOURCES ${dosbox_sources})
     # The host API's exports, listed (staging_exports.def).
     target_sources(dosbox PRIVATE src/main/cpp/staging_exports.def)
+    # Winsock, for Staging's networking (IPX, its HTTP client) and DOS's host name (KairoDos#155).
+    target_link_libraries(dosbox PRIVATE ws2_32)
 endif()
 target_link_libraries(libdosboxcommon PRIVATE
     $<IF:$<TARGET_EXISTS:iir::iir>,iir::iir,iir::iir_static>

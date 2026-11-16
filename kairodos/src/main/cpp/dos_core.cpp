@@ -20,6 +20,7 @@
 #include "kairo/emulator_turns.h"
 #include "kairo/fresh_library.h"
 #include "kairo/machine_core.h"
+#include "kairo/midi_bytes.h"
 #include "kairo/thread_priority.h"
 #include "staging_bridge.h"
 
@@ -273,7 +274,7 @@ private:
             polled_ = false;
             staging_ = Staging::open(error_);
             if (!staging_) return;
-            const KairoStagingCallbacks callbacks{3, on_video, on_poll, on_restart, on_frame};
+            const KairoStagingCallbacks callbacks{4, on_video, on_poll, on_restart, on_frame, on_midi_byte};
             int result;
             try {
                 result = staging_->run(config_.c_str(), config_dir_.c_str(), resources_.c_str(), paths.data(), paths.size(),
@@ -284,6 +285,8 @@ private:
                 result = 1;
             }
             staging_.reset();
+            // What the guest left open (a SysEx without its end) goes; the next run starts with no running status.
+            kairo_midi_out_flush();
             if (result != 0) {
                 if (error_.empty())
                     error_ = "DOSBox Staging could not start or continue this game. Check the launch configuration.";
@@ -291,6 +294,9 @@ private:
             }
         } while (restart_ && !stopping_);
     }
+
+    // The guest's MIDI out, while Staging's MIDI device is the MIDI port (kairo_midi_port.h, KairoDos#150).
+    static void on_midi_byte(uint8_t byte) { kairo_midi_out_byte(byte); }
 
     static void on_video(const uint32_t *pixels, int width, int height, int pitch, double aspect) {
         running->video(pixels, width, height, pitch, aspect);

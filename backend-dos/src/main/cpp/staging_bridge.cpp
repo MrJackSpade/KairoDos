@@ -235,9 +235,11 @@ SDL_Scancode scancode(int code) {
 }
 }
 
+void kairo_staging_midi_byte(uint8_t byte) { callbacks.midi_byte(byte); }
+
 extern "C" int kairo_staging_run(const char* config, const char* config_dir,
     const char* resources, const char* const* paths, size_t path_count, const KairoStagingCallbacks* cb) {
-    if (!cb || cb->version != 3 || !cb->video || !cb->poll || !cb->restart || !cb->frame || !config || !config_dir || !resources || (path_count && !paths)) return 1;
+    if (!cb || cb->version != 4 || !cb->video || !cb->poll || !cb->restart || !cb->frame || !cb->midi_byte || !config || !config_dir || !resources || (path_count && !paths)) return 1;
     host_paths.assign(paths, paths + path_count);
 #ifdef KAIRO_GUEST_PROFILE
     kairo_guest_profile::open(config_dir);

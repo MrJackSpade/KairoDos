@@ -9,7 +9,7 @@
 // turn over at the start of every emulated frame (frame) and waits there until the host gives it
 // back. Every kairo_staging_ function but kairo_staging_run is called while the host has the turn.
 struct KairoStagingCallbacks {
-    uint32_t version;  // 3
+    uint32_t version;  // 4
     // A frame's picture, when it changed.
     void (*video)(const uint32_t* pixels, int width, int height, int pitch, double aspect);
     // Staging's event poll: 0 ends the run (the host stops or restarts it), 1 continues.
@@ -19,7 +19,13 @@ struct KairoStagingCallbacks {
     // An emulated frame begins, whether or not its picture changed, at the guest's refresh rate in
     // hertz: the host takes its turn, and this returns when the host gives it back.
     void (*frame)(double refresh_hz);
+    // A byte the guest wrote to its MIDI out, on the emulation thread, while Staging's MIDI device is the
+    // MIDI port (mididevice=port, kairo_midi_port.h, KairoDos#150).
+    void (*midi_byte)(uint8_t byte);
 };
+
+// The MIDI port's byte to the host (KairoStagingCallbacks::midi_byte), on the emulation thread.
+void kairo_staging_midi_byte(uint8_t byte);
 
 // Owned and updated by the emulation thread.
 struct KairoStagingCpuCounters {

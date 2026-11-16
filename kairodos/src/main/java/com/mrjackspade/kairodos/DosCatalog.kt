@@ -56,7 +56,9 @@ object DosCatalog : LayeredGameCatalog.Schema {
     val joystick = MachineOption("joystick", UiText.res(R.string.dos_joystick), listOf(
         ChoiceOption(ON, UiText.res(FrontendR.string.kairo_on)),
         ChoiceOption(OFF, UiText.res(FrontendR.string.kairo_off))), ON)
-    val options = listOf(cpu, video, voodoo, joystick)
+    /** The guest's MIDI out: the game's own MIDI device, or the port picked under Configurations (KairoDos#150). */
+    val midiOut = MachineOption.midiOut()
+    val options = listOf(cpu, video, voodoo, joystick, midiOut)
 
     /**
      * The game's version (`launch.version`, one of its catalog `configs`), or its Custom version

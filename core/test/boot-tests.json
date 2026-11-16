@@ -215,6 +215,57 @@
           "ownPointer": true
         }
       }
+    },
+    {
+      "name": "DOS MIDI out",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/midi.conf": "app:core/test/dos/midi.conf"
+      },
+      "media": [
+        "app:core/test/dos/midi"
+      ],
+      "settings": {
+        "config": "home:dos/midi.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "midiOut": {
+          "frames": 600,
+          "messages": [
+            "F0 7E 7F 09 01 F7",
+            "C1 05",
+            "91 3C 64",
+            "3C 00",
+            "3E 64",
+            "F8",
+            "B1 07 7F",
+            "81 3E 00"
+          ]
+        }
+      }
+    },
+    {
+      "name": "DOS MIDI out off",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/midi-off.conf": "app:core/test/dos/midi-off.conf"
+      },
+      "media": [
+        "app:core/test/dos/midi"
+      ],
+      "settings": {
+        "config": "home:dos/midi-off.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "midiOut": {
+          "frames": 600,
+          "messages": []
+        }
+      }
     }
   ]
 }

@@ -1355,6 +1355,24 @@ std_fs::path resolve_home(const std::string &str) noexcept
 
 '''),
     ],
+    # The guest's MIDI out to the MIDI port the player picked (KairoDos#150): mididevice=port is KairoDos's
+    # own device (backend-dos kairo_midi_port.h), which gets every byte the guest writes first, as written
+    # (Staging's parser rewrites running status); what Staging sends of its own goes to it whole.
+    'staging-midi-port': [
+        ('dosbox-staging/src/midi/midi.cpp',
+         '#include "private/soundcanvas.h"\n',
+         '#include "private/soundcanvas.h"\n\n#if defined(KAIRO_STAGING)\n#include "kairo_midi_port.h" // KairoDos\n#endif\n'),
+        ('dosbox-staging/src/midi/midi.cpp',
+         'void MIDI_RawOutByte(const uint8_t data)\n{\n\tif (!MIDI_IsAvailable()) {\n\t\treturn;\n\t}\n',
+         'void MIDI_RawOutByte(const uint8_t data)\n{\n\tif (!MIDI_IsAvailable()) {\n\t\treturn;\n\t}\n'
+         '#if defined(KAIRO_STAGING)\n\t// KairoDos: the byte as the guest wrote it, to the MIDI port when it is the device\n'
+         '\tconst KairoMidiRawByte kairo_raw(data);\n#endif\n'),
+        ('dosbox-staging/src/midi/midi.cpp',
+         '\t\t\t// Use system-level MIDI interface of the host OS\n#if C_COREMIDI\n',
+         '\t\t\t// Use system-level MIDI interface of the host OS\n#if defined(KAIRO_STAGING)\n'
+         '\t\t\t// KairoDos: the MIDI port the player picked (kairo_midi_port.h)\n'
+         '\t\t\tmidi.device = KAIRO_CreateMidiPort();\n#elif C_COREMIDI\n'),
+    ],
     # The shared PC boot test's Windows build (KairoDos#140): mingw's own clock_gettime, and the
     # standard headers Android's libc++ reached through others.
     'staging-windows-host': [
