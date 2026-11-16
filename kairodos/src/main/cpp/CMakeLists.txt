@@ -18,6 +18,12 @@ if(NOT ANDROID)
     set(KAIRO_PGO OFF CACHE BOOL "" FORCE)
     add_subdirectory("${KAIRODOS_ROOT}/backend-dos" backend-dos)
     kairo_library_beside_test(kairodos dosbox)
+elseif(KAIRO_DEVICE_TEST)
+    # The shared device test (Kairo#192) loads the Staging the app ships: backend-dos's own build, with
+    # the app module's dependencies and options (its profile included), beside the test's library.
+    set(KAIRO_STAGING_DEPS "${KAIRODOS_ROOT}/.downloads/staging-deps/installed/arm64-kairo-android" CACHE PATH "")
+    add_subdirectory("${KAIRODOS_ROOT}/backend-dos" backend-dos)
+    add_dependencies(kairodos dosbox)
 endif()
 # Preserve this host's existing non-Debug optimization level.
 target_compile_options(kairodos PRIVATE $<$<NOT:$<CONFIG:Debug>>:-O2>)
