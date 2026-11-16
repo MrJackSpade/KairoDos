@@ -287,6 +287,106 @@
           "messages": []
         }
       }
+    },
+    {
+      "name": "DOS OPL sound",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/sound-opl.conf": "app:core/test/dos/sound-opl.conf"
+      },
+      "media": [
+        "app:core/test/dos/sound"
+      ],
+      "settings": {
+        "config": "home:dos/sound-opl.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "sound": {
+          "frames": 600
+        }
+      }
+    },
+    {
+      "name": "DOS ESFM sound",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/sound-esfm.conf": "app:core/test/dos/sound-esfm.conf"
+      },
+      "media": [
+        "app:core/test/dos/sound"
+      ],
+      "settings": {
+        "config": "home:dos/sound-esfm.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "sound": {
+          "frames": 600
+        }
+      }
+    },
+    {
+      "name": "DOS Disney Sound Source sound",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/sound-disney.conf": "app:core/test/dos/sound-disney.conf"
+      },
+      "media": [
+        "app:core/test/dos/sound"
+      ],
+      "settings": {
+        "config": "home:dos/sound-disney.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "sound": {
+          "frames": 600
+        }
+      }
+    },
+    {
+      "name": "DOS Gravis UltraSound sound",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/sound-gus.conf": "app:core/test/dos/sound-gus.conf"
+      },
+      "media": [
+        "app:core/test/dos/sound"
+      ],
+      "settings": {
+        "config": "home:dos/sound-gus.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "sound": {
+          "frames": 600
+        }
+      }
+    },
+    {
+      "name": "DOS Game Blaster sound",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/sound-cms.conf": "app:core/test/dos/sound-cms.conf"
+      },
+      "media": [
+        "app:core/test/dos/sound"
+      ],
+      "settings": {
+        "config": "home:dos/sound-cms.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "sound": {
+          "frames": 600
+        }
+      }
     }
   ]
 }

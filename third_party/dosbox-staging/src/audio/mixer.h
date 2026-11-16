@@ -532,6 +532,16 @@ inline void MIXER_PullFromQueueCallback(const int frames_requested, DeviceType* 
 	}
 	static std::vector<AudioType> to_mix = {};
 
+#ifdef KAIRO_STAGING
+	// KairoDos#154: the mixer runs on the emulation thread, which is the one that fills this queue,
+	// and mixes behind it (KairoMixLagTicks): a running queue always holds what it asks for.
+	if (device->output_queue.IsRunning() &&
+	    device->output_queue.Size() < check_cast<size_t>(frames_requested)) {
+		throw std::runtime_error(device->channel->GetName() + ": the mixer needs " +
+		                         std::to_string(frames_requested) + " frames, the queue holds " +
+		                         std::to_string(device->output_queue.Size()));
+	}
+#endif
 	const auto frames_received = check_cast<int>(
 	        device->output_queue.BulkDequeue(to_mix, frames_requested));
 

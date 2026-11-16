@@ -154,6 +154,19 @@ private:
 	void AudioCallback(const int frames);
 	AudioFrame RenderFrame();
 	void RenderUpToNow();
+	// The frames from the last rendered one up to [now].
+	void RenderUpTo(double now);
+#ifdef KAIRO_STAGING
+public:
+	// Renders up to the emulated now while the channel is awake: every tick, so each frame is made
+	// at its own time, in order with the writes, as the mixer's queued devices make theirs
+	// (KairoDos#154).
+	void RenderTick();
+
+private:
+	friend void OPL_WaitForWorker();
+	void DiscardRendered();
+#endif
 
 	void PortWrite(const io_port_t port, const io_val_t value,
 	               const io_width_t width);
@@ -173,6 +186,11 @@ private:
 
 void OPL_Init(OplMode mode);
 void OPL_Destroy();
+#ifdef KAIRO_STAGING
+// Waits until the OPL worker has done everything given to it, so it stays idle until the
+// emulation thread gives it more: before each mix and while the mixer is locked (KairoDos#154).
+void OPL_WaitForWorker();
+#endif
 
 // CMS/Game Blaster, OPL, and ESFM configuration and initialisation
 void OPL_AddConfigSettings();

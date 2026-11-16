@@ -117,6 +117,9 @@ const char* KairoStagingHostPath(const char* reference);
 bool KairoStagingPoll();
 // Called by VGA_VerticalTimer at the start of every emulated frame.
 void KairoStagingFrameEnd();
+// Mixes the sound of the emulated time up to a few ticks ago, for the host to take (mixer.cpp,
+// KairoDos#154). Emulation thread, at each emulated frame's end.
+void KairoMixerFrameEnd();
 void KairoStagingVideo(const uint32_t* pixels, int width, int height, int pitch, double aspect);
 void KairoStagingKeyboardWait(bool waiting);
 void KairoStagingKeyboardPoll();

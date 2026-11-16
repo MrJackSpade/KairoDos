@@ -27,6 +27,7 @@
 #include "gui/mapper.h"
 #include "hardware/audio/gus.h"
 #include "hardware/audio/lpt_dac.h"
+#include "hardware/audio/opl.h"
 #include "hardware/audio/pcspeaker.h"
 #include "hardware/audio/ps1audio.h"
 #include "hardware/audio/soundblaster.h"
@@ -48,6 +49,12 @@
 #include <SDL.h>
 
 CHECK_NARROWING();
+
+#ifdef KAIRO_STAGING
+// KairoDos#154: the mixer runs on the emulation thread, on the emulated tick (KairoMixerFrameEnd).
+int KairoMixerFramesBehind();
+int64_t KairoMixerTicks();
+#endif
 
 // #define DEBUG_MIXER
 
@@ -285,6 +292,9 @@ void MIXER_LockMixerThread()
 	GUS_NotifyLockMixer();
 	REELMAGIC_NotifyLockMixer();
 	SBLASTER_NotifyLockMixer();
+#ifdef KAIRO_STAGING
+	OPL_WaitForWorker();
+#endif
 
 	mixer.mutex.lock();
 }
@@ -893,6 +903,13 @@ void MixerChannel::Enable(const bool should_enable)
 	}
 
 	is_enabled = should_enable;
+#ifdef KAIRO_STAGING
+	// Nothing came from this channel since the mixer's position, so it leads with silence up to
+	// the last tick: its first frames are the next tick's, as every other channel's are.
+	if (should_enable) {
+		audio_frames.resize(audio_frames.size() + check_cast<size_t>(KairoMixerFramesBehind()));
+	}
+#endif
 }
 
 // Depending on the resampling method and the channel, mixer and ZoH upsampler
@@ -1065,7 +1082,11 @@ void MixerChannel::ClearResampler()
 	if (do_resample) {
 		assert(speex_resampler.state);
 		speex_resampler_reset_mem(speex_resampler.state);
+		// Kairo's mixer mixes only what its channels made by the last tick (KairoMixerFrameEnd), so
+		// the resampler starts from zeros instead of reading its latency ahead.
+#ifndef KAIRO_STAGING
 		speex_resampler_skip_zeros(speex_resampler.state);
+#endif
 
 #ifdef DEBUG_MIXER
 		LOG_DEBUG("%s: Speex resampler cleared and primed %d-frame input queue",
@@ -2072,7 +2093,12 @@ void MixerChannel::Sleeper::MaybeSleep()
 {
 	// A signed integer can a durration of ~24 days in milliseconds, which
 	// is surely more than enough.
+#ifdef KAIRO_STAGING
+	// Emulated time, so a channel falls asleep at the same point in every run.
+	const auto awake_for_ms = check_cast<int>(KairoMixerTicks() - woken_at_ms);
+#else
 	const auto awake_for_ms = check_cast<int>(GetTicksSince(woken_at_ms));
+#endif
 
 	// Not enough time has passed.. .. try to sleep later
 	if (awake_for_ms < fadeout_or_sleep_after_ms) {
@@ -2099,7 +2125,11 @@ void MixerChannel::Sleeper::MaybeSleep()
 bool MixerChannel::Sleeper::WakeUp()
 {
 	// Always reset for another round of awakeness
+#ifdef KAIRO_STAGING
+	woken_at_ms = KairoMixerTicks();
+#else
 	woken_at_ms   = GetTicks();
+#endif
 	fadeout_level = 1.0f;
 	had_signal    = false;
 
@@ -2752,11 +2782,89 @@ extern "C" int kairo_staging_read_audio(int16_t* samples, int frames)
 	}
 	return static_cast<int>(received);
 }
+
+// KairoDos#154: the mixer runs on the emulation thread, on the emulated 1 ms tick. Mixed on its
+// own thread, as much sound reached the host each frame as that thread had finished by then, and
+// channels slept by the host's clock, so identical runs played the same sound cut differently.
+// Now each frame ends with the sound of the emulated time up to KairoMixLagTicks before it (mixed
+// in blocks between frame ends, as the thread mixed), and the host plays it, dropping what its
+// queue cannot hold while frames run back to back, as in fast-forward.
+//
+// A device that queues its sound (MIXER_PullFromQueueCallback) adds each tick's frames on that
+// tick, and OPL renders each tick's on its worker (Opl::RenderTick): mixing KairoMixLagTicks
+// behind, every channel already holds what a mix takes.
+constexpr int64_t KairoMixLagTicks = 4;
+static int64_t kairo_ticks        = 0;
+static int64_t kairo_mixed_frames = 0;
+
+// The output frames of the first [ticks] ticks.
+static int64_t kairo_frames_of_ticks(const int64_t ticks)
+{
+	return ticks * mixer.sample_rate_hz.load() / 1000;
+}
+
+static void kairo_mix_up_to(const int64_t frames_total)
+{
+	const auto frames = check_cast<int>(frames_total - kairo_mixed_frames);
+	if (frames <= 0) {
+		return;
+	}
+	kairo_mixed_frames = frames_total;
+	// The OPL worker adds its frames to its channel itself: idle, it leaves the channel to the
+	// mix alone.
+	OPL_WaitForWorker();
+	std::unique_lock lock(mixer.mutex);
+	mix_samples(frames);
+	lock.unlock();
+	if (mixer.state == MixerState::NoSound) {
+		return;
+	}
+	if (mixer.state == MixerState::Muted) {
+		mixer.output_buffer.clear();
+		mixer.output_buffer.resize(frames);
+	}
+	// The host takes every frame's sound at its end, so a second of output never fills.
+	if (mixer.final_output.Size() + mixer.output_buffer.size() > mixer.final_output.MaxCapacity()) {
+		throw std::runtime_error("MIXER: the host has not taken the output of " +
+		                         std::to_string(mixer.final_output.Size()) + " frames");
+	}
+	mixer.final_output.BulkEnqueue(mixer.output_buffer);
+}
+
+static void kairo_mixer_tick()
+{
+	++kairo_ticks;
+	// In blocks between frame ends, as the mixer's thread mixed, so a queue holds at most a block
+	// beyond the lag.
+	const auto ready = kairo_frames_of_ticks(std::max<int64_t>(kairo_ticks - KairoMixLagTicks, 0));
+	if (ready - kairo_mixed_frames >= mixer.blocksize) {
+		kairo_mix_up_to(ready);
+	}
+}
+
+void KairoMixerFrameEnd()
+{
+	kairo_mix_up_to(kairo_frames_of_ticks(std::max<int64_t>(kairo_ticks - KairoMixLagTicks, 0)));
+}
+
+// The output frames from the mixer's position up to the last tick: the silence a channel that starts
+// now leads with, so its sound lines up with the tick it was made on.
+int KairoMixerFramesBehind()
+{
+	return check_cast<int>(kairo_frames_of_ticks(kairo_ticks) - kairo_mixed_frames);
+}
+
+// Emulated milliseconds, for the channel sleeper.
+int64_t KairoMixerTicks()
+{
+	return kairo_ticks;
+}
 #endif
 void MIXER_CloseAudioDevice()
 {
 #ifdef KAIRO_STAGING
 	{ std::lock_guard lock(kairo_audio_mutex); kairo_audio_ready = false; }
+	TIMER_DelTickHandler(kairo_mixer_tick);
 #endif
 	TIMER_DelTickHandler(capture_callback);
 
@@ -2973,16 +3081,26 @@ void MIXER_Init()
 	const auto prebuffer_frames = (mixer.sample_rate_hz * mixer.prebuffer_ms) /
 	                              1000;
 
+#ifdef KAIRO_STAGING
+	// KairoDos#154: the host takes each emulated frame's sound at its end (KairoMixerFrameEnd), so
+	// a second of output always holds it.
+	mixer.final_output.Resize(mixer.sample_rate_hz);
+#else
 	mixer.final_output.Resize(mixer.blocksize + prebuffer_frames);
+#endif
 
 	// One second of audio
 	mixer.capture_queue.Resize(mixer.sample_rate_hz * 2);
 
-	mixer.thread = std::thread(mixer_thread_loop);
 #ifdef KAIRO_STAGING
 	{ std::lock_guard lock(kairo_audio_mutex); kairo_audio_ready = mixer.state != MixerState::NoSound; }
-#endif
+	kairo_ticks        = 0;
+	kairo_mixed_frames = 0;
+	TIMER_AddTickHandler(kairo_mixer_tick);
+#else
+	mixer.thread = std::thread(mixer_thread_loop);
 	set_thread_name(mixer.thread, "dosbox:mixer");
+#endif
 
 	TIMER_AddTickHandler(capture_callback);
 

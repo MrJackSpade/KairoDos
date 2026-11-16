@@ -19,6 +19,7 @@
 #include "cpu/cpu.h"
 #include "gui/mapper.h"
 #include "hardware/memory.h"
+#include "hardware/timer.h"
 #include "misc/support.h"
 #include "utils/checks.h"
 #include "utils/math_utils.h"
@@ -464,9 +465,26 @@ struct Opl::WorkerState {
 	uint64_t catchups = 0, wakeups = 0, callback_frames = 0, callbacks = 0;
 	uint64_t current_callback_frames = 0;
 #endif
+#ifdef KAIRO_STAGING
+	// The channel's resampling and filters, a second stage after synthesis, so the two run at
+	// once: each block goes to the channel in the order it was made (KairoDos#154). Declared
+	// before the synthesis stage, which hands it blocks: it is joined after it.
+	struct ChannelWork {
+		uint32_t frames = 0;
+		std::array<AudioFrame, BlockFrames> pcm = {};
+	};
+	struct ChannelDone {};
+	kairo::OrderedWorker<ChannelWork, ChannelDone, QueueCapacity, false> channel_stage;
+#endif
 	// Declared last: join before destroying processor state.
 	kairo::OrderedWorker<Command, Result, QueueCapacity, TrackQueue> queue;
 	explicit WorkerState(Opl& opl_owner) : owner(opl_owner),
+#ifdef KAIRO_STAGING
+	        channel_stage([this](const ChannelWork& work) {
+		        owner.channel->AddSamples_sfloat(static_cast<int>(work.frames), &work.pcm[0][0]);
+		        return ChannelDone{};
+	        }),
+#endif
 	        queue([this](const Command& command) { return Process(command); }) {
 #if defined(KAIRO_OPL_VERIFY)
 		reference_rendered_ms = owner.last_rendered_ms;
@@ -488,6 +506,16 @@ struct Opl::WorkerState {
 			OPL3_WriteRegBuffered(&owner.opl.chip, command.address, command.value);
 		for (uint32_t i = 0; i < command.frames; ++i)
 			result.pcm[i] = owner.RenderFrame();
+#ifdef KAIRO_STAGING
+		// The emulation thread touches the channel only while both stages are idle: the mixer
+		// waits for them before each mix (OPL_WaitForWorker), as locking the mixer does.
+		if (command.frames) {
+			ChannelWork work;
+			work.frames = command.frames;
+			work.pcm    = result.pcm;
+			channel_stage.submit(std::move(work), [](ChannelDone) {});
+		}
+#endif
 #if defined(KAIRO_OPL_VERIFY)
 		result.expected = command.expected;
 #endif
@@ -508,7 +536,9 @@ struct Opl::WorkerState {
 			reference_rendered_ms += owner.ms_per_frame;
 			const auto frame = ReferenceFrame();
 			expected_catchup.push(frame);
+#ifndef KAIRO_STAGING
 			reference_fifo.push(frame);
+#endif
 		}
 	}
 	void FinishCatchup() {
@@ -528,6 +558,16 @@ struct Opl::WorkerState {
 		Compare(frame, ReferenceFrame());
 		++current_callback_frames;
 	}
+#ifdef KAIRO_STAGING
+	// The mixer takes made frames only; the render datum stays on the emulated timeline.
+	void FinishCallback(const int requested) {
+		if (requested < 0 || current_callback_frames != static_cast<uint64_t>(requested))
+			throw std::runtime_error("OPL mixer callback length diverged");
+		++callbacks;
+		callback_frames += current_callback_frames;
+		current_callback_frames = 0;
+	}
+#else
 	void FinishCallback(const int requested, const double now) {
 		if (requested < 0 || current_callback_frames != static_cast<uint64_t>(requested))
 			throw std::runtime_error("OPL mixer callback length diverged");
@@ -536,6 +576,7 @@ struct Opl::WorkerState {
 		current_callback_frames = 0;
 		reference_rendered_ms = now;
 	}
+#endif
 	AudioFrame ReferenceFrame() {
 		int16_t pcm[2] = {};
 		OPL3_GenerateStream(&reference, pcm, 1);
@@ -558,7 +599,9 @@ struct Opl::WorkerState {
 #if defined(KAIRO_OPL_VERIFY)
 			Compare(result.pcm[i], result.expected[i]);
 #endif
+#ifndef KAIRO_STAGING
 			owner.fifo.emplace(result.pcm[i]);
+#endif
 		}
 #if defined(KAIRO_OPL_VERIFY)
 		maxFifoFrames = std::max(maxFifoFrames, owner.fifo.size());
@@ -581,6 +624,10 @@ struct Opl::WorkerState {
 	}
 	void Drain() {
 		queue.drain([this](Result r) { Consume(std::move(r)); });
+#ifdef KAIRO_STAGING
+		// The synthesis stage is idle now, so this thread is the channel stage's only consumer.
+		channel_stage.drain([](ChannelDone) {});
+#endif
 	}
 };
 
@@ -663,8 +710,18 @@ void Opl::RenderUpToNow()
 #endif
 	if (woke) {
 		last_rendered_ms = now;
+#ifdef KAIRO_STAGING
+		// What was made before the channel fell asleep is not played: the mixer leads the channel
+		// with silence up to now (MixerChannel::Enable).
+		DiscardRendered();
+#endif
 		return;
 	}
+	RenderUpTo(now);
+}
+
+void Opl::RenderUpTo(const double now)
+{
 	// Keep rendering until we're current
 #if defined(KAIRO_OPL_WORKER)
 	if (worker) {
@@ -696,8 +753,10 @@ void Opl::AudioCallback(const int requested_frames)
 #if defined(KAIRO_OPL_WORKER)
 	// Complete queued writes and catch-up audio before touching the chip here.
 	// Holding the existing OPL mutex prevents another producer from submitting
-	// work until this callback finishes. Mixer synthesis already runs off the
-	// emulation thread, so retain it here after this explicit ownership handoff.
+	// work until this callback finishes.
+#ifdef KAIRO_STAGING
+	const auto frames_on_channel_before_drain = channel->audio_frames.size();
+#endif
 	DrainWorker();
 #endif
 #if 0
@@ -707,6 +766,39 @@ void Opl::AudioCallback(const int requested_frames)
 		        fifo.size());
 	}
 #endif
+#ifdef KAIRO_STAGING
+#if defined(KAIRO_OPL_WORKER)
+	if (worker) {
+		// The worker added every frame up to the last tick to the channel (RenderTick), and the
+		// mixer mixes behind it: a drain that adds nothing leaves the mixer short.
+		if (frames_on_channel_before_drain == channel->audio_frames.size()) {
+			throw std::runtime_error(channel->GetName() + ": the mixer needs " +
+			                         std::to_string(requested_frames) +
+			                         " more frames, none are made");
+		}
+		return;
+	}
+#endif
+	// Every frame up to the last tick is made (RenderTick), and the mixer mixes behind it.
+	if (fifo.size() < static_cast<size_t>(requested_frames)) {
+		throw std::runtime_error(channel->GetName() + ": the mixer needs " +
+		                         std::to_string(requested_frames) + " frames, " +
+		                         std::to_string(fifo.size()) + " are made");
+	}
+	static std::vector<AudioFrame> frames = {};
+	frames.resize(check_cast<size_t>(requested_frames));
+	for (auto& frame : frames) {
+#if defined(KAIRO_OPL_VERIFY)
+		if (worker) worker->CompareQueuedMixerFrame(fifo.front());
+#endif
+		frame = fifo.front();
+		fifo.pop();
+	}
+	channel->AddSamples_sfloat(requested_frames, &frames[0][0]);
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->FinishCallback(requested_frames);
+#endif
+#else
 	auto frames_remaining = requested_frames;
 
 	// First, send any frames we've queued since the last callback
@@ -732,7 +824,50 @@ void Opl::AudioCallback(const int requested_frames)
 #if defined(KAIRO_OPL_VERIFY)
 	if (worker) worker->FinishCallback(requested_frames, now);
 #endif
+#endif
 }
+
+#ifdef KAIRO_STAGING
+void Opl::RenderTick()
+{
+	std::lock_guard lock(mutex);
+	if (!channel->is_enabled) {
+		return;
+	}
+	const auto now = PIC_FullIndex();
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->PrepareCatchup(now, false);
+#endif
+	RenderUpTo(now);
+}
+
+void Opl::DiscardRendered()
+{
+#if defined(KAIRO_OPL_WORKER)
+	DrainWorker();
+#if defined(KAIRO_OPL_VERIFY)
+	if (worker) worker->reference_fifo = {};
+#endif
+#endif
+	fifo = {};
+}
+
+void OPL_WaitForWorker()
+{
+#if defined(KAIRO_OPL_WORKER)
+	if (opl) {
+		opl->DrainWorker();
+	}
+#endif
+}
+
+static void opl_render_tick()
+{
+	if (opl) {
+		opl->RenderTick();
+	}
+}
+#endif
 
 void Opl::CacheWrite(const io_port_t port, const uint8_t val)
 {
@@ -1209,6 +1344,9 @@ Opl::Opl(Section* configuration, const OplMode _opl_mode)
 	ReadHandler[2].Install(base + 8u, read_from, io_width_t::byte, 1);
 
 	MAPPER_AddHandler(OPL_SaveRawEvent, SDL_SCANCODE_UNKNOWN, 0, "caprawopl", "Rec. OPL");
+#ifdef KAIRO_STAGING
+	TIMER_AddTickHandler(opl_render_tick);
+#endif
 
 	LOG_MSG("%s: Running %s on ports %xh and %xh",
 	        channel->GetName().c_str(),
@@ -1224,6 +1362,9 @@ Opl::~Opl()
 	LOG_MSG("%s: Shutting down %s", channel->GetName().c_str(), to_string(opl.mode));
 
 	MIXER_LockMixerThread();
+#ifdef KAIRO_STAGING
+	TIMER_DelTickHandler(opl_render_tick);
+#endif
 #if defined(KAIRO_OPL_WORKER)
 	DrainWorker();
 	if (worker) {

@@ -309,6 +309,8 @@ bool KairoStagingPoll() {
 }
 void KairoStagingFrameEnd() {
     guest_frames.fetch_add(1, std::memory_order_relaxed);
+    // The frame's sound is ready before the host takes its turn.
+    KairoMixerFrameEnd();
     const auto held = GetTicksUs();
     callbacks.frame(VGA_GetRefreshRate());
     // The host's turn is not the emulator's work: auto cycles must not count it.
