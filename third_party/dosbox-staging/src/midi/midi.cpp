@@ -85,6 +85,13 @@ static std::unique_ptr<MidiDevice> create_device(
 {
 	using namespace MidiDeviceName;
 
+#if defined(KAIRO_STAGING)
+	// KairoDos: the MIDI port the player picked (kairo_midi_port.h)
+	if (name == "kairo") {
+		return KAIRO_CreateMidiPort();
+	}
+#endif
+
 	// Internal MIDI synths
 	if (name == MidiDeviceName::SoundCanvas) {
 		return std::make_unique<MidiDeviceSoundCanvas>();
@@ -647,10 +654,7 @@ public:
 
 		if (device_pref == MidiDevicePortPref) {
 			// Use system-level MIDI interface of the host OS
-#if defined(KAIRO_STAGING)
-			// KairoDos: the MIDI port the player picked (kairo_midi_port.h)
-			midi.device = KAIRO_CreateMidiPort();
-#elif C_COREMIDI
+#if C_COREMIDI
 			// macOS
 			midi.device = create_device(MidiDeviceName::CoreMidi,
 			                            midiconfig_prefs);
@@ -852,6 +856,9 @@ static void init_mididevice_settings(SectionProp& secprop)
 	                     MidiDeviceName::SoundCanvas,
 #endif
 	                     MidiDeviceName::FluidSynth,
+#if defined(KAIRO_STAGING)
+	                     "kairo",
+#endif
 	                     "none"});
 
 	str_prop->SetDeprecatedWithAlternateValue("alsa", DefaultMidiDevicePref);

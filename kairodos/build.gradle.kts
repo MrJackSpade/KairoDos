@@ -18,7 +18,14 @@ val stagingResources by tasks.registering(Sync::class) {
     into(layout.buildDirectory.dir("generated/staging-assets/staging-resources"))
     exclude("meson.build")
 }
-tasks.named("preBuild") { dependsOn(stagingResources) }
+// FluidSynth's default SoundFont (KairoDos#151), the shared GeneralUser GS (shared SoundFonts).
+val soundFontAssets = layout.buildDirectory.dir("generated/soundfont-assets")
+android.sourceSets.getByName("main").assets.srcDir(soundFontAssets)
+val stageSoundFont by tasks.registering(Sync::class) {
+    from(rootProject.file("shared/third_party/generaluser-gs/GeneralUser-GS.sf2")) { into("soundfonts") }
+    into(soundFontAssets)
+}
+tasks.named("preBuild") { dependsOn(stagingResources, stageSoundFont) }
 
 dependencies {
     implementation(project(":backend-dos"))

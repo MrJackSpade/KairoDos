@@ -1,5 +1,6 @@
 package com.mrjackspade.kairodos
 
+import android.content.Intent
 import android.net.Uri
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -9,6 +10,9 @@ import com.mrjackspade.kairo.frontend.CatalogGame
 import com.mrjackspade.kairo.frontend.CatalogSetting
 import com.mrjackspade.kairo.frontend.ChoiceGroup
 import com.mrjackspade.kairo.frontend.ChoiceOption
+import com.mrjackspade.kairo.frontend.ImportedFilePicker
+import com.mrjackspade.kairo.frontend.ShippedAssets
+import com.mrjackspade.kairo.frontend.SoundFonts
 import com.mrjackspade.kairo.frontend.ChoicePage
 import com.mrjackspade.kairo.frontend.ChoiceSpec
 import com.mrjackspade.kairo.frontend.CreateGameFlow
@@ -69,6 +73,7 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         private const val NEW_GAME = "staging/new-game.txt"
         /** The Version choice that runs the preset with the player's own DOSBox settings and startup commands. */
         private const val CUSTOM_VERSION = "custom"
+        private const val SOUND_FONT_IMPORT_REQUEST = FIRST_PRODUCT_REQUEST
         /** The lock keys' codes (DosKeys), in the order dos_core.cpp reports them. */
         private val LOCK_KEYS = listOf(301, 300, 302)
         /**
@@ -260,7 +265,22 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
      * CPU speed is Machine's; the video card and 3dfx rendering are Graphics' (AGENTS.md), each the
      * all-games default of its option ([DosCatalog.options]).
      */
-    override val machineOptions = DosCatalog.options
+    /** The SoundFonts the player imported, for a game to pick (KairoDos#151). */
+    private val soundFontFiles by lazy { SoundFonts.library(this) }
+    private val soundFontImport by lazy {
+        ImportedFilePicker(this, soundFontFiles, SOUND_FONT_IMPORT_REQUEST, "sound-font-import",
+            getString(FrontendR.string.kairo_sound_font_import), getString(FrontendR.string.kairo_option_sound_font), ::toast)
+    }
+    /** Where the shipped SoundFont is installed for FluidSynth. */
+    private val shippedSoundFont by lazy { File(filesDir, "system/soundfont/${SoundFonts.SHIPPED_FILE}") }
+    override fun handleProductResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean =
+        soundFontImport.handle(requestCode, resultCode, data) || super.handleProductResult(requestCode, resultCode, data)
+
+    // The SoundFont lists the player's too, and imports more.
+    override val machineOptions = DosCatalog.options.map { option ->
+        if (option.id == SoundFonts.ID) SoundFonts.option({ SoundFonts.choices(soundFontFiles) }, { select -> soundFontImport.actions(select) })
+        else option
+    }
     // A game set to the MIDI port sends its MIDI music to the port picked under Configurations (KairoDos#150).
     override val guestMidiOut = true
 
@@ -459,10 +479,15 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
             DosCatalog.CPU_MAX -> "max"
             else -> "fixed ${cpu.toInt()}"
         }
+        // FluidSynth's SoundFont: the shipped one, or the player's own the game picked (KairoDos#151).
+        val soundFont = options.getValue(DosCatalog.soundFont.id).let { value ->
+            if (value == SoundFonts.DEFAULT) shippedSoundFont else checkNotNull(soundFontFiles.file(value)) { "No SoundFont $value" }
+        }
         return DosStagingLaunchConfig.Machine(cycles,
             options.getValue(DosCatalog.voodoo.id) == DosCatalog.VOODOO_SINGLE, touchSelection(entry).directTouch,
             DosVideoHardware.machine(options.getValue(DosCatalog.video.id)),
-            options.getValue(DosCatalog.joystick.id) == DosCatalog.ON, options.getValue(DosCatalog.midiOut.id) == "port")
+            options.getValue(DosCatalog.joystick.id) == DosCatalog.ON, options.getValue(DosCatalog.midiOut.id) == "port",
+            soundFont.absolutePath)
     }
 
     /** The name a game asks for, such as for saves, edited in its tray and checked on Save. */
@@ -857,6 +882,9 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
         }
         val driveFiles = drives.map { it?.let { disk -> dosLibrary.prepareMedia(disk, selected, cancelled) } }
         val resources = DosStagingResources.prepare(this, cancelled)
+        // The game's SoundFont is there for FluidSynth: the shipped one installed, or the player's still kept.
+        ShippedAssets.install(this, "soundfonts/${SoundFonts.SHIPPED_FILE}", shippedSoundFont, progress)
+        SoundFonts.file(optionValue(record, DosCatalog.soundFont), shippedSoundFont, soundFontFiles)
         val customized = custom(playable)
         val configuration = DosStagingLaunchConfig.write(this, File(saveDir, "staging/launch.conf"),
             drive, launch, configName, dependencies, overlays, player, machineSettings(playable, record), target,

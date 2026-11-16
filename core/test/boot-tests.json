@@ -266,6 +266,27 @@
           "messages": []
         }
       }
+    },
+    {
+      "name": "DOS MIDI out default",
+      "firmware": {},
+      "home": {
+        "staging/resources": "app:third_party/dosbox-staging/resources",
+        "dos/midi-default.conf": "app:core/test/dos/midi-default.conf"
+      },
+      "media": [
+        "app:core/test/dos/midi"
+      ],
+      "settings": {
+        "config": "home:dos/midi-default.conf",
+        "resources": "home:staging"
+      },
+      "checks": {
+        "midiOut": {
+          "frames": 600,
+          "messages": []
+        }
+      }
     }
   ]
 }

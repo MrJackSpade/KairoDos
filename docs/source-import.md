@@ -103,9 +103,9 @@ Original GPL notices are preserved.
 
 ## MIDI out to a MIDI port of the device
 
-Group `staging-midi-port` (KairoDos#150). Under `KAIRO_STAGING`, `src/midi/midi.cpp`'s
-`mididevice=port` (the host's MIDI port) is KairoDos's own device, `backend-dos/src/main/cpp/kairo_midi_port.cpp`,
-which plays nothing itself. `MIDI_RawOutByte` hands it every byte the guest writes first, as written
+Group `staging-midi-port` (KairoDos#150). Under `KAIRO_STAGING`, `src/midi/midi.cpp` gains
+`mididevice=kairo`, KairoDos's own device (`backend-dos/src/main/cpp/kairo_midi_port.cpp`), which plays nothing
+itself; Staging's default, `port`, still opens no device on Android. `MIDI_RawOutByte` hands it every byte the guest writes first, as written
 (Staging's own parsing rewrites running status), and it sends them through the host's `midi_byte`
 callback to the port the player picked; the messages Staging sends of its own (`MIDI_Reset`) go to it
 whole. Every other device is unchanged. Original GPL notices are preserved.

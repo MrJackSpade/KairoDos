@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// KairoDos's MIDI port (KairoDos#150): Staging's "port" MIDI device on Android, the guest's MIDI out to the
-// MIDI port of the device the player picked (the app's MIDI out, kairo/midi_bytes.h through the host's
-// midi_byte callback). Staging-midi-port (tools/patches.py) creates it for mididevice=port and hands it
+// KairoDos's MIDI port (KairoDos#150): a MIDI device of KairoDos's own, mididevice=kairo, the guest's MIDI out
+// to the MIDI port of the device the player picked (the app's MIDI out, kairo/midi_bytes.h through the host's
+// midi_byte callback). Staging-midi-port (tools/patches.py) creates it for mididevice=kairo and hands it
 // every byte the guest writes first, as written, so running status stays as the guest sent it.
 #pragma once
 

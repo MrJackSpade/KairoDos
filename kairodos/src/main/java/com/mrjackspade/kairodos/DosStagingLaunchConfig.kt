@@ -41,7 +41,7 @@ internal object DosStagingLaunchConfig {
      */
     /** [cycles]: DOSBox's cycles setting, "auto", "max" or "fixed <n>". */
     data class Machine(val cycles: String, val singleVoodooThread: Boolean, val directTouch: Boolean, val video: String?,
-                       val joystick: Boolean, val midiPort: Boolean)
+                       val joystick: Boolean, val midiPort: Boolean, val soundFont: String)
 
     /**
      * The settings the app gives every game over its catalog config, by section in the order
@@ -67,9 +67,12 @@ internal object DosStagingLaunchConfig {
         // Automatic preserves the catalog's machine (Staging defaults to S3).
         // Explicit user choices follow imported settings so they take precedence.
         machine.video?.let { "dosbox" to listOf("machine" to it) },
-        // The MIDI port (KairoDos#150): Staging's port device sends the guest's MIDI to the port picked under
-        // Configurations; otherwise the game's own MIDI device stays.
-        if (machine.midiPort) "midi" to listOf("mididevice" to "port") else null)
+        // The MIDI port (KairoDos#150): KairoDos's own MIDI device (kairo_midi_port.h) sends the guest's MIDI to
+        // the port picked under Configurations; otherwise the game's own MIDI device stays.
+        if (machine.midiPort) "midi" to listOf("mididevice" to "kairo") else null,
+        // FluidSynth's SoundFont, for a game whose MIDI device is FluidSynth (KairoDos#151): the shipped
+        // GeneralUser GS, or the player's own the game picked.
+        "fluidsynth" to listOf("soundfont" to machine.soundFont))
 
     /**
      * A launch configuration and the host paths it names: AUTOEXEC.BAT is read in the DOS code

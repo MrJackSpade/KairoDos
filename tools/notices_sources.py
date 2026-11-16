@@ -60,3 +60,7 @@ for base in (CORE / 'src', CORE / 'include', CORE / 'resources', THIRD_PARTY / '
             for block in COMMENT.findall(content):
                 if LICENSE_TERMS.search(block):
                     add(path, block)
+
+# FluidSynth's default SoundFont, which the app ships (KairoDos#151), under its own licence.
+SECTIONS.append(('GeneralUser GS 2.0.3', 'https://www.schristiancollins.com, shared/third_party/generaluser-gs',
+                 [clean((notices.ROOT / 'shared/third_party/generaluser-gs/LICENSE.txt').read_text(encoding='utf-8'))]))

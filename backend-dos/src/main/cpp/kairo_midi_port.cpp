@@ -38,7 +38,7 @@ public:
 
 	std::string GetName() const override
 	{
-		return "port";
+		return "kairo";
 	}
 
 	Type GetType() const override

@@ -9,6 +9,7 @@ import com.mrjackspade.kairo.frontend.LayeredGameCatalog
 import com.mrjackspade.kairo.frontend.MachineOption
 import com.mrjackspade.kairo.frontend.ChoiceOption
 import com.mrjackspade.kairo.frontend.CustomValue
+import com.mrjackspade.kairo.frontend.SoundFonts
 import com.mrjackspade.kairo.frontend.UiText
 import com.mrjackspade.kairo.frontend.R as FrontendR
 import org.json.JSONArray
@@ -58,7 +59,9 @@ object DosCatalog : LayeredGameCatalog.Schema {
         ChoiceOption(OFF, UiText.res(FrontendR.string.kairo_off))), ON)
     /** The guest's MIDI out: the game's own MIDI device, or the port picked under Configurations (KairoDos#150). */
     val midiOut = MachineOption.midiOut()
-    val options = listOf(cpu, video, voodoo, joystick, midiOut)
+    /** FluidSynth's SoundFont: the shipped GeneralUser GS, or one the player imported (KairoDos#151); MainActivity lists those. */
+    val soundFont = SoundFonts.option()
+    val options = listOf(cpu, video, voodoo, joystick, midiOut, soundFont)
 
     /**
      * The game's version (`launch.version`, one of its catalog `configs`), or its Custom version

@@ -17,7 +17,8 @@ Preserve Staging's LICENSE, licenses directory and per-file notices. These cover
 - ARM64 builds link copied Staging and static dependencies, with Android `c++_shared`.
 - `shared/tools/notices.py .` generates the offline About notice from `tools/notices_sources.py`: from copied license texts and embedded notices, dependency notices, Spleen and NDK notices.
 - Corresponding source must include the exact app revision, pinned shared revision, complete Staging/SDL trees, dependency/recipe archives, adapters and build scripts. A checkout without shared is incomplete.
-- No proprietary ROM, BIOS, operating system, soundfont or game is supplied. Freely licensed Staging keyboard/codepage resources and DOS utilities include notices and source.
+- The app ships GeneralUser GS 2.0.3 by S. Christian Collins as FluidSynth's default SoundFont (KairoDos#151), under its own licence (`shared/third_party/generaluser-gs/LICENSE.txt`), which allows it in software; players may import their own SoundFonts.
+- No proprietary ROM, BIOS, operating system or game is supplied, nor any other soundfont. Freely licensed Staging keyboard/codepage resources and DOS utilities include notices and source.
 - Device boot acceptance and source/license checks are required before an APK is described as release-ready. Build success alone is insufficient.
 
 Catalog artwork (game covers and screenshots) is used under fair use and is separate from the code license.
