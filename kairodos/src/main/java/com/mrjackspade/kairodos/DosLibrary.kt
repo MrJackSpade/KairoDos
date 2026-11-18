@@ -89,6 +89,10 @@ class DosLibrary(private val context: Context) {
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.path }) })
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
+    private val documents = DosDocuments(context)
+    private val installers = DosInstallers(context, documents, cache) { game, tree, cancelled -> prepare(game, tree, cancelled) }
+    /** Which programs of the folder are Collection Chamber installers, by path, size and time (planScan). */
+    private val installerProbes = DosInstallerProbes(File(context.filesDir, "installer-probes-v1.json"))
     // The Disks page's drives (prepareMedia), beside the game's own prepared copy: kept, as other
     // apps keep a disk's working copy, so a disk keeps what a game writes to it.
     private val mediaCache = File(context.filesDir, "dos-media")
@@ -123,8 +127,12 @@ class DosLibrary(private val context: Context) {
         val inspection = if (type in archiveExtensions) {
             DosContentHash.inspectZipDocument(context, file.uri, cancelled, sevenZ = type == "7z")
         } else null
-        val contentId = inspection?.contentId ?: hashSource(source, cancelled)
-        val installer = inspection?.exodosSource == true &&
+        // A Collection Chamber installer granted alone: its parts, if it has any, are not readable here.
+        val clickteam = type == "exe" && DosClickteam.isInstaller(context, file.uri)
+        val contentId = inspection?.contentId ?: if (clickteam)
+            DosClickteam.open(context, file.name, file.uri, emptyList()).use(DosClickteam::contentId)
+            else hashSource(source, cancelled)
+        val installer = clickteam || inspection?.exodosSource == true &&
             !isInstalledArchive(file.name)
         // Keyed by its path relative to the library folder, or its URI where it has none (Kairo#56).
         return Game(file.key, file.uri.toString(), file.name,
@@ -248,6 +256,9 @@ class DosLibrary(private val context: Context) {
                            val data: List<DocumentTreeWalker.FileEntry> = emptyList()) : ScanWork
         data class Folder(val tree: Uri, val root: String,
                           val members: List<DocumentTreeWalker.FileEntry>) : ScanWork
+        /** A Collection Chamber installer: its [program] and its [parts] (`.D01` on), in order. */
+        data class Installer(val program: DocumentTreeWalker.FileEntry,
+                             val parts: List<DocumentTreeWalker.FileEntry>) : ScanWork
     }
 
     fun scan(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean,
@@ -257,7 +268,10 @@ class DosLibrary(private val context: Context) {
     private fun planScan(tree: Uri, depth: ScanDepth, cancelled: AtomicBoolean,
                          progress: (String) -> Unit): LibraryScanPipeline.Plan<ScanWork, Game> {
         val source = walker.scan(tree, cancelled, { true }, progress, folderListings, depth)
-        val all = source.files
+        // Installers, with their parts, are games of their own; the rest of the folder is laid out as before.
+        val installerWork = installers(source.files, cancelled)
+        val claimed = installerWork.flatMap { listOf(it.program) + it.parts }.mapTo(HashSet()) { it.path }
+        val all = source.files.filter { it.path !in claimed }
         val rootFiles = all.filter { !it.path.contains('/') }
         val containsArchives = all.any { extension(it.path) in archiveExtensions }
         val rootGame = (rootFiles.size > 1 || all.any { it.path.contains('/') }) &&
@@ -278,7 +292,7 @@ class DosLibrary(private val context: Context) {
                  (!containsArchives || !item.path.contains('/')))) &&
                 (!item.path.contains('/') || item.path.substringBefore('/') !in folderGroups)
         }
-        val work = ArrayList<ScanWork>()
+        val work = ArrayList<ScanWork>(installerWork)
         val byPath = all.associateBy { it.path.lowercase(Locale.ROOT) }
         work.addAll(archives.map { item ->
             ScanWork.Archive(item, if (discs.isDescriptor(item.path)) trackData(item, byPath) else emptyList())
@@ -293,15 +307,60 @@ class DosLibrary(private val context: Context) {
         return LibraryScanPipeline.Plan(work, finalEntries = folderErrors)
     }
 
+    /**
+     * The Collection Chamber installers among [files], with their parts beside them. A program is
+     * read only when it could be one: the only program in its folder, or one with a `.D01` part
+     * beside it; its bytes decide ([installerProbes] keeps the answer).
+     */
+    private fun installers(files: List<DocumentTreeWalker.FileEntry>, cancelled: AtomicBoolean): List<ScanWork.Installer> {
+        val found = ArrayList<ScanWork.Installer>()
+        for (members in files.groupBy { it.path.substringBeforeLast('/', "") }.values) {
+            val siblings = members.associateBy { it.path.substringAfterLast('/').lowercase(Locale.ROOT) }
+            val programs = members.filter { extension(it.path) in executableExtensions }
+            for (program in programs) {
+                if (extension(program.path) != "exe") continue
+                val parts = DosClickteam.parts(program.path.substringAfterLast('/'), siblings)
+                if (programs.size > 1 && parts.isEmpty()) continue
+                require(!cancelled.get()) { "Cancelled" }
+                // A program that cannot be read is listed as an installer, whose inspection then
+                // fails with why, on its own entry; it is not kept, so the next scan reads it again.
+                val installer = runCatching {
+                    installerProbes.isInstaller(program) { DosClickteam.isInstaller(context, program.uri) }
+                }.getOrElse { true }
+                if (installer) found += ScanWork.Installer(program, parts)
+            }
+        }
+        installerProbes.save()
+        return found
+    }
+
+    private fun installerFingerprint(work: ScanWork.Installer) =
+        (listOf(work.program) + work.parts).joinToString(":") { "${it.size}:${it.modified}" }
+
+    /** An installer, named by its file list; one missing a part its files need fails with that part's name. */
+    private fun inspectInstaller(work: ScanWork.Installer, scan: LibraryScanPipeline.ScanContext<Game>): List<Game> {
+        val item = work.program
+        val fingerprint = installerFingerprint(work)
+        val contentId = knownContent(scan.prior[item.path], fingerprint, DosClickteam.PREFIX) ?: run {
+            scan.hashStarted(item.path)
+            DosClickteam.open(context, item.path.substringAfterLast('/'), item.uri, work.parts.map { it.uri })
+                .use(DosClickteam::contentId)
+        }
+        return listOf(Game(item.path, item.uri.toString(), item.path, false, false, fingerprint, contentId, null,
+            installer = true, catalogId = catalogId(scan, item.path, contentId)))
+    }
+
     private fun describe(work: ScanWork): String = when (work) {
         is ScanWork.Archive -> work.file.path
         is ScanWork.Folder -> folderDisplay(work)
+        is ScanWork.Installer -> work.program.path
     }
 
     /** A game the library has scanned before keeps its identity; only Recheck all files hashes it again. */
     private fun known(work: ScanWork, scan: LibraryScanPipeline.ScanContext<Game>): Boolean = when (work) {
         is ScanWork.Archive -> scan.prior[work.file.path] != null
         is ScanWork.Folder -> scan.prior[folderId(work)] != null
+        is ScanWork.Installer -> scan.prior[work.program.path] != null
     }
 
     /** [old]'s content ID, when it is a game this scan need not read again. */
@@ -318,6 +377,7 @@ class DosLibrary(private val context: Context) {
             is ScanWork.Archive -> if (discs.isDescriptor(work.file.path)) inspectDisc(work, scan)
                 else inspectArchive(work.file, scan)
             is ScanWork.Folder -> inspectFolder(work, scan)
+            is ScanWork.Installer -> inspectInstaller(work, scan)
         }
 
     private fun inspectArchive(item: DocumentTreeWalker.FileEntry,
@@ -518,133 +578,21 @@ class DosLibrary(private val context: Context) {
             folderDisplay(work), true, work.root == "@root", folderFingerprint(work),
             null, error.message ?: context.getString(R.string.unreadable_game_folder),
             catalogId = scan.earlier[folderId(work)]?.catalogId))
+        is ScanWork.Installer -> listOf(Game(work.program.path, work.program.uri.toString(), work.program.path,
+            false, false, installerFingerprint(work), null, error.message ?: context.getString(R.string.unreadable_game),
+            installer = true, catalogId = scan.earlier[work.program.path]?.catalogId))
     }
 
-    /** Materialize eXoDOS's ZIP extraction as a durable, separate archive. */
+    /** Installs [game], an installer of the games folder [tree], beside it (DosInstallers). */
     fun install(game: Game, tree: Uri, cancelled: AtomicBoolean,
-                progress: (String) -> Unit = {}): Game {
-        require(game.installer && !game.folder && game.playable) { "Not an eXoDOS installer" }
-        progress(context.getString(R.string.preparing_installer))
-        val source = prepare(game, tree, cancelled)
-        val originalName = game.path.substringAfterLast('/')
-        val installedName = originalName.substringBeforeLast('.') + " - Installed.zip"
-        val parentPath = game.path.substringBeforeLast('/', "")
-        var parentId = DocumentsContract.getTreeDocumentId(tree)
-        if (parentPath.isNotEmpty()) for (segment in parentPath.split('/')) {
-            parentId = childId(tree, parentId, segment, true)
-                ?: error(context.getString(R.string.installer_folder_moved))
-        }
-        val path = if (parentPath.isEmpty()) installedName else "$parentPath/$installedName"
-        val existing = childId(tree, parentId, installedName, false)
-        val created = if (existing != null)
-            DocumentsContract.buildDocumentUriUsingTree(tree, existing)
-        else DocumentsContract.createDocument(context.contentResolver,
-            DocumentsContract.buildDocumentUriUsingTree(tree, parentId),
-            "application/zip", installedName)
-            ?: error("Could not create installed game archive")
-        val uri = DocumentsContract.buildDocumentUriUsingTree(tree,
-            DocumentsContract.getDocumentId(created))
-        try {
-            if (existing == null) {
-                val digest = MessageDigest.getInstance("SHA-256")
-                var written = 0L
-                var nextReport = 64L * 1024 * 1024
-                source.inputStream().use { input ->
-                    context.contentResolver.openOutputStream(uri, "wt")?.use { output ->
-                        val buffer = ByteArray(65536)
-                        while (true) {
-                            require(!cancelled.get()) { "Cancelled" }
-                            val count = input.read(buffer)
-                            if (count < 0) break
-                            digest.update(buffer, 0, count)
-                            output.write(buffer, 0, count)
-                            written += count
-                            if (written >= nextReport) {
-                                progress(context.getString(R.string.installing_copied, written / (1024 * 1024)))
-                                nextReport += 64L * 1024 * 1024
-                            }
-                        }
-                    } ?: error("Could not write installed game archive")
-                }
-                val expected = digest.digest()
-                val actual = MessageDigest.getInstance("SHA-256")
-                progress(context.getString(R.string.installed_verifying))
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    val buffer = ByteArray(65536)
-                    while (true) {
-                        require(!cancelled.get()) { "Cancelled" }
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        actual.update(buffer, 0, count)
-                    }
-                } ?: error("Could not verify installed game archive")
-                require(expected.contentEquals(actual.digest())) {
-                    context.getString(R.string.installed_verification_failed)
-                }
-            } else {
-                progress(context.getString(R.string.installed_checking))
-                val checked = DosContentHash.zipDocument(context, uri, cancelled)
-                require(checked == game.contentId) {
-                    context.getString(R.string.installed_name_taken)
-                }
-            }
-            val staged = File(cache,
-                "${GameKey(path).hashName}-${game.contentId!!.substringAfter(':').take(16)}.zip")
-            if (!staged.isFile) source.renameTo(staged)
-            // The scan's fingerprint, so the next scan reuses this verified content ID.
-            return Game(path, uri.toString(), path, false, false,
-                documentFingerprint(uri), game.contentId, null, false, catalogId = game.catalogId)
-        } catch (failure: Exception) {
-            if (existing == null) runCatching {
-                DocumentsContract.deleteDocument(context.contentResolver, uri)
-            }
-            throw failure
-        }
-    }
+                progress: (String) -> Unit = {}): Game = installers.install(game, tree, cancelled, progress)
 
     /** Keep the installed copy private when the launcher only grants one source file. */
     fun installExternal(game: Game, cancelled: AtomicBoolean,
-                        progress: (String) -> Unit = {}): Game {
-        require(game.external && game.installer && game.playable) { "Not an external installer" }
-        progress(context.getString(R.string.preparing_installer))
-        val source = prepare(game, null, cancelled)
-        val installedId = sha256("external:${game.contentId}")
-        val folder = File(context.filesDir, "installed-dos").apply { mkdirs() }
-        val installed = File(folder, "$installedId.zip")
-        if (installed.isFile) {
-            require(DosContentHash.zip({ context.text(it) }, installed, cancelled) == game.contentId) {
-                context.getString(R.string.installed_changed)
-            }
-        } else {
-            val pending = File.createTempFile("dos-install-", ".part", folder)
-            try {
-                source.inputStream().use { input -> pending.outputStream().use { output ->
-                    copyChecked(input, output, cancelled)
-                } }
-                require(DosContentHash.zip({ context.text(it) }, pending, cancelled) == game.contentId) {
-                    context.getString(R.string.installed_verification_failed)
-                }
-                require(pending.renameTo(installed)) { "Could not save installed game" }
-            } finally { pending.delete() }
-        }
-        val name = game.path.substringBeforeLast('.') + " - Installed.zip"
-        // Outside the library folder, its key is its own file's URI.
-        val uri = Uri.fromFile(installed).toString()
-        return Game(uri, uri, name, false, false, "", game.contentId, null, false, true, game.catalogId)
-    }
+                        progress: (String) -> Unit = {}): Game = installers.installExternal(game, cancelled, progress)
 
-    fun deleteInstaller(game: Game, installed: Game) {
-        require(game.installer) { "Not an installer" }
-        require(!installed.installer && installed.contentId == game.contentId) {
-            context.getString(R.string.installed_unavailable)
-        }
-        val check = DosContentHash.zipDocument(context,
-            Uri.parse(installed.uri), AtomicBoolean(false))
-        require(check == game.contentId) { context.getString(R.string.installed_unverified) }
-        require(DocumentsContract.deleteDocument(context.contentResolver, Uri.parse(game.uri))) {
-            context.getString(R.string.installer_remove_refused)
-        }
-    }
+    /** Removes the installer [game] of the games folder [tree], once [installed] is there intact. */
+    fun deleteInstaller(game: Game, installed: Game, tree: Uri) = installers.deleteInstaller(game, installed, tree)
 
     /** Remove the selected source document, rather than only hiding its catalog entry. */
     fun deleteSource(game: Game) {
@@ -661,32 +609,8 @@ class DosLibrary(private val context: Context) {
         cache.listFiles()?.filter { it.name.startsWith("${game.key.hashName}-") }?.forEach { it.delete() }
     }
 
-    private fun documentFingerprint(uri: Uri): String {
-        val columns = arrayOf(DocumentsContract.Document.COLUMN_SIZE,
-            DocumentsContract.Document.COLUMN_LAST_MODIFIED)
-        context.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
-            require(cursor.moveToFirst()) { "Installed game archive is missing" }
-            val size = if (cursor.isNull(0)) -1 else cursor.getLong(0)
-            val modified = if (cursor.isNull(1)) 0 else cursor.getLong(1)
-            return "$size:$modified"
-        } ?: error("Could not read installed game archive")
-    }
-
-    private fun childId(tree: Uri, parentId: String, name: String,
-                        directory: Boolean): String? {
-        val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
-        val columns = arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-            DocumentsContract.Document.COLUMN_MIME_TYPE)
-        context.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
-            while (cursor.moveToNext()) {
-                if (cursor.getString(1) == name &&
-                    (cursor.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) == directory)
-                    return cursor.getString(0)
-            }
-        } ?: error("Could not read game folder")
-        return null
-    }
+    private fun childId(tree: Uri, parentId: String, name: String, directory: Boolean): String? =
+        documents.childId(tree, parentId, name, directory)
 
     fun prepare(game: Game, tree: Uri?, cancelled: AtomicBoolean,
                 wrapFolder: String? = null): File {

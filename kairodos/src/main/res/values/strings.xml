@@ -122,6 +122,8 @@
     <string name="installer_folder_moved">Installer folder was moved; refresh the library</string>
     <!-- %1$d is how many mebibytes have been copied. -->
     <string name="installing_copied">Installing game: %1$d MiB copied</string>
+    <string name="installer_part_missing">This installer needs its part %1$s beside it</string>
+    <string name="installing_unpacked">Installing game: %1$d%% unpacked</string>
     <string name="installed_verifying">Verifying installed game archive…</string>
     <string name="installed_checking">Checking installed game archive…</string>
     <string name="installed_verification_failed">Installed game archive failed verification</string>

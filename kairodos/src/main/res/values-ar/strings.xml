@@ -209,6 +209,8 @@
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
     <string name="installing_copied">جارٍ تثبيت اللعبة: تم نسخ %1$d MiB</string>
+    <string name="installer_part_missing">يحتاج هذا المثبّت إلى جزئه %1$s بجانبه</string>
+    <string name="installing_unpacked">جارٍ تثبيت اللعبة: تم فك %1$d%%</string>
     <!-- EN: Verifying installed game archive… -->
     <string name="installed_verifying">جارٍ التحقق من أرشيف اللعبة المثبّتة…</string>
     <!-- EN: Checking installed game archive… -->

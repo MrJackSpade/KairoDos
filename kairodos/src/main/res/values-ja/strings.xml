@@ -209,6 +209,8 @@
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
     <string name="installing_copied">ゲームをインストール中: %1$d MiB コピー済み</string>
+    <string name="installer_part_missing">このインストーラーには隣に分割ファイル %1$s が必要です</string>
+    <string name="installing_unpacked">ゲームをインストール中: %1$d%% 展開済み</string>
     <!-- EN: Verifying installed game archive… -->
     <string name="installed_verifying">インストール済みのゲームアーカイブを検証しています…</string>
     <!-- EN: Checking installed game archive… -->

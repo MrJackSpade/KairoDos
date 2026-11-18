@@ -209,6 +209,8 @@
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
     <string name="installing_copied">게임 설치 중: %1$d MiB 복사됨</string>
+    <string name="installer_part_missing">이 설치 프로그램은 옆에 분할 파일 %1$s이(가) 있어야 합니다</string>
+    <string name="installing_unpacked">게임 설치 중: %1$d%% 압축 해제됨</string>
     <!-- EN: Verifying installed game archive… -->
     <string name="installed_verifying">설치된 게임 압축 파일 검증 중…</string>
     <!-- EN: Checking installed game archive… -->

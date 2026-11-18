@@ -1045,7 +1045,8 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
                 TrayButton(getString(FrontendR.string.kairo_remove), ButtonTone.DANGER) {
                 installerNotice = null
                 Thread {
-                    runCatching { dosLibrary.deleteInstaller(installer, installed) }
+                    runCatching { dosLibrary.deleteInstaller(installer, installed,
+                        checkNotNull(tree) { getString(R.string.choose_dos_folder_for_game) }) }
                         .onSuccess { runOnUiThread {
                             installerPromptOpen = false
                             removeLibrarySource(installer)

@@ -12,6 +12,8 @@ internal object DosStagingLaunchConfig {
     private val mountC = Regex("(?i)^@?mount\\s+c\\s+.+$")
     private val imgC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
     private val WRITABLE_IMAGES = setOf("img", "ima")
+    /** IMGMOUNT's options that take a value (Staging's and DOSBox-X's, which Collection Chamber setups use). */
+    private val IMGMOUNT_VALUE_OPTIONS = setOf("-t", "-fs", "-size", "-chs", "-o", "-el-torito", "-bootcd", "-label")
 
     private fun cpuCore(source: String?): String {
         var inCpu = false
@@ -84,11 +86,35 @@ internal object DosStagingLaunchConfig {
     /** The reference prefix, KAIRO_HOST_PATH_PREFIX in staging_bridge.h. */
     private const val HOST_PATH_PREFIX = "kairo-host:"
 
-    /** [context] puts a failure the player reads in their language. */
+    /** A launch configuration's lines and the host paths they name by reference ([Written]). */
+    class Composed(val lines: List<String>, val hostPaths: List<String>)
+
+    /** Writes [compose]'s configuration to [config]; [context] puts a failure the player reads in their language. */
     fun write(context: Context, config: File, drive: DosStagingStorage.Drive, launch: DosLaunch?,
               name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
               machine: Machine, target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
               autoexec: String? = null, drives: List<File?> = emptyList()): Written {
+        val composed = compose({ id, args -> context.getString(id, *args) }, config, drive, launch, name, dependencies,
+            overlays, player, machine, target, settings, autoexec, drives)
+        val atomic = AtomicFile(config)
+        val output = atomic.startWrite()
+        try {
+            output.write((composed.lines.joinToString("\r\n") + "\r\n").toByteArray(Charsets.UTF_8))
+            atomic.finishWrite(output)
+        } catch (failure: Exception) { atomic.failWrite(output); throw failure }
+        return Written(config, composed.hostPaths)
+    }
+
+    /**
+     * The launch configuration of [drive]'s game: [launch]'s config [name] (or the player's own
+     * [autoexec]) with its drives' host paths, and the app's settings ([hostSettings]) and the
+     * player's [settings] after its own. [config] is where it goes; a scratch drive goes beside it.
+     * [message] puts a failure the player reads in their language (a string resource and its arguments).
+     */
+    fun compose(message: (Int, Array<out Any>) -> String, config: File, drive: DosStagingStorage.Drive, launch: DosLaunch?,
+                name: String, dependencies: Map<String, File>, overlays: Map<File, File>, player: String?,
+                machine: Machine, target: DosLaunchTarget = DosLaunchTarget.Normal, settings: Map<String, String> = emptyMap(),
+                autoexec: String? = null, drives: List<File?> = emptyList()): Composed {
         val hostPaths = ArrayList<String>()
         // A mount operand: a host path by reference, quoted; a DOS path as it is.
         fun operand(path: String): String {
@@ -126,7 +152,7 @@ internal object DosStagingLaunchConfig {
                 if (inside.isEmpty()) return drive.directory.absolutePath
                 val game = inside.substringBefore('/')
                 val root = if (game.equals(folder, true)) gameRoot else
-                    dependencies[game.lowercase()] ?: error(context.getString(R.string.exodos_dependency_missing, game))
+                    dependencies[game.lowercase()] ?: error(message(R.string.exodos_dependency_missing, arrayOf(game)))
                 return DosStagingStorage.path(root, inside.substringAfter('/', "")).absolutePath
             }
             if (normalized.startsWith("./discs/", true))
@@ -134,6 +160,11 @@ internal object DosStagingLaunchConfig {
             if (normalized.startsWith("./floppy/", true))
                 return DosStagingStorage.path(gameRoot, "floppy/" + normalized.substring(9)).absolutePath
             if (normalized == ".") return mountedRoot.absolutePath
+            // Any other relative path is from the folder the game's DOSBox ran in, its launch folder:
+            // a Collection Chamber setup mounts "HDD" and "CD\GAME.CUE" beside its configuration.
+            // eXoDOS configurations name only the paths above.
+            if (normalized.isNotEmpty() && !normalized.startsWith('/') && !Regex("^[A-Za-z]:").containsMatchIn(normalized))
+                return DosStagingStorage.path(gameRoot, normalized.removePrefix("./")).absolutePath
             return path
         }
         val layers = overlays.map { (base, layer) -> base.canonicalFile to layer }
@@ -202,7 +233,7 @@ internal object DosStagingLaunchConfig {
                             val floppy = drive.media.length() <= 2_949_120
                             lines += "imgmount ${if (floppy) "A" else "D"} ${operand(writableImage(drive.media.absolutePath))} -t ${if (floppy) "floppy" else "hdd"}"
                         } else lines += "boot ${operand(writableImage(drive.media.absolutePath))}"
-                        else -> error(context.getString(R.string.media_type_unsupported, "DOSBox Staging", drive.media.extension))
+                        else -> error(message(R.string.media_type_unsupported, arrayOf("DOSBox Staging", drive.media.extension)))
                     }
                 } else {
                     val executables = mountedRoot.listFiles().orEmpty().filter {
@@ -214,7 +245,9 @@ internal object DosStagingLaunchConfig {
             } else for (original in commands.lineSequence()) {
                 val line = original.trimEnd('\r')
                 val trimmed = line.trim()
-                if (mountC.matches(trimmed) || (contentDrive == "C" && trimmed.equals("C:", true))) continue
+                // The content drive's mount went in above. A later C: stays: a game's menu switches
+                // to its CD (D:) and back to C: before starting the next program.
+                if (mountC.matches(trimmed)) continue
                 val mounted = mount.matchEntire(line)
                 if (mounted != null) {
                     val originalPath = mounted.groupValues[4].trim('"')
@@ -234,7 +267,9 @@ internal object DosStagingLaunchConfig {
                         !token.equals("-ide", true) && (index == 0 || !originalTokens[index - 1].equals("-ide", true))
                     }
                     lines += tokens.mapIndexed { index, token ->
-                        if (index < 2 || token.startsWith('-')) token else {
+                        // An option's value ("-t iso") is not a path, though it reads as a relative one.
+                        val optionValue = index > 0 && tokens[index - 1].lowercase() in IMGMOUNT_VALUE_OPTIONS
+                        if (index < 2 || token.startsWith('-') || optionValue) token else {
                             val path = writableImage(nativePath(token.trim('"')))
                             if (path != token.trim('"')) operand(path) else token
                         }
@@ -259,11 +294,11 @@ internal object DosStagingLaunchConfig {
             if (program.endsWith(".cmd", true)) {
                 // DOS-compatible CMD text is run as a batch file on an app-owned
                 // scratch drive. Never rename/overwrite a file in the game drive.
-                require(target.occupiedDrives.isNotEmpty()) { context.getString(R.string.command_script_needs_drives) }
+                require(target.occupiedDrives.isNotEmpty()) { message(R.string.command_script_needs_drives, emptyArray()) }
                 val used = target.occupiedDrives + lines.mapNotNull { Regex("(?i)^\\s*@?(?:img)?mount\\s+([a-z])\\s+").find(it)
                     ?.groupValues?.get(1)?.uppercase()?.single() }.toSet()
                 val letter = ('Y' downTo 'A').firstOrNull { it !in used }
-                    ?: error(context.getString(R.string.command_script_no_drive))
+                    ?: error(message(R.string.command_script_no_drive, emptyArray()))
                 val scratch = File(config.parentFile, "command-script").apply {
                     require(isDirectory || mkdirs()) { "Could not prepare command script drive" }
                 }
@@ -283,12 +318,6 @@ internal object DosStagingLaunchConfig {
                 lines += "[$section]"
                 values.forEach { (key, value) -> lines += "$key = $value" }
             }
-        val atomic = AtomicFile(config)
-        val output = atomic.startWrite()
-        try {
-            output.write((lines.joinToString("\r\n") + "\r\n").toByteArray(Charsets.UTF_8))
-            atomic.finishWrite(output)
-        } catch (failure: Exception) { atomic.failWrite(output); throw failure }
-        return Written(config, hostPaths)
+        return Composed(lines, hostPaths)
     }
 }

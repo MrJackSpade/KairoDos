@@ -209,6 +209,8 @@
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
     <string name="installing_copied">Instalando jogo: %1$d MiB copiados</string>
+    <string name="installer_part_missing">Este instalador precisa da sua parte %1$s ao lado</string>
+    <string name="installing_unpacked">Instalando jogo: %1$d%% descompactado</string>
     <!-- EN: Verifying installed game archive… -->
     <string name="installed_verifying">Verificando a integridade do arquivo do jogo instalado…</string>
     <!-- EN: Checking installed game archive… -->

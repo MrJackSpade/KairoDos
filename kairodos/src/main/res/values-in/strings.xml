@@ -209,6 +209,8 @@
     <!-- %1$d is how many mebibytes have been copied. -->
     <!-- EN: Installing game: %1$d MiB copied -->
     <string name="installing_copied">Menginstal game: %1$d MiB disalin</string>
+    <string name="installer_part_missing">Penginstal ini memerlukan bagiannya %1$s di sebelahnya</string>
+    <string name="installing_unpacked">Menginstal game: %1$d%% diekstrak</string>
     <!-- EN: Verifying installed game archive… -->
     <string name="installed_verifying">Memverifikasi arsip game yang terinstal…</string>
     <!-- EN: Checking installed game archive… -->
