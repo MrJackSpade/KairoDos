@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  * ordinary game of the folder; it keeps the installer's catalog record.
  */
 internal class DosInstallers(private val context: Context, private val documents: DosDocuments, private val cache: File,
+                             /** Keeps the launch an installer's files declare, under the installer's and its archive's IDs. */
+                             private val keepLaunch: (Collection<String>, DosClickteamLaunch.Launch?) -> Unit,
                              /** DosLibrary.prepare: a game's verified copy in [cache]. */
                              private val prepare: (DosLibrary.Game, Uri?, AtomicBoolean) -> File) {
 
@@ -41,22 +43,29 @@ internal class DosInstallers(private val context: Context, private val documents
         val parts = DosClickteam.parts(name, documents.files(tree, parentId)).map { it.second }
         val unpacked = File.createTempFile("dos-install-", ".zip.part", cache)
         try {
-            unpack(game, name, parts, unpacked, cancelled, progress)
+            val launch = unpack(game, name, parts, unpacked, cancelled, progress)
             val contentId = DosContentHash.zip({ context.text(it) }, unpacked, cancelled)
+            keepLaunch(listOf(game.contentId!!, contentId), launch)
             return writeInstalled(game, tree, unpacked, contentId, cancelled, progress)
         } finally { unpacked.delete() }
     }
 
-    /** The installer [game] (its program [name] and [parts]) unpacked to the ZIP [target]; it must be the installer the scan saw. */
+    /**
+     * The installer [game] (its program [name] and [parts]) unpacked to the ZIP [target], which
+     * records the installer and its shortcuts as its comment; it must be the installer the scan
+     * saw. Returns the launch its shortcuts declare (DosClickteamLaunch), or null.
+     */
     private fun unpack(game: DosLibrary.Game, name: String, parts: List<Uri>, target: File, cancelled: AtomicBoolean,
-                       progress: (String) -> Unit) {
+                       progress: (String) -> Unit): DosClickteamLaunch.Launch? =
         DosClickteam.open(context, name, Uri.parse(game.uri), parts).use { installer ->
             require(DosClickteam.contentId(installer) == game.contentId) { context.getString(R.string.game_changed_since_scan) }
-            DosClickteam.writeZip(installer, target, cancelled) { percent ->
+            val entries = DosClickteam.entries(installer)
+            val launch = DosClickteamLaunch.launch(DosClickteam.files(installer), entries)
+            DosClickteam.writeZip(installer, target, DosClickteam.comment(DosClickteam.Installed(game.contentId!!, entries)), cancelled) { percent ->
                 progress(context.getString(R.string.installing_unpacked, percent.toInt()))
             }
+            launch
         }
-    }
 
     /**
      * Writes [source], the installed archive whose content ID is [contentId], to `<installer> - Installed.zip`
@@ -113,10 +122,11 @@ internal class DosInstallers(private val context: Context, private val documents
         } else {
             val pending = File.createTempFile("dos-install-", ".part", folder)
             try {
-                if (clickteam) {
+                val launch = if (clickteam) {
                     // A frontend grants the program alone: an installer in parts cannot be read.
                     unpack(game, game.path.substringAfterLast('/'), emptyList(), pending, cancelled, progress)
-                } else prepare(game, null, cancelled).inputStream().use { input ->
+                } else null
+                if (!clickteam) prepare(game, null, cancelled).inputStream().use { input ->
                     pending.outputStream().use { output ->
                         val buffer = ByteArray(65536)
                         while (true) {
@@ -129,6 +139,7 @@ internal class DosInstallers(private val context: Context, private val documents
                 }
                 val written = DosContentHash.zip({ context.text(it) }, pending, cancelled)
                 require(clickteam || written == game.contentId) { context.getString(R.string.installed_verification_failed) }
+                keepLaunch(listOf(game.contentId!!, written), launch)
                 require(pending.renameTo(installed)) { "Could not save installed game" }
                 written
             } finally { pending.delete() }

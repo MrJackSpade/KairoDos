@@ -32,4 +32,6 @@ dependencies {
     // Game ZIPs read in place through their document's descriptor (DosZip.members).
     implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
+    // Android's org.json is a stub on the JVM; tests parse JSON with the real library.
+    testImplementation("org.json:json:20240303")
 }

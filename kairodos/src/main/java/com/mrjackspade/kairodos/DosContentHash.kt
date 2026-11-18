@@ -17,7 +17,8 @@ import java.util.zip.CRC32
 
 /** One identity for a DOS game tree, whether stored as a ZIP or extracted files. */
 object DosContentHash {
-    data class ZipInspection(val contentId: String, val exodosSource: Boolean)
+    /** A ZIP's content ID, whether it is an eXoDOS source, and its [comment] (DosClickteam.installed reads an installed archive's). */
+    data class ZipInspection(val contentId: String, val exodosSource: Boolean, val comment: String? = null)
     private const val PREFIX = "sha256-dos-manifest-v1:"
     private val HEADER = "kairo-dos-manifest-v1\u0000".toByteArray(Charsets.UTF_8)
 
@@ -32,7 +33,9 @@ object DosContentHash {
                 val inspectMembers = { members: List<DosZip.Member>, opener: DosZip.Opener ->
                     inspect({ context.text(it) }, members, { member -> chdMember(opener.open(member), context.cacheDir, cancelled) }, cancelled)
                 }
-                if (sevenZ) DosZip.readSevenZ(channel, inspectMembers) else DosZip.read(channel, inspectMembers)
+                if (sevenZ) DosZip.readSevenZ(channel, inspectMembers)
+                // Read before the members: reading them closes the channel.
+                else DosZip.comment(channel).let { comment -> DosZip.read(channel, inspectMembers).copy(comment = comment) }
             }
         }
 

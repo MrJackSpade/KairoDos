@@ -31,7 +31,11 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 /** User selected DOS files and folders; no game data is packaged with the app. */
-class DosLibrary(private val context: Context) {
+class DosLibrary(private val context: Context,
+                 /** What games' own files give them: a Collection Chamber game's launch (DosFilesRecords). */
+                 private val filesRecords: DosFilesRecords,
+                 /** A record was added to [filesRecords]: the catalog resolves games again. */
+                 private val filesChanged: () -> Unit) {
     val hashCount: Int get() = scanPipeline.hashCount
     companion object {
         /** A new game's path in the games folder: the zip its drive is saved to (saveBlank). */
@@ -90,7 +94,14 @@ class DosLibrary(private val context: Context) {
     }
     private val cache = File(context.cacheDir, "dos-archives").apply { mkdirs() }
     private val documents = DosDocuments(context)
-    private val installers = DosInstallers(context, documents, cache) { game, tree, cancelled -> prepare(game, tree, cancelled) }
+    private val installers = DosInstallers(context, documents, cache, ::keepFilesRecord) { game, tree, cancelled -> prepare(game, tree, cancelled) }
+
+    /** Keeps [launch], what a game's files declare, under each of [contentIds]. */
+    private fun keepFilesRecord(contentIds: Collection<String>, launch: DosClickteamLaunch.Launch?) {
+        if (launch == null) return
+        filesRecords.put(contentIds, DosFilesRecords.record(launch))
+        filesChanged()
+    }
     /** Which programs of the folder are Collection Chamber installers, by path, size and time (planScan). */
     private val installerProbes = DosInstallerProbes(File(context.filesDir, "installer-probes-v1.json"))
     // The Disks page's drives (prepareMedia), beside the game's own prepared copy: kept, as other
@@ -134,9 +145,14 @@ class DosLibrary(private val context: Context) {
             else hashSource(source, cancelled)
         val installer = clickteam || inspection?.exodosSource == true &&
             !isInstalledArchive(file.name)
+        // What a Collection Chamber installer installed keeps the installer's catalog record.
+        val installed = DosClickteam.installed(inspection?.comment)
+        if (installed != null && !filesRecords.has(contentId))
+            keepFilesRecord(listOf(installed.installer, contentId), DosClickteam.launch(context, file.uri, installed))
         // Keyed by its path relative to the library folder, or its URI where it has none (Kairo#56).
         return Game(file.key, file.uri.toString(), file.name,
-            false, false, "${file.size}:${file.modified}", contentId, null, installer, true)
+            false, false, "${file.size}:${file.modified}", contentId, null, installer, true,
+            catalogId = installed?.installer ?: contentId)
     }
 
     /** A new game [name] on an empty C: drive, which [saveBlank] writes to the games folder as `<name>.zip`. */
@@ -387,6 +403,8 @@ class DosLibrary(private val context: Context) {
         val old = scan.prior[id]
         var installer = old?.installer == true &&
             !isInstalledArchive(item.path.substringAfterLast('/'))
+        // What a Collection Chamber installer installed: it keeps the installer's catalog record.
+        var installedFrom: String? = null
         val contentId = knownContent(old, fingerprint, if (extension(item.path) in archiveExtensions)
                 "sha256-dos-manifest-v1:" else "sha256-dos-file-v1:") ?: run {
             scan.hashStarted(item.path)
@@ -395,11 +413,17 @@ class DosLibrary(private val context: Context) {
                     context, item.uri, scan.cancelled, sevenZ = extension(item.path) == "7z")
                 installer = inspection.exodosSource &&
                     !isInstalledArchive(item.path.substringAfterLast('/'))
+                DosClickteam.installed(inspection.comment)?.let { installed ->
+                    installedFrom = installed.installer
+                    if (!filesRecords.has(inspection.contentId))
+                        keepFilesRecord(listOf(installed.installer, inspection.contentId), DosClickteam.launch(context, item.uri, installed))
+                }
                 inspection.contentId
             } else hashSource(item, scan.cancelled)
         }
         return listOf(Game(id, item.uri.toString(), item.path, false, false,
-            fingerprint, contentId, null, installer, catalogId = catalogId(scan, id, contentId)))
+            fingerprint, contentId, null, installer,
+            catalogId = scan.earlier[id]?.catalogId ?: installedFrom ?: contentId))
     }
 
     /** A CUE sheet, named by its track data's content; an error entry when the data is not beside it. */

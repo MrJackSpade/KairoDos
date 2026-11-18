@@ -18,11 +18,16 @@ FILE_LIST = 0x143A
 DATA = 0x7F7F
 PART_HEADER = 4
 MAX_BLOCK = 64 * 1024 * 1024
-# Record layouts: header size, then a file record's field offsets from the record's start.
+# Record layouts: header size, then a file record's field offsets from the record's start. A record
+# whose flags have TIMES holds three FILETIMEs before its path; one without starts its path that much sooner.
 LAYOUTS = {
-    "current": dict(header=4, offset=6, packed=10, size=18, checksum=22, name=68),
-    "earlier": dict(header=8, offset=28, packed=32, size=24, checksum=20, name=64),
+    "current": dict(header=4, offset=6, packed=10, size=18, checksum=22, flags=26, name=68),
+    "earlier": dict(header=8, offset=28, packed=32, size=24, checksum=20, flags=8, name=64),
 }
+TIMES = 0x08
+# Record types that are files; type 2 is the uninstaller's shortcut.
+FILE_TYPES = (0, 1)
+TIMES_SIZE = 24
 
 
 def part_name(program, index):
@@ -118,10 +123,16 @@ def parse(data, layout):
             size, kind = struct.unpack_from("<II", data, pos)
         if size < layout["header"] or size > len(data) - pos:
             raise ValueError("record outside the list")
-        if kind == 0:
-            start = pos + layout["name"]
+        if kind in FILE_TYPES:
+            timed = data[pos + layout["flags"]] & TIMES
+            start = pos + layout["name"] - (0 if timed else TIMES_SIZE)
             end = data.index(b"\0", start, pos + size)
             name = data[start:end].decode("cp1252").replace("\\", "/")
+            # After the path: the shortcuts made to it (a Start menu group, then a Start menu and a
+            # desktop shortcut, each its name, arguments and icon; an empty name is none).
+            tail = data[end + 1:pos + size].split(b"\0")
+            shortcuts = [dict(name=tail[i].decode("cp1252"), arguments=tail[i + 1].decode("cp1252"))
+                         for i in (1, 4) if len(tail) > i + 1 and tail[i]]
             parts = name.split("/")
             if not name or name.startswith("/") or ":" in name or any(p in ("", ".", "..") for p in parts):
                 raise ValueError(f"unsafe path {name!r}")
@@ -130,11 +141,16 @@ def parse(data, layout):
             names.add(name.lower())
             field = lambda key: struct.unpack_from("<I", data, pos + layout[key])[0]
             files.append(dict(name=name, offset=field("offset"), packed=field("packed"),
-                              size=field("size"), checksum=field("checksum")))
+                              size=field("size"), checksum=field("checksum"), shortcuts=shortcuts))
         pos += size
         records += 1
     if pos != len(data) or records != count:
         raise ValueError("records do not tile the list")
+    # The files' data tiles the data block; identical files share one copy. A misread record breaks this.
+    ordered = sorted(files, key=lambda f: f["offset"])
+    for before, f in zip(ordered, ordered[1:]):
+        if f["offset"] not in (before["offset"], before["offset"] + before["packed"]):
+            raise ValueError(f"{f['name']}: its data does not follow {before['name']}'s")
     return files
 
 

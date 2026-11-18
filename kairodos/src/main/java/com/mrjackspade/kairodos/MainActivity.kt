@@ -120,12 +120,14 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
 
     // The library and its catalog --------------------------------------------------------------------
 
-    private val dosLibrary by lazy { DosLibrary(this) }
+    /** What games' own files give them (an installer's launch): the catalog's lowest layer. */
+    private val filesRecords by lazy { DosFilesRecords(File(filesDir, "files-records-v1.json")) }
+    private val dosLibrary by lazy { DosLibrary(this, filesRecords) { catalog.filesChanged() } }
 
     override fun createCatalog(): LayeredGameCatalog {
         // Before KairoDos read the shared catalog its overrides and catalog file had their own names.
         DosCatalogMigration.moveLocalFiles(filesDir)
-        return LayeredGameCatalog(this, DosCatalog).also { DosSettingsMigration.run(preferences, it) }
+        return LayeredGameCatalog(this, DosCatalog, filesRecords::get).also { DosSettingsMigration.run(preferences, it) }
     }
 
     override fun createLibrary(catalog: LayeredGameCatalog): MachineLibrary<DosLibrary.Game> = Library()

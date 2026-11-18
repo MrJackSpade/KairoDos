@@ -67,6 +67,32 @@ object DosZip {
         }
 
     /**
+     * The ZIP open on [channel]'s comment (UTF-8), from its end of central directory record; null
+     * when it has none. A comment is not a member: the content ID leaves it out.
+     */
+    fun comment(channel: FileChannel): String? {
+        val size = channel.size()
+        val tail = minOf(size, 22L + 0xFFFF).toInt()
+        val bytes = ByteArray(tail)
+        val buffer = java.nio.ByteBuffer.wrap(bytes)
+        var at = size - tail
+        while (buffer.hasRemaining()) {
+            val read = channel.read(buffer, at)
+            if (read < 0) error("The archive ended early")
+            at += read
+        }
+        // The end record is the last signature whose comment length reaches exactly to the end.
+        for (start in tail - 22 downTo 0) {
+            if (bytes[start] != 0x50.toByte() || bytes[start + 1] != 0x4B.toByte() || bytes[start + 2] != 0x05.toByte() ||
+                bytes[start + 3] != 0x06.toByte()) continue
+            val length = (bytes[start + 20].toInt() and 0xFF) or ((bytes[start + 21].toInt() and 0xFF) shl 8)
+            if (start + 22 + length != tail) continue
+            return if (length == 0) null else String(bytes, start + 22, length, Charsets.UTF_8)
+        }
+        error("Not a ZIP archive: no end of central directory")
+    }
+
+    /**
      * Writes the 7z archive [sevenZ] as the ZIP [zip], member by member, for DOSBox, which mounts
      * ZIPs. The ZIP's names are UTF-8 and flagged so, which [open] reads as written, so the game's
      * content ID (DosContentHash) is the same from either.
