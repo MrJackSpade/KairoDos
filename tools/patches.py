@@ -1675,4 +1675,9 @@ std_fs::path resolve_home(const std::string &str) noexcept
          '\tbool is_image_mode = false;\n};\n',
          "\tbool is_image_mode = false;\n#ifdef KAIRO_STAGING\n\t// The geometry options' values, taken off the command line with the other options, before\n\t// its remaining arguments are read as paths (MOUNT::ParseArguments); ParseGeometry applies them.\n\tstd::optional<std::string> freesize_option = {};\n\tstd::optional<std::string> size_option     = {};\n\tstd::optional<std::string> chs_option      = {};\n#endif\n};\n"),
     ],
+    'staging-dma-shared-channels': [
+        ('dosbox-staging/src/hardware/dma.cpp',
+         '\tassert(!owner_name.empty());\n\n\tif (HasReservation()) {\n\t\tLOG_MSG("DMA: %s is replacing %s on %d-bit DMA channel %u",\n',
+         '\tassert(!owner_name.empty());\n\n#ifdef KAIRO_STAGING\n\t// Two devices on one channel share it, as in DOSBox 0.74-3 and DOSBox-X, which the eXoDOS and\n\t// Collection Chamber configurations are written for: each takes the channel\'s callback when it\n\t// starts a transfer. Staging removed the earlier device instead (Rapid Assault\'s GUS on its\n\t// Sound Blaster\'s DMA 1 left the game with no Sound Blaster: "Sound card not responding").\n\tif (HasReservation() && reservation_owner_name != owner_name) {\n\t\tLOG_MSG("DMA: %s shares %d-bit DMA channel %u with %s",\n\t\t        owner_name.c_str(),\n\t\t        is_16bit == 1 ? 16 : 8,\n\t\t        chan_num,\n\t\t        reservation_owner_name.c_str());\n\t\tevict_callback         = evict_cb;\n\t\treservation_owner_name = owner_name;\n\t\treturn;\n\t}\n#endif\n\tif (HasReservation()) {\n\t\tLOG_MSG("DMA: %s is replacing %s on %d-bit DMA channel %u",\n'),
+    ],
 }

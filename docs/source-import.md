@@ -123,6 +123,11 @@ had read every remaining argument of an image mount as an image, so `-size 512,6
 second image and the mount failed. `ParseArguments` now takes them off with `-t`, `-fs`, `-ide` and
 `-label`, into `MountParameters`, and `ParseGeometry` applies them.
 
+Group `staging-dma-shared-channels` (Collection Chamber launch sweep). `src/hardware/dma.cpp`'s
+`DmaChannel::ReserveFor` evicted a channel's earlier owner (the Sound Blaster when the GUS took its
+DMA), destroying that device; a second owner now shares the channel, as in DOSBox 0.74-3, each
+device taking the channel's callback when it starts a transfer.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`

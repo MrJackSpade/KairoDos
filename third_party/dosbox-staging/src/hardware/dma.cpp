@@ -478,6 +478,22 @@ void DmaChannel::ReserveFor(const std::string& owner_name,
 	assert(evict_cb);
 	assert(!owner_name.empty());
 
+#ifdef KAIRO_STAGING
+	// Two devices on one channel share it, as in DOSBox 0.74-3 and DOSBox-X, which the eXoDOS and
+	// Collection Chamber configurations are written for: each takes the channel's callback when it
+	// starts a transfer. Staging removed the earlier device instead (Rapid Assault's GUS on its
+	// Sound Blaster's DMA 1 left the game with no Sound Blaster: "Sound card not responding").
+	if (HasReservation() && reservation_owner_name != owner_name) {
+		LOG_MSG("DMA: %s shares %d-bit DMA channel %u with %s",
+		        owner_name.c_str(),
+		        is_16bit == 1 ? 16 : 8,
+		        chan_num,
+		        reservation_owner_name.c_str());
+		evict_callback         = evict_cb;
+		reservation_owner_name = owner_name;
+		return;
+	}
+#endif
 	if (HasReservation()) {
 		LOG_MSG("DMA: %s is replacing %s on %d-bit DMA channel %u",
 		        owner_name.c_str(),
