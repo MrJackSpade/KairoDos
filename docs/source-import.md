@@ -128,6 +128,11 @@ Group `staging-dma-shared-channels` (Collection Chamber launch sweep). `src/hard
 DMA), destroying that device; a second owner now shares the channel, as in DOSBox 0.74-3, each
 device taking the channel's callback when it starts a transfer.
 
+Group `staging-config-unknown-sections` (Collection Chamber launch sweep). `src/config/config.cpp`'s
+`Config::ParseConfigFile` kept the current section when a section header named one Staging does not
+have, so DOSBox-X's `[sblaster2]` (a second card, `sbtype = none`) overwrote `[sblaster]`. An unknown
+section now clears the current section, and its lines are skipped.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`

@@ -312,6 +312,16 @@ bool Config::ParseConfigFile(const std::string& type,
 				current_section = sec;
 				is_autoexec_section = (section_name == "autoexec");
 			}
+#ifdef KAIRO_STAGING
+			else {
+				// A section Staging does not have (DOSBox-X's [sblaster2], its second Sound
+				// Blaster) is skipped; its lines went to the section before it, and the second
+				// card's 'sbtype = none' removed the first (Trash Buster's "No Sound Blaster
+				// found").
+				LOG_INFO("CONFIG: Skipping unknown section [%s]", section_name.c_str());
+				current_section = nullptr;
+			}
+#endif
 		} else if (current_section) {
 			current_section->HandleInputLine(line);
 		}

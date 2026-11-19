@@ -1680,4 +1680,9 @@ std_fs::path resolve_home(const std::string &str) noexcept
          '\tassert(!owner_name.empty());\n\n\tif (HasReservation()) {\n\t\tLOG_MSG("DMA: %s is replacing %s on %d-bit DMA channel %u",\n',
          '\tassert(!owner_name.empty());\n\n#ifdef KAIRO_STAGING\n\t// Two devices on one channel share it, as in DOSBox 0.74-3 and DOSBox-X, which the eXoDOS and\n\t// Collection Chamber configurations are written for: each takes the channel\'s callback when it\n\t// starts a transfer. Staging removed the earlier device instead (Rapid Assault\'s GUS on its\n\t// Sound Blaster\'s DMA 1 left the game with no Sound Blaster: "Sound card not responding").\n\tif (HasReservation() && reservation_owner_name != owner_name) {\n\t\tLOG_MSG("DMA: %s shares %d-bit DMA channel %u with %s",\n\t\t        owner_name.c_str(),\n\t\t        is_16bit == 1 ? 16 : 8,\n\t\t        chan_num,\n\t\t        reservation_owner_name.c_str());\n\t\tevict_callback         = evict_cb;\n\t\treservation_owner_name = owner_name;\n\t\treturn;\n\t}\n#endif\n\tif (HasReservation()) {\n\t\tLOG_MSG("DMA: %s is replacing %s on %d-bit DMA channel %u",\n'),
     ],
+    'staging-config-unknown-sections': [
+        ('dosbox-staging/src/config/config.cpp',
+         '\t\t\t}\n\t\t} else if (current_section) {\n',
+         '\t\t\t}\n#ifdef KAIRO_STAGING\n\t\t\telse {\n\t\t\t\t// A section Staging does not have (DOSBox-X\'s [sblaster2], its second Sound\n\t\t\t\t// Blaster) is skipped; its lines went to the section before it, and the second\n\t\t\t\t// card\'s \'sbtype = none\' removed the first (Trash Buster\'s "No Sound Blaster\n\t\t\t\t// found").\n\t\t\t\tLOG_INFO("CONFIG: Skipping unknown section [%s]", section_name.c_str());\n\t\t\t\tcurrent_section = nullptr;\n\t\t\t}\n#endif\n\t\t} else if (current_section) {\n'),
+    ],
 }
