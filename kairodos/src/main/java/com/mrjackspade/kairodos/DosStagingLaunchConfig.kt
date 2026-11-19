@@ -8,9 +8,10 @@ import java.io.File
 /** Translate catalog launch profiles to ordinary Staging mounts. Catalog
  * commands run in DOS; only MOUNT/IMGMOUNT receive native Android paths. */
 internal object DosStagingLaunchConfig {
-    private val mount = Regex("(?i)^(\\s*@?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
-    private val mountC = Regex("(?i)^@?mount\\s+c\\s+.+$")
-    private val imgC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
+    // A drive letter, with or without its colon ("mount d: CD"), as DOSBox takes it.
+    private val mount = Regex("(?i)^(\\s*@?mount\\s+)([a-z]):?(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
+    private val mountC = Regex("(?i)^@?mount\\s+c:?\\s+.+$")
+    private val imgC = Regex("(?i)^@?imgmount\\s+c:?\\s+.+$")
     private val WRITABLE_IMAGES = setOf("img", "ima")
     /** IMGMOUNT's options that take a value (Staging's and DOSBox-X's, which Collection Chamber setups use). */
     private val IMGMOUNT_VALUE_OPTIONS = setOf("-t", "-fs", "-size", "-chs", "-o", "-el-torito", "-bootcd", "-label", "-ide")
@@ -340,7 +341,7 @@ internal object DosStagingLaunchConfig {
                 // DOS-compatible CMD text is run as a batch file on an app-owned
                 // scratch drive. Never rename/overwrite a file in the game drive.
                 require(target.occupiedDrives.isNotEmpty()) { message(R.string.command_script_needs_drives, emptyArray()) }
-                val used = target.occupiedDrives + lines.mapNotNull { Regex("(?i)^\\s*@?(?:img)?mount\\s+([a-z])\\s+").find(it)
+                val used = target.occupiedDrives + lines.mapNotNull { Regex("(?i)^\\s*@?(?:img)?mount\\s+([a-z]):?\\s+").find(it)
                     ?.groupValues?.get(1)?.uppercase()?.single() }.toSet()
                 val letter = ('Y' downTo 'A').firstOrNull { it !in used }
                     ?: error(message(R.string.command_script_no_drive, emptyArray()))

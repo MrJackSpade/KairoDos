@@ -8,9 +8,10 @@ import java.time.format.DateTimeFormatter
 /** Catalog startup profile and player setup helpers for the DOS backend. */
 internal object DosLaunchConfig {
 
-    private val mountC = Regex("(?i)^@?mount\\s+c\\s+(.+)$")
+    private val mountC = Regex("(?i)^@?mount\\s+c:?\\s+(.+)$")
     private val playerName = Regex("[A-Z0-9_]{1,8}")
-    private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
+    // A drive letter, with or without its colon ("mount d: CD"), as DOSBox takes it.
+    private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z]):?(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
 
     /** A launch's versions, its configurations in the order the player sees them: the standard one (dosbox.conf) first. */
     fun versions(launch: DosLaunch?): List<String> = launch?.configs?.keys.orEmpty()

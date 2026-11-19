@@ -98,6 +98,15 @@ class DosStagingLaunchConfigTest {
         assertTrue(resolved(compose(DosLaunch("JRA", mapOf("dosbox.conf" to plain), false))).contains("imgmount D <JRA/CD/JRV.cue> -t iso"))
     }
 
+    @Test fun aDriveLetterWithItsColonMountsTheSame() {
+        file("DOS/CD/QUIK/QUIK.BAT")
+        file("DOS/HDD/GAME.EXE")
+        val config = "[autoexec]\nmount c: HDD\nmount d: \"CD/QUIK\" -t cdrom\nD:\ncall QUIK.BAT\n"
+        val lines = resolved(compose(DosLaunch("DOS", mapOf("dosbox.conf" to config), false)))
+        assertTrue(lines.contains("mount C <DOS/HDD>"))
+        assertTrue(lines.contains("mount d <DOS/CD/QUIK> -t cdrom"))
+    }
+
     @Test fun bootKeepsADosPathAndItsOptions() {
         file("Cap/CAP.IMG")
         val config = "[autoexec]\nmount C \".\\eXoDOS\\Cap\"\nc:\nboot CAP.IMG -l a\nexit\n"
