@@ -260,7 +260,11 @@ void TandyDAC::ChangeMode()
 		    new_sample_rate_hz < DacMaxSampleRateHz) {
 			assert(channel);
 
+#ifdef KAIRO_STAGING
+			KAIRO_SetQueuedSampleRate<TandyDAC, uint8_t, false, false, true>(this, new_sample_rate_hz);
+#else
 			channel->SetSampleRate(new_sample_rate_hz);
+#endif
 
 			const auto vol = static_cast<float>(regs.amplitude) / 7.0f;
 

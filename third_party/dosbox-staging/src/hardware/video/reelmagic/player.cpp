@@ -735,7 +735,12 @@ static void ActivatePlayerAudioFifo(AudioFifo& audio_fifo)
 	}
 	active_fifo = &audio_fifo;
 	assert(reel_magic_audio.channel);
+#ifdef KAIRO_STAGING
+	KAIRO_SetQueuedSampleRate<ReelMagicAudio, AudioFrame, true, true, true>(&reel_magic_audio,
+	                                                                      active_fifo->GetSampleRate());
+#else
 	reel_magic_audio.channel->SetSampleRate(active_fifo->GetSampleRate());
+#endif
 	reel_magic_audio.output_queue.Start();
 	reel_magic_audio.channel->Enable(true);
 }

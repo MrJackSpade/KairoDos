@@ -459,7 +459,11 @@ void Gus::ActivateVoices(uint8_t requested_voices)
 
 		ms_per_render = MillisInSecond / sample_rate_hz;
 
+#ifdef KAIRO_STAGING
+		KAIRO_SetQueuedSampleRate<Gus, AudioFrame, true, true, true>(this, sample_rate_hz);
+#else
 		channel->SetSampleRate(sample_rate_hz);
+#endif
 	}
 
 	if (active_voices && prev_logged_voices != active_voices) {

@@ -918,13 +918,18 @@ static CacheBlock *CreateCacheBlock(CodePageHandler *codepage, PhysPt start, Bit
 			decode.rep=REP_Z;
 			goto restart_prefix;
 
+		// CMC, CLC and STC fill the flags from the lazy state before
+		// changing CF, so they consume the pending flag producers.
 		case 0xf5:		//CMC
+			AcquireFlags(FMASK_TEST);
 			gen_call_function_raw((void*)dynrec_cmc);
 			break;
 		case 0xf8:		//CLC
+			AcquireFlags(FMASK_TEST);
 			gen_call_function_raw((void*)dynrec_clc);
 			break;
 		case 0xf9:		//STC
+			AcquireFlags(FMASK_TEST);
 			gen_call_function_raw((void*)dynrec_stc);
 			break;
 

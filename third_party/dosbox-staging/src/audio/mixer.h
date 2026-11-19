@@ -489,6 +489,53 @@ void MIXER_SetReverbPreset(const ReverbPreset new_preset);
 ChorusPreset MIXER_GetChorusPreset();
 void MIXER_SetChorusPreset(const ChorusPreset new_preset);
 
+#ifdef KAIRO_STAGING
+// Sizes a device's queue for its channel's rate: two of the mixer's blocks, or a hundred in
+// fast-forward, where the mixer asks for far more at once.
+template <class DeviceType>
+inline void KAIRO_SizeQueue(DeviceType* device)
+{
+	const float blocks = MIXER_FastForwardModeEnabled() ? 100.0f : 2.0f;
+	device->output_queue.Resize(iceil(device->channel->GetFramesPerBlock() * blocks));
+}
+
+// Hands frames dequeued from a device's queue to its channel, which converts them at its rate.
+template <class DeviceType, class AudioType, bool stereo, bool signeddata, bool nativeorder>
+inline void KAIRO_AddQueuedFrames(DeviceType* device, const std::vector<AudioType>& frames)
+{
+	if (frames.empty()) {
+		return;
+	}
+	if constexpr (std::is_same_v<AudioType, AudioFrame>) {
+		device->channel->AddAudioFrames(frames);
+	} else {
+		device->channel->template AddSamples<AudioType, stereo, signeddata, nativeorder>(
+		        check_cast<int>(frames.size()), frames.data());
+	}
+}
+
+// KairoDos#154: a device that queues its sound is mixed KairoMixLagTicks behind the tick that made
+// it, in its channel's rate. When the rate changes, the frames still queued were made at the old
+// one; mixed at the new one, the mix would ask the queue for a different count than it holds. So
+// they go to the channel first, converted at the rate they were made at, and only then does the
+// channel take the new rate. The queue is then sized for the new rate at once: sized for a lower
+// one until the next pull, it would drop what the device makes at the higher one. Every queued
+// device changes its rate through here.
+template <class DeviceType, class AudioType, bool stereo, bool signeddata, bool nativeorder>
+inline void KAIRO_SetQueuedSampleRate(DeviceType* device, const int rate_hz)
+{
+	assert(device && device->channel);
+	if (device->channel->GetSampleRate() == rate_hz) {
+		return;
+	}
+	static std::vector<AudioType> queued = {};
+	device->output_queue.BulkDequeue(queued, device->output_queue.Size());
+	KAIRO_AddQueuedFrames<DeviceType, AudioType, stereo, signeddata, nativeorder>(device, queued);
+	device->channel->SetSampleRate(rate_hz);
+	KAIRO_SizeQueue(device);
+}
+#endif
+
 // Generic callback used for audio devices which generate audio on the main
 // thread. These devices produce audio on the main thread and consume on the
 // mixer thread. This callback is the consumer part.
@@ -505,6 +552,9 @@ inline void MIXER_PullFromQueueCallback(const int frames_requested, DeviceType* 
 
 	assert(device && device->channel);
 
+#ifdef KAIRO_STAGING
+	KAIRO_SizeQueue(device);
+#else
 	if (MIXER_FastForwardModeEnabled()) {
 		// Special case, normally only hit when using the fast-forward
 		// hotkey (Alt + F12). We need a very large buffer to compensate
@@ -530,6 +580,7 @@ inline void MIXER_PullFromQueueCallback(const int frames_requested, DeviceType* 
 		device->output_queue.Resize(
 		        iceil(device->channel->GetFramesPerBlock() * 2.0f));
 	}
+#endif
 	static std::vector<AudioType> to_mix = {};
 
 #ifdef KAIRO_STAGING
@@ -545,6 +596,9 @@ inline void MIXER_PullFromQueueCallback(const int frames_requested, DeviceType* 
 	const auto frames_received = check_cast<int>(
 	        device->output_queue.BulkDequeue(to_mix, frames_requested));
 
+#ifdef KAIRO_STAGING
+	KAIRO_AddQueuedFrames<DeviceType, AudioType, stereo, signeddata, nativeorder>(device, to_mix);
+#else
 	if (frames_received > 0) {
 		if constexpr (std::is_same_v<AudioType, AudioFrame>) {
 			device->channel->AddAudioFrames(to_mix);
@@ -553,6 +607,7 @@ inline void MIXER_PullFromQueueCallback(const int frames_requested, DeviceType* 
 			        frames_received, to_mix.data());
 		}
 	}
+#endif
 	// Fill any shortfall with silence
 	if (frames_received < frames_requested) {
 		device->channel->AddSilence();

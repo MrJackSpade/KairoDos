@@ -1481,9 +1481,13 @@ void SoundBlaster::SetChannelRateHz(const int requested_rate_hz)
 	                                MinPlaybackRateHz,
 	                                NativeDacRateHz);
 	assert(channel);
+#ifdef KAIRO_STAGING
+	KAIRO_SetQueuedSampleRate<SoundBlaster, AudioFrame, true, true, true>(this, rate_hz);
+#else
 	if (channel->GetSampleRate() != rate_hz) {
 		channel->SetSampleRate(rate_hz);
 	}
+#endif
 }
 
 // Wake up the queue and channel to resume processing and playback

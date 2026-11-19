@@ -527,6 +527,8 @@ static void dyn_imul_gvev(Bitu immsize) {
 			break;
 	}
 
+	// The multiply helpers fill the flags from the lazy state.
+	AcquireFlags(FMASK_TEST);
 	if (decode.big_op) gen_call_function_raw((void*)dynrec_dimul_dword);
 	else gen_call_function_raw((void*)dynrec_dimul_word);
 
@@ -710,9 +712,11 @@ static void dyn_grp3_eb(void) {
 		dyn_sop_byte_gencall(SOP_NEG);
 		break;
 	case 0x4:	// mul Eb
+		AcquireFlags(FMASK_TEST);
 		gen_call_function_raw((void*)&dynrec_mul_byte);
 		return;
 	case 0x5:	// imul Eb
+		AcquireFlags(FMASK_TEST);
 		gen_call_function_raw((void*)&dynrec_imul_byte);
 		return;
 	case 0x6:	// div Eb
@@ -755,10 +759,12 @@ static void dyn_grp3_ev(void) {
 		dyn_sop_word_gencall(SOP_NEG,decode.big_op);
 		break;
 	case 0x4:	// mul Eb
+		AcquireFlags(FMASK_TEST);
 		if (decode.big_op) gen_call_function_raw((void*)&dynrec_mul_dword);
 		else gen_call_function_raw((void*)&dynrec_mul_word);
 		return;
 	case 0x5:	// imul Eb
+		AcquireFlags(FMASK_TEST);
 		if (decode.big_op) gen_call_function_raw((void*)&dynrec_imul_dword);
 		else gen_call_function_raw((void*)&dynrec_imul_word);
 		return;
@@ -913,10 +919,13 @@ static bool dyn_grp6(void) {
 					gen_call_function_R((void*)CPU_LTR,FC_RETOP);
 					dyn_check_exception(FC_RETOP);
 					break;
+				// VERR and VERW fill the flags from the lazy state to set ZF.
 				case 0x04:	// VERR
+					AcquireFlags(FMASK_TEST);
 					gen_call_function_R((void*)CPU_VERR,FC_RETOP);
 					break;
 				case 0x05:	// VERW
+					AcquireFlags(FMASK_TEST);
 					gen_call_function_R((void*)CPU_VERW,FC_RETOP);
 					break;
 			}

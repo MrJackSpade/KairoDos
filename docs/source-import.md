@@ -87,6 +87,15 @@ Other conditions/producers retain original handling; no memory or invalidation
 semantics change. Original GPL notices remain intact. A verification-only macro
 checks producer identity and is absent from normal builds.
 
+Group `dynrec-flag-consumers` (Collection Chamber launch sweep). The queue's single
+producer is only the live one if nothing filled the flags since: CMC, CLC, STC,
+MUL, IMUL (all forms), VERR and VERW call helpers that fill the flags from the
+lazy state at run time, so `src/cpu/core_dynrec/decoder.h` and `decoder_opcodes.h`
+now acquire the flags before them, as PUSHF and RCL/RCR already did. Without it
+a CMP; STC; Jcc sequence took its condition from the CMP's lazy state, and
+Windows for Workgroups 3.11's VMM stopped with "Invalid VxD dynamic link call to
+device number 0007". The verification macro runs clean over a Windows boot.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
@@ -115,6 +124,8 @@ whole. Every other device is unchanged. Original GPL notices are preserved.
 Group `staging-fixed-clock` (KairoDos#156). Under `KAIRO_STAGING`, `src/ints/bios.cpp` (`BIOS_HostTimeSync`, the DOS date and BIOS tick count at boot) and `src/hardware/cmos.cpp` (the CMOS clock, which Staging reads from the host's time at every read) take the time from `KairoStagingClock` (`backend-dos/src/main/cpp/staging_bridge.h`): the host's local time, as before, or for a run that must repeat exactly (`kairo::Launch::repeatable`, the shared tests) a fixed start, 1993-01-01 00:00:00 UTC (`kairo_staging_fixed_clock`), plus the emulated time since the run began. The app keeps the host's time. Original GPL notices are preserved.
 
 Group `staging-mixer-on-tick` (KairoDos#154). Under `KAIRO_STAGING`, `src/audio/mixer.cpp` mixes on the emulation thread instead of its own: a tick handler mixes, `KairoMixLagTicks` (4) emulated 1 ms ticks behind the sound devices, in blocks of the mixer's block size, and `KairoMixerFrameEnd` (called by the bridge's frame end) mixes the rest before the host takes each frame's sound, so identical runs give the same sound in every frame. A queued device's pull (`MIXER_PullFromQueueCallback`, `src/audio/mixer.h`) never waits and fails when its running queue is short; a channel enabled mid-run leads with silence up to the last tick; the channel sleeper counts emulated time; speex starts from zeros instead of `speex_resampler_skip_zeros`. `src/hardware/audio/opl.cpp` and `opl.h` render every OPL frame on the timeline, each tick (`Opl::RenderTick`), on the ordered OPL worker, which also hands each block to a second ordered stage for the channel's resampling and filters; the mixer waits for both before each mix and while it is locked (`OPL_WaitForWorker`), and the mixer callback only takes made frames. Original GPL notices are preserved.
+
+Group `staging-queued-rate` (Collection Chamber launch sweep). A queued device's frames are mixed `KairoMixLagTicks` behind the tick that made them, at its channel's rate, so a rate change left the next mix asking the queue for the old rate's frames at the new one (Sound Blaster 11025 to 22050 Hz: 241 frames asked, 219 held). `KAIRO_SetQueuedSampleRate` (`src/audio/mixer.h`) hands the frames still queued to the channel at the rate they were made at, sets the new rate, and sizes the queue for it at once (`KAIRO_SizeQueue`, the pull's own sizing): sized for the lower rate until the next pull, the queue dropped what a Sound Blaster switched from 11025 to 22050 Hz made (236 frames held, the 11025 Hz capacity). The Sound Blaster, GUS, Tandy DAC and ReelMagic change their rate through it, and `MIXER_PullFromQueueCallback` shares its hand-off (`KAIRO_AddQueuedFrames`) and sizing. Original GPL notices are preserved.
 
 ## Ordered OPL worker
 
