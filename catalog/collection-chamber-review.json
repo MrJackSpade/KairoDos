@@ -141,6 +141,10 @@
    "exodos": "sha256-dos-manifest-v1:75cc0400c96127312bc5a50d37884478c5f5e4dc67d180e53f83e70c774ad4a7",
    "reason": "The installer is Leather Goddesses of Phobos 2 with the first game added (2+)."
   },
+  "NR2": {
+   "version": "dosbox-D3D.conf",
+   "reason": "Version: its \"NASCAR Racing 2 (Direct 3D)\" shortcut's dosbox-D3D.conf (N2.BAT, on the emulated Voodoo); dosbox.conf, which sorts first, is its \"(3Dfx)\" shortcut's N23DFX.BAT, for DOSBox Glide passthrough, which Staging does not have (\"Cannot determine glide port\")."
+  },
   "PYL": {
    "exodos": "sha256-dos-manifest-v1:75cb05a0d3379dcb85ec6c4571661e4b51b2905b126ea5f835f4297744283fda",
    "reason": "The installer spells Pył (1999) without its Polish ł."
