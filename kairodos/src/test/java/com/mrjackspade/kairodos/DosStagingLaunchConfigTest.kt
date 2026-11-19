@@ -81,6 +81,23 @@ class DosStagingLaunchConfigTest {
             "@boot <overlay/GB2/FLOPPY/GB1.img>", "exit"), autoexec)
     }
 
+    @Test fun aCdImageGoesOnTheIdeBusWhereItsDosboxPutsIt() {
+        file("JRA/CD/JRV.cue", "FILE \"JRV.bin\" BINARY")
+        file("JRA/HDD/50.img")
+        val dosboxX = "[ide, secondary]\nenable = true\n[autoexec]\nimgmount D \"CD\\JRV.CUE\" -t iso\nimgmount c HDD\\50.img -size 512,63,16,101\nboot c:\n"
+        val lines = resolved(compose(DosLaunch("JRA", mapOf("dosbox.conf" to dosboxX), false)))
+        assertTrue(lines.contains("imgmount D <JRA/CD/JRV.cue> -t iso -ide"))
+        assertTrue(lines.contains("imgmount c <overlay/JRA/HDD/50.img> -size 512,63,16,101"))
+        // An eXoDOS configuration's own "-ide 2m" stays, its value not read as a path.
+        file("Pilgrim/cd/PILGRIM.ISO")
+        val exodos = "[autoexec]\nmount C \".\\eXoDOS\\Pilgrim\"\nimgmount d .\\eXoDOS\\Pilgrim\\cd\\PILGRIM.ISO -t iso -fs iso -ide 2m\n"
+        assertTrue(resolved(compose(DosLaunch("Pilgrim", mapOf("dosbox.conf" to exodos), false)))
+            .contains("imgmount d <Pilgrim/cd/PILGRIM.ISO> -t iso -fs iso -ide 2m"))
+        // Without DOSBox-X's controller, a CD image stays off the bus.
+        val plain = "[autoexec]\nimgmount D \"CD\\JRV.CUE\" -t iso\n"
+        assertTrue(resolved(compose(DosLaunch("JRA", mapOf("dosbox.conf" to plain), false))).contains("imgmount D <JRA/CD/JRV.cue> -t iso"))
+    }
+
     @Test fun bootKeepsADosPathAndItsOptions() {
         file("Cap/CAP.IMG")
         val config = "[autoexec]\nmount C \".\\eXoDOS\\Cap\"\nc:\nboot CAP.IMG -l a\nexit\n"

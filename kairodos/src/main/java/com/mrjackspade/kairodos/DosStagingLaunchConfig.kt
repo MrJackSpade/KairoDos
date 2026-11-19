@@ -13,16 +13,28 @@ internal object DosStagingLaunchConfig {
     private val imgC = Regex("(?i)^@?imgmount\\s+c\\s+.+$")
     private val WRITABLE_IMAGES = setOf("img", "ima")
     /** IMGMOUNT's options that take a value (Staging's and DOSBox-X's, which Collection Chamber setups use). */
-    private val IMGMOUNT_VALUE_OPTIONS = setOf("-t", "-fs", "-size", "-chs", "-o", "-el-torito", "-bootcd", "-label")
+    private val IMGMOUNT_VALUE_OPTIONS = setOf("-t", "-fs", "-size", "-chs", "-o", "-el-torito", "-bootcd", "-label", "-ide")
 
     /**
      * DOSBox 0.74-3's behaviour where Staging differs, for the eXoDOS and Collection Chamber
      * configurations written for it and tested on it. File locking: 0.74-3 has no SHARE emulation;
      * Staging's 'auto' emulates SHARE while Windows 3.1 runs, and refuses a Director projector
      * opening its own EXE (deny-none) while Windows holds it open (compatibility mode), so the
-     * projector reports "Invalid projector file" (Gross Gags).
+     * projector reports "Invalid projector file" (Grossology).
      */
     private val SOURCE_DEFAULTS = listOf("dos" to listOf("file_locking" to "off"))
+
+    /** Whether [source] is a DOSBox-X configuration with an IDE controller enabled (an `[ide, ...]` section's `enable`). */
+    private fun dosboxXIde(source: String?): Boolean {
+        var inIde = false
+        for (original in source.orEmpty().lineSequence()) {
+            val line = original.substringBefore('#').trim()
+            if (line.startsWith('[')) inIde = Regex("(?i)^\\[ide,\\s*\\w+]$").matches(line)
+            else if (inIde && '=' in line && line.substringBefore('=').trim().equals("enable", true) &&
+                line.substringAfter('=').trim().lowercase() in setOf("true", "1", "on")) return true
+        }
+        return false
+    }
 
     private fun cpuCore(source: String?): String {
         var inCpu = false
@@ -277,10 +289,16 @@ internal object DosStagingLaunchConfig {
                 if (trimmed.startsWith("imgmount ", true) || trimmed.startsWith("@imgmount ", true)) {
                     // Image mounting accepts host paths. Quoted paths can contain
                     // spaces; retain the source quoting and convert only operands.
-                    val originalTokens = Regex("\"[^\"]*\"|\\S+").findAll(line).map { it.value }.toList()
-                    val tokens = originalTokens.filterIndexed { index, token ->
-                        !token.equals("-ide", true) && (index == 0 || !originalTokens[index - 1].equals("-ide", true))
+                    val written = Regex("\"[^\"]*\"|\\S+").findAll(line).map { it.value }.toList()
+                    // A CD image goes on the IDE bus where the DOSBox the configuration is written for puts
+                    // it: its "-ide" ("-ide 2m"), or, for DOSBox-X with an IDE controller enabled, the next
+                    // free slot, which DOSBox-X picks for every CD image (a booted DOS's IDE CD driver
+                    // finds the disc there: Jump Raven).
+                    val cdImage = written.withIndex().any { (index, token) ->
+                        index > 0 && written[index - 1].equals("-t", true) && token.lowercase() in setOf("iso", "cdrom")
                     }
+                    val tokens = if (cdImage && written.none { it.equals("-ide", true) } && dosboxXIde(source)) written + "-ide"
+                        else written
                     lines += tokens.mapIndexed { index, token ->
                         // An option's value ("-t iso") is not a path, though it reads as a relative one.
                         val optionValue = index > 0 && tokens[index - 1].lowercase() in IMGMOUNT_VALUE_OPTIONS

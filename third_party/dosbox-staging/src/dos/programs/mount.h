@@ -49,6 +49,13 @@ struct MountParameters {
 	bool is_drive_number = false;
 
 	bool is_image_mode = false;
+#ifdef KAIRO_STAGING
+	// The geometry options' values, taken off the command line with the other options, before
+	// its remaining arguments are read as paths (MOUNT::ParseArguments); ParseGeometry applies them.
+	std::optional<std::string> freesize_option = {};
+	std::optional<std::string> size_option     = {};
+	std::optional<std::string> chs_option      = {};
+#endif
 };
 
 class MOUNT final : public Program {

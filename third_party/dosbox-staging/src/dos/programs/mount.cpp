@@ -659,6 +659,19 @@ bool MOUNT::ParseArguments(MountParameters& params, bool& explicit_fs,
 
 	// Label
 	cmd->FindString("-label", params.label, true);
+#ifdef KAIRO_STAGING
+	// The geometry options take values too: off the command line here, with the others, or an
+	// image mount reads the value as another image ("imgmount c disk.img -size 512,63,16,101"
+	// mounted the image, then failed on "512,63,16,101": Jurassic Park's DOSBox-X configuration).
+	for (auto [name, option] : {std::pair{"-freesize", &params.freesize_option},
+	                            std::pair{"-size", &params.size_option},
+	                            std::pair{"-chs", &params.chs_option}}) {
+		std::string value = {};
+		if (cmd->FindString(name, value, true)) {
+			*option = value;
+		}
+	}
+#endif
 
 	return true;
 }
@@ -717,7 +730,12 @@ bool MOUNT::ParseGeometry(MountParameters& params)
 	// Parse the free space in mb (kb for floppies)
 	std::string mb_size;
 
+#ifdef KAIRO_STAGING
+	if (params.freesize_option) {
+		mb_size = *params.freesize_option;
+#else
 	if (cmd->FindString("-freesize", mb_size, true)) {
+#endif
 
 		char teststr[1024];
 		uint16_t freesize = static_cast<uint16_t>(atoi(mb_size.c_str()));
@@ -748,7 +766,13 @@ bool MOUNT::ParseGeometry(MountParameters& params)
 	}
 
 	// Parse -size
+#ifdef KAIRO_STAGING
+	if (params.size_option) {
+		str_size = *params.size_option;
+	}
+#else
 	cmd->FindString("-size", str_size, true);
+#endif
 
 	// Apply str_size string to sizes array
 	if (!str_size.empty()) {
@@ -778,7 +802,12 @@ bool MOUNT::ParseGeometry(MountParameters& params)
 	}
 
 	// Parse -chs C,H,S
+#ifdef KAIRO_STAGING
+	if (params.chs_option) {
+		str_chs = *params.chs_option;
+#else
 	if (cmd->FindString("-chs", str_chs, true)) {
+#endif
 		int cmd_cylinders = 0;
 		int cmd_heads     = 0;
 		int cmd_sectors   = 0;

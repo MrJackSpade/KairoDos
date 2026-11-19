@@ -117,6 +117,12 @@ Group `staging-overlay-mkdir-parents` (Collection Chamber launch sweep). `src/do
 the base alone (a game's own folder before anything was written there); it now calls
 `Sync_leading_dirs` first, as file creation does, so the parents are made in the overlay too.
 
+Group `staging-mount-geometry-options` (Collection Chamber launch sweep). `src/dos/programs/mount.cpp`
+took `-size`, `-chs` and `-freesize` off the command line in `ParseGeometry`, after `ProcessPaths`
+had read every remaining argument of an image mount as an image, so `-size 512,63,16,101` became a
+second image and the mount failed. `ParseArguments` now takes them off with `-t`, `-fs`, `-ide` and
+`-label`, into `MountParameters`, and `ParseGeometry` applies them.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
