@@ -37,6 +37,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import catalog_descriptions
 import catalog_files
 from catalog_config import MACHINE_OPTIONS
+from collection_chamber import artwork as collection_chamber_artwork, own_game_key, own_games
 from dos_artwork import with_launchbox
 from dos_catalog_review import apply_review, read_review
 
@@ -80,24 +81,46 @@ def research_game(record, images):
     return game
 
 
+def read_versioned(path, field):
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data.get("schemaVersion") == 1, f"invalid {path.name}"
+    return data[field]
+
+
 def apply_collection_chamber(games):
     """The Collection Chamber's installers (catalog/collection-chamber-v1.json, tools/collection_chamber.py):
-    each installer, and the archive it installs, is another medium of its eXoDOS game, or a game of
-    its own titled as the installer names it. Their launch comes from their own files (the app's
-    files layer), so they add none here."""
+    each installer, and the archive it installs, is another medium of its eXoDOS game, or of a game of
+    its own (collection_chamber.own_games: a folder's versions of one title are one game). A game of
+    its own takes its title and tags from its LaunchBox record
+    (catalog/research/collection-chamber-launchbox-v1.json), or its title from the installer without
+    one, and its artwork from LaunchBox and its Collection Chamber post
+    (catalog/research/collection-chamber-pages-v1.json, collection_chamber.artwork). Their launch
+    comes from their own files (the app's files layer), so they add none here."""
     source = ROOT / "catalog/collection-chamber-v1.json"
     if not source.exists():
         return
-    data = json.loads(source.read_text(encoding="utf-8"))
-    assert data.get("schemaVersion") == 1, "invalid collection-chamber-v1.json"
-    for code, installer in sorted(data["installers"].items()):
+    installers = read_versioned(source, "installers")
+    launchboxes = read_versioned(ROOT / "catalog/research/collection-chamber-launchbox-v1.json", "games")
+    pages = read_versioned(ROOT / "catalog/research/collection-chamber-pages-v1.json", "games")
+    keys = {}
+    for code, codes in sorted(own_games(installers).items()):
+        key = own_game_key(installers, codes)
+        newest = installers[codes[0]]
+        assert key not in games, f"collection-chamber-v1.json: {code}'s key {key} is taken"
+        assert code in pages, f"collection-chamber-pages-v1.json has no {code}: run tools/collection_chamber.py pages"
+        launchbox = launchboxes.get(code, {})
+        game = {"title": launchbox.get("title") or newest["title"], "contentIds": []}
+        if launchbox.get("tags"):
+            game["tags"] = launchbox["tags"]
+        art = collection_chamber_artwork(code, newest, launchbox, pages[code])
+        if art:
+            game["artwork"] = art
+        games[key] = game
+        keys.update((installer, key) for installer in codes)
+    for code, installer in sorted(installers.items()):
         media = [installer["installer"]] + ([installer["installed"]] if installer.get("installed") else [])
-        key = installer.get("game") or "dos:" + installer["installer"].split(":", 1)[1][:16]
-        if installer.get("game"):
-            assert key in games, f"collection-chamber-v1.json: {code} names unknown game {key}"
-        else:
-            assert key not in games, f"collection-chamber-v1.json: {code}'s key {key} is taken"
-            games[key] = {"title": installer["title"], "contentIds": []}
+        key = installer.get("game") or keys[code]
+        assert key in games, f"collection-chamber-v1.json: {code} names unknown game {key}"
         game = games[key]
         game["contentIds"] = game["contentIds"] + [m for m in media if m not in game["contentIds"]]
 

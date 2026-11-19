@@ -2,6 +2,8 @@
 
     python tools/collection_chamber.py scan <folder> <cache.json> [--count N] [--workers W]
     python tools/collection_chamber.py match <cache.json> <out.json>
+    python tools/collection_chamber.py launchbox <folder> <cache.json> <references.json>
+    python tools/collection_chamber.py pages <references.json> <listing.tsv>...
 
 scan reads each installer (one per folder of <folder>, the downloads as the blog's MEGA folders
 name them) that <cache.json> does not have yet, at most N per run, and keeps what the catalog needs:
@@ -12,17 +14,32 @@ launch its shortcuts declare (clickteam_launch.py). Run it again until it report
 match pairs each installer with its eXoDOS game by title (catalog/complete-input-v1.zip), which
 catalog generation alone may do, and writes the catalog input: each installer's IDs and its game
 key, or its own title when eXoDOS has no such game. Read the report before committing it.
+
+launchbox gives each installer eXoDOS has no game for its LaunchBox record (launchbox.py's snapshots
+of MS-DOS, Windows 3.X and Windows), for its tags, box art and screenshot
+(catalog/research/collection-chamber-launchbox-v1.json), and writes reference text for writing its
+description (descriptions.py --references): LaunchBox's overview and the installer's ChamberNotes INFO.
+
+pages finds the same installers' Collection Chamber posts (<listing.tsv>: the blog's game lists, title,
+mega and page per row) for the cover and screenshot LaunchBox has none of, kept in catalog/artwork
+(catalog/research/collection-chamber-pages-v1.json), and adds each post's text to the reference text.
+Run it after launchbox.
 """
 import argparse
+import csv
 import difflib
 import glob
 import hashlib
+import html
+import io
 import json
 import os
+import pathlib
 import re
 import struct
 import sys
 import unicodedata
+import urllib.request
 import zipfile
 import zlib
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -108,13 +125,27 @@ def scan_one(program, key):
 
 def scan(args):
     cache = json.load(open(args.cache, encoding="utf-8")) if os.path.exists(args.cache) else {}
-    programs = []
+    programs, current = [], set()
     for folder in sorted(glob.glob(os.path.join(args.folder, "*"))):
         found = sorted(glob.glob(os.path.join(folder, "Install-*.exe")))
         for program in found:
             key = key_of(program, len(found) == 1)
+            current.add(key)
             if key not in cache:
                 programs.append((program, key))
+    def save():
+        temporary = args.cache + ".part"
+        with open(temporary, "w", encoding="utf-8") as handle:
+            json.dump(cache, handle, indent=1, sort_keys=True)
+        os.replace(temporary, args.cache)
+
+    # An installer that is gone, or whose key changed when its folder gained or lost one, is read again.
+    gone = sorted(set(cache) - current)
+    for key in gone:
+        print(f"{key}: no longer in {args.folder}", flush=True)
+        del cache[key]
+    if gone:
+        save()
     todo = programs[:args.count]
     print(f"{len(cache)} done, {len(programs)} left, reading {len(todo)}", flush=True)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
@@ -130,10 +161,7 @@ def scan(args):
                 cache[code] = {"code": os.path.basename(os.path.dirname(program)), "key": code,
                                "program": os.path.basename(program), "error": f"{type(error).__name__}: {error}"}
             print(code, json.dumps(cache[code])[:200], flush=True)
-            temporary = args.cache + ".part"
-            with open(temporary, "w", encoding="utf-8") as handle:
-                json.dump(cache, handle, indent=1, sort_keys=True)
-            os.replace(temporary, args.cache)
+            save()
     print(f"left: {len(programs) - len(todo)}")
 
 
@@ -144,6 +172,7 @@ def normalize(text):
     """A title as words to compare: ASCII, lower case, no punctuation or articles, numerals as digits."""
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
     text = text.replace("&", " and ").replace("+", " plus ")
+    text = re.sub(r"\b(\d)\s*-\s*d\b", r"\1d", text)  # 3-D, 3D
     text = re.sub(r"\(aka [^)]*\)|\([^)]*\)", " ", text)
     text = re.sub(r"[^a-z0-9]+", " ", text)
     words = [ROMAN.get(w, w) for w in text.split() if w not in ("the", "a", "an")]
@@ -168,75 +197,86 @@ def exodos_year(record):
     return int(found.group(1)) if found else None
 
 
-def match(args):
-    """Each installer's eXoDOS game, by title in tiers: the whole title ("exact"), then either one's main
-    title ("main"), then a close spelling ("close"). Several games in a tier are told apart by the
-    years the installer names; a tier that still names several, or none, leaves the installer to the next."""
-    cache = json.load(open(args.cache, encoding="utf-8"))
+class TitleIndex:
+    """Games by title, to find an installer's: its whole title ("exact"), then either one's main title
+    ("main"), then a close spelling ("close"). Several games in a tier are told apart by the years
+    the installer names; a tier that still names several, or none, leaves the installer to the next.
+    A game of another number (Dark Seed for Dark Seed II), or released more than two years from what
+    the installer names (Ghost of 1990 for Ghosts of 1994), is never its game."""
+
+    def __init__(self, entries):
+        """[entries]: (game ID, title, year or None), a game once per title it is known by."""
+        self.full, self.main, self.titles = {}, {}, {}
+        for game, text, year in entries:
+            self.full.setdefault(normalize(text), set()).add((game, year))
+            self.main.setdefault(normalize(main_title(text)), set()).add((game, year))
+            self.titles.setdefault(game, []).append(text)
+
+    @staticmethod
+    def numerals(text):
+        return {w for w in text.split() if w.isdigit()}
+
+    def decide(self, candidates, years, name):
+        def numbered(game):
+            # Any of the game's titles whose numbers the installer's title has.
+            return any(self.numerals(normalize(text)) <= self.numerals(name) | self.numerals(normalize(main_title(text)))
+                       for text in self.titles[game])
+        candidates = {(c, y) for c, y in candidates
+                      if numbered(c) and (y is None or not years or min(abs(y - i) for i in years) <= 2)}
+        ids = {c for c, _ in candidates}
+        if len(ids) == 1:
+            return ids.pop()
+        dated = {c for c, y in candidates if y is not None and y in years}
+        return dated.pop() if len(dated) == 1 else None
+
+    def find(self, title, years):
+        """(game ID, tier) for [title] and the [years] its installer names; (None, "none") without one."""
+        name = normalize(title)
+        name_main = normalize(main_title(title))
+        tiers = [("exact", self.full.get(name, set())),
+                 ("main", self.main.get(name, set()) | self.full.get(name_main, set()) |
+                  (self.main.get(name_main, set()) if len(name_main.split()) > 1 else set()))]
+        for label, candidates in tiers:
+            chosen = self.decide(candidates, years, name) if candidates else None
+            if chosen:
+                return chosen, label
+        close = difflib.get_close_matches(name, list(self.full), n=3, cutoff=0.9)
+        candidates = set().union(*(self.full[c] for c in close)) if close else set()
+        chosen = self.decide(candidates, years, name) if candidates else None
+        return (chosen, "close") if chosen else (None, "none")
+
+
+def exodos_records():
     with zipfile.ZipFile(os.path.join(ROOT, "catalog/complete-input-v1.zip")) as archive:
         records = {}
         for name in archive.namelist():
             if len(name) == 7:
                 records.update(json.loads(archive.read(name))["games"])
-    titles = []  # (content ID, title, year) for every eXoDOS game and collection member
-    for content_id, record in records.items():
-        for variant in [record] + list(record.get("variants", {}).values()):
-            if variant.get("title"):
-                titles.append((content_id, variant["title"], exodos_year(variant) or exodos_year(record)))
-    full = {}
-    main = {}
-    for content_id, text, year in titles:
-        full.setdefault(normalize(text), set()).add((content_id, year))
-        main.setdefault(normalize(main_title(text)), set()).add((content_id, year))
+    return records
 
-    def numerals(text):
-        return {w for w in text.split() if w.isdigit()}
 
-    def decide(candidates, installer_years, name):
-        # A game of another number (Dark Seed for Dark Seed II), or released years from what the
-        # installer names (Ghost of 1990 for Ghosts of 1994), is another game.
-        candidates = {(c, y) for c, y in candidates
-                      if numerals(normalize(records[c]["title"])) <= numerals(name) | numerals(normalize(main_title(records[c]["title"])))
-                      and (y is None or not installer_years or min(abs(y - i) for i in installer_years) <= 2)}
-        ids = {c for c, _ in candidates}
-        if len(ids) == 1:
-            return ids.pop()
-        dated = {c for c, y in candidates if y is not None and y in installer_years}
-        return dated.pop() if len(dated) == 1 else None
-
+def match(args):
+    """Each installer's eXoDOS game (TitleIndex), or a reviewed decision
+    (catalog/collection-chamber-review.json) over it."""
+    cache = json.load(open(args.cache, encoding="utf-8"))
+    records = exodos_records()
+    index = TitleIndex((content_id, variant["title"], exodos_year(variant) or exodos_year(record))
+                       for content_id, record in records.items()
+                       for variant in [record] + list(record.get("variants", {}).values()) if variant.get("title"))
     review_file = os.path.join(ROOT, "catalog/collection-chamber-review.json")
     review = json.load(open(review_file, encoding="utf-8"))["installers"] if os.path.exists(review_file) else {}
     for code, decision in review.items():
         assert decision.get("reason", "").strip(), f"collection-chamber-review.json: {code} gives no reason"
-        assert decision["exodos"] is None or decision["exodos"] in records, f"collection-chamber-review.json: {code} names no eXoDOS game"
+        assert decision.get("exodos") is None or decision["exodos"] in records, f"collection-chamber-review.json: {code} names no eXoDOS game"
     out, report = {}, {}
     for code, record in sorted(cache.items()):
         if "installer" not in record:
             report["skipped"] = report.get("skipped", 0) + 1
             print(f"SKIP {code}: {record.get('error')}")
             continue
-        name = normalize(record["title"])
-        name_main = normalize(main_title(record["title"]))
         installer_years = set(record.get("years", []))
-        chosen, tier = None, "none"
-        tiers = [
-            ("exact", full.get(name, set())),
-            ("main", main.get(name, set()) | full.get(name_main, set()) | (main.get(name_main, set()) if len(name_main.split()) > 1 else set())),
-        ]
-        for label, candidates in tiers:
-            if candidates:
-                chosen = decide(candidates, installer_years, name)
-                if chosen:
-                    tier = label
-                    break
-        if not chosen:
-            close = difflib.get_close_matches(name, list(full), n=3, cutoff=0.9)
-            candidates = set().union(*(full[c] for c in close)) if close else set()
-            if candidates:
-                chosen = decide(candidates, installer_years, name)
-                tier = "close" if chosen else "none"
-        if code in review:
-            # A reviewed decision (catalog/collection-chamber-review.json) over the title rules.
+        chosen, tier = index.find(record["title"], installer_years)
+        if "exodos" in review.get(code, {}):
             chosen = review[code]["exodos"]
             tier = "reviewed" if chosen else "none"
         entry = {"title": record["title"], "installer": record["installer"], "installed": record.get("installed")}
@@ -254,6 +294,329 @@ def match(args):
     print(report)
 
 
+LAUNCHBOX_PLATFORMS = ("dos", "win3x", "windows")  # searched in this order: DOS releases first
+
+
+def own_games(installers):
+    """The installers (catalog/collection-chamber-v1.json) eXoDOS has no game for, as the games they
+    are: {game: [installer, ...]}, newest first (Install-X_v2.exe before Install-X.exe). A folder's
+    installers of one title are versions of one game (the blog keeps a game's older releases beside
+    its new one); a folder can also hold other games. A game is named by its folder, or by its
+    newest installer when the folder holds other games too; its title, years and notes come from
+    its newest installer."""
+    groups = {}
+    for code, entry in sorted(installers.items(), reverse=True):
+        if not entry.get("game"):
+            groups.setdefault((code.split("/")[0], normalize(entry["title"])), []).append(code)
+    folders = [folder for folder, _ in groups]
+    return {(folder if folders.count(folder) == 1 else codes[0]): codes for (folder, _), codes in groups.items()}
+
+
+def own_game_key(installers, codes):
+    """A game's catalog key: its newest installer's, the release the blog offers, as the app keys a
+    game by its content ID; adding the older releases it keeps leaves the key as it was."""
+    return "dos:" + installers[codes[0]]["installer"].split(":", 1)[1][:16]
+
+
+def chamber_notes(installer):
+    """The INFO section of the installer's ChamberNotes.txt: the game's back-of-box text, for reference."""
+    notes = next((f for f in installer.files if f["name"].lower().endswith("chambernotes.txt")), None)
+    if notes is None:
+        return ""
+    text = installer.read(notes).decode("cp1252", "replace").replace("\r\n", "\n")
+    found = re.search(r"\n\s*INFO\s*\n=+\n(.*?)\n=+\n", text, re.S)
+    return found.group(1).strip() if found else ""
+
+
+def launchbox(args):
+    """The LaunchBox record of each installer the catalog has no eXoDOS game for (TitleIndex over each
+    platform's names and aliases, MS-DOS first), and what the catalog takes from it: tags, box art and
+    screenshot. Writes catalog/research/collection-chamber-launchbox-v1.json, and the description
+    reference text (LaunchBox's overview and the installer's ChamberNotes INFO, reference only) to <references>."""
+    sys.path.insert(0, os.path.join(ROOT, "shared/tools"))
+    import launchbox as launchbox_tool
+    from research import game_tags, year_of
+    downloads = os.path.join(ROOT, ".downloads/launchbox")
+    snapshots = {slug: json.load(open(os.path.join(downloads, f"{slug}-snapshot.json"), encoding="utf-8"))
+                 for slug in LAUNCHBOX_PLATFORMS}
+    tags = {slug: json.load(open(os.path.join(downloads, f"{slug}-tags.json"), encoding="utf-8"))
+            for slug in LAUNCHBOX_PLATFORMS}
+    indexes = {slug: TitleIndex((game_id, text, year_of(game)) for game_id, game in games.items()
+                                for text in [game["Name"]] + list(game.get("aliases", [])) if text)
+               for slug, games in snapshots.items()}
+    cache = json.load(open(args.cache, encoding="utf-8"))
+    installers = json.load(open(os.path.join(ROOT, "catalog/collection-chamber-v1.json"), encoding="utf-8"))["installers"]
+    review_file = os.path.join(ROOT, "catalog/collection-chamber-review.json")
+    review = json.load(open(review_file, encoding="utf-8"))["installers"] if os.path.exists(review_file) else {}
+    for code, decision in review.items():
+        decided = decision.get("launchbox")
+        assert decided is None or decided["id"] in snapshots[decided["platform"]], f"collection-chamber-review.json: {code} names no LaunchBox game"
+    out, references, report = {}, {}, {}
+    for code, codes in sorted(own_games(installers).items()):
+        entry = installers[codes[0]]
+        years = set().union(*(cache[c].get("years", []) for c in codes))
+        found = next(((slug, *indexes[slug].find(entry["title"], years)) for slug in LAUNCHBOX_PLATFORMS
+                      if indexes[slug].find(entry["title"], years)[0]), None)
+        if "launchbox" in review.get(code, {}):
+            # A reviewed decision (catalog/collection-chamber-review.json) over the title rules.
+            decided = review[code]["launchbox"]
+            found = None if decided is None else (decided["platform"], decided["id"], "reviewed")
+        key = own_game_key(installers, codes)
+        installer = clickteam.Installer(os.path.join(args.folder, cache[codes[0]]["code"], cache[codes[0]]["program"]))
+        try:
+            notes = chamber_notes(installer)
+        finally:
+            installer.close()
+        if not found:
+            report["none"] = report.get("none", 0) + 1
+            print(f"NONE {code}: {entry['title']!r} {sorted(years)}")
+            if notes:
+                references[key] = notes
+            continue
+        slug, game_id, tier = found
+        game = snapshots[slug][game_id]
+        record = {"platform": slug, "launchbox": game_id, "title": game["Name"], "match": tier,
+                  "tags": game_tags(year_of(game), tags[slug].get(game_id), None)}
+        for field, source in (("developer", "Developer"), ("publisher", "Publisher")):
+            if game.get(source):
+                record[field] = game[source]
+        box = launchbox_tool.first_image(game, launchbox_tool.BOX_TYPES)
+        shot = launchbox_tool.first_image(game, launchbox_tool.SCREENSHOT_TYPES)
+        if box:
+            record["boxArt"] = box
+        if shot:
+            record["preview"] = shot
+        out[code] = record
+        references[key] = "\n\n".join(part for part in (game.get("Overview", "").strip(), notes) if part)
+        report[f"{slug} {tier}"] = report.get(f"{slug} {tier}", 0) + 1
+        print(f"{tier.upper()} {code}: {entry['title']!r} {sorted(years)} -> {slug} {game['Name']!r} {year_of(game)}"
+              f"{'' if box else ' (no box)'}{'' if shot else ' (no screenshot)'}")
+    with open(os.path.join(ROOT, "catalog/research/collection-chamber-launchbox-v1.json"), "w", encoding="utf-8") as handle:
+        json.dump({"schemaVersion": 1, "games": out}, handle, ensure_ascii=False, indent=1, sort_keys=True)
+        handle.write("\n")
+    with open(args.references, "w", encoding="utf-8") as handle:
+        json.dump(references, handle, ensure_ascii=False, indent=1, sort_keys=True)
+    print(report)
+
+
+DOWNLOADS = os.path.join(ROOT, ".downloads/collection-chamber")
+BLOG_IMAGE = re.compile(r'<img[^>]*?\ssrc="(https://blogger\.googleusercontent\.com/img/[^"]+)"')
+# The size of a Blogger image URL (/s320/, /w200-h129/ before the file name, or =s320 at the end of a
+# nameless one); s0 asks for the uploaded image.
+BLOG_IMAGE_SIZE = re.compile(r"/(?:s\d+(?:-c)?|w\d+-h\d+(?:-[a-z0-9-]+)?)/(?=[^/]+$)|=(?:s\d+|w\d+-h\d+)(?:-[a-z0-9-]+)?$")
+# Images a post shows that are not the game: its review banner, and the games it suggests after it ("Try - ...").
+BLOG_NOT_GAME = re.compile(r"/Review[+%20 ]+by[^/]*$", re.I)
+BLOG_SUGGESTION = re.compile(r"/Try(?:[+ -]|%20|---)", re.I)
+# Screenshots of a game's DOS release, in posts that show its releases on several machines.
+BLOG_DOS = re.compile(r"[^a-z]DOS[^a-z][^/]*$", re.I)
+DOS_CAPTION = re.compile(r"\b(?:MS-DOS|DOS|IBM PC|PC)\b")
+# The text that opens a post's download section.
+BLOG_DOWNLOAD = re.compile(r"\bTo download the game\b", re.I)
+# A screenshot's width to height, as screens are (320x200 to 640x480, or a 4:3 picture in a 16:9 one).
+SCREEN_ASPECT = (1.2, 1.8)
+
+
+def read_json(path):
+    with open(path, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def write_json(path, value):
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(value, handle, ensure_ascii=False, indent=1, sort_keys=True)
+        handle.write("\n")
+
+
+def page_index(listings):
+    """TitleIndex of the blog's pages ([listings]: TSV files of title, mega, page rows, as the blog's
+    game lists name them): each by its title, the alternate title it gives in parentheses, and each
+    game of a page that offers several ("A & B")."""
+    entries = []
+    for path in listings:
+        with open(path, encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle, delimiter="\t"))
+        for row in rows:
+            names = [row["title"]] + re.findall(r"\(([^)]*)\)", row["title"])
+            parts = re.split(r"\s+&\s+", row["title"])
+            names += parts if len(parts) > 1 else []
+            entries += [(row["page"], name, None) for name in names]
+    return TitleIndex(entries)
+
+
+def post_body(post):
+    start = post.index("post-body entry-content")
+    return post[start:post.index("post-footer", start)]
+
+
+def full_size(url):
+    return BLOG_IMAGE_SIZE.sub(lambda size: "/s0/" if size.group(0).startswith("/") else "=s0", url)
+
+
+def captioned_images(post):
+    """[(image URL at its uploaded size, caption, shown after the download section)] of a post: an
+    image's caption is the first text after it, the cell under it when a table row of images has a
+    caption row with a cell for each."""
+    images, waiting, downloads = [], [], False
+    for piece in re.split(r"(<img[^>]*>)", post_body(post).split(">", 1)[1]):
+        if piece.startswith("<img"):
+            found = BLOG_IMAGE.search(piece)
+            if found:
+                waiting.append(full_size(found.group(1)))
+            continue
+        text = re.sub(r"\s+", " ", html_text(piece)).strip()
+        if not text:
+            continue
+        rows = [row for row in re.findall(r"<tr[^>]*>(.*?)</tr>", piece, re.S) if html_text(row).strip()]
+        cells = [cell for cell in (re.sub(r"\s+", " ", html_text(cell)).strip()
+                                   for cell in re.split(r"</td>", rows[0] if rows else "")) if cell]
+        captions = cells if len(cells) == len(waiting) else [text[:200]] * len(waiting)
+        images += [(url, caption, downloads) for url, caption in zip(waiting, captions)]
+        waiting = []
+        downloads = downloads or bool(BLOG_DOWNLOAD.search(text))
+    return images + [(url, "", downloads) for url in waiting]
+
+
+def post_images(post):
+    """(cover, screenshot candidates) of a Collection Chamber post: the post's first image is the
+    game's cover, and the images after it, up to the games it suggests, are screenshots. Those after
+    its download section show the installer's own release, the others its history on every machine,
+    so the release's are the candidates when it shows any; of either, a DOS release's alone, by file
+    name or caption, when it labels some so."""
+    images = captioned_images(post)
+    if not images:
+        return None, []
+    shots = []
+    for url, caption, released in images[1:]:
+        if BLOG_SUGGESTION.search(url):
+            break
+        if not BLOG_NOT_GAME.search(url):
+            shots.append((url, caption, released))
+    for group in ([shot for shot in shots if shot[2]], [shot for shot in shots if not shot[2]]):
+        named = [url for url, _, _ in group if BLOG_DOS.search(url)]
+        captioned = [url for url, caption, _ in group if DOS_CAPTION.search(caption)]
+        candidates = named or captioned or [url for url, _, _ in group]
+        if candidates:
+            return images[0][0], candidates
+    return images[0][0], []
+
+
+def middle_out(items):
+    """[items] from the middle outwards: a gallery's title screens come first, its play in the middle."""
+    middle = len(items) // 2
+    return [item for _, item in sorted(enumerate(items), key=lambda pair: abs(pair[0] - middle))]
+
+
+def screen_shaped(raw):
+    from PIL import Image
+    with Image.open(io.BytesIO(raw)) as image:
+        width, height = image.size
+    return SCREEN_ASPECT[0] <= width / height <= SCREEN_ASPECT[1]
+
+
+def html_text(fragment):
+    text = re.sub(r"<br\s*/?>|</(?:div|p|td|tr)>", "\n", fragment)
+    text = re.sub(r"<[^>]+>", "", text)
+    return html.unescape(text)
+
+
+def post_text(page):
+    """The post's text, up to its download section: reference for writing a description."""
+    text = html_text(post_body(page).split(">", 1)[1]).replace("\xa0", " ")
+    text = re.split(r"\n\s*(?:DOWNLOAD|Download)\b", text)[0]
+    return re.sub(r"\n\s*\n+", "\n\n", text).strip()
+
+
+def fetched(url, path):
+    """The body at [url], kept at [path] once it has been downloaded."""
+    if not os.path.exists(path):
+        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Kairo catalog)"})
+        with urllib.request.urlopen(request) as response:
+            body = response.read()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path + ".part", "wb") as handle:
+            handle.write(body)
+        os.replace(path + ".part", path)
+    with open(path, "rb") as handle:
+        return handle.read()
+
+
+def image_file(url):
+    return os.path.join(DOWNLOADS, "images", hashlib.sha256(url.encode()).hexdigest()[:16])
+
+
+def artwork(code, entry, launchbox_record, page_record):
+    """The compact artwork (tools/dos_artwork.py) of a game the catalog has no eXoDOS game for
+    ([code], own_games), under its newest installer's ([entry]) content ID: each kind from LaunchBox ([launchbox_record], downloaded by its URL),
+    or else from the game's Collection Chamber post ([page_record], kept in the repository); None
+    without either."""
+    from dos_artwork import compact
+    digest = entry["installer"].split(":", 1)[1]
+    variant = hashlib.sha256(code.encode()).hexdigest()[:12]
+    art = {}
+    for kind in ("boxArt", "preview"):
+        if (launchbox_record or {}).get(kind) or (page_record or {}).get(kind):
+            art[kind] = f"art/catalog/dos/{digest[:2]}/{digest}/{variant}/{kind}.webp"
+        if (launchbox_record or {}).get(kind):
+            art[kind + "Url"] = launchbox_record[kind]
+    return compact(art) if art else None
+
+
+def pages(args):
+    """The Collection Chamber post of each installer the catalog has no eXoDOS game for (page_index over
+    [listings], or a reviewed "page" in catalog/collection-chamber-review.json): its cover and a
+    screenshot for each kind LaunchBox has none of (collection-chamber-launchbox-v1.json), encoded as
+    the bundled artwork (shared fetch_artwork.py) into catalog/artwork, since the repository serves
+    them, and the post's text added to the description reference text in <references>. Writes
+    catalog/research/collection-chamber-pages-v1.json. Pages and images are kept under
+    .downloads/collection-chamber, so a run fetches each once."""
+    sys.path.insert(0, os.path.join(ROOT, "shared/tools"))
+    from fetch_artwork import bundle
+    index = page_index(args.listings)
+    installers = read_json(os.path.join(ROOT, "catalog/collection-chamber-v1.json"))["installers"]
+    review = read_json(os.path.join(ROOT, "catalog/collection-chamber-review.json"))["installers"]
+    launchboxes = read_json(os.path.join(ROOT, "catalog/research/collection-chamber-launchbox-v1.json"))["games"]
+    references = read_json(args.references)
+    out, report = {}, {}
+    for code, codes in sorted(own_games(installers).items()):
+        entry = installers[codes[0]]
+        page = review.get(code, {}).get("page") or index.find(entry["title"], set())[0]
+        assert page, f"{code} ({entry['title']}) has no Collection Chamber page: add its \"page\" to collection-chamber-review.json"
+        post = fetched(page, os.path.join(DOWNLOADS, "pages", hashlib.sha256(page.encode()).hexdigest()[:16] + ".html")).decode("utf-8")
+        cover, shots = post_images(post)
+        launchbox_record = launchboxes.get(code, {})
+        record = {"page": page}
+        if cover and not launchbox_record.get("boxArt"):
+            record["boxArt"] = review.get(code, {}).get("boxArt") or cover
+        if not launchbox_record.get("preview"):
+            # The middlemost screen-shaped one: posts also show their game's box, manual and maps.
+            shot = review.get(code, {}).get("preview") or next(
+                (url for url in middle_out(shots) if screen_shaped(fetched(url, image_file(url)))), None)
+            if shot:
+                record["preview"] = shot
+        art = artwork(code, entry, launchbox_record, record)
+        if art:
+            from dos_artwork import expand
+            paths = expand(art)
+            for kind in ("boxArt", "preview"):
+                if kind not in record:
+                    continue
+                target = os.path.join(ROOT, "catalog/artwork", paths[kind])
+                raw = fetched(record[kind], image_file(record[kind]))
+                record[kind + "Sha256"] = hashlib.sha256(raw).hexdigest()
+                os.makedirs(os.path.dirname(target), exist_ok=True)
+                bundle(raw, pathlib.Path(target), record[kind])
+        key = own_game_key(installers, codes)
+        text = post_text(post)
+        references[key] = "\n\n".join(part for part in (references.get(key, ""), text) if part)
+        out[code] = record
+        kinds = [kind for kind in ("boxArt", "preview") if kind in record]
+        report[" ".join(kinds) or "nothing"] = report.get(" ".join(kinds) or "nothing", 0) + 1
+        print(f"{code}: {page} {' '.join(kinds)}")
+    write_json(os.path.join(ROOT, "catalog/research/collection-chamber-pages-v1.json"), {"schemaVersion": 1, "games": out})
+    write_json(args.references, references)
+    print(report)
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -266,8 +629,15 @@ def main():
     m = sub.add_parser("match")
     m.add_argument("cache")
     m.add_argument("out")
+    lb = sub.add_parser("launchbox")
+    lb.add_argument("folder")
+    lb.add_argument("cache")
+    lb.add_argument("references")
+    p = sub.add_parser("pages")
+    p.add_argument("references")
+    p.add_argument("listings", nargs="+")
     args = parser.parse_args()
-    scan(args) if args.command == "scan" else match(args)
+    {"scan": scan, "match": match, "launchbox": launchbox, "pages": pages}[args.command](args)
 
 
 if __name__ == "__main__":

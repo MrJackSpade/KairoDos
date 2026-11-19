@@ -1,0 +1,1812 @@
+{
+ "games": {
+  "3DU1": {
+   "boxArt": "https://images.launchbox-app.com/0437a880-29cf-46d7-b508-3dc91e43c5d1.jpg",
+   "developer": "Dynamix",
+   "launchbox": "146932",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/77b04794-1c17-475b-9b22-c9080dfc58e8.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1995",
+    "Pinball",
+    "Multiplayer"
+   ],
+   "title": "3-D Ultra Pinball"
+  },
+  "3DU2": {
+   "boxArt": "https://images.launchbox-app.com/84b4fd84-afa4-432d-ba5b-65b01cd4f2c7.jpg",
+   "developer": "Dynamix",
+   "launchbox": "146933",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/ca41eb2d-e23c-4692-afd9-efee1d117686.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1996",
+    "Pinball",
+    "Multiplayer"
+   ],
+   "title": "3-D Ultra Pinball: Creep Night"
+  },
+  "3DU3": {
+   "boxArt": "https://images.launchbox-app.com/98d9d4da-74f9-45f7-9c03-aec6254c8609.jpg",
+   "developer": "Dynamix",
+   "launchbox": "142154",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/adec9280-fd58-4974-8acf-8b86ba42e499.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1997",
+    "Pinball",
+    "Multiplayer"
+   ],
+   "title": "3-D Ultra Pinball: The Lost Continent"
+  },
+  "3DUM": {
+   "boxArt": "https://images.launchbox-app.com/r2_5a728a32-f3b4-44a6-be4e-991364d1e973.jpg",
+   "developer": "Dynamix",
+   "launchbox": "147276",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/96faed8f-4286-4d56-88f6-94ba85781601.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1997",
+    "Sports",
+    "Multiplayer"
+   ],
+   "title": "3-D Ultra Minigolf"
+  },
+  "9LR": {
+   "boxArt": "https://images.launchbox-app.com/562f7f60-a0ba-4b59-977e-c5bd3b1c4474.jpg",
+   "developer": "Tribeca Interactive",
+   "launchbox": "142155",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/c5d20018-6bbf-4e75-984a-3f079f348b1c.png",
+   "publisher": "GT Interactive Software",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "9: The Last Resort"
+  },
+  "AAM": {
+   "boxArt": "https://images.launchbox-app.com/29946a05-91b6-458a-b5c5-7a2d5a2098d0.jpg",
+   "developer": "7th Level",
+   "launchbox": "132852",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/eb03dbf5-bf53-49ca-a1a1-ebd6299f53fa.png",
+   "publisher": "7th Level",
+   "tags": [
+    "1996",
+    "Action; Platform",
+    "Single Player"
+   ],
+   "title": "Arcade America"
+  },
+  "AAV": {
+   "boxArt": "https://images.launchbox-app.com/48bf356b-8379-4e75-99ba-5b10d06d7cd8.jpg",
+   "developer": "Perceptum Informática",
+   "launchbox": "150531",
+   "match": "main",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/20830541-4545-4f5c-ba55-9ad65f9c92a2.png",
+   "publisher": "Perceptum Informática",
+   "tags": [
+    "1998",
+    "Shooter"
+   ],
+   "title": "The Varginha Incident"
+  },
+  "ACE": {
+   "boxArt": "https://images.launchbox-app.com/07232dcf-36bc-426d-b50c-2ea76e5298f7.jpg",
+   "developer": "7th Level",
+   "launchbox": "142156",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/2fa23dca-0843-4f45-bd3f-ec67f225f0ef.jpg",
+   "publisher": "Bomico Entertainment Software",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Ace Ventura"
+  },
+  "AIM": {
+   "boxArt": "https://images.launchbox-app.com/e96ce21e-2942-4189-9bb4-2cf429052031.jpg",
+   "developer": "Synergy",
+   "launchbox": "150235",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/bc45e78e-dd42-421f-b119-a971a56d3160.jpg",
+   "publisher": "Synergy Interactive",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Alice: An Interactive Museum"
+  },
+  "AMF": {
+   "boxArt": "https://images.launchbox-app.com/cf8877b3-32ad-4e7d-8e25-7eae8914dfbd.png",
+   "developer": "A Couple 'A Cowboys",
+   "launchbox": "146928",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/2bd736bc-ca92-4939-8bc7-0cd612d8fd11.png",
+   "publisher": "EMG Publishing",
+   "tags": [
+    "1995",
+    "Board Game; Horror; Strategy",
+    "Multiplayer"
+   ],
+   "title": "Atmosfear: The Third Dimension"
+  },
+  "AWW": {
+   "boxArt": "https://images.launchbox-app.com/b447cacd-f62b-436c-8e48-d87feab53c67.jpg",
+   "developer": "Inverse Ink",
+   "launchbox": "146926",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/a6e28527-907d-4da9-8a46-2f9eacb2a72f.png",
+   "publisher": "Inverse Ink",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Aquaman: War of the Water Worlds"
+  },
+  "BAW": {
+   "boxArt": "https://images.launchbox-app.com/0c7f6d99-ada8-42ac-8e35-97d162cc0650.jpg",
+   "developer": "Imagination Pilots",
+   "launchbox": "151673",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/b978bddf-ac82-4b74-94fe-01806e352fd3.png",
+   "publisher": "IVI Publishing",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Blown Away"
+  },
+  "BBE": {
+   "boxArt": "https://images.launchbox-app.com/dab5230f-11b8-4f0b-b477-a020e09bd7d4.jpg",
+   "developer": "7th Level",
+   "launchbox": "151922",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/bea9e4b6-47e0-4dfb-b357-c166d72baaf4.jpg",
+   "publisher": "7th Level",
+   "tags": [
+    "1995",
+    "Fighting"
+   ],
+   "title": "Battle Beast"
+  },
+  "BLH": {
+   "boxArt": "https://images.launchbox-app.com/0ecba9e8-213b-4156-b042-7a81214cf756.jpg",
+   "developer": "Quarium Inc.",
+   "launchbox": "151674",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/fb6214bc-da6b-4bb4-8009-04b6190b87c4.jpg",
+   "publisher": "Orion Interactive",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Blue Heat"
+  },
+  "BMAC": {
+   "boxArt": "https://images.launchbox-app.com/f1578dad-90b7-4e74-a840-1efd56b35003.jpg",
+   "developer": "Gryphon Software",
+   "launchbox": "199559",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/58e65ec5-f616-470d-8bae-20c260af0b77.png",
+   "publisher": "Gryphon Software",
+   "tags": [
+    "1996",
+    "Action; Education; Puzzle"
+   ],
+   "title": "The Adventures of Batman & Robin: Activity Center"
+  },
+  "BPK": {
+   "boxArt": "https://images.launchbox-app.com/a8a2a663-b122-48e9-a81e-559096729642.jpg",
+   "developer": "Animagination",
+   "launchbox": "151466",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/d99ea7cf-8357-422c-9005-dfa774180131.png",
+   "publisher": "Animagination",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Backpacker: The Lost Florence Gold Mine"
+  },
+  "BPP": {
+   "boxArt": "https://images.launchbox-app.com/3f3afb27-41e1-4ede-a8c3-4da83fff1760.jpg",
+   "developer": "Inverse Ink",
+   "launchbox": "151581",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/527cdec0-8397-48fd-baec-c544c47ddc36.png",
+   "publisher": "Inverse Ink",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Batman: Partners in Peril"
+  },
+  "BSY": {
+   "boxArt": "https://images.launchbox-app.com/bcaab8dd-2337-4e05-b208-9b1ef6c22341.jpg",
+   "developer": "Century Interactive",
+   "launchbox": "151819",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/03e8fe27-e51e-484c-824c-dc960abb4e95.jpg",
+   "publisher": "BMG Interactive Entertainment",
+   "tags": [
+    "1996",
+    "Action; Platform",
+    "Single Player"
+   ],
+   "title": "Bermuda Syndrome"
+  },
+  "CCK": {
+   "boxArt": "https://images.launchbox-app.com/a9a7d78f-eef7-49ab-8f81-94fd8b17d4dd.jpg",
+   "developer": "Index+",
+   "launchbox": "460174",
+   "match": "exact",
+   "platform": "windows",
+   "publisher": "Europress Software",
+   "tags": [
+    "1997",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Crusader: Adventure Out of Time"
+  },
+  "CFA": {
+   "boxArt": "https://images.launchbox-app.com/2dcaf0e5-649a-4628-a5e3-10c090e4675b.jpg",
+   "developer": "Gray Matter Studios",
+   "launchbox": "152729",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/a484a8ee-3091-4796-bb30-379bb3e21648.jpg",
+   "publisher": "Harper Collins Interactive",
+   "tags": [
+    "1996",
+    "Adventure; Puzzle",
+    "Single Player"
+   ],
+   "title": "Chaos: A Fantasy Adventure Game"
+  },
+  "COK": {
+   "boxArt": "https://images.launchbox-app.com/842eb510-bc01-43b1-8503-3e09bdae6987.jpg",
+   "developer": "Softedge",
+   "launchbox": "154233",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/82d0820c-66ec-4a3c-a923-52c0bdf8c41c.png",
+   "publisher": "Yano Electric",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Cosmology of Kyoto"
+  },
+  "CPA": {
+   "boxArt": "https://images.launchbox-app.com/21623d35-e543-47b8-871a-102e8ceae74e.jpg",
+   "developer": "Mechadeus",
+   "launchbox": "151752",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/f09e81da-a49a-4817-bc43-cd9aa4cbb710.png",
+   "publisher": "Media Vision",
+   "tags": [
+    "1993",
+    "Action",
+    "Single Player"
+   ],
+   "title": "Critical Path"
+  },
+  "CSK": {
+   "boxArt": "https://images.launchbox-app.com/c7e46926-17d1-46b0-8080-2c9eef1df46e.jpg",
+   "developer": "Some Interactive",
+   "launchbox": "151753",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/91aa6c2c-0d18-477c-b80c-1fabf7f62ffa.png",
+   "publisher": "Maxis Software",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Crystal Skull"
+  },
+  "DAAC": {
+   "boxArt": "https://images.launchbox-app.com/4c13f22e-e45e-4534-a9b5-9c00a13e3173.png",
+   "developer": "Disney Interactive",
+   "launchbox": "154308",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/895052d0-30f1-4f2a-bf2a-add9a22844ba.png",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1995",
+    "Education"
+   ],
+   "title": "Aladdin Activity Center"
+  },
+  "DAE": {
+   "boxArt": "https://images.launchbox-app.com/0021773e-e423-4cdb-ab0e-f3a0631e1637.jpg",
+   "developer": "Mechadeus",
+   "launchbox": "153287",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/f6e165ba-cde6-4c42-8d0b-15a286ea1990.png",
+   "publisher": "Virgin Interactive Entertainment",
+   "tags": [
+    "1995",
+    "Adventure"
+   ],
+   "title": "The Daedalus Encounter"
+  },
+  "DASD": {
+   "boxArt": "https://images.launchbox-app.com/68315da0-873c-4486-b5da-0939ce6b5a7c.jpg",
+   "developer": "Media Station, Inc.",
+   "launchbox": "137220",
+   "match": "exact",
+   "platform": "windows",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1997",
+    "Education"
+   ],
+   "title": "Disney's Animated Storybook: 101 Dalmatians"
+  },
+  "DASH": {
+   "boxArt": "https://images.launchbox-app.com/7ae34665-4f33-4c34-aae5-4a0fd87e3381.jpg",
+   "developer": "Disney Interactive",
+   "launchbox": "153475",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/3ee62e90-aa47-4327-b3c8-ffe8ee916903.png",
+   "publisher": "Media Station",
+   "tags": [
+    "1997",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Disney's Hercules Animated Story Book"
+  },
+  "DASL": {
+   "boxArt": "https://images.launchbox-app.com/c6fbd820-13dd-43ab-8a39-6e2522bc7045.jpg",
+   "developer": "Disney Interactive",
+   "launchbox": "167729",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/8a61a827-88c9-4384-b426-103d56a17c60.png",
+   "publisher": "Media Station",
+   "tags": [
+    "1995",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Disney's Animated Storybook: The Lion King"
+  },
+  "DASN": {
+   "boxArt": "https://images.launchbox-app.com/ad539052-aa4a-4755-a3dd-36e8b9e25fd2.jpg",
+   "developer": "Disney Interactive",
+   "launchbox": "154310",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/0b9928f5-ffb3-44fb-9f4a-03ce9cca7ed3.png",
+   "publisher": "Media Station",
+   "tags": [
+    "1996",
+    "Adventure; Education"
+   ],
+   "title": "Disney's Hunchback of Notre Dame Animated Storybook"
+  },
+  "DASP": {
+   "boxArt": "https://images.launchbox-app.com/8458eba7-1a6c-41c2-8cdf-40e8243ba291.png",
+   "developer": "Disney Interactive",
+   "launchbox": "154311",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/380d091c-fcd6-49ba-b578-cd91642e662d.png",
+   "publisher": "Media Station",
+   "tags": [
+    "1995",
+    "Adventure; Education"
+   ],
+   "title": "Disney's Pocahontas Animated Storybook"
+  },
+  "DASS": {
+   "boxArt": "https://images.launchbox-app.com/e05ea878-34b8-4ec0-8021-eda640a60ada.png",
+   "developer": "Media Station",
+   "launchbox": "425699",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1997",
+    "Education",
+    "Single Player"
+   ],
+   "title": "Disney presents Ariel's Story Studio"
+  },
+  "DAST": {
+   "boxArt": "https://images.launchbox-app.com/faf6ead5-0e05-461e-b304-36bfb0cedb8c.jpg",
+   "developer": "Media Station",
+   "launchbox": "425700",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1996",
+    "Education",
+    "Single Player"
+   ],
+   "title": "Disney's Animated Storybook: Toy Story"
+  },
+  "DASW": {
+   "boxArt": "https://images.launchbox-app.com/002221fe-e7dc-4842-8d6c-895bb8a83801.jpg",
+   "developer": "Media Station",
+   "launchbox": "425697",
+   "match": "reviewed",
+   "platform": "win3x",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1995",
+    "Education",
+    "Single Player"
+   ],
+   "title": "Disney's Animated Storybook: Winnie the Pooh and the Honey Tree"
+  },
+  "DAZZ": {
+   "boxArt": "https://images.launchbox-app.com/5a9aaa5a-cf7a-45cb-ae26-d2638d70aa8f.jpg",
+   "developer": "The Voyager Company",
+   "launchbox": "153291",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/9c93023b-3c81-434f-9fe5-fd158f7542b3.png",
+   "publisher": "The Voyager Company",
+   "tags": [
+    "1994",
+    "Adventure; Education"
+   ],
+   "title": "Dazzeloids"
+  },
+  "DEDM": {
+   "boxArt": "https://images.launchbox-app.com/6b23c8a1-5af5-4d09-a0e2-5d77ef248de5.jpg",
+   "developer": "Dreamforge Entertainment",
+   "launchbox": "141803",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/6966dfb9-e908-49b3-b0d9-10c374b50507.png",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "101 Dalmatians: Escape From DeVil Manor"
+  },
+  "DGR": {
+   "boxArt": "https://images.launchbox-app.com/4a2bec0e-7474-42ee-be33-60d92cea80d5.jpg",
+   "developer": "Microforum International",
+   "launchbox": "151754",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/dab81a01-73c7-48c0-961b-4a3ca634602a.png",
+   "publisher": "Microforum International",
+   "tags": [
+    "1995",
+    "Action",
+    "Single Player"
+   ],
+   "title": "Dagger's Rage"
+  },
+  "DLAC": {
+   "boxArt": "https://images.launchbox-app.com/2f4ac171-42f9-4f81-becc-0bdc5f55a6c6.jpg",
+   "developer": "Gryphon Software",
+   "launchbox": "167730",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/93a5ccef-c736-43c3-826a-7a971eb872df.png",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1995",
+    "Action; Education"
+   ],
+   "title": "Disney's The Lion King Activity Center"
+  },
+  "DMC": {
+   "boxArt": "https://images.launchbox-app.com/81eccba6-7725-46f6-a26c-503857b14700.jpg",
+   "developer": "Blue Byte Software",
+   "launchbox": "152661",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/94617c08-d331-44e0-8b36-886e92909c58.png",
+   "publisher": "Blue Byte Software",
+   "tags": [
+    "1995",
+    "Board Game; Strategy",
+    "Multiplayer"
+   ],
+   "title": "Dr. Drago's Madcap Chase"
+  },
+  "DS2": {
+   "boxArt": "https://images.launchbox-app.com/b36d0ef0-08e1-47eb-8bff-77b9d9395ab2.jpg",
+   "developer": "Cyberdreams",
+   "launchbox": "20174",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/1016ca45-2863-4cfc-b336-28a7813a5b7d.jpg",
+   "publisher": "Cyberdreams",
+   "tags": [
+    "1995",
+    "Adventure; Horror",
+    "Single Player"
+   ],
+   "title": "Dark Seed II"
+  },
+  "DSE": {
+   "boxArt": "https://images.launchbox-app.com/0bb84763-50b6-4200-ac70-0806cf86c071.jpg",
+   "developer": "Corel",
+   "launchbox": "151763",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/1033a811-3d5f-4181-9d74-0b340b0bf9c1.png",
+   "publisher": "Future Endeavours",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Dracula's Secret"
+  },
+  "DSP": {
+   "boxArt": "https://images.launchbox-app.com/485c63ca-7c9f-489e-8d31-d9fa13995386.jpg",
+   "developer": "Inscape",
+   "launchbox": "151756",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/e6d4ae0b-aec3-4223-99ad-fc0fcd6f224f.png",
+   "publisher": "Inscape",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Devo Presents: Adventures of the Smart Patrol"
+  },
+  "DTPJ": {
+   "boxArt": "https://images.launchbox-app.com/364be4e2-2dff-47a4-8b94-d1099a9fa1ab.jpg",
+   "developer": "7th Level",
+   "launchbox": "8949",
+   "match": "exact",
+   "platform": "windows",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1995",
+    "Compilation"
+   ],
+   "title": "Timon & Pumbaa's Jungle Games"
+  },
+  "DTTG": {
+   "boxArt": "https://images.launchbox-app.com/c30befce-2993-4309-9974-b35bb431f136.jpg",
+   "developer": "7th Level",
+   "launchbox": "167731",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/ba67be6d-8903-4625-94ba-f56406a846fe.png",
+   "publisher": "Disney Interactive",
+   "tags": [
+    "1996",
+    "Action; Board Game; Education",
+    "Multiplayer"
+   ],
+   "title": "Disney's The Hunchback of Notre Dame: Topsy Turvy Games"
+  },
+  "DUS": {
+   "boxArt": "https://images.launchbox-app.com/38ab476f-03f2-4dc7-908f-750f3666ecdb.jpg",
+   "developer": "Cyberflix",
+   "launchbox": "167735",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/ae6ecea9-51a7-403b-83e1-f3efd94c22cc.png",
+   "publisher": "BMG Interactive Entertainment",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Dust: A Tale of the Wired West"
+  },
+  "EM1": {
+   "boxArt": "https://images.launchbox-app.com/5bd4e43e-d1d1-4c06-a6b4-25e1e8337e1a.jpg",
+   "developer": "OutSide Directors Company",
+   "launchbox": "151771",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/06e0e4d1-35f3-4e01-a68a-332173fa3832.png",
+   "publisher": "Sony Imagesoft",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Eastern Mind: The Lost Souls of Tong Nou"
+  },
+  "END": {
+   "boxArt": "https://images.launchbox-app.com/ae421138-8072-4d48-997a-63f7a2e151b8.jpg",
+   "developer": "onesong partners, Inc.",
+   "launchbox": "97614",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/caee9425-2bd8-4396-ac25-b05f1d84453d.png",
+   "publisher": "Time Warner Interactive",
+   "tags": [
+    "1995",
+    "Puzzle; Strategy",
+    "Single Player"
+   ],
+   "title": "Endorfun"
+  },
+  "FEM": {
+   "boxArt": "https://images.launchbox-app.com/245002a8-97d0-4fe5-b29c-b905e682429c.jpg",
+   "developer": "Amazing Media",
+   "launchbox": "151779",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/697815a2-2600-43e7-9a24-99968f88195f.jpg",
+   "publisher": "Interplay Entertainment",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Frankenstein: Through the Eyes of the Monster"
+  },
+  "FPL": {
+   "boxArt": "https://images.launchbox-app.com/dd424edf-710a-4b5f-bc7b-eafbe8c90bb5.jpg",
+   "developer": "The Armchair Travel Company",
+   "launchbox": "154407",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/eacaa227-89f1-4801-afc9-5be2479651fa.png",
+   "publisher": "The Armchair Travel Company",
+   "tags": [
+    "1998",
+    "Adventure",
+    "Multiplayer"
+   ],
+   "title": "Foul Play: Mystery at Awkward Manor"
+  },
+  "FT1": {
+   "boxArt": "https://images.launchbox-app.com/e6ea68e1-eb4a-4757-9f89-f468978297aa.jpg",
+   "developer": "Cinematronics",
+   "launchbox": "425739",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Maxis Software",
+   "tags": [
+    "1996",
+    "Pinball",
+    "Multiplayer"
+   ],
+   "title": "Full Tilt! Pinball"
+  },
+  "FT2": {
+   "boxArt": "https://images.launchbox-app.com/c52bb4cb-dff0-4987-8e2b-0010b42e6126.jpg",
+   "developer": "Maxis Software",
+   "launchbox": "154895",
+   "match": "reviewed",
+   "platform": "windows",
+   "preview": "https://images.launchbox-app.com/235a2ad7-0379-4036-8a96-bb1ba87c7a18.png",
+   "publisher": "Maxis Software",
+   "tags": [
+    "1996",
+    "Pinball",
+    "Multiplayer"
+   ],
+   "title": "Full Tilt! 2 Pinball"
+  },
+  "FU3": {
+   "boxArt": "https://images.launchbox-app.com/e2a473b3-e0bb-468b-a432-0a7467bdcbb0.jpg",
+   "developer": "Terminal Reality",
+   "launchbox": "151780",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/079053f4-2353-4c59-9160-e3ca455b3f59.png",
+   "publisher": "Microsoft",
+   "tags": [
+    "1995",
+    "Shooter",
+    "Single Player"
+   ],
+   "title": "Fury 3"
+  },
+  "GDK": {
+   "boxArt": "https://images.launchbox-app.com/9c642d4f-f011-43ec-9850-9005745bf3d9.jpg",
+   "developer": "Hoffman and Associates",
+   "launchbox": "151816",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/b37b0576-cd42-424d-a06e-fc3b08fde01d.jpg",
+   "publisher": "Hoffman and Associates",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Gord@k"
+  },
+  "GHO": {
+   "boxArt": "https://images.launchbox-app.com/d0a6e3d3-4844-464d-91b8-42b13a447f4d.jpg",
+   "developer": "Media Design Interactive",
+   "launchbox": "151815",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/adf96614-6180-420a-81f1-ce8f0e0bb4c8.png",
+   "publisher": "Media Design Interactive",
+   "tags": [
+    "1994",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Ghosts"
+  },
+  "GML": {
+   "boxArt": "https://images.launchbox-app.com/44c9c918-c110-4120-84f4-47dcf706f1c2.jpg",
+   "developer": "EMME Interactive",
+   "launchbox": "155076",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/bdb3a5f8-6047-4368-8456-c5a45abe266a.png",
+   "publisher": "Cambrix Publishing",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Great Myths & Legends Volume 1: Monsters & Mythical Creatures"
+  },
+  "GRS": {
+   "boxArt": "https://images.launchbox-app.com/e7cfbd2a-e995-4727-95c9-b6e37c02de3d.jpg",
+   "developer": "Appaloosa Interactive",
+   "launchbox": "151818",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/eec80344-7b23-41a0-86cf-a94a6ab6e25c.png",
+   "publisher": "SegaSoft",
+   "tags": [
+    "1997",
+    "Action; Education; Strategy",
+    "Multiplayer"
+   ],
+   "title": "Grossology"
+  },
+  "HCB": {
+   "boxArt": "https://images.launchbox-app.com/ec229716-09c5-4f82-9d5e-0d76d4964224.jpg",
+   "developer": "Digital Fusion",
+   "launchbox": "154537",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/84ee41d2-bc6e-4e05-8d3c-d3c7e872fdee.png",
+   "publisher": "Time Warner Interactive Group",
+   "tags": [
+    "1993",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Hell Cab"
+  },
+  "HOI": {
+   "boxArt": "https://images.launchbox-app.com/a3d753c4-204e-46ac-beb5-374ffb0159d4.jpg",
+   "developer": "Sunflowers",
+   "launchbox": "154539",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/5e4a936e-6a89-4c6b-8f72-40016d628397.jpg",
+   "publisher": "Sunflowers",
+   "tags": [
+    "1996",
+    "Construction and Management Simulation",
+    "Single Player"
+   ],
+   "title": "Holiday Island"
+  },
+  "IAF": {
+   "boxArt": "https://images.launchbox-app.com/9110f7f6-cc0d-4714-a877-d84b11b01da3.jpg",
+   "developer": "Zombie",
+   "launchbox": "154543",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/267b7d8e-6bdf-40fe-b307-e28372b96a27.png",
+   "publisher": "GT Interactive Software",
+   "tags": [
+    "1995",
+    "Shooter",
+    "Single Player"
+   ],
+   "title": "Ice & Fire"
+  },
+  "IHF": {
+   "boxArt": "https://images.launchbox-app.com/3ed007b8-bc47-4847-a640-82ca5188e74a.jpg",
+   "developer": "Three Blind Mice Interactive",
+   "launchbox": "155762",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/98f40771-7b84-43af-98d1-07a413477944.png",
+   "publisher": "Avtex Interactive Media",
+   "tags": [
+    "1995",
+    "Adventure; Horror"
+   ],
+   "title": "Interactive History of Frankenstein"
+  },
+  "IJD": {
+   "boxArt": "https://images.launchbox-app.com/5d0de622-f3cf-4e0a-8fed-d1d50d26d444.jpg",
+   "developer": "LucasArts",
+   "launchbox": "154555",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/701eada6-17f8-4f17-bf72-d88a4a003dca.png",
+   "publisher": "LucasArts",
+   "tags": [
+    "1996",
+    "Action; Adventure",
+    "Single Player"
+   ],
+   "title": "Indiana Jones and his Desktop Adventures"
+  },
+  "JB1": {
+   "boxArt": "https://images.launchbox-app.com/f5e44414-f183-4eb3-a523-0301275a28cd.jpg",
+   "developer": "East Point Software",
+   "launchbox": "136492",
+   "match": "exact",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/35087942-881d-4900-9859-35ab88d5057c.png",
+   "publisher": "Virgin Interactive Entertainment",
+   "tags": [
+    "1995",
+    "Platform"
+   ],
+   "title": "Disney's The Jungle Book"
+  },
+  "JDB": {
+   "boxArt": "https://images.launchbox-app.com/3f24710a-35d4-4698-b682-67a8295e0fc6.jpg",
+   "developer": "Ion, Inc.",
+   "launchbox": "156004",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/dc3bb90e-d329-4108-881c-241208a12e10.png",
+   "publisher": "BMG Interactive Entertainment",
+   "tags": [
+    "1994",
+    "Adventure"
+   ],
+   "title": "Jump: The David Bowie Interactive CD-ROM"
+  },
+  "JGP": {
+   "boxArt": "https://images.launchbox-app.com/90185a3f-26c6-4d07-82fc-82f8a23500ba.jpg",
+   "developer": "Studio Interactive",
+   "launchbox": "155137",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/a26c8c87-1437-4bf0-ae20-69cd2106340d.png",
+   "publisher": "Philips Interactive Media",
+   "tags": [
+    "1997",
+    "Action",
+    "Single Player"
+   ],
+   "title": "Jumanji"
+  },
+  "JMN": {
+   "boxArt": "https://images.launchbox-app.com/5661c8a3-1f8a-4642-9c83-c70e8cc643f8.jpg",
+   "developer": "Propaganda Code",
+   "launchbox": "154750",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/5c138245-d203-4cae-93e3-830162e882b0.png",
+   "publisher": "Sony Imagesoft",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Johnny Mnemonic"
+  },
+  "JRA": {
+   "boxArt": "https://images.launchbox-app.com/b3880f8c-7fb2-4542-bbc7-fca033f12a18.jpg",
+   "developer": "Cyberflix",
+   "launchbox": "154753",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/87e9b038-cfb7-4b91-b17c-fc431792c6a3.png",
+   "publisher": "Paramount Interactive",
+   "tags": [
+    "1994",
+    "Action",
+    "Single Player"
+   ],
+   "title": "Jump Raven"
+  },
+  "JW1": {
+   "boxArt": "https://images.launchbox-app.com/5f4eb398-2311-4640-8874-3d0760967514.jpg",
+   "developer": "ELOI Productions",
+   "launchbox": "154748",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/01839bd0-f798-4594-a13c-4defab9f7cfd.jpg",
+   "publisher": "Discis Knowledge Research",
+   "tags": [
+    "1995",
+    "Puzzle",
+    "Single Player"
+   ],
+   "title": "Jewels of the Oracle"
+  },
+  "KCC": {
+   "boxArt": "https://images.launchbox-app.com/8156fada-e86e-4aed-b012-941ab3a623f2.jpg",
+   "developer": "InterServ International",
+   "launchbox": "154755",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/42c4851a-4b60-4937-b7b6-7bbf13ab2ed5.png",
+   "publisher": "InterServ International",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Karma: Curse of the 12 Caves"
+  },
+  "KOL": {
+   "boxArt": "https://images.launchbox-app.com/f18dbd30-fe10-4919-86d4-3a8cb00a56b1.jpg",
+   "developer": "Colossal Pictures",
+   "launchbox": "154757",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Brøderbund Software",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Koala Lumpur: Journey to the Edge"
+  },
+  "LDY": {
+   "boxArt": "https://images.launchbox-app.com/24e1528b-b134-4d8b-a138-17a480d78510.jpg",
+   "developer": "Coktel Vision",
+   "launchbox": "140503",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/d6750a98-20b8-4e05-969d-f87a5d3494ac.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1995",
+    "Adventure; Flight Simulator",
+    "Single Player"
+   ],
+   "title": "The Last Dynasty"
+  },
+  "LFC": {
+   "boxArt": "https://images.launchbox-app.com/eded0558-fd59-47a1-a716-10b62b022836.jpg",
+   "developer": "Software Toolworks",
+   "launchbox": "139367",
+   "match": "main",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/7dabb02c-2029-48a2-b3f2-4a79bac9e477.png",
+   "publisher": "Mindscape",
+   "tags": [
+    "1992",
+    "Role-Playing",
+    "Single Player"
+   ],
+   "title": "The Four Crystals of Trazere"
+  },
+  "LOM": {
+   "boxArt": "https://images.launchbox-app.com/43d1ea4e-ae98-458c-9b91-dd13b74b4594.jpg",
+   "developer": "Maelstrom Games",
+   "launchbox": "29925",
+   "match": "exact",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/7ce6b67e-5de9-4354-8e56-a37d164cac29.png",
+   "publisher": "Domark Software",
+   "tags": [
+    "1995",
+    "Action; Role-Playing; Strategy",
+    "Single Player"
+   ],
+   "title": "Lords of Midnight"
+  },
+  "MAG": {
+   "boxArt": "https://images.launchbox-app.com/f6fe2fe7-93f8-4e1b-9e47-26616c5eee8e.jpg",
+   "developer": "Wayzata Technology",
+   "launchbox": "164397",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/13b9d76a-3116-4de7-8521-8c8fcabb89e8.png",
+   "publisher": "CPIO Multimedia",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Museum of Anything Goes"
+  },
+  "MBM": {
+   "boxArt": "https://images.launchbox-app.com/5ba3c4a8-ef3b-4d6a-8df3-ac3d4b7b4ead.jpg",
+   "developer": "Davidson & Associates",
+   "launchbox": "164465",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/54773135-6880-40a1-9113-d716f18ab4ab.png",
+   "publisher": "Davidson & Associates",
+   "tags": [
+    "1994",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Math Blaster Mystery: The Great Brain Robbery"
+  },
+  "MG1": {
+   "boxArt": "https://images.launchbox-app.com/6a782626-5d65-4aca-a830-c2db646267ee.jpg",
+   "developer": "Vioma Digital Media",
+   "launchbox": "440009",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Vioma Digital Media",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Mystery at Greveholm"
+  },
+  "MIR": {
+   "boxArt": "https://images.launchbox-app.com/8d3eef49-c59b-471a-9eed-01cb9039d639.jpg",
+   "developer": "Virgin Sound and Vision",
+   "launchbox": "164399",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/6503dae8-e0f4-4c30-9307-d0d3cc3cc587.png",
+   "publisher": "Virgin Sound and Vision",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Mysterious Island: A Race Against Time and Hot Lava!"
+  },
+  "MJ1": {
+   "boxArt": "https://images.launchbox-app.com/74cd02f4-a7f0-41c9-8e0b-8963d8afe793.jpg",
+   "developer": "OmniMedia",
+   "launchbox": "159521",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/5aa1d2c1-cc3a-481e-a8df-859442442b82.jpg",
+   "publisher": "Piranha Interactive Publishing",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Majestic Part 1: Alien Encounter"
+  },
+  "MPCW": {
+   "boxArt": "https://images.launchbox-app.com/612ba768-0f3c-472a-bd2c-4138fd9d6465.jpg",
+   "developer": "7th Level",
+   "launchbox": "159713",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/681ad4f2-53d0-4ee2-aac6-f2d95e6171eb.jpg",
+   "publisher": "7th Level",
+   "tags": [
+    "1994",
+    "Adventure; Puzzle",
+    "Single Player"
+   ],
+   "title": "Monty Python's Complete Waste of Time"
+  },
+  "MPHG": {
+   "boxArt": "https://images.launchbox-app.com/356c832a-b3ed-4baf-a172-31e750ef0d17.jpg",
+   "developer": "7th Level",
+   "launchbox": "159710",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/e0527940-1473-498b-bc5d-f2e75309557e.png",
+   "publisher": "7th Level",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Monty Python & the Quest for the Holy Grail"
+  },
+  "MTI": {
+   "boxArt": "https://images.launchbox-app.com/d6ac8dfa-b7ae-4d88-b4b7-1e4f7e93c426.jpg",
+   "developer": "Activision",
+   "launchbox": "164394",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/269c01dd-0417-4798-98db-ef90a893bb4c.jpg",
+   "publisher": "Activision",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Muppet Treasure Island"
+  },
+  "MTP": {
+   "boxArt": "https://images.launchbox-app.com/472f41cd-596f-49aa-a70d-bca5beb917aa.jpg",
+   "developer": "Amazing Media",
+   "launchbox": "165756",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/caa6084d-b715-4e45-a5dc-0ba3449a755d.png",
+   "publisher": "Interplay Productions",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Mummy: Tomb of the Pharaoh"
+  },
+  "NBD": {
+   "boxArt": "https://images.launchbox-app.com/c93d7d89-4884-474a-90d2-0f8e2e78bd18.jpg",
+   "developer": "ISG Productions",
+   "launchbox": "144548",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/c926fcb2-7267-4dde-be88-e19ce25728ea.png",
+   "publisher": "Trimark Interactive",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "National Lampoon's Blind Date"
+  },
+  "NOR": {
+   "boxArt": "https://images.launchbox-app.com/f1c9f765-07a0-428d-90f0-eb699e7ddc8c.jpg",
+   "developer": "TSi",
+   "launchbox": "199573",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/cc688231-60f1-4f22-93e3-eb47f08460c2.png",
+   "publisher": "Cyberdreams",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Noir: A Shadowy Thriller"
+  },
+  "PEY": {
+   "boxArt": "https://images.launchbox-app.com/ddb42a49-b9b9-4e6a-85e4-250c7de3553a.jpg",
+   "developer": "Brooklyn Multimedia",
+   "launchbox": "164413",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/835d465d-6ef6-46cb-b2ee-4110f9e605ad.png",
+   "publisher": "Simon & Schuster Interactive",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Private Eye"
+  },
+  "PGM": {
+   "boxArt": "https://images.launchbox-app.com/fc3a14eb-637f-463c-bb5f-c0dd6c2f35df.jpg",
+   "developer": "Mammoth Micro Productions",
+   "launchbox": "164409",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/c0b663d4-86f7-453a-bc91-387b292ed231.png",
+   "publisher": "Turner Interactive",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Pagemaster"
+  },
+  "PPD": {
+   "boxArt": "https://images.launchbox-app.com/61aa903d-16e8-4111-ba75-ef1802268e06.jpg",
+   "developer": "Knowledge Adventure",
+   "launchbox": "165955",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/092d83b0-72ae-4333-8bc5-5a64685999f4.png",
+   "publisher": "McGraw Hill Home Interactive",
+   "tags": [
+    "1996",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Pyramid: Challenge of the Pharaoh's Dream"
+  },
+  "PPO": {
+   "boxArt": "https://images.launchbox-app.com/0581dddf-694e-423d-85a3-f1b861f6f3b6.jpg",
+   "developer": "Software Technology",
+   "launchbox": "151302",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/e9635fe4-1c59-4ddc-a5fd-5c1fa1acec6a.png",
+   "publisher": "Cineplay Interactive",
+   "tags": [
+    "1992",
+    "Construction and Management Simulation; Life Simulation; Strategy"
+   ],
+   "title": "Power Politics"
+  },
+  "PRI": {
+   "boxArt": "https://images.launchbox-app.com/4b10655c-4d0d-408c-9bba-dd135f9852a1.jpg",
+   "developer": "Graphix Zone",
+   "launchbox": "164466",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/605cdf43-dfaf-4a41-868b-79d97d93eaff.png",
+   "publisher": "Compton's New Media",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Prince Interactive"
+  },
+  "PYS": {
+   "boxArt": "https://images.launchbox-app.com/47abe7f6-52e0-4f49-a564-182649e0e52d.jpg",
+   "developer": "Parroty Interactive",
+   "launchbox": "440473",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/fcf69ccb-a1b6-4338-b0d1-52577ccd07ef.png",
+   "publisher": "Palladium Interactive",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Pyst"
+  },
+  "QG1": {
+   "boxArt": "https://images.launchbox-app.com/f79417be-29f5-4d57-83c1-8601a11b95c5.jpg",
+   "developer": "HyperBole Studios",
+   "launchbox": "142333",
+   "match": "main",
+   "platform": "win3x",
+   "publisher": "Namco",
+   "tags": [
+    "1993",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Quantum Gate"
+  },
+  "QG2": {
+   "boxArt": "https://images.launchbox-app.com/b0dfbd7f-dabe-4080-bd1c-d9d9db363639.jpg",
+   "developer": "HyperBole Studios",
+   "launchbox": "164385",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/6b99c72c-b9cb-4de3-b30d-9945d6865179.png",
+   "publisher": "HyperBole Studios",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Vortex: Quantum Gate II"
+  },
+  "QIN": {
+   "boxArt": "https://images.launchbox-app.com/bb39a611-98fd-4e74-8699-6275f5874946.jpg",
+   "developer": "Learn Technologies Interactive",
+   "launchbox": "146921",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/399a33c8-796f-4831-9981-d362486a1fbb.png",
+   "publisher": "Time Warner Electronic Publishing",
+   "tags": [
+    "1996",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Qin: Tomb of the Middle Kingdom"
+  },
+  "QPL": {
+   "boxArt": "https://images.launchbox-app.com/88ab1d96-b746-4b29-a859-d00641a48049.jpg",
+   "developer": "Mediax",
+   "launchbox": "421267",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "EMI Records",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Queensrÿche's Promised Land"
+  },
+  "RBD": {
+   "boxArt": "https://images.launchbox-app.com/a6089e70-8d3f-42cd-a859-b534facfcb78.jpg",
+   "developer": "Inscape",
+   "launchbox": "165917",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/bf3bcf47-8420-4f7f-a44d-52ae17a0d43f.png",
+   "publisher": "Inscape",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Residents' Bad Day on the Midway"
+  },
+  "RFS": {
+   "boxArt": "https://images.launchbox-app.com/1f03655f-5c29-49b8-8d66-be5dfb84cb37.jpg",
+   "developer": "The Voyager Company",
+   "launchbox": "167723",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/f5f35d0c-230c-4813-9825-e6d970e93868.png",
+   "publisher": "The Voyager Company",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Residents: Freak Show"
+  },
+  "RVL": {
+   "boxArt": "https://images.launchbox-app.com/07be6983-1f89-41bc-9550-614877e5ef74.jpg",
+   "developer": "Second Vision",
+   "launchbox": "165953",
+   "match": "reviewed",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/179000f7-88ee-49be-b16e-851db9508e22.png",
+   "publisher": "GTE Entertainment",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Rolling Stones Voodoo Lounge CD-ROM"
+  },
+  "SDC": {
+   "boxArt": "https://images.launchbox-app.com/709a4b31-4945-4c0a-b812-a33081b42003.jpg",
+   "developer": "Knowledge Adventure",
+   "launchbox": "165857",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/ffb9e7c9-2f59-4cd5-990f-c48e4e23d615.png",
+   "publisher": "Knowledge Adventure",
+   "tags": [
+    "1996",
+    "Education",
+    "Single Player"
+   ],
+   "title": "Steven Spielberg's Director's Chair"
+  },
+  "SM6": {
+   "boxArt": "https://images.launchbox-app.com/abd81fde-cff5-4565-9929-d55a52d269c4.jpg",
+   "developer": "Brooklyn Multimedia",
+   "launchbox": "143747",
+   "match": "reviewed",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/81bcd422-97d0-4c6a-8fad-30d3fa88eb20.png",
+   "publisher": "Byron Preiss Multimedia Company",
+   "tags": [
+    "1996",
+    "Action; Adventure",
+    "Single Player"
+   ],
+   "title": "Marvel Comics Spider-Man: The Sinister Six"
+  },
+  "SMAC": {
+   "boxArt": "https://images.launchbox-app.com/3eb98a84-1246-435c-ab47-2d331ab8e41d.jpg",
+   "developer": "Gryphon Software",
+   "launchbox": "165678",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/0e357d40-00e4-43b5-a240-fbd652a3d203.jpg",
+   "publisher": "Warner Bros. Interactive Entertainment",
+   "tags": [
+    "1998",
+    "Education",
+    "Single Player"
+   ],
+   "title": "Superman Activity Center"
+  },
+  "SMK": {
+   "boxArt": "https://images.launchbox-app.com/e203bf35-f62d-4b91-9f3d-e94793bd5cba.jpg",
+   "developer": "Future Concept",
+   "launchbox": "165944",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/6d00d15e-4403-47c1-8b79-3aee0c432ad3.jpg",
+   "publisher": "Enteractive",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "The Sacred Mirror of Kofun"
+  },
+  "SMM": {
+   "boxArt": "https://images.launchbox-app.com/a77957d3-1110-4115-a3f2-da4ad19dd3f4.jpg",
+   "developer": "Inverse Ink",
+   "launchbox": "447711",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Inverse Ink",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Superman: The Mysterious Mr. Mist"
+  },
+  "SPK": {
+   "boxArt": "https://images.launchbox-app.com/c5e2cd0b-1a17-4dc3-b0fe-fbbc8efaae24.jpg",
+   "developer": "Maxis",
+   "launchbox": "195910",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/4dd1b2fc-ca7d-412a-90b8-3a6d087fab8d.png",
+   "publisher": "Maxis",
+   "tags": [
+    "1996",
+    "Construction and Management Simulation"
+   ],
+   "title": "SimPark"
+  },
+  "SPQ": {
+   "boxArt": "https://images.launchbox-app.com/83bec0b9-a731-4d9a-9b17-178455423505.jpg",
+   "developer": "CyberSites",
+   "launchbox": "165951",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/1ed01778-6d55-4993-ab6d-07980b366424.png",
+   "publisher": "GT Interactive Software",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "SPQR: The Empire's Darkest Hour"
+  },
+  "SSS": {
+   "boxArt": "https://images.launchbox-app.com/ce05bf17-3906-4f24-9e68-be105aab9e33.jpg",
+   "developer": "Inverse Ink",
+   "launchbox": "447723",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Inverse Ink",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Superboy: Spies from Outer Space"
+  },
+  "STKL": {
+   "boxArt": "https://images.launchbox-app.com/r2_c76f03ec-4b65-4686-822a-8b207653f1c9.jpg",
+   "developer": "Touchscreen Media Group",
+   "launchbox": "447725",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Simon & Schuster Interactive",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Star Trek: Klingon"
+  },
+  "STO": {
+   "boxArt": "https://images.launchbox-app.com/1d7826cc-703d-4eb9-9ddc-a6d0128e61a0.jpg",
+   "developer": "Funnybone Interactive",
+   "launchbox": "154396",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/136b0bf2-2515-4950-90da-365fab4e9e24.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Stay Tooned!"
+  },
+  "STU": {
+   "boxArt": "https://images.launchbox-app.com/3095d850-bb0d-4a0b-8d7e-c2b65d8f75a0.jpg",
+   "developer": "Maxis Software",
+   "launchbox": "165875",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/e51cf5f1-e0bc-4299-a786-8aa6789ee407.jpg",
+   "publisher": "Maxis Software",
+   "tags": [
+    "1996",
+    "Education",
+    "Single Player"
+   ],
+   "title": "SimTunes"
+  },
+  "STW": {
+   "boxArt": "https://images.launchbox-app.com/09414ab6-dfba-46b7-8baa-ce583d8d04b3.jpg",
+   "developer": "Maxis Software",
+   "launchbox": "447658",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Maxis Software",
+   "tags": [
+    "1995",
+    "Construction and Management Simulation",
+    "Single Player"
+   ],
+   "title": "SimTown"
+  },
+  "SWC": {
+   "boxArt": "https://images.launchbox-app.com/d0417aa0-4574-42c0-816c-b3cec74071e6.jpg",
+   "developer": "The Software Toolworks",
+   "launchbox": "124469",
+   "match": "exact",
+   "platform": "dos",
+   "preview": "https://images.launchbox-app.com/4ba8c8f3-60a6-4340-80ef-cbc19d2d2482.png",
+   "publisher": "The Software Toolworks",
+   "tags": [
+    "1993",
+    "Board Game; Strategy",
+    "Multiplayer"
+   ],
+   "title": "The Software Toolworks' Star Wars Chess"
+  },
+  "SWP": {
+   "boxArt": "https://images.launchbox-app.com/cb8f8d07-521a-47ef-91ec-92b31b7149cb.jpg",
+   "developer": "WayForward Technologies",
+   "launchbox": "194541",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "Parroty Interactive",
+   "tags": [
+    "1997",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Star Warped"
+  },
+  "SYN": {
+   "boxArt": "https://images.launchbox-app.com/3c35c6ac-8723-4761-88f8-a25ca7f8a96b.jpg",
+   "developer": "Istvan Pely Productions",
+   "launchbox": "421268",
+   "match": "exact",
+   "platform": "windows",
+   "publisher": "Bethesda Softworks",
+   "tags": [
+    "1998",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Symbiocom"
+  },
+  "TBP": {
+   "boxArt": "https://images.launchbox-app.com/e9a88cc4-4267-4d25-9404-561563b2780a.jpg",
+   "developer": "Dynamix",
+   "launchbox": "128028",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/4d7bdd27-2a88-4dd2-80ae-c1b27fb07384.png",
+   "publisher": "Sierra On-Line",
+   "tags": [
+    "1993",
+    "Pinball"
+   ],
+   "title": "Pinball for Windows"
+  },
+  "TBS": {
+   "boxArt": "https://images.launchbox-app.com/428cc40e-f1b6-449e-97de-12181b580cc8.jpg",
+   "developer": "7th Level",
+   "launchbox": "165853",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/0000c4d9-0a49-4f7e-b59b-a02479c7bc85.jpg",
+   "publisher": "7th Level",
+   "tags": [
+    "1995",
+    "Compilation",
+    "Single Player"
+   ],
+   "title": "Take Your Best Shot"
+  },
+  "TMY": {
+   "boxArt": "https://images.launchbox-app.com/f3de3dc0-e52c-4125-b244-f8a5c1af3a0f.jpg",
+   "developer": "Interplay Productions",
+   "launchbox": "158203",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/de6e3a01-1d5f-4e8f-b5ce-c8410330c83d.png",
+   "publisher": "Interplay Productions",
+   "tags": [
+    "1996",
+    "Adventure"
+   ],
+   "title": "Tommy"
+  },
+  "TRQ": {
+   "boxArt": "https://images.launchbox-app.com/65932093-2948-4bab-ac7b-2957ba1ca08b.jpg",
+   "developer": "Kopetz Bolich Design",
+   "launchbox": "165769",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/b8903d50-d5fe-442a-aaa1-0df04c959931.png",
+   "publisher": "Sirius Publishing",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Treasure Quest"
+  },
+  "TTX": {
+   "boxArt": "https://images.launchbox-app.com/75f0a1f9-ecd5-4e80-ae7a-30671f2b7f8b.jpg",
+   "developer": "Ground Zero Productions",
+   "launchbox": "132655",
+   "match": "main",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/19b1e3e3-5f4d-4627-b368-7e2a7439e91e.png",
+   "publisher": "Grolier Electronic Publishing",
+   "tags": [
+    "1995",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Terror T.R.A.X: Track of the Vampire"
+  },
+  "UHH": {
+   "boxArt": "https://images.launchbox-app.com/2f17b00f-d748-441d-a4a2-e7642aeeb236.jpg",
+   "developer": "Brooklyn Multimedia",
+   "launchbox": "151782",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/006764a4-cf10-4a74-9b58-8fd223b4cb9d.png",
+   "publisher": "Microsoft",
+   "tags": [
+    "1994",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Gahan Wilson's The Ultimate Haunted House"
+  },
+  "VSO": {
+   "boxArt": "https://images.launchbox-app.com/bf0d203c-8060-4f53-ba32-e844e79bfae4.jpg",
+   "developer": "ISM",
+   "launchbox": "142242",
+   "match": "exact",
+   "platform": "win3x",
+   "publisher": "ISM",
+   "tags": [
+    "1997",
+    "Education; Life Simulation"
+   ],
+   "title": "Virtual Surgeon: Open Heart"
+  },
+  "VSU": {
+   "boxArt": "https://images.launchbox-app.com/e08281f7-f15d-48e9-982f-0962b20d809f.jpg",
+   "developer": "Random Games",
+   "launchbox": "216875",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/37767f8e-5f38-492d-81ff-8601036086f3.png",
+   "publisher": "GT Interactive Software",
+   "tags": [
+    "1996",
+    "Construction and Management Simulation; Strategy"
+   ],
+   "title": "Vikings: The Strategy of Ultimate Conquest"
+  },
+  "WEF": {
+   "boxArt": "https://images.launchbox-app.com/5970c060-4a27-43d2-9b3b-3ba49010a484.jpg",
+   "developer": "Mediola",
+   "launchbox": "464780",
+   "match": "exact",
+   "platform": "windows",
+   "preview": "https://images.launchbox-app.com/e4052066-d3a7-4d70-80ed-c818c019b036.jpg",
+   "publisher": "Mediola",
+   "tags": [
+    "1996",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Woodspell"
+  },
+  "WEI": {
+   "boxArt": "https://images.launchbox-app.com/315c6046-1faa-4296-8f49-6dcf50bfa99e.jpg",
+   "developer": "TwoPointZero",
+   "launchbox": "164317",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/39064815-8df8-4c4d-a024-21591a845474.png",
+   "publisher": "Global Star Software",
+   "tags": [
+    "1996",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Weird: Truth is Stranger than Fiction"
+  },
+  "WFL": {
+   "boxArt": "https://images.launchbox-app.com/a67b1079-5965-46d2-88a0-112dc3ef4eba.jpg",
+   "developer": "Mediola S.R.L",
+   "launchbox": "164313",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/aec83230-dad3-42fa-8a60-0a77ca1c6f67.png",
+   "publisher": "Simon & Schuster Interactive",
+   "tags": [
+    "1996",
+    "Adventure",
+    "Single Player"
+   ],
+   "title": "Who's Fat Lou"
+  },
+  "WOG": {
+   "boxArt": "https://images.launchbox-app.com/bca53585-618f-4a7f-be5f-dd4082fd348d.jpg",
+   "developer": "Luminaria",
+   "launchbox": "151625",
+   "match": "exact",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/20822964-c9e8-48af-82ef-204116c251fa.png",
+   "publisher": "Luminaria",
+   "tags": [
+    "1994",
+    "Adventure; Education",
+    "Single Player"
+   ],
+   "title": "Wrath of the Gods"
+  },
+  "YBR": {
+   "boxArt": "https://images.launchbox-app.com/9fb541a7-3122-4f5f-86b3-ffc622381193.jpg",
+   "developer": "Synergy",
+   "launchbox": "151596",
+   "match": "close",
+   "platform": "win3x",
+   "preview": "https://images.launchbox-app.com/4c2897c9-e1fa-4b54-a03e-0e4e00e6432b.png",
+   "publisher": "Synergy Interactive",
+   "tags": [
+    "1995",
+    "Adventure; Strategy",
+    "Single Player"
+   ],
+   "title": "Yellow Brick Road"
+  }
+ },
+ "schemaVersion": 1
+}

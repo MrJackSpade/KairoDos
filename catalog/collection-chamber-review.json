@@ -1,6 +1,14 @@
 {
  "schemaVersion": 1,
  "installers": {
+  "3DU1": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "146932"
+   },
+   "reason": "LaunchBox: 3-D Ultra Pinball (1995), not its 1997 sequel The Lost Continent. Page: The blog titles 3D Ultra Pinball by its Space Colony table.",
+   "page": "https://collectionchamber.blogspot.com/p/3d-ultra-pinball-space-colony.html"
+  },
   "AYA": {
    "exodos": "sha256-dos-manifest-v1:8b878d1ff801b205f6d51a5d63afd4f7c0835c98deb4933ec3e188935e50a026",
    "reason": "The same 1994 game; the installer drops its subtitle."
@@ -15,11 +23,102 @@
   },
   "DAAC": {
    "exodos": null,
-   "reason": "Disney's Aladdin Activity Center is an educational activity program; eXoDOS's Disney's Aladdin is Virgin's 1994 platformer."
+   "reason": "Disney's Aladdin Activity Center is an educational activity program; eXoDOS's Disney's Aladdin is Virgin's 1994 platformer. LaunchBox: Aladdin Activity Center.",
+   "launchbox": {
+    "platform": "win3x",
+    "id": "154308"
+   }
+  },
+  "DASH": {
+   "page": "https://collectionchamber.blogspot.com/2015/03/disneys-animated-storybook.html",
+   "reason": "Page: The blog's Disney's Animated Storybook: Hercules."
+  },
+  "DASS": {
+   "page": "https://collectionchamber.blogspot.com/p/disneys-ariels-story-studio.html",
+   "reason": "Page: The blog's Disney's Ariel's Story Studio."
+  },
+  "DASW": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "425697"
+   },
+   "reason": "LaunchBox: Disney's Animated Storybook: Winnie the Pooh and the Honey Tree, the 1995 storybook."
+  },
+  "DBOG": {
+   "exodos": "sha256-dos-manifest-v1:5816a849dadb72b17a4b3b52364e5ccdedab1f52812da9ed45441d257ab314ba",
+   "reason": "The installer names Disney's Beauty and the Beast: Be Our Guest by its subtitle."
+  },
+  "DHC": {
+   "preview": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6niJVQibDdIsM0zth5xfKsKdbd7bTAdaF6-FE_sJshW_F8WqEVUZKmz0Q05yCPKyfy1HQAhnfyG848B2pXFwviI55VmzrdWM_lMRLGGgw9Q0V9aMcPns5hGfRZKhkweW54fMmimJ_U3A/s0/003.png",
+   "reason": "Preview: the post's gallery mixes every machine's releases; this is Die Hard on DOS."
+  },
+  "DTPJ": {
+   "page": "https://collectionchamber.blogspot.com/p/disneys-lion-king-timon-pumbaas-jungle.html",
+   "reason": "Page: The blog's Disney's The Lion King: Timon & Pumbaa's Jungle Games."
+  },
+  "DTTG": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "167731"
+   },
+   "reason": "LaunchBox: Disney's The Hunchback of Notre Dame: Topsy Turvy Games. Page: The blog's Disney's The Hunchback of Notre Dame: Topsy Turvy Games.",
+   "page": "https://collectionchamber.blogspot.com/p/disneys-hunchback-of-notre-dame-topsy.html"
+  },
+  "FAT": {
+   "exodos": "sha256-dos-manifest-v1:63ba0cbedaa95f9054fb7a709ccae37496527cb83df1531e9749317ea9447fa8",
+   "reason": "Fatal Racing is the European title of Gremlin's Whiplash."
   },
   "FEM": {
    "exodos": null,
-   "reason": "Frankenstein: Through the Eyes of the Monster is a 1995 adventure; eXoDOS's Frankenstein is a 1994 platform game."
+   "reason": "Frankenstein: Through the Eyes of the Monster is a 1995 adventure; eXoDOS's Frankenstein is a 1994 platform game. LaunchBox: Frankenstein: Through the Eyes of the Monster.",
+   "launchbox": {
+    "platform": "win3x",
+    "id": "151779"
+   }
+  },
+  "FFC": {
+   "page": "https://collectionchamber.blogspot.com/p/fantastic-4-interactive-cd-rom.html",
+   "reason": "Page: The blog's Fantastic 4: Interactive CD-ROM."
+  },
+  "FT2": {
+   "launchbox": {
+    "platform": "windows",
+    "id": "154895"
+   },
+   "reason": "LaunchBox: Full Tilt! 2 Pinball, not the first Full Tilt! Pinball. Page: The blog's Full Tilt! 2 Pinball, not the first game's page.",
+   "page": "https://collectionchamber.blogspot.com/p/full-tilt-2-pinball.html"
+  },
+  "GML": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "155076"
+   },
+   "reason": "LaunchBox: Great Myths & Legends Volume 1: Monsters & Mythical Creatures, the volume the installer's notes describe."
+  },
+  "GRMC": {
+   "preview": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjioDmaXp9TAzK4LhoUZt1fVSmKRuzA2YoLA-2PVuB0mtokNlXrjd52lsrRWJfMfhaNj1Cr6JqPfQ6TUhJu6rbuWxjtWlNGLuD4CEbcBJCSKu44yPCXFVb4I9LHyXeMJLtM29OLCMvV5CY8_btGCgpGMxphC5CNJhqoNTPyW5bUNc7ADGqyAl-WRqqpQUE/s0/GRMC-2001.png",
+   "reason": "Preview: the post's gallery mixes every machine's releases; this is Gremlins 2 on DOS."
+  },
+  "HGC": {
+   "page": "https://collectionchamber.blogspot.com/p/hitchhikers-guide-to-galaxy-collection.html",
+   "reason": "Page: The blog's Hitchhiker's Guide to the Galaxy Collection. Preview: the installer runs the text adventure under Frotz and a Windows remake; this is the DOS Trivia Challenge.",
+   "preview": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9IcB6g9t_AvK7Je0Mt7S8jkLGlmEemqoVjzXU9LJMmbrCjCnPth06l_iDTJphHmayLOcow6DwxIcjqZ_LrEJFPVFvL1N-sL9EBC54yH05hlvTIzVyP5R770e0EuZyRqiC1JJSjF2NgaA/s0/013.png"
+  },
+  "IJAC": {
+   "preview": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgyimJKshUFEKP3uhXSZJPqKL1Blk9jXVuXPsDP1MORuNwKAvyKCBkjS5L7QvxK9b7Nak0AvEWFq5D7GwqGLyWCfm1OkQxN7Jl6qdTtrMZClFudV3Xu_8UTpkqED5Q3WRyxSRiARL8y59bH1mXrPh1wFcYFa9KnR9vNmN33QCs2WiG7sbjlrPH6afyKWY0/s0/IJAC-FOA-005.png",
+   "reason": "Preview: the post's gallery mixes every machine's releases; this is Fate of Atlantis: The Action Game on DOS."
+  },
+  "IMC": {
+   "launchbox": null,
+   "reason": "LaunchBox has no Iron Man Interactive CD-ROM Comic Book; its title is close to the Spider-Man one's."
+  },
+  "JDB": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "156004"
+   },
+   "reason": "LaunchBox: Jump: The David Bowie Interactive CD-ROM. Page: The blog's Jump: The David Bowie Interactive CD-ROM.",
+   "page": "https://collectionchamber.blogspot.com/2016/01/jump-david-bowie-interactive.html"
   },
   "JP1": {
    "exodos": "sha256-dos-manifest-v1:1db38e1ccfb24952e376e076c4d0580d7038b34a5d30cd13d3ebff9d5a790fba",
@@ -29,6 +128,10 @@
    "exodos": "sha256-dos-manifest-v1:4ad5193bbf28f68b255cf04e6ac6f7ca34217efb5e76cedca1f940230e0e5726",
    "reason": "King's Bounty Classic is New World Computing's 1990 King's Bounty."
   },
+  "LEMT": {
+   "page": "https://collectionchamber.blogspot.com/p/lemmings-trilogy.html",
+   "reason": "Page: The blog's Lemmings Trilogy."
+  },
   "LGP": {
    "exodos": "sha256-dos-manifest-v1:75cc0400c96127312bc5a50d37884478c5f5e4dc67d180e53f83e70c774ad4a7",
    "reason": "The installer is Leather Goddesses of Phobos 2 with the first game added (2+)."
@@ -37,9 +140,67 @@
    "exodos": "sha256-dos-manifest-v1:75cb05a0d3379dcb85ec6c4571661e4b51b2905b126ea5f835f4297744283fda",
    "reason": "The installer spells Pył (1999) without its Polish ł."
   },
+  "PYS": {
+   "page": "https://collectionchamber.blogspot.com/p/pyst.html",
+   "reason": "Page: The blog's P.Y.S.T."
+  },
+  "QG2": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "164385"
+   },
+   "reason": "LaunchBox: The Vortex: Quantum Gate II."
+  },
+  "RML": {
+   "exodos": "sha256-dos-manifest-v1:eb425b8238619577f31691afe8338086d89858470b0a5560d253add8d8fa7f70",
+   "reason": "The installer drops the Ripley's Believe It or Not! of the title."
+  },
+  "RVL": {
+   "launchbox": {
+    "platform": "win3x",
+    "id": "165953"
+   },
+   "reason": "LaunchBox: Rolling Stones Voodoo Lounge CD-ROM. Page: The blog's Rolling Stones: Voodoo Lounge CD-ROM.",
+   "page": "https://collectionchamber.blogspot.com/p/rolling-stones-voodoo-lounge-cd-rom.html"
+  },
+  "RVT": {
+   "page": "https://collectionchamber.blogspot.com/2015/07/robocop-vs-terminator.html",
+   "reason": "Page: The blog's RoboCop vs The Terminator."
+  },
+  "SM6": {
+   "launchbox": {
+    "platform": "dos",
+    "id": "143747"
+   },
+   "reason": "LaunchBox: Marvel Comics Spider-Man: The Sinister Six, not the Interactive CD-ROM Comic Book."
+  },
   "STHA": {
    "exodos": "sha256-dos-manifest-v1:1b95e2c0ac0694de35bf988d8d7d494ea98b0d95c2ab640c3307154eba129920",
    "reason": "DS9 abbreviates Deep Space Nine; the same 1996 game."
+  },
+  "STTC": {
+   "exodos": "sha256-dos-manifest-v1:e3d8b1d91769660fcdae99073b6572119a570b66f6c3eb26305eeca7a9e21659",
+   "reason": "TNG is The Next Generation."
+  },
+  "SYN": {
+   "page": "https://collectionchamber.blogspot.com/2019/11/symbiocom-aka-syn-factor.html",
+   "reason": "Page: The blog's Symbiocom (aka Syn-Factor)."
+  },
+  "THA": {
+   "page": "https://collectionchamber.blogspot.com/p/thors-hammer.html",
+   "reason": "Page: The blog's Thor's Hammer."
+  },
+  "TT3": {
+   "exodos": "sha256-dos-manifest-v1:a2b2f83c17684b903ac0a469565136b2af19dd862b968b0632ca0a5261f1b59a",
+   "reason": "The installer drops The Adventures of of the title."
+  },
+  "TTX": {
+   "page": "https://collectionchamber.blogspot.com/p/terror-trax-track-of-vampire.html",
+   "reason": "Page: The blog's Terror T.R.A.X.: Track of the Vampire."
+  },
+  "WIZ": {
+   "page": "https://collectionchamber.blogspot.com/2015/04/wizball-wizkid.html",
+   "reason": "Page: The blog's Wizball & Wizkid."
   }
  }
 }

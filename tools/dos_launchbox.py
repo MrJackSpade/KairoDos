@@ -4,7 +4,7 @@ from LaunchBox and uses the repository's copy only for images LaunchBox does not
 
 Usage: dos_launchbox.py <eXoDOS root> <LaunchBox MS-DOS snapshot>
 
-The snapshot comes from shared/tools/launchbox.py snapshot <Metadata.zip> <dir> dos. Each game
+The snapshot comes from shared/tools/launchbox.py snapshot <dir> dos. Each game
 takes the LaunchBox DatabaseID eXoDOS's MS-DOS.xml records for it; a game without one takes the
 LaunchBox game whose name equals its title and whose year agrees. Writes
 catalog/launchbox-artwork-v1.json: {"folders": {"<folder>": {"game": DatabaseID,

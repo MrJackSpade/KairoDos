@@ -298,7 +298,12 @@
    "match": "exact",
    "title": "Big Red Racing"
   },
-  "BSY": {
+  "BSY/Install-BSY.exe": {
+   "installed": "sha256-dos-manifest-v1:e37eb47690d9145c2c8098f5c1458cdb555fee86b9f233bd242ca25603e779d4",
+   "installer": "sha256-dos-clickteam-v1:c4e77532d5face7a89e88ee49da937301dd75cb1d67ed918eb212f704142f5ce",
+   "title": "Bermuda Syndrome"
+  },
+  "BSY/Install-BSY_v2.exe": {
    "installed": "sha256-dos-manifest-v1:d432bbb0a004512b5fa6ba93dd568d44fd511824584670b9cf003ccd49e9b5e4",
    "installer": "sha256-dos-clickteam-v1:2aef3393700b35e73d7530fde7b6a8793d1b4d21fe210c9d610a55c7a68b560e",
    "title": "Bermuda Syndrome"
@@ -383,7 +388,14 @@
    "installer": "sha256-dos-clickteam-v1:e94caa4332b76dbb1535a891bcb461eb9ebfdcf96306f3cddfa27b1ca4e83b79",
    "title": "Chuckie Egg Collection"
   },
-  "CF5": {
+  "CF5/Install-CF5_v3.exe": {
+   "game": "dos:4557bbe269a6838a",
+   "installed": "sha256-dos-manifest-v1:a9ebff2092f419eb69f35cd7c6f3b834227b617b9ff7a6be33e4327229dc40bb",
+   "installer": "sha256-dos-clickteam-v1:34dd8ac34cd1e40b2411c12b4875c1ed566f936bb632e7f730a6a1fc637e4c55",
+   "match": "exact",
+   "title": "Chewy ESC from F5"
+  },
+  "CF5/Install-CF5_v4.exe": {
    "game": "dos:4557bbe269a6838a",
    "installed": "sha256-dos-manifest-v1:8252126ea05d0703fe1119daf40a71fffea999f8d572691d9067b2ccac4003e3",
    "installer": "sha256-dos-clickteam-v1:a9d6d837f0031e4ba4f52ddc8981c70a78d6ab2deb7540369aa40bbef8da1395",
@@ -423,7 +435,14 @@
    "match": "exact",
    "title": "Clue!"
   },
-  "COA": {
+  "COA/Install-COA.exe": {
+   "game": "dos:c421744268ee6e52",
+   "installed": "sha256-dos-manifest-v1:5c5ba8cf48f61a6069808462dc0f631f1b946bf5f19dc68d3caa901a9289f747",
+   "installer": "sha256-dos-clickteam-v1:8972e4c7e183b7b687dc099e3dcca64ca51200d853a5a0c9d0bf0a0619859b39",
+   "match": "exact",
+   "title": "Coaster"
+  },
+  "COA/Install-COA_v2.exe": {
    "game": "dos:c421744268ee6e52",
    "installed": "sha256-dos-manifest-v1:a036d46521c7e371ee638ac912394a921b4ca36dbc3d39c70a29c8e225791b6f",
    "installer": "sha256-dos-clickteam-v1:c212675ed6e2620ec44aae4941cfcc8c7ffbc96b8c79232e12475a0f58199b59",
@@ -558,8 +577,10 @@
    "title": "Dazzeloids"
   },
   "DBOG": {
+   "game": "dos:5816a849dadb72b1",
    "installed": "sha256-dos-manifest-v1:992c8d08d8cb0574415ec72e6fdebdc3c73ae12a7d2953ca7bb83768bd676370",
    "installer": "sha256-dos-clickteam-v1:d2efd51d404c7106e3fb596c9ff6bdb204876b1193116a84a7fd8cb2bf17abfe",
+   "match": "reviewed",
    "title": "Be Our Guest"
   },
   "DC5": {
@@ -793,7 +814,14 @@
    "match": "exact",
    "title": "Fade to Black"
   },
-  "F96": {
+  "F96/Install-F96_v3.exe": {
+   "game": "dos:d5f083842a927f01",
+   "installed": "sha256-dos-manifest-v1:3e799f70b5b1d4a28a7873ab036a0d22be8c82acd520872ddc6ac9ed92954073",
+   "installer": "sha256-dos-clickteam-v1:cea7d99e8e61669af4c908fbea72908a94dd1174530e027147aebf68e67b224f",
+   "match": "exact",
+   "title": "Fable"
+  },
+  "F96/Install-F96_v5.exe": {
    "game": "dos:d5f083842a927f01",
    "installed": "sha256-dos-manifest-v1:0f3467c9282e531a5ce0c8bb05981784d575a49488229f445a3152dbc21d519a",
    "installer": "sha256-dos-clickteam-v1:c7a0724b6fd62490a44064b79fb698ec9d48b84f138313f78dc23630d6cdcd9c",
@@ -801,8 +829,10 @@
    "title": "Fable"
   },
   "FAT": {
+   "game": "dos:63ba0cbedaa95f90",
    "installed": "sha256-dos-manifest-v1:9cd5ff1d89c4c6a80c71315892f8214598acb5899a71a70b0be2235ca43193c4",
    "installer": "sha256-dos-clickteam-v1:a5badd2aa4d5886f487600f1e6381b3108f10f365bb53da6c8ffa120ad3ba94b",
+   "match": "reviewed",
    "title": "Fatal Racing"
   },
   "FDC": {
@@ -1246,13 +1276,6 @@
    "title": "Leather Goddesses of Phobos 2+"
   },
   "LIO": {
-   "game": "dos:1b43437519bf90c6",
-   "installed": "sha256-dos-manifest-v1:3c097df6e9c48ee9c71d08ce1eb5db6035f45baee680a3dcd12987cffd48cfd7",
-   "installer": "sha256-dos-clickteam-v1:7c8b17a06e23e1ed98a7cd8af3aef9348186aeab120b5f5e10a85f2762adc803",
-   "match": "exact",
-   "title": "Lion"
-  },
-  "LIO/Install-LIO.exe": {
    "game": "dos:1b43437519bf90c6",
    "installed": "sha256-dos-manifest-v1:3c097df6e9c48ee9c71d08ce1eb5db6035f45baee680a3dcd12987cffd48cfd7",
    "installer": "sha256-dos-clickteam-v1:7c8b17a06e23e1ed98a7cd8af3aef9348186aeab120b5f5e10a85f2762adc803",
@@ -1707,8 +1730,10 @@
    "title": "Race Mania"
   },
   "RML": {
+   "game": "dos:eb425b8238619577",
    "installed": "sha256-dos-manifest-v1:a91012f4bc9a0033fd3af8543027363add5038e98d5798cc7487d7e1d873c3e3",
    "installer": "sha256-dos-clickteam-v1:8a284ba37bf9b867122be949c4c75c2989613cbb7c75eed0a1e66aa4f5025ec8",
+   "match": "reviewed",
    "title": "Riddle of Master Lu"
   },
   "ROM": {
@@ -2020,8 +2045,10 @@
    "title": "Star Trek Pinball"
   },
   "STTC": {
+   "game": "dos:e3d8b1d91769660f",
    "installed": "sha256-dos-manifest-v1:8972c324bcd63456abd39b5b9ff1f805a3b1c1189f413ae7b7b9cd8d2888b10d",
    "installer": "sha256-dos-clickteam-v1:49cce9425d7ad91ef86142fe301295a4a0e80ba60b84a9e8f75c703a7ea8884c",
+   "match": "reviewed",
    "title": "Star Trek TNG - The Transinium Challenge"
   },
   "STU": {
@@ -2150,8 +2177,10 @@
    "title": "Tintin in Tibet"
   },
   "TT3": {
+   "game": "dos:a2b2f83c17684b90",
    "installed": "sha256-dos-manifest-v1:ad8bead21441cd6a31b5207b8a5c16196e7af664ed951adc5d6ee5b0966ca9e5",
    "installer": "sha256-dos-clickteam-v1:54a870b23ac7ade58a9c583f714a3d6aea41009b88f139d5eb58726e031372ee",
+   "match": "reviewed",
    "title": "Tintin - Prisoners of the Sun"
   },
   "TTB": {
