@@ -73,7 +73,8 @@ internal object DosClickteam {
     fun files(installer: ClickteamInstaller): DosClickteamLaunch.Files = object : DosClickteamLaunch.Files {
         private val byPath = installer.members.associateBy { it.name.lowercase(Locale.ROOT) }
         override fun exists(path: String) = path.lowercase(Locale.ROOT) in byPath
-        override fun read(path: String) = byPath[path.lowercase(Locale.ROOT)]?.let { installer.open(it).use { input -> input.readBytes() } }
+        override fun read(path: String) = open(path)?.use { input -> input.readBytes() }
+        override fun open(path: String) = byPath[path.lowercase(Locale.ROOT)]?.let(installer::open)
     }
 
     /**
@@ -108,7 +109,8 @@ internal object DosClickteam {
                     val byPath = members.filterNot { it.directory }.associateBy { it.name.replace('\\', '/').lowercase(Locale.ROOT) }
                     DosClickteamLaunch.launch(object : DosClickteamLaunch.Files {
                         override fun exists(path: String) = path.lowercase(Locale.ROOT) in byPath
-                        override fun read(path: String) = byPath[path.lowercase(Locale.ROOT)]?.let { opener.open(it).use { input -> input.readBytes() } }
+                        override fun read(path: String) = open(path)?.use { input -> input.readBytes() }
+                        override fun open(path: String) = byPath[path.lowercase(Locale.ROOT)]?.let(opener::open)
                     }, installed.entries)
                 }
             }

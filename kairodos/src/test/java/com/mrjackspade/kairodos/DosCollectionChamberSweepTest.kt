@@ -3,6 +3,8 @@ package com.mrjackspade.kairodos
 import com.mrjackspade.kairo.frontend.ClickteamInstaller
 import java.io.File
 import java.nio.channels.FileChannel
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assume.assumeTrue
@@ -29,19 +31,29 @@ class DosCollectionChamberSweepTest {
         val app = File("..").canonicalFile
         val soundFont = File(app, "shared/third_party/generaluser-gs/GeneralUser-GS.sf2")
         check(soundFont.isFile) { "No shipped SoundFont at $soundFont" }
+        val programs = File(samples!!).listFiles().orEmpty().filter { it.isDirectory }.sortedBy { it.name }.flatMap { folder ->
+            folder.listFiles().orEmpty().filter { it.isFile && it.name.endsWith(".exe", true) }.sortedBy { it.name }
+                .map { "${folder.name}/${it.name}" to it }
+        }.filter { (name, _) -> filter == null || filter.matches(name) }
+        // Unpacked several at a time (KAIRO_SWEEP_THREADS), listed in folder order.
+        val pool = Executors.newFixedThreadPool(System.getenv("KAIRO_SWEEP_THREADS")?.toInt() ?: 1)
+        val results = try {
+            programs.map { (name, program) ->
+                pool.submit(Callable {
+                    try {
+                        sweepTest(program, name, out, frames, soundFont)?.let { it to "TEST" } ?: (null to "NONE no launch")
+                    } catch (failure: Throwable) {
+                        null to "FAIL ${failure::class.simpleName}: ${failure.message}\n" +
+                            failure.stackTrace.take(12).joinToString("\n") { "    at $it" }
+                    }
+                })
+            }.map { it.get() }
+        } finally { pool.shutdown() }
         val tests = JSONArray()
         val report = StringBuilder()
-        for (folder in File(samples!!).listFiles().orEmpty().filter { it.isDirectory }.sortedBy { it.name }) {
-            for (program in folder.listFiles().orEmpty().filter { it.isFile && it.name.endsWith(".exe", true) }.sortedBy { it.name }) {
-                val name = "${folder.name}/${program.name}"
-                if (filter != null && !filter.matches(name)) continue
-                val line = try {
-                    sweepTest(program, name, out, frames, soundFont)?.let { tests.put(it); "TEST" } ?: "NONE no launch"
-                } catch (failure: Throwable) {
-                    "FAIL ${failure::class.simpleName}: ${failure.message}"
-                }
-                report.append("$name $line\n")
-            }
+        programs.zip(results).forEach { (entry, result) ->
+            result.first?.let(tests::put)
+            report.append("${entry.first} ${result.second}\n")
         }
         File(app, "core/test/collection-chamber-sweep.json").writeText(JSONObject().put("tests", tests).toString(1) + "\n")
         File("build/collection-chamber-sweep.txt").writeText(report.toString())

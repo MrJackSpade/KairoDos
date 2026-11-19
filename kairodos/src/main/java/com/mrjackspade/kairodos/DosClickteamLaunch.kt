@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 package com.mrjackspade.kairodos
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.io.InputStream
 import java.nio.charset.Charset
 import java.util.Locale
 
@@ -18,8 +17,11 @@ import java.util.Locale
 internal object DosClickteamLaunch {
     /** The installed files, by their path (forward slashes) in any case. */
     interface Files {
+        /** A small file whole: a batch file or a configuration. */
         fun read(path: String): ByteArray?
         fun exists(path: String): Boolean
+        /** A file as a stream, for a program, which is scanned in pieces however large it is (DosProgramScan). */
+        fun open(path: String): InputStream? = read(path)?.inputStream()
     }
 
     /** A shortcut the installer makes: the file it starts and the arguments it starts it with. */
@@ -36,8 +38,6 @@ internal object DosClickteamLaunch {
 
     private val TEXT: Charset = Charset.forName("windows-1252")
     private val PROGRAMS = listOf(".exe", ".bat", ".cmd", ".com")
-    private val AUTOPLAY = "AMD50_RESOURCES_HEADER".toByteArray(Charsets.US_ASCII)
-    private val MENU_KEY = Regex("P\\d+\\.O\\d+\\.S\\d+\\.RO\\d+\\.([12])")
     private const val DEPTH = 8
 
     fun launch(files: Files, entries: List<Entry>): Launch? {
@@ -72,9 +72,9 @@ internal object DosClickteamLaunch {
         return when (extension(target)) {
             ".bat", ".cmd" -> batch(files, String(files.read(target) ?: return emptyList(), TEXT), folder, seen, depth)
             ".exe" -> {
-                val program = files.read(target) ?: return emptyList()
-                if (isDosbox(program)) listOfNotNull(run(files, program, folder, arguments))
-                else menuActions(program).flatMap { (action, actionArguments) ->
+                val program = DosProgramScan.of(files.open(target) ?: return emptyList())
+                if (program.dosbox) listOfNotNull(run(files, program, folder, arguments))
+                else program.menuActions().flatMap { (action, actionArguments) ->
                     if (extension(action) !in PROGRAMS) return@flatMap emptyList()
                     val path = join(parent(target), action) ?: return@flatMap emptyList()
                     if (!files.exists(path)) emptyList()
@@ -124,7 +124,7 @@ internal object DosClickteamLaunch {
     }
 
     /** DOSBox started in [folder] with [arguments]: the configurations it reads, as DOSBox finds them. */
-    private fun run(files: Files, program: ByteArray, folder: String, arguments: String): Run? {
+    private fun run(files: Files, program: DosProgramScan, folder: String, arguments: String): Run? {
         val tokens = tokens(arguments)
         val asked = ArrayList<String>()
         val commands = ArrayList<String>()
@@ -138,7 +138,7 @@ internal object DosClickteamLaunch {
         }
         // Every -conf file there is, in order; when none is, its default in its folder (DOSBox-X's own name first).
         val configs = asked.filter(files::exists).ifEmpty {
-            val defaults = (if (contains(program, "DOSBox-X")) listOf("dosbox-x.conf") else emptyList()) + "dosbox.conf"
+            val defaults = (if (program.dosboxX) listOf("dosbox-x.conf") else emptyList()) + "dosbox.conf"
             listOfNotNull(defaults.mapNotNull { join(folder, it) }.firstOrNull(files::exists))
         }
         if (configs.isEmpty()) return null
@@ -183,74 +183,6 @@ internal object DosClickteamLaunch {
         }
     }
 
-    /** A DOSBox build (0.74, SVN-Daum, ECE, DOSBox-X): its own name and its IMGMOUNT command. */
-    fun isDosbox(program: ByteArray) = contains(program, "DOSBox") && contains(program, "IMGMOUNT")
-
-    /** A menu program's run actions: each file (relative to the menu's folder) and its arguments. */
-    fun menuActions(program: ByteArray): List<Pair<String, String>> = autoplayActions(program).ifEmpty { keyedActions(program) }
-
-    /**
-     * AutoPlay Menu Designer's: after its resource header, property records (u32 kind 14, u32 total,
-     * u16, u32 value length, u32 property, value); a run action is property 1, a UTF-16 path under
-     * %ROOT%, and the property 2 after it, its arguments.
-     */
-    private fun autoplayActions(program: ByteArray): List<Pair<String, String>> {
-        val start = indexOf(program, AUTOPLAY, 0)
-        if (start < 0) return emptyList()
-        val buffer = ByteBuffer.wrap(program).order(ByteOrder.LITTLE_ENDIAN)
-        val actions = ArrayList<Pair<String, String>>()
-        var at = start
-        while (at + 18 <= program.size) {
-            if (buffer.getInt(at) == 14 && buffer.getShort(at + 8).toInt() == 0 && buffer.getInt(at + 14) == 1) {
-                val length = buffer.getInt(at + 10)
-                if (length in 2..4096 && length % 2 == 0 && buffer.getInt(at + 4) == 18 + length && at + 18 + length <= program.size &&
-                    program[at + 16 + length].toInt() == 0 && program[at + 17 + length].toInt() == 0) {
-                    val target = String(program, at + 18, length - 2, Charsets.UTF_16LE)
-                    if (target.startsWith("%ROOT%")) {
-                        val next = at + 18 + length
-                        val arguments = if (next + 18 <= program.size && buffer.getInt(next) == 14 && buffer.getInt(next + 14) == 2) {
-                            val argumentsLength = buffer.getInt(next + 10)
-                            if (argumentsLength in 2..4096 && buffer.getInt(next + 4) == 18 + argumentsLength && next + 18 + argumentsLength <= program.size)
-                                String(program, next + 18, argumentsLength - 2, Charsets.UTF_16LE) else ""
-                        } else ""
-                        actions += target.removePrefix("%ROOT%").trimStart('\\', '/') to arguments
-                    }
-                }
-            }
-            at++
-        }
-        return actions
-    }
-
-    /**
-     * A menu whose properties are keyed records (u32 kind 14, u32 total, u16 key length, u32 value
-     * length, key, value): a button's run action is `P<page>.O<object>.S<n>.RO<n>.1`, its file, and `.2`, its arguments.
-     */
-    private fun keyedActions(program: ByteArray): List<Pair<String, String>> {
-        val buffer = ByteBuffer.wrap(program).order(ByteOrder.LITTLE_ENDIAN)
-        val values = LinkedHashMap<String, String>()
-        var at = 0
-        while (at + 14 <= program.size) {
-            if (buffer.getInt(at) == 14) {
-                val total = buffer.getInt(at + 4)
-                val keyLength = buffer.getShort(at + 8).toInt() and 0xFFFF
-                val valueLength = buffer.getInt(at + 10)
-                if (keyLength in 2..64 && valueLength in 0..4096 && total == 14 + keyLength + valueLength && at + total <= program.size &&
-                    program[at + 13 + keyLength].toInt() == 0) {
-                    val key = String(program, at + 14, keyLength - 1, Charsets.US_ASCII)
-                    if (MENU_KEY.matches(key)) {
-                        var end = at + total
-                        while (end > at + 14 + keyLength && program[end - 1].toInt() == 0) end--
-                        values[key] = String(program, at + 14 + keyLength, end - at - 14 - keyLength, TEXT)
-                    }
-                }
-            }
-            at++
-        }
-        return values.filterKeys { it.endsWith(".1") }.filterValues { it.isNotEmpty() }
-            .map { (key, file) -> file to values[key.dropLast(1) + "2"].orEmpty() }
-    }
-
     /** [path] from [folder], forward slashes, `.` and `..` resolved; null when it leaves the install folder. */
     private fun join(folder: String, path: String): String? {
         val parts = ArrayList(folder.split('/').filter { it.isNotEmpty() })
@@ -273,22 +205,4 @@ internal object DosClickteamLaunch {
     /** A command line's words: quoted ones as one, without their quotes. */
     private fun tokens(line: String): List<String> =
         Regex("\"([^\"]*)\"|(\\S+)").findAll(line).map { it.groupValues[1].ifEmpty { it.groupValues[2] } }.toList()
-
-    private fun contains(bytes: ByteArray, text: String) = indexOf(bytes, text.toByteArray(Charsets.US_ASCII), 0) >= 0
-
-    private fun indexOf(bytes: ByteArray, pattern: ByteArray, from: Int): Int {
-        if (pattern.isEmpty()) return from
-        val first = pattern[0]
-        var at = from
-        val last = bytes.size - pattern.size
-        while (at <= last) {
-            if (bytes[at] == first) {
-                var match = true
-                for (index in 1 until pattern.size) if (bytes[at + index] != pattern[index]) { match = false; break }
-                if (match) return at
-            }
-            at++
-        }
-        return -1
-    }
 }
