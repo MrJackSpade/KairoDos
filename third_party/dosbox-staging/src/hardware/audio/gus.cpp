@@ -382,6 +382,9 @@ Gus::Gus(const io_port_t port_pref, const uint8_t dma_pref, const uint8_t irq_pr
 
 	ms_per_render = MillisInSecond / channel->GetSampleRate();
 
+#ifdef KAIRO_STAGING
+	BindDmaTransfer();
+#endif
 	UpdatePlaybackDmaAddress(dma_pref);
 	UpdateRecordingDmaAddress(dma_pref);
 
@@ -738,6 +741,20 @@ static void gus_dma_event(uint32_t)
 	}
 }
 
+#ifdef KAIRO_STAGING
+// The transfer the DMA control register's sample size asks for. The register resets to 8-bit
+// samples, so a channel the program unmasks before it first writes the register (Escape from
+// Delirium) starts that transfer, which does nothing while the register leaves DMA disabled,
+// instead of calling an empty function.
+void Gus::BindDmaTransfer()
+{
+	PerformDmaTransfer = std::bind(dma_control_register.are_samples_16bit
+	                                       ? &Gus::SizedDmaTransfer<SampleSize::Bits16>
+	                                       : &Gus::SizedDmaTransfer<SampleSize::Bits8>,
+	                               this);
+}
+#endif
+
 void Gus::StartDmaTransfers()
 {
 	PIC_RemoveEvents(gus_dma_event);
@@ -1090,6 +1107,9 @@ void Gus::Reset() noexcept
 	adlib_command_reg = ADLIB_CMD_DEFAULT;
 
 	dma_control_register.data = {};
+#ifdef KAIRO_STAGING
+	BindDmaTransfer();
+#endif
 
 	sample_ctrl = 0;
 
@@ -1338,11 +1358,15 @@ void Gus::WriteToRegister()
 		// write in bit 6 that can't be read back because this bit takes
 		// on a different meaning when reading the DMA control register.
 		//
+#ifdef KAIRO_STAGING
+		BindDmaTransfer();
+#else
 		PerformDmaTransfer = std::bind(
 		        dma_control_register.are_samples_16bit
 		                ? &Gus::SizedDmaTransfer<SampleSize::Bits16>
 		                : &Gus::SizedDmaTransfer<SampleSize::Bits8>,
 		        this);
+#endif
 
 		if (dma_control_register.is_enabled) {
 			StartDmaTransfers();

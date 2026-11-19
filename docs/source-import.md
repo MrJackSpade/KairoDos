@@ -105,6 +105,13 @@ title. `src/cpu/core_dynrec/decoder_opcodes.h` now checks both after the POPF an
 then ends the block with an IRET's return, whose handling switches to the trap
 decoder or serves the interrupt; otherwise the block runs on.
 
+Group `staging-gus-dma-transfer` (Collection Chamber launch sweep). `src/hardware/audio/gus.cpp`
+bound the DMA transfer function only on the first write to the DMA control register
+(41h), while unmasking the DMA channel starts transfers at once, so a program
+unmasking it first (Escape from Delirium) made Staging call an empty
+`std::function`. `Gus::BindDmaTransfer` now binds it when the GUS is made and on
+reset too, for the register's reset state (8-bit samples).
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`

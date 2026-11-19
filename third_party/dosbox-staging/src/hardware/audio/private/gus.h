@@ -289,6 +289,9 @@ private:
 	void UpdateDmaAddr(uint32_t offset) noexcept;
 	void DmaCallback(const DmaChannel* chan, DmaEvent event);
 	void StartDmaTransfers();
+#ifdef KAIRO_STAGING
+	void BindDmaTransfer();
+#endif
 
 	template <SampleSize sample_size>
 	bool SizedDmaTransfer();
