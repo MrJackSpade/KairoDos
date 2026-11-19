@@ -535,7 +535,7 @@
   },
   "presets": {
     "1000-miglia-native-joystick-dpad-inferred-v1": {
-      "description": "Native joystick driving: D-pad Up accelerates, Down brakes, Left/Right steer; A alone downshifts and A+Up upshifts. X headlights, Select map, L1 pause, Start returns to selections.",
+      "description": "Native joystick driving: D-pad Up accelerates, Down brakes, Left/Right steer; A alone downshifts and A+Up upshifts. X headlights, Start map, L1 pause, Select returns to selections.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -570,13 +570,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             32
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -617,13 +617,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               32
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -632,7 +632,7 @@
       }
     },
     "120-degrees-below-zero-dpad-mouse-parser-low-v1": {
-      "description": "Low-confidence control-panel mapping for the DOS SCI0 adventure: D-pad moves the mouse pointer, A=Space use, B=Enter start/select, Start=Esc menu. Typed parser commands still need the virtual keyboard; native joystick support is unverified.",
+      "description": "Low-confidence control-panel mapping for the DOS SCI0 adventure: D-pad moves the mouse pointer, A=Space use, B=Enter start/select, Select=Esc menu. Typed parser commands still need the virtual keyboard; native joystick support is unverified.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -663,7 +663,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -700,7 +700,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -709,7 +709,7 @@
       }
     },
     "1830-dpad-mouse-keyboard-v1": {
-      "description": "Mouse-first DOS board-game layout: D-pad moves the pointer, A left-clicks, X confirms with Enter, and Start sends Esc to cancel/back. Use the virtual keyboard for names and any text prompts.",
+      "description": "Mouse-first DOS board-game layout: D-pad moves the pointer, A left-clicks, X confirms with Enter, and Select sends Esc to cancel/back. Use the virtual keyboard for names and any text prompts.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -738,7 +738,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -773,7 +773,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -1373,7 +1373,7 @@
       }
     },
     "3d-bomber-keyboard-v1": {
-      "description": "Keyboard action layout: D-pad arrows move, L1/R1 with Alt+arrow strafe, B drops bombs (Ctrl), X types chat (T), Start quits (Esc).",
+      "description": "Keyboard action layout: D-pad arrows move, L1/R1 with Alt+arrow strafe, B drops bombs (Ctrl), X types chat (T), Select quits (Esc).",
       "bindings": [
         {
           "input": "virtual:up",
@@ -1426,7 +1426,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -1485,7 +1485,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -2042,7 +2042,7 @@
       }
     },
     "4d-prince-of-persia-dpad-keyboard-v1": {
-      "description": "DOS keyboard controls: D-pad arrows run/jump/crouch/climb; hold A=Shift with Left/Right for careful walking, and A alone drinks potions, grabs ledges, draws the sword, or strikes. B=Space shows time remaining; Start=Esc pauses. No joystick scheme is documented.",
+      "description": "DOS keyboard controls: D-pad arrows run/jump/crouch/climb; hold A=Shift with Left/Right for careful walking, and A alone drinks potions, grabs ledges, draws the sword, or strikes. B=Space shows time remaining; Select=Esc pauses. No joystick scheme is documented.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -2081,7 +2081,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -2126,7 +2126,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -2301,7 +2301,7 @@
       }
     },
     "5th-fleet-dpad-mouse-hotkeys-v1": {
-      "description": "Mouse-first DOS wargame layout: D-pad moves the pointer; A/B left/right click. X=E executes orders, Y=R opens Tactical Reference, L1=P and R1=N browse previous/next active unit on the Operations Display, and Start=Esc uses the screen-specific exit/back command. Pointer actions including dragging remain essential; keyboard is needed for full access.",
+      "description": "Mouse-first DOS wargame layout: D-pad moves the pointer; A/B left/right click. X=E executes orders, Y=R opens Tactical Reference, L1=P and R1=N browse previous/next active unit on the Operations Display, and Select=Esc uses the screen-specific exit/back command. Pointer actions including dragging remain essential; keyboard is needed for full access.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -2352,7 +2352,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -2409,7 +2409,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -2418,7 +2418,7 @@
       }
     },
     "a10-tank-killer-dpad-native-joystick-v1": {
-      "description": "Low-confidence native joystick layout for the 1989 DOS release. D-pad up=joystick 1 down (climb), down=joystick 1 up (dive), left/right=joystick 1 left/right; A/B=joystick 1 buttons 1/2 (cannon/selected weapon). X=F flare, Y=C chaff, L1=Tab next HUD/TID target, R1=Shift+= next active weapon, L2/R2 cycle throttle keys 1-9, Select=M map, Start=Esc control panel/pause. Vertical joystick menus move opposite the flight mapping; Tab advances menu hot pads. Throttle cycling is not state synchronized.",
+      "description": "Low-confidence native joystick layout for the 1989 DOS release. D-pad up=joystick 1 down (climb), down=joystick 1 up (dive), left/right=joystick 1 left/right; A/B=joystick 1 buttons 1/2 (cannon/selected weapon). X=F flare, Y=C chaff, L1=Tab next HUD/TID target, R1=Shift+= next active weapon, L2/R2 cycle throttle keys 1-9, Start=M map, Select=Esc control panel/pause. Vertical joystick menus move opposite the flight mapping; Tab advances menu hot pads. Throttle cycling is not state synchronized.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -2498,13 +2498,13 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             109
           ]
@@ -2590,13 +2590,13 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               109
             ]
@@ -2862,7 +2862,7 @@
       }
     },
     "absolute-pinball-dpad-keyboard-v1": {
-      "description": "Exact DOS pinball keyboard map: D-pad Left/Right use the two flippers and Up nudges upward; A launches, B nudges right, X selects one player, Start pauses/options.",
+      "description": "Exact DOS pinball keyboard map: D-pad Left/Right use the two flippers and Up nudges upward; A launches, B nudges right, X selects one player, Select pauses/options.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -2901,7 +2901,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -2946,7 +2946,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -3385,7 +3385,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -3442,7 +3442,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -4511,7 +4511,7 @@
       }
     },
     "adventure-math-keyboard-v1": {
-      "description": "Hybrid keyboard controls: D-pad left/right move in the bonus round; A fires with Space; B confirms with Enter; X/Y select addition/subtraction (A/S); L1 pauses (P); Start returns to menu (Esc). Use the app keyboard for name, level, and numeric-answer fields.",
+      "description": "Hybrid keyboard controls: D-pad left/right move in the bonus round; A fires with Space; B confirms with Enter; X/Y select addition/subtraction (A/S); L1 pauses (P); Select returns to menu (Esc). Use the app keyboard for name, level, and numeric-answer fields.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -4556,13 +4556,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             8
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -4613,13 +4613,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               8
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -4962,7 +4962,7 @@
       }
     },
     "air-strike-mouse-turret-v1": {
-      "description": "Mouse-controlled turret: D-pad moves the pointer; A fires with left click; B launches grenades with right click; X/Y/L1/R1/L2/R2 select weapons 1-6; Start opens the Escape menu.",
+      "description": "Mouse-controlled turret: D-pad moves the pointer; A fires with left click; B launches grenades with right click; X/Y/L1/R1/L2/R2 select weapons 1-6; Select opens the Escape menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5025,7 +5025,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -5094,7 +5094,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -5103,7 +5103,7 @@
       }
     },
     "air-troubles-p1-keyboard-v1": {
-      "description": "Player 1 keyboard layout: D-pad arrows move, A fires the cannon (Enter), B fires the secondary weapon (Right Shift), and Start returns to the main menu (Esc).",
+      "description": "Player 1 keyboard layout: D-pad arrows move, A fires the cannon (Enter), B fires the secondary weapon (Right Shift), and Select returns to the main menu (Esc).",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5142,7 +5142,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -5187,7 +5187,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -5196,7 +5196,7 @@
       }
     },
     "airlift-rescue-native-joystick-v1": {
-      "description": "Native joystick controls on digital inputs: D-pad up/down are inverted at the DOS joystick to keep up ascending and down descending; left/right map directly. A=joystick button 1 fire, B=button 2 facing, Start=Esc options.",
+      "description": "Native joystick controls on digital inputs: D-pad up/down are inverted at the DOS joystick to keep up ascending and down descending; left/right map directly. A=joystick button 1 fire, B=button 2 facing, Select=Esc options.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5223,7 +5223,7 @@
           "joystick": "y"
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -5256,7 +5256,7 @@
             "joystick": "y"
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -5590,7 +5590,7 @@
       }
     },
     "aldos-adventure-keyboard-v1": {
-      "description": "Keyboard platform controls on the D-pad and buttons: arrows run/climb, A jumps with Space, Start exits with Esc.",
+      "description": "Keyboard platform controls on the D-pad and buttons: arrows run/climb, A jumps with Space, Select exits with Esc.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5623,7 +5623,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -5662,7 +5662,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -5671,7 +5671,7 @@
       }
     },
     "alex2-mouse-board-v1": {
-      "description": "D-pad moves the mouse pointer, A left-clicks for board actions, X requests the documented H move suggestion, and Start exits with Esc.",
+      "description": "D-pad moves the mouse pointer, A left-clicks for board actions, X requests the documented H move suggestion, and Select exits with Esc.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5700,7 +5700,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -5735,7 +5735,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -5910,7 +5910,7 @@
       }
     },
     "alien-cabal-joystick-v1": {
-      "description": "Native joystick profile: configure SETUP for joystick axes, button 1=Fire, and button 2=Look Forward (hold with D-pad up/down to look vertically). D-pad drives joystick 1; X=Space activates doors/lifts, Y=End returns view forward, L1=Tab map, R1/L2/R2/Select=weapons 1-4, Start=Esc menu. Weapon 5 is not separately bound.",
+      "description": "Native joystick profile: configure SETUP for joystick axes, button 1=Fire, and button 2=Look Forward (hold with D-pad up/down to look vertically). D-pad drives joystick 1; X=Space activates doors/lifts, Y=End returns view forward, L1=Tab map, R1/L2/R2/Start=weapons 1-4, Select=Esc menu. Weapon 5 is not separately bound.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -5973,13 +5973,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             52
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -6048,13 +6048,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               52
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -6277,7 +6277,7 @@
       }
     },
     "amazon-queen-dpad-mouse-v1": {
-      "description": "D-pad moves the mouse pointer; A clicks left and B clicks right. X opens the journal (F1), Y skips speech (Space), and Start skips cutscenes or closes the journal (Esc).",
+      "description": "D-pad moves the mouse pointer; A clicks left and B clicks right. X opens the journal (F1), Y skips speech (Space), and Select skips cutscenes or closes the journal (Esc).",
       "bindings": [
         {
           "input": "virtual:up",
@@ -6316,7 +6316,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -6361,7 +6361,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -6878,7 +6878,7 @@
       }
     },
     "apocalypse-abyss-dpad-keyboard-actions-v1": {
-      "description": "D-pad arrows move. A=Space bomb, B=Ctrl dagger, X=Alt wand, L1+direction=Shift+arrow face without moving, Y=Enter confirm, Start=Escape.",
+      "description": "D-pad arrows move. A=Space bomb, B=Ctrl dagger, X=Alt wand, L1+direction=Shift+arrow face without moving, Y=Enter confirm, Select=Escape.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -6935,7 +6935,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -6998,7 +6998,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -7363,7 +7363,7 @@
       }
     },
     "astro-blaster-documented-functions-v1": {
-      "description": "A=laser, B=timewarp, Start=pause/exit; L1/R1 select one/two players in menus. Movement keys are undocumented.",
+      "description": "A=laser, B=timewarp, Select=pause/exit; L1/R1 select one/two players in menus. Movement keys are undocumented.",
       "bindings": [
         {
           "input": "virtual:a",
@@ -7378,7 +7378,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -7411,7 +7411,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -7585,7 +7585,7 @@
       }
     },
     "atac-native-joystick-dpad-weapons-v1": {
-      "description": "Native DOS joystick flight controls: D-pad sends joystick 1 left/right/dive/climb; A presses joystick button 1 as the documented selector. B=Return fires the selected weapon, X=Backspace fires the cannon, and Start=Esc returns to the prior screen. Throttle, rudder, and aircraft-specific controls remain on the keyboard.",
+      "description": "Native DOS joystick flight controls: D-pad sends joystick 1 left/right/dive/climb; A presses joystick button 1 as the documented selector. B=Return fires the selected weapon, X=Backspace fires the cannon, and Select=Esc returns to the prior screen. Throttle, rudder, and aircraft-specific controls remain on the keyboard.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -7620,7 +7620,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -7661,7 +7661,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -7670,7 +7670,7 @@
       }
     },
     "avenger-keyboard-player-one-v1": {
-      "description": "Player 1: D-pad arrows move the ship; A=Right Alt primary fire; B=Right Ctrl secondary fire; Start=Esc menu.",
+      "description": "Player 1: D-pad arrows move the ship; A=Right Alt primary fire; B=Right Ctrl secondary fire; Select=Esc menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -7709,7 +7709,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -7754,7 +7754,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -7763,7 +7763,7 @@
       }
     },
     "avish-keyboard-platform-puzzle-v1": {
-      "description": "D-pad arrows provide directional movement/jump/elevator equivalents for documented cursor keys 4/6/8/2. A=Space item pickup/drop, B=Enter use item, X=P room view, Y=C held item, L1=M music, R1=S sound, Start=Esc quit/restart.",
+      "description": "D-pad arrows provide directional movement/jump/elevator equivalents for documented cursor keys 4/6/8/2. A=Space item pickup/drop, B=Enter use item, X=P room view, Y=C held item, L1=M music, R1=S sound, Select=Esc quit/restart.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -7826,7 +7826,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -7895,7 +7895,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -8006,7 +8006,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -8069,7 +8069,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -9063,7 +9063,7 @@
       }
     },
     "bobs-dragon-hunt-command-keys-v1": {
-      "description": "D-pad Left/Right turns with keypad +/-; A=Enter, B=Get, X=Wear, Y=Drop, L1=Status, R1=Examine, L2=Cast, Start=Escape. Use the virtual keyboard for the command list.",
+      "description": "D-pad Left/Right turns with keypad +/-; A=Enter, B=Get, X=Wear, Y=Drop, L1=Status, R1=Examine, L2=Cast, Select=Escape. Use the virtual keyboard for the command list.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -9120,7 +9120,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -9183,7 +9183,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -9192,7 +9192,7 @@
       }
     },
     "boxzum-native-joystick-v1": {
-      "description": "D-pad sends native joystick 1 directions; L1 selects joystick mode with J during setup; A starts with Enter; Start sends Esc to return to the main menu.",
+      "description": "D-pad sends native joystick 1 directions; L1 selects joystick mode with J during setup; A starts with Enter; Select sends Esc to return to the main menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -9223,7 +9223,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -9260,7 +9260,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -9671,13 +9671,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             106
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -9710,13 +9710,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               106
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -9867,7 +9867,7 @@
       }
     },
     "budokan-native-joystick-configuration-v1": {
-      "description": "Native joystick 1: D-pad moves through directional attack sequences and A is the joystick Action button. B bows/stops sparring. Start=Esc opens game configuration. Menus and Player 1/2 selection still need keyboard digits and Enter.",
+      "description": "Native joystick 1: D-pad moves through directional attack sequences and A is the joystick Action button. B bows/stops sparring. Select=Esc opens game configuration. Menus and Player 1/2 selection still need keyboard digits and Enter.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -9896,7 +9896,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -9931,7 +9931,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -10127,7 +10127,7 @@
       }
     },
     "c-dogs-native-joystick-two-button-v1": {
-      "description": "Native joystick defaults: D-pad moves, A=Button 1 fire/menu select, B=Button 2 cycles weapons (tap) or slides (hold then direction). L1=Tab map, Start=Esc pause/abort; press any other control to resume.",
+      "description": "Native joystick defaults: D-pad moves, A=Button 1 fire/menu select, B=Button 2 cycles weapons (tap) or slides (hold then direction). L1=Tab map, Select=Esc pause/abort; press any other control to resume.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -10160,7 +10160,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -10199,7 +10199,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -10704,7 +10704,7 @@
       }
     },
     "captain-comic-keyboard-v1": {
-      "description": "Keyboard movement and actions on the D-pad and buttons: left/right move, A jumps, B fires, X opens doors, Y teleports, Start pauses/quits.",
+      "description": "Keyboard movement and actions on the D-pad and buttons: left/right move, A jumps, B fires, X opens doors, Y teleports, Select pauses/quits.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -10743,7 +10743,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -10788,7 +10788,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -10845,7 +10845,7 @@
       }
     },
     "carmen-sandiego-1985-native-joystick-v1": {
-      "description": "Native DOS joystick menu controls for Where in the World Is Carmen Sandiego? (1985): D-pad controls joystick 1; A/B are joystick buttons 1/2; Select sends Ctrl+I to enable joystick mode; Start sends Esc to return to the menu.",
+      "description": "Native DOS joystick menu controls for Where in the World Is Carmen Sandiego? (1985): D-pad controls joystick 1; A/B are joystick buttons 1/2; Start sends Ctrl+I to enable joystick mode; Select sends Esc to return to the menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -10872,14 +10872,14 @@
           "joystick": "y"
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             306,
             105
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -10912,14 +10912,14 @@
             "joystick": "y"
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               306,
               105
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -11371,7 +11371,7 @@
       }
     },
     "champ-asterocks-joystick-v1": {
-      "description": "D-pad directions drive the native joystick; A fires, B triggers the secondary action (hyperspace in Classic, shield in CHAMP), X opens controller options, Start opens options, and L1 pauses.",
+      "description": "D-pad directions drive the native joystick; A fires, B triggers the secondary action (hyperspace in Classic, shield in CHAMP), X opens controller options, Select opens options, and L1 pauses.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -11404,7 +11404,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -11449,7 +11449,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -11856,7 +11856,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -11895,7 +11895,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -12074,7 +12074,7 @@
       }
     },
     "codename-iceman-dos-native-joystick-v1": {
-      "description": "D-pad sends native joystick 1 directions for character movement. A=Enter selects menus/dismisses messages; B=Tab inventory; X=F3 repeats the prior command; Y=Ctrl-P pauses; L1=F5 saves; R1=F7 restores; Start=Esc opens menus. Arbitrary parser commands and submarine controls still need keyboard/pointer input.",
+      "description": "D-pad sends native joystick 1 directions for character movement. A=Enter selects menus/dismisses messages; B=Tab inventory; X=F3 repeats the prior command; Y=Ctrl-P pauses; L1=F5 saves; R1=F7 restores; Select=Esc opens menus. Arbitrary parser commands and submarine controls still need keyboard/pointer input.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -12130,7 +12130,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -12192,7 +12192,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -12201,7 +12201,7 @@
       }
     },
     "conflagration-dpad-keyboard-v1": {
-      "description": "D-pad Left/Right/Down move and Up rotates right; A drops, B rotates left, X help, Y sound, L1 new game, R1 scores, Select pause, Start exits.",
+      "description": "D-pad Left/Right/Down move and Up rotates right; A drops, B rotates left, X help, Y sound, L1 new game, R1 scores, Start pause, Select exits.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -12264,13 +12264,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             9
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -12339,13 +12339,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               9
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -12693,7 +12693,7 @@
       }
     },
     "d-generation-native-joystick-two-buttons-v1": {
-      "description": "Native D/Generation joystick controls: D-pad supplies eight-way movement; A/button 1 becomes laser fire on first use, B/button 2 throws grenades. X=Enter talk to survivors; Y=U weapon menu; Start=Esc freeze/resume.",
+      "description": "Native D/Generation joystick controls: D-pad supplies eight-way movement; A/button 1 becomes laser fire on first use, B/button 2 throws grenades. X=Enter talk to survivors; Y=U weapon menu; Select=Esc freeze/resume.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -12732,7 +12732,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -12777,7 +12777,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -12786,7 +12786,7 @@
       }
     },
     "dangerous-dave-risky-rescue-native-joystick-v1": {
-      "description": "D-pad drives native joystick 1; A/B are documented joystick buttons 1/2 for jump/fire. X=Ctrl+Down drops down from a platform/ladder; Y=F1 help; L1=F4 save; R1=F5 restore; Select=Space status; Start=Esc quit.",
+      "description": "D-pad drives native joystick 1; A/B are documented joystick buttons 1/2 for jump/fire. X=Ctrl+Down drops down from a platform/ladder; Y=F1 help; L1=F4 save; R1=F5 restore; Start=Space status; Select=Esc quit.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -12838,13 +12838,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             32
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -12902,13 +12902,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               32
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -13989,7 +13989,7 @@
           "mouse": "rightButton"
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -14022,7 +14022,7 @@
             "mouse": "rightButton"
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -14160,7 +14160,7 @@
           "joystick": "b"
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -14189,7 +14189,7 @@
             "joystick": "b"
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -14274,7 +14274,7 @@
           "joystick": "y"
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -14307,7 +14307,7 @@
             "joystick": "y"
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -15669,7 +15669,7 @@
       }
     },
     "ega-snake-dpad-controls-v1": {
-      "description": "D-pad moves the snake; A=pause, B=help, X=sound, Y=talking, L1/R1 change speed, Start quits.",
+      "description": "D-pad moves the snake; A=pause, B=help, X=sound, Y=talking, L1/R1 change speed, Select quits.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -15732,7 +15732,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -15801,7 +15801,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -15810,7 +15810,7 @@
       }
     },
     "elite-forces-inferred-mouse-v1": {
-      "description": "Low-confidence RTS-style mouse recommendation: D-pad moves the cursor, A clicks, X opens the documented buy menu, Y shows documented scores, and Start quits.",
+      "description": "Low-confidence RTS-style mouse recommendation: D-pad moves the cursor, A clicks, X opens the documented buy menu, Y shows documented scores, and Select quits.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -15845,7 +15845,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -15886,7 +15886,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -16916,7 +16916,7 @@
       }
     },
     "firing-snake-keyboard-v1": {
-      "description": "D-pad sends arrow keys; A=Ctrl fire, R1=Alt speed up, Start=Esc quit.",
+      "description": "D-pad sends arrow keys; A=Ctrl fire, R1=Alt speed up, Select=Esc quit.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -16955,7 +16955,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -17000,7 +17000,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -17115,7 +17115,7 @@
       }
     },
     "frantis-mission-ii-dpad-keys-v1": {
-      "description": "Frantis: Mission II DOS keyboard chart: D-pad sends arrow keys; A=Space fire, B=Left Alt bombs, X=Enter interaction, Start=Esc menu exit.",
+      "description": "Frantis: Mission II DOS keyboard chart: D-pad sends arrow keys; A=Space fire, B=Left Alt bombs, X=Enter interaction, Select=Esc menu exit.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -17160,7 +17160,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -17211,7 +17211,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -17265,7 +17265,7 @@
       }
     },
     "gadget-lost-time-dpad-arrows-action-low-v1": {
-      "description": "Low-confidence keyboard layout for the 1993 PC release: D-pad sends arrow keys for movement, jumping, and interaction; A=Ctrl uses or throws items, B=U summons/uses gadgets, X=H pauses, Start=Esc quits. Text answers may need the virtual keyboard.",
+      "description": "Low-confidence keyboard layout for the 1993 PC release: D-pad sends arrow keys for movement, jumping, and interaction; A=Ctrl uses or throws items, B=U summons/uses gadgets, X=H pauses, Select=Esc quits. Text answers may need the virtual keyboard.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -17310,7 +17310,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -17361,7 +17361,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -17641,7 +17641,7 @@
       }
     },
     "gravitar-keyboard-v1": {
-      "description": "Keyboard fallback: D-pad rotates/thrusts; A fires; B shields or sucks fuel; Start exits.",
+      "description": "Keyboard fallback: D-pad rotates/thrusts; A fires; B shields or sucks fuel; Select exits.",
       "bindings": [
         {
           "input": "virtual:left",
@@ -17674,7 +17674,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -17713,7 +17713,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -18648,7 +18648,7 @@
       }
     },
     "horror-zombies-keyboard-actions-v1": {
-      "description": "Keyboard fallback for the DOS version: D-pad arrows move; A=Space action/fire; B=Ctrl attack; X=Alt strafe; Start=Esc menu; Y/N answer prompts.",
+      "description": "Keyboard fallback for the DOS version: D-pad arrows move; A=Space action/fire; B=Ctrl attack; X=Alt strafe; Select=Esc menu; Y/N answer prompts.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -18699,13 +18699,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             110
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -18762,13 +18762,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               110
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -19326,13 +19326,13 @@
           "joystick": "y"
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             112
           ]
@@ -19365,13 +19365,13 @@
             "joystick": "y"
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               112
             ]
@@ -19799,7 +19799,7 @@
       }
     },
     "jones-fast-lane-mouse-click-chords-v1": {
-      "description": "D-pad moves the mouse pointer; A left-clicks. Hold R1 (Shift) with A for the documented right-click, or L1 (Ctrl) with A for middle-click. B sends F4 for statistics, X F6 for goals, Y F1 for help, Start Esc to pause, and Select F5 to save.",
+      "description": "D-pad moves the mouse pointer; A left-clicks. Hold R1 (Shift) with A for the documented right-click, or L1 (Ctrl) with A for middle-click. B sends F4 for statistics, X F6 for goals, Y F1 for help, Select Esc to pause, and Start F5 to save.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -19852,13 +19852,13 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             286
           ]
@@ -19917,13 +19917,13 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               286
             ]
@@ -19989,7 +19989,7 @@
       }
     },
     "judge-dredd-dos-keyboard-inferred-v1": {
-      "description": "Low-confidence DOS keyboard fallback: D-pad sends arrow movement; A/X send Space/Enter action; B sends Ctrl attack; Start sends Esc; L1/R1 send Y/N responses. The DOS control page and catalog differ by one year, and native joystick support is unverified.",
+      "description": "Low-confidence DOS keyboard fallback: D-pad sends arrow movement; A/X send Space/Enter action; B sends Ctrl attack; Select sends Esc; L1/R1 send Y/N responses. The DOS control page and catalog differ by one year, and native joystick support is unverified.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -20034,7 +20034,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -20097,7 +20097,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -20317,7 +20317,7 @@
       }
     },
     "kings-beach-native-joystick-actions-v1": {
-      "description": "Native joystick layout: D-pad sends joystick 1 directions; A/B send joystick buttons 1/2. Press A+B together for sky-ball serve, spike, or block according to play context. L1 pauses with P, X opens the F3 stat screen, and Start returns to the beach with Escape.",
+      "description": "Native joystick layout: D-pad sends joystick 1 directions; A/B send joystick buttons 1/2. Press A+B together for sky-ball serve, spike, or block according to play context. L1 pauses with P, X opens the F3 stat screen, and Select returns to the beach with Escape.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -20356,7 +20356,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -20401,7 +20401,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -21493,13 +21493,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             282
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -21534,13 +21534,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               282
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -21549,7 +21549,7 @@
       }
     },
     "megapede-dpad-mouse-shooter-v1": {
-      "description": "D-pad mouse movement; A=left fire, B=right energized attack, L1=pause, R1=sound, Start=quit.",
+      "description": "D-pad mouse movement; A=left fire, B=right energized attack, L1=pause, R1=sound, Select=quit.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -21588,7 +21588,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -21633,7 +21633,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -22662,7 +22662,7 @@
       }
     },
     "nightmare-elm-street-dpad-numpad-items-v1": {
-      "description": "DOS numeric keypad movement and keyboard inventory actions: D-pad directions use keypad 8/4/6/2, A uses the selected item with keypad 5, L1/R1 cycle items with A/Z, B drops with D, and Start opens the menu with Escape.",
+      "description": "DOS numeric keypad movement and keyboard inventory actions: D-pad directions use keypad 8/4/6/2, A uses the selected item with keypad 5, L1/R1 cycle items with A/Z, B drops with D, and Select opens the menu with Escape.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -22713,7 +22713,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -22770,7 +22770,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -22779,7 +22779,7 @@
       }
     },
     "nitro-racers-native-joystick-inferred-v1": {
-      "description": "Low-confidence native joystick preset: D-pad directions drive joystick 1; A uses documented Enter/Nitro, B pauses, and Start ends the race. Exact joystick axis and button roles were not available in the sources.",
+      "description": "Low-confidence native joystick preset: D-pad directions drive joystick 1; A uses documented Enter/Nitro, B pauses, and Select ends the race. Exact joystick axis and button roles were not available in the sources.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -22810,7 +22810,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -22847,7 +22847,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -23167,7 +23167,7 @@
       }
     },
     "paddlers-player-one-dpad-v1": {
-      "description": "D-pad arrow keys control Player 1; Select pauses, Start returns to title.",
+      "description": "D-pad arrow keys control Player 1; Start pauses, Select returns to title.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -23194,13 +23194,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             112
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -23233,13 +23233,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               112
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -25220,7 +25220,7 @@
       }
     },
     "riva-mouse-two-button-v1": {
-      "description": "D-pad moves the mouse pointer; A begins travel or activates an item with left-click; B opens the available-options menu with right-click; L1 holds Shift to run; Start sends Esc.",
+      "description": "D-pad moves the mouse pointer; A begins travel or activates an item with left-click; B opens the available-options menu with right-click; L1 holds Shift to run; Select sends Esc.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -25253,7 +25253,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -25292,7 +25292,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -25639,7 +25639,7 @@
       }
     },
     "rott-dark-war-native-joystick-v1": {
-      "description": "D-pad sends native joystick 1 directions for movement/turning. A is joystick button 1 (fire), B button 2 (use/open). X toggles weapons; Y turns 180 degrees; L1/R1 sidestep; Select shows the map; Start opens the main menu.",
+      "description": "D-pad sends native joystick 1 directions for movement/turning. A is joystick button 1 (fire), B button 2 (use/open). X toggles weapons; Y turns 180 degrees; L1/R1 sidestep; Start shows the map; Select opens the main menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -25690,13 +25690,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             9
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -25753,13 +25753,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               9
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -26555,7 +26555,7 @@
       }
     },
     "shadow-knights-native-joystick-v1": {
-      "description": "D-pad sends joystick 1 directions; A/button 1=Ctrl jump, B/button 2=Alt sword attack; Select=F4 joystick configuration, Start=Esc quit.",
+      "description": "D-pad sends joystick 1 directions; A/button 1=Ctrl jump, B/button 2=Alt sword attack; Start=F4 joystick configuration, Select=Esc quit.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -26582,13 +26582,13 @@
           "joystick": "y"
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             285
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -26621,13 +26621,13 @@
             "joystick": "y"
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               285
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -27523,7 +27523,7 @@
       }
     },
     "star-quest-i-native-joystick-dpad-v1": {
-      "description": "D-pad native joystick directions; A=fire, B=roll; L1/R1 previous/next weapon; Start pauses to menu.",
+      "description": "D-pad native joystick directions; A=fire, B=roll; L1/R1 previous/next weapon; Select pauses to menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -27562,7 +27562,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -27607,7 +27607,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -28137,7 +28137,7 @@
       }
     },
     "tankgame-native-joystick-dpad-inferred-v1": {
-      "description": "Low-confidence hybrid: D-pad sends native DOS joystick 1 directions for driving; A sends Space to fire. L1 toggles reserve weapon (Tab); Select toggles sound (F1); Start exits (Esc). No analog stick or joystick button role is assumed.",
+      "description": "Low-confidence hybrid: D-pad sends native DOS joystick 1 directions for driving; A sends Space to fire. L1 toggles reserve weapon (Tab); Start toggles sound (F1); Select exits (Esc). No analog stick or joystick button role is assumed.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -28168,13 +28168,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             282
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -28211,13 +28211,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               282
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -28697,7 +28697,7 @@
       }
     },
     "time-commando-dpad-keyboard-actions-v1": {
-      "description": "D-pad sends arrow keys for movement and menu navigation. A sends Ctrl to attack; A+Down produces the documented parry. B sends Space for Search/Action and menu selection. L1+Left/Right sends Alt+Arrow for lateral dodge. Start sends Esc for the in-game menu.",
+      "description": "D-pad sends arrow keys for movement and menu navigation. A sends Ctrl to attack; A+Down produces the documented parry. B sends Space for Search/Action and menu selection. L1+Left/Right sends Alt+Arrow for lateral dodge. Select sends Esc for the in-game menu.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -28742,7 +28742,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -28793,7 +28793,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -29092,7 +29092,7 @@
       }
     },
     "tommys-air-raid-dpad-keyboard-v1": {
-      "description": "D-pad selects and raises/lowers gun batteries; A/B set missile burst altitude; X/Y lower/raise all batteries; shoulders adjust slew and sound; Select shows instructions; Start quits.",
+      "description": "D-pad selects and raises/lowers gun batteries; A/B set missile burst altitude; X/Y lower/raise all batteries; shoulders adjust slew and sound; Start shows instructions; Select quits.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -29161,13 +29161,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             286
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -29242,13 +29242,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               286
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -29597,7 +29597,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -29624,7 +29624,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -30163,7 +30163,7 @@
       }
     },
     "universe-ii-dos-keyboard-menu-v1": {
-      "description": "DOS keyboard-menu fallback: Start=Esc enables keyboard menu selection; D-pad sends arrow keys and A=Return selects. Context-sensitive hotkeys and starport text-parser commands require the virtual keyboard; mouse remains a supported alternative.",
+      "description": "DOS keyboard-menu fallback: Select=Esc enables keyboard menu selection; D-pad sends arrow keys and A=Return selects. Context-sensitive hotkeys and starport text-parser commands require the virtual keyboard; mouse remains a supported alternative.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -30196,7 +30196,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -30235,7 +30235,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -30669,7 +30669,7 @@
       }
     },
     "wing-commander-1990-native-joystick-v1": {
-      "description": "Wing Commander (1990 DOS), native joystick. D-pad drives joystick 1; A/B are joystick buttons 1/2 (both together fire missiles/mines); B+direction adjusts speed/roll and B double-click fires afterburners. X/Y select gun/weapon type (G/W), L1/R1 target/lock (T/L), L2/R2 autopilot/navigation (A/N), Select pauses (P), Start sends Esc.",
+      "description": "Wing Commander (1990 DOS), native joystick. D-pad drives joystick 1; A/B are joystick buttons 1/2 (both together fire missiles/mines); B+direction adjusts speed/roll and B double-click fires afterburners. X/Y select gun/weapon type (G/W), L1/R1 target/lock (T/L), L2/R2 autopilot/navigation (A/N), Start pauses (P), Select sends Esc.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -30732,13 +30732,13 @@
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             112
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -30807,13 +30807,13 @@
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               112
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -30899,7 +30899,7 @@
       }
     },
     "wings-of-thunder-native-joystick-keyboard-actions-v1": {
-      "description": "D-pad controls native joystick 1 flight axes. A=Space fire, B=Backspace weapon select, X=F flares, Y=E engine toggle, L1/R1 = and - throttle, Start=Esc options, Select=Alt+P pause.",
+      "description": "D-pad controls native joystick 1 flight axes. A=Space fire, B=Backspace weapon select, X=F flares, Y=E engine toggle, L1/R1 = and - throttle, Select=Esc options, Start=Alt+P pause.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -30954,13 +30954,13 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
         },
         {
-          "input": "virtual:select",
+          "input": "virtual:start",
           "keys": [
             308,
             112
@@ -31022,13 +31022,13 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
           },
           {
-            "input": "virtual:select",
+            "input": "virtual:start",
             "keys": [
               308,
               112
@@ -31038,7 +31038,7 @@
       }
     },
     "wings-p1-keyboard-flight-v1": {
-      "description": "D-pad Up/Left/Right thrust and turn; Down fires weapon 2; A fires normal gun; Start pauses/quits.",
+      "description": "D-pad Up/Left/Right thrust and turn; Down fires weapon 2; A fires normal gun; Select pauses/quits.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -31071,7 +31071,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -31110,7 +31110,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -31640,7 +31640,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -31685,7 +31685,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
@@ -31847,7 +31847,7 @@
       }
     },
     "world-quest-native-joystick-v1": {
-      "description": "D-pad sends native joystick directions; A=button 1 missiles, B=button 2 bomb, X=Space nuke, L1=F1 pause, Start=Esc end game.",
+      "description": "D-pad sends native joystick directions; A=button 1 missiles, B=button 2 bomb, X=Space nuke, L1=F1 pause, Select=Esc end game.",
       "bindings": [
         {
           "input": "virtual:up",
@@ -31886,7 +31886,7 @@
           ]
         },
         {
-          "input": "virtual:start",
+          "input": "virtual:select",
           "keys": [
             27
           ]
@@ -31931,7 +31931,7 @@
             ]
           },
           {
-            "input": "virtual:start",
+            "input": "virtual:select",
             "keys": [
               27
             ]
