@@ -199,6 +199,10 @@
    "page": "https://collectionchamber.blogspot.com/2019/11/symbiocom-aka-syn-factor.html",
    "reason": "Page: The blog's Symbiocom (aka Syn-Factor)."
   },
+  "TC1": {
+   "version": "T1.conf",
+   "reason": "Version: The Terminator (T1.conf), the collection's first game; Setup-T2.conf, which sorts first, is The Terminator 2029's install utility."
+  },
   "THA": {
    "page": "https://collectionchamber.blogspot.com/p/thors-hammer.html",
    "reason": "Page: The blog's Thor's Hammer."
