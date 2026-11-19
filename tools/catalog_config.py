@@ -42,7 +42,10 @@ MODIFIER_KEYS = frozenset({303, 304, 305, 306, 307, 308})
 
 LAUNCH_FIELDS = {"folder": lambda value: isinstance(value, str) and bool(FOLDER.fullmatch(value)),
                  "configs": _configs,
-                 "exception": lambda value: type(value) is bool}
+                 "exception": lambda value: type(value) is bool,
+                 # The configuration a medium starts (one of its configs, or one its own files give it,
+                 # such as a Collection Chamber installer's), the player's Version setting's default.
+                 "version": lambda value: isinstance(value, str) and 0 < len(value) <= 128}
 
 
 def DOCUMENTS(games):

@@ -112,6 +112,11 @@ unmasking it first (Escape from Delirium) made Staging call an empty
 `std::function`. `Gus::BindDmaTransfer` now binds it when the GUS is made and on
 reset too, for the register's reset state (8-bit samples).
 
+Group `staging-overlay-mkdir-parents` (Collection Chamber launch sweep). `src/dos/drive_overlay.cpp`'s
+`Overlay_Drive::MakeDir` created a directory in the overlay only, failing when its parent existed in
+the base alone (a game's own folder before anything was written there); it now calls
+`Sync_leading_dirs` first, as file creation does, so the parents are made in the overlay too.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`

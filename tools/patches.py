@@ -1644,4 +1644,9 @@ std_fs::path resolve_home(const std::string &str) noexcept
          '\tvoid StartDmaTransfers();\n\n',
          '\tvoid StartDmaTransfers();\n#ifdef KAIRO_STAGING\n\tvoid BindDmaTransfer();\n#endif\n\n'),
     ],
+    'staging-overlay-mkdir-parents': [
+        ('dosbox-staging/src/dos/drive_overlay.cpp',
+         '\tCROSS_FILENAME(newdir);\n\tconst int result = local_drive_create_dir(newdir);\n',
+         "\tCROSS_FILENAME(newdir);\n#ifdef KAIRO_STAGING\n\t// A directory whose parent exists only in the base (a game's own folder, before it has written\n\t// anything there) is made in the overlay after its parents are, as a file is\n\t// (create_file_in_overlay): I.M. Meen's MCHECK makes C:\\MEENDATA\\SAVE beside its installed files.\n\tif (!Sync_leading_dirs(dir)) {\n\t\treturn false;\n\t}\n#endif\n\tconst int result = local_drive_create_dir(newdir);\n"),
+    ],
 }

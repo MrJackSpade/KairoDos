@@ -64,9 +64,14 @@
    "reason": "LaunchBox: Disney's The Hunchback of Notre Dame: Topsy Turvy Games. Page: The blog's Disney's The Hunchback of Notre Dame: Topsy Turvy Games.",
    "page": "https://collectionchamber.blogspot.com/p/disneys-hunchback-of-notre-dame-topsy.html"
   },
+  "EXA": {
+   "version": "dosbox-x.conf",
+   "reason": "Version: its \"Extreme Assault\" shortcut starts the software version (dosbox-x.conf); 3DFX.conf, which sorts first, needs DOSBox-X's Glide passthrough, which Staging does not have."
+  },
   "FAT": {
    "exodos": "sha256-dos-manifest-v1:63ba0cbedaa95f9054fb7a709ccae37496527cb83df1531e9749317ea9447fa8",
-   "reason": "Fatal Racing is the European title of Gremlin's Whiplash."
+   "reason": "Fatal Racing is the European title of Gremlin's Whiplash. Version: its \"Fatal Racing\" shortcut starts dosbox_FAT.conf; dosbox_3DFX.conf, which sorts first, is its \"Fatal Racing 3Dfx\" shortcut's.",
+   "version": "dosbox_FAT.conf"
   },
   "FEM": {
    "exodos": null,
@@ -166,6 +171,10 @@
   "RVT": {
    "page": "https://collectionchamber.blogspot.com/2015/07/robocop-vs-terminator.html",
    "reason": "Page: The blog's RoboCop vs The Terminator."
+  },
+  "SCR": {
+   "version": "dosbox_SCR.conf",
+   "reason": "Version: its \"Screamer Rally\" shortcut starts dosbox_SCR.conf; dosbox_3DFX.conf, which sorts first, is its \"Screamer Rally 3Dfx\" shortcut's, for DOSBox Glide passthrough."
   },
   "SM6": {
    "launchbox": {

@@ -70,6 +70,31 @@ class DosStagingLaunchConfigTest {
         assertTrue(lines.takeWhile { it != "[autoexec]" }.joinToString("\n").contains("cycles=max"))
     }
 
+    @Test fun bootOpensAnImageNamedFromTheLaunchFolderAsAHostPath() {
+        file("GB2/HDD/GB2/GB2.BAT")
+        file("GB2/FLOPPY/GB1.img")
+        val config = "[autoexec]\nmount C \"HDD\"\n@boot .\\FLOPPY\\gb1.img\nexit\n"
+        val lines = resolved(compose(DosLaunch("GB2", mapOf("dosbox.conf" to config), false)))
+        val autoexec = lines.subList(lines.indexOf("[autoexec]"), lines.indexOfFirst { it.startsWith("[sdl]") })
+        // Booted from its overlay copy, as a disk image the game writes to.
+        assertEquals(listOf("[autoexec]", "@echo off", "mount C <GB2/HDD>", "mount C <overlay/GB2/HDD> -t overlay", "C:",
+            "@boot <overlay/GB2/FLOPPY/GB1.img>", "exit"), autoexec)
+    }
+
+    @Test fun bootKeepsADosPathAndItsOptions() {
+        file("Cap/CAP.IMG")
+        val config = "[autoexec]\nmount C \".\\eXoDOS\\Cap\"\nc:\nboot CAP.IMG -l a\nexit\n"
+        val lines = resolved(compose(DosLaunch("Cap", mapOf("dosbox.conf" to config), false)))
+        assertTrue(lines.contains("boot CAP.IMG -l a"))
+    }
+
+    @Test fun launchesStartWithoutSharingEmulationUnlessTheConfigurationAsks() {
+        val own = "[dos]\nfile_locking = on\n[autoexec]\nexit\n"
+        val lines = resolved(compose(DosLaunch("", mapOf("dosbox.conf" to own), false)))
+        // The app's default comes first, so the configuration's own setting is read after it.
+        assertTrue(lines.joinToString("\n").startsWith("[dos]\nfile_locking = off\n[dos]\nfile_locking = on\n"))
+    }
+
     @Test fun anExodosConfigStillMountsItsGameFolder() {
         file("Creature/CRSHOCK.EXE")
         file("Creature/cd/CRSHOCK_1.cue")

@@ -15,6 +15,15 @@ internal object DosStagingLaunchConfig {
     /** IMGMOUNT's options that take a value (Staging's and DOSBox-X's, which Collection Chamber setups use). */
     private val IMGMOUNT_VALUE_OPTIONS = setOf("-t", "-fs", "-size", "-chs", "-o", "-el-torito", "-bootcd", "-label")
 
+    /**
+     * DOSBox 0.74-3's behaviour where Staging differs, for the eXoDOS and Collection Chamber
+     * configurations written for it and tested on it. File locking: 0.74-3 has no SHARE emulation;
+     * Staging's 'auto' emulates SHARE while Windows 3.1 runs, and refuses a Director projector
+     * opening its own EXE (deny-none) while Windows holds it open (compatibility mode), so the
+     * projector reports "Invalid projector file" (Gross Gags).
+     */
+    private val SOURCE_DEFAULTS = listOf("dos" to listOf("file_locking" to "off"))
+
     private fun cpuCore(source: String?): String {
         var inCpu = false
         var core = "auto"
@@ -201,6 +210,12 @@ internal object DosStagingLaunchConfig {
             return layer.absolutePath
         }
         val lines = ArrayList<String>()
+        // What the DOSBox the configurations are written for does where Staging does otherwise, before
+        // the game's own settings, so a configuration that sets it still does.
+        SOURCE_DEFAULTS.forEach { (section, values) ->
+            lines += "[$section]"
+            values.forEach { (key, value) -> lines += "$key = $value" }
+        }
         if (marker != null) lines += source!!.substring(0, marker.range.first).trimEnd()
         lines += "[autoexec]"
         lines += "@echo off"
@@ -277,6 +292,18 @@ internal object DosStagingLaunchConfig {
                     continue
                 }
                 if (manualProgram) continue // Mounts only; never execute the game's startup script.
+                if (trimmed.startsWith("boot ", true) || trimmed.startsWith("@boot ", true)) {
+                    // BOOT opens an image as a DOS path, else as a host path from the folder DOSBox runs
+                    // in: an image named from there (".\FLOPPY\GB1.IMG", ".\eXoDOS\Game\DISK.IMG") is a
+                    // host path, passed by reference as IMGMOUNT's are, and booted from its overlay copy.
+                    // Other operands (a DOS path, "-l c") stay as written.
+                    lines += Regex("\"[^\"]*\"|\\S+").findAll(line).map { it.value }.toList().mapIndexed { index, token ->
+                        val path = token.trim('"')
+                        if (index > 0 && (path.startsWith(".\\") || path.startsWith("./")))
+                            operand(writableImage(nativePath(path))) else token
+                    }.joinToString(" ")
+                    continue
+                }
                 var adapted = if (folder.isEmpty()) line else sourceGame.replace(line) { dosPrefix }
                 adapted = sourceDiscs.replace(adapted) { dosPrefix + "discs\\" }
                 adapted = sourceFloppy.replace(adapted) { dosPrefix + "floppy\\" }

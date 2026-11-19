@@ -150,6 +150,14 @@ bool Overlay_Drive::MakeDir(const char * dir) {
 	safe_strcpy(newdir, overlaydir);
 	safe_strcat(newdir, dir);
 	CROSS_FILENAME(newdir);
+#ifdef KAIRO_STAGING
+	// A directory whose parent exists only in the base (a game's own folder, before it has written
+	// anything there) is made in the overlay after its parents are, as a file is
+	// (create_file_in_overlay): I.M. Meen's MCHECK makes C:\MEENDATA\SAVE beside its installed files.
+	if (!Sync_leading_dirs(dir)) {
+		return false;
+	}
+#endif
 	const int result = local_drive_create_dir(newdir);
 	if (result == DOSERR_NONE) {
 		char fakename[CROSS_LEN];

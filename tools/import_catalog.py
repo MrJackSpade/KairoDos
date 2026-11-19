@@ -95,13 +95,16 @@ def apply_collection_chamber(games):
     (catalog/research/collection-chamber-launchbox-v1.json), or its title from the installer without
     one, and its artwork from LaunchBox and its Collection Chamber post
     (catalog/research/collection-chamber-pages-v1.json, collection_chamber.artwork). Their launch
-    comes from their own files (the app's files layer), so they add none here."""
+    comes from their own files (the app's files layer); a reviewed "version"
+    (catalog/collection-chamber-review.json) names the configuration their installer's main shortcut
+    starts, where another sorts before it, as each of its media's launch version."""
     source = ROOT / "catalog/collection-chamber-v1.json"
     if not source.exists():
         return
     installers = read_versioned(source, "installers")
     launchboxes = read_versioned(ROOT / "catalog/research/collection-chamber-launchbox-v1.json", "games")
     pages = read_versioned(ROOT / "catalog/research/collection-chamber-pages-v1.json", "games")
+    review = read_versioned(ROOT / "catalog/collection-chamber-review.json", "installers")
     keys = {}
     for code, codes in sorted(own_games(installers).items()):
         key = own_game_key(installers, codes)
@@ -123,6 +126,10 @@ def apply_collection_chamber(games):
         assert key in games, f"collection-chamber-v1.json: {code} names unknown game {key}"
         game = games[key]
         game["contentIds"] = game["contentIds"] + [m for m in media if m not in game["contentIds"]]
+        version = review.get(code, {}).get("version")
+        if version:
+            for medium in media:
+                game.setdefault("diskMachine", {})[medium] = {"launch": {"version": version}}
 
 
 def apply_machine(games):
