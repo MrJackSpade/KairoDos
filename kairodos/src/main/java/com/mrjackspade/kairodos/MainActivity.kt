@@ -458,14 +458,11 @@ class MainActivity : MachineActivity<DosLibrary.Game>() {
     }
 
     /** A game's versions, its catalog configs (eXoDOS presets), the standard one first. */
-    private fun versions(record: CatalogGame) = record.launch?.configs?.keys.orEmpty()
-        .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
+    private fun versions(record: CatalogGame) = DosLaunchConfig.versions(record.launch)
 
     /** The catalog config the game starts with: the version the player picked, or its standard one. */
-    private fun startConfig(game: DosLibrary.Game): String {
-        val versions = versions(catalog.resolve(game))
-        return pickedVersion(game)?.takeIf { it in versions } ?: versions.firstOrNull() ?: "dosbox.conf"
-    }
+    private fun startConfig(game: DosLibrary.Game): String =
+        DosLaunchConfig.startName(catalog.resolve(game).launch, pickedVersion(game))
 
     private fun catalogConfig(game: DosLibrary.Game): DosConfig? =
         catalog.resolve(game).launch?.configs?.get(startConfig(game))?.let(DosConfig::parse)

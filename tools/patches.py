@@ -1613,4 +1613,15 @@ std_fs::path resolve_home(const std::string &str) noexcept
          '\treel_magic_audio.channel->SetSampleRate(active_fifo->GetSampleRate());\n\treel_magic_audio.output_queue.Start();\n',
          '\treel_magic_audio.channel->SetSampleRate(active_fifo->GetSampleRate());\n#endif\n\treel_magic_audio.output_queue.Start();\n'),
     ],
+    'dynrec-popf-stops': [
+        ('dosbox-staging/src/cpu/core_dynrec/decoder.h',
+         '\t\tcase 0x9d:\t// popf\n\t\t\tgen_call_function_I((void *)&CPU_POPF,decode.big_op);\n',
+         '\t\tcase 0x9d:\t// popf\n#ifdef KAIRO_STAGING\n\t\t\tdyn_popf();\n#else\n\t\t\tgen_call_function_I((void *)&CPU_POPF,decode.big_op);\n'),
+        ('dosbox-staging/src/cpu/core_dynrec/decoder.h',
+         '\t\t\tInvalidateFlags();\n\t\t\tbreak;\n',
+         '\t\t\tInvalidateFlags();\n#endif\n\t\t\tbreak;\n'),
+        ('dosbox-staging/src/cpu/core_dynrec/decoder_opcodes.h',
+         '\nstatic void dyn_iret(void) {\n',
+         "\n#ifdef KAIRO_STAGING\n// Whether a POPF stops its block, as the normal core stops after one: it set the trap flag, so\n// the next instruction traps, or it set the interrupt flag with an interrupt waiting.\nstatic uint32_t DRC_CALL_CONV dynrec_popf_stops(void) DRC_FC;\nstatic uint32_t DRC_CALL_CONV dynrec_popf_stops(void) {\n\treturn (GETFLAG(TF) || (GETFLAG(IF) && PIC_IRQCheck)) ? 1 : 0;\n}\n\n// POPF can set the trap flag or enable interrupts mid-block, where the translated code would\n// run on without trapping or serving them (a program single-stepping itself: Darker's X.EXE).\n// When it does, the block ends after it with an IRET's return, whose handling switches to the\n// trap decoder or serves the interrupt; otherwise the block runs on. KairoDos runs this core in\n// real mode too, where such programs are; upstream's auto core interprets real mode.\nstatic void dyn_popf(void) {\n\tgen_call_function_I((void *)&CPU_POPF,decode.big_op);\n\tdyn_check_exception(FC_RETOP);\n\tInvalidateFlags();\n\tgen_call_function_raw((void *)&dynrec_popf_stops);\n\tconst auto runs_on = gen_create_branch_on_zero(FC_RETOP, true);\n\tdyn_set_eip_end();\n\tdyn_reduce_cycles();\n\tdyn_return(BR_Iret);\n\tgen_fill_branch(runs_on);\n}\n#endif\n\nstatic void dyn_iret(void) {\n"),
+    ],
 }

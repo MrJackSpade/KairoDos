@@ -1248,6 +1248,32 @@ static void dyn_jmp_far_imm(void) {
 	dyn_closeblock();
 }
 
+#ifdef KAIRO_STAGING
+// Whether a POPF stops its block, as the normal core stops after one: it set the trap flag, so
+// the next instruction traps, or it set the interrupt flag with an interrupt waiting.
+static uint32_t DRC_CALL_CONV dynrec_popf_stops(void) DRC_FC;
+static uint32_t DRC_CALL_CONV dynrec_popf_stops(void) {
+	return (GETFLAG(TF) || (GETFLAG(IF) && PIC_IRQCheck)) ? 1 : 0;
+}
+
+// POPF can set the trap flag or enable interrupts mid-block, where the translated code would
+// run on without trapping or serving them (a program single-stepping itself: Darker's X.EXE).
+// When it does, the block ends after it with an IRET's return, whose handling switches to the
+// trap decoder or serves the interrupt; otherwise the block runs on. KairoDos runs this core in
+// real mode too, where such programs are; upstream's auto core interprets real mode.
+static void dyn_popf(void) {
+	gen_call_function_I((void *)&CPU_POPF,decode.big_op);
+	dyn_check_exception(FC_RETOP);
+	InvalidateFlags();
+	gen_call_function_raw((void *)&dynrec_popf_stops);
+	const auto runs_on = gen_create_branch_on_zero(FC_RETOP, true);
+	dyn_set_eip_end();
+	dyn_reduce_cycles();
+	dyn_return(BR_Iret);
+	gen_fill_branch(runs_on);
+}
+#endif
+
 static void dyn_iret(void) {
 	dyn_reduce_cycles();
 	dyn_set_eip_last_end(FC_RETOP);

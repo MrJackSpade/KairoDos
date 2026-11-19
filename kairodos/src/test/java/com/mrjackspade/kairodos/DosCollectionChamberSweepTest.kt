@@ -80,17 +80,24 @@ class DosCollectionChamberSweepTest {
             DosClickteamLaunch.launch(DosClickteam.files(installer), DosClickteam.entries(installer))
         } ?: return null
         overlay.mkdirs()
-        val configName = launch.configs.keys.first()
+        // The configuration the app starts: its standard version.
+        val dosLaunch = DosLaunch(launch.folder, launch.configs, false)
+        val configName = DosLaunchConfig.startName(dosLaunch, null)
         val composed = DosStagingLaunchConfig.compose({ id, args -> "string $id ${args.joinToString()}" },
             File(game, "launch.conf"), DosStagingStorage.Drive(base, null, overlay),
-            DosLaunch(launch.folder, launch.configs, false), configName, emptyMap(), mapOf(base to overlay), null,
+            dosLaunch, configName, emptyMap(), mapOf(base to overlay), null,
             DosStagingLaunchConfig.Machine("auto", false, false, null, true, false, soundFont.absolutePath))
         val config = File(game, "launch.conf")
         config.writeText(composed.lines.joinToString("\r\n") + "\r\n")
         val root = out.canonicalFile.toPath()
         return JSONObject().put("name", name).put("firmware", JSONObject())
             .put("home", JSONObject().put("staging/resources", "app:third_party/dosbox-staging/resources"))
-            .put("media", JSONArray(composed.hostPaths.map { root.relativize(File(it).canonicalFile.toPath()).toString().replace('\\', '/') }))
+            // A path the download does not ship (its configuration mounts a folder or image it left out) is
+            // passed on as the app passes it, for Staging to report as DOSBox does.
+            .put("media", JSONArray(composed.hostPaths.map { path ->
+                val relative = root.relativize(File(path).canonicalFile.toPath()).toString().replace('\\', '/')
+                if (File(path).exists()) relative else "absent:$relative"
+            }))
             .put("settings", JSONObject().put("config", config.canonicalPath).put("resources", "home:staging"))
             .put("checks", JSONObject().put("boot", JSONObject().put("frames", frames).apply {
                 System.getenv("KAIRO_SWEEP_EVERY")?.takeIf { it.isNotEmpty() }?.let { put("every", it.toInt()) }

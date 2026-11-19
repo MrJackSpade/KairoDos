@@ -47,3 +47,4 @@ __pycache__/
 # The Collection Chamber launch sweep's generated boot tests (DosCollectionChamberSweepTest), which name local paths.
 /core/test/collection-chamber-sweep.json
 /core/test/sweep-exp.json
+/core/test/sweep-part-*.json

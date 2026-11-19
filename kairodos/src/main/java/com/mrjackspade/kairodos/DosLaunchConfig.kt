@@ -12,6 +12,16 @@ internal object DosLaunchConfig {
     private val playerName = Regex("[A-Z0-9_]{1,8}")
     private val mountDrive = Regex("(?i)^(\\s*@?(?:img)?mount\\s+)([a-z])(\\s+)(\"[^\"]*\"|\\S+)(.*)$")
 
+    /** A launch's versions, its configurations in the order the player sees them: the standard one (dosbox.conf) first. */
+    fun versions(launch: DosLaunch?): List<String> = launch?.configs?.keys.orEmpty()
+        .sortedWith(compareBy<String> { it != "dosbox.conf" }.thenBy { it })
+
+    /** The configuration a game starts: the version the player [picked], when it is one, else the first. */
+    fun startName(launch: DosLaunch?, picked: String?): String {
+        val versions = versions(launch)
+        return picked?.takeIf { it in versions } ?: versions.firstOrNull() ?: "dosbox.conf"
+    }
+
     fun needsPlayer(launch: DosLaunch?): Boolean =
         launch?.folder?.lowercase() in setOf("azalta", "dom_door", "legord")
 

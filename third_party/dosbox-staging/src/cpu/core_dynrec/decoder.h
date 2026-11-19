@@ -735,9 +735,13 @@ static CacheBlock *CreateCacheBlock(CodePageHandler *codepage, PhysPt start, Bit
 			dyn_check_exception(FC_RETOP);
 			break;
 		case 0x9d:	// popf
+#ifdef KAIRO_STAGING
+			dyn_popf();
+#else
 			gen_call_function_I((void *)&CPU_POPF,decode.big_op);
 			dyn_check_exception(FC_RETOP);
 			InvalidateFlags();
+#endif
 			break;
 
 		case 0x9e:dyn_sahf();break;

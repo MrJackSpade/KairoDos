@@ -96,6 +96,15 @@ a CMP; STC; Jcc sequence took its condition from the CMP's lazy state, and
 Windows for Workgroups 3.11's VMM stopped with "Invalid VxD dynamic link call to
 device number 0007". The verification macro runs clean over a Windows boot.
 
+Group `dynrec-popf-stops` (Collection Chamber launch sweep). The normal core stops
+after a POPF that sets the trap flag (the next instruction traps) or the interrupt
+flag with an interrupt waiting; the translated POPF ran on in its block, so a
+program single-stepping itself never trapped. KairoDos runs this core in real mode
+too, where upstream's auto core interprets, and Darker's X.EXE hung before its
+title. `src/cpu/core_dynrec/decoder_opcodes.h` now checks both after the POPF and
+then ends the block with an IRET's return, whose handling switches to the trap
+decoder or serves the interrupt; otherwise the block runs on.
+
 ## Core-owned paging storage
 
 Under `KAIRO_STAGING`, `src/cpu/paging.h` gives the single core-owned `paging`
