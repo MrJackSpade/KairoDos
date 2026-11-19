@@ -35,7 +35,15 @@ class DosClickteamLaunchSamplesTest {
             .takeWhile { it.isFile }.toList()
         ClickteamInstaller.open((listOf(program) + parts).map { FileChannel.open(it.toPath()).let { c -> ClickteamInstaller.Part(c, c) } }).use { installer ->
             val launch = DosClickteamLaunch.launch(DosClickteam.files(installer), DosClickteam.entries(installer))
-            "${program.parentFile.name} " + (launch?.let { "folder=${it.folder} configs=${it.configs.keys.joinToString(",")}" } ?: "none")
+            // With KAIRO_CLICKTEAM_INSTALLED set, the content ID of the archive the app installs from it.
+            val installed = if (System.getenv("KAIRO_CLICKTEAM_INSTALLED").isNullOrEmpty()) "" else {
+                val zip = File.createTempFile("installed-", ".zip")
+                try {
+                    DosClickteam.writeZip(installer, zip, "", java.util.concurrent.atomic.AtomicBoolean(false)) {}
+                    " installed=" + DosContentHash.zip({ it.toString() }, zip, java.util.concurrent.atomic.AtomicBoolean(false))
+                } finally { zip.delete() }
+            }
+            "${program.parentFile.name} " + (launch?.let { "folder=${it.folder} configs=${it.configs.keys.joinToString(",")}" } ?: "none") + installed
         }
     } catch (failure: Throwable) {
         "${program.parentFile.name} FAIL ${failure::class.simpleName}: ${failure.message}"

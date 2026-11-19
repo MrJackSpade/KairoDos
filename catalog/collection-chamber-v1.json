@@ -1,0 +1,2377 @@
+{
+ "installers": {
+  "3DU1": {
+   "installed": "sha256-dos-manifest-v1:a5258a55bd14818140f78bca5dd8bff43ce26e8716897503444e4e35b3d911f5",
+   "installer": "sha256-dos-clickteam-v1:61aa57018e6c6d9897db29bc0b463b22515e7e5024ad8dbbc191544945bdc26c",
+   "title": "3D Ultra Pinball"
+  },
+  "3DU2": {
+   "installed": "sha256-dos-manifest-v1:1bdd71db019d9dc6a7e7cd2fef50fa9229f96826c415d1c0b084d2bbe9104072",
+   "installer": "sha256-dos-clickteam-v1:7576fead795295e30a6b2a04fa66c1b88ec79219cd5acebbc87f567c1c251545",
+   "title": "3D Ultra Pinball 2 - CreepNight"
+  },
+  "3DU3": {
+   "installed": "sha256-dos-manifest-v1:5241b94224253c33d7efd7a71c6db86abca0d7bb9879ad312ed7ccc6e7054c79",
+   "installer": "sha256-dos-clickteam-v1:d0902b3fd8ece916110561fec4c5cf765aab8ae93ff1bc47e17fd23de70dea0f",
+   "title": "3D Ultra Pinball 3 - The Lost Continent"
+  },
+  "3DUM": {
+   "installed": "sha256-dos-manifest-v1:21f6583c8d212f55885968d89f779c774e277b846ee6cddeb16d9c5dad057134",
+   "installer": "sha256-dos-clickteam-v1:13ce91b71bff4677af5df18dc56cf259c7eb219914974a9a3a710be715ea3a9b",
+   "title": "3D Ultra Minigolf"
+  },
+  "9LR": {
+   "installed": "sha256-dos-manifest-v1:f9a48270fb5150e5f9299dae72f280ac351018101342df6712336f5b19dbda59",
+   "installer": "sha256-dos-clickteam-v1:8ba3887e75fe5d89039cb548fb7dcfb1f06fab8ed6e54b6f755a75133bb06070",
+   "title": "9 - The Last Resort"
+  },
+  "AAM": {
+   "installed": "sha256-dos-manifest-v1:137375bad6bf1dae1fc540e862f866de5c5582807911bb9ce31dda537861d82a",
+   "installer": "sha256-dos-clickteam-v1:ab7fca9cdf22639a6d37fe64ae9faa761a949fcc40e2e072f4b7d2fd85b5d18e",
+   "title": "Arcade America"
+  },
+  "AAV": {
+   "installed": "sha256-dos-manifest-v1:363e66db54478497818febb0f4f81b4b3d323d8c63a82247e3008c76ae88c9d9",
+   "installer": "sha256-dos-clickteam-v1:4717ad12ebffe65011c6d086523ae126af37904b1d1dbae48efce506b61b331f",
+   "title": "Alien Anarchy - The Varginha Incident"
+  },
+  "ABL": {
+   "game": "dos:aa5efbf92b3811ca",
+   "installed": "sha256-dos-manifest-v1:596859423ccf761c110484d59287b3d2379f83ed72b62bf57984730f782e0f1d",
+   "installer": "sha256-dos-clickteam-v1:964f5b3db5d7ae7e06404c8bac063a5259350433c630c1875dbee664cbf846fb",
+   "match": "exact",
+   "title": "Airball"
+  },
+  "ABU": {
+   "game": "dos:7011272dc804dad0",
+   "installed": "sha256-dos-manifest-v1:a3aa6136d2db40e97c4606e93d56d32504c7d3398f8db0725c55bebd03801787",
+   "installer": "sha256-dos-clickteam-v1:d829f7c9f42263e958c4e804efc0ea2d442752cd78d04996adc6708c86d66f0f",
+   "match": "exact",
+   "title": "Abuse"
+  },
+  "ACB": {
+   "game": "dos:c242311042727c64",
+   "installed": "sha256-dos-manifest-v1:fe7e0d5f44399ee8b63b6c569964fc4d2ffb9228a0e7b702fc84d60626d763ba",
+   "installer": "sha256-dos-clickteam-v1:9b56e4ce5a6c6c9d63ff5ca0dc83e62af2f66826fa3c6c0aeee9b73ba68dc120",
+   "match": "exact",
+   "title": "Aliens - A Comic Book Adventure"
+  },
+  "ACE": {
+   "installed": "sha256-dos-manifest-v1:f5dc6fc0ad0dd828550a4f42e25ba4e40f7f642f5390717f431df836fa86661f",
+   "installer": "sha256-dos-clickteam-v1:ebef0b23cfa2e448efabc5e2651ffb16e935b220ae3071cb771b1224b8bf9764",
+   "title": "Ace Ventura"
+  },
+  "ADC": {
+   "game": "dos:a9ff051d8d95e111",
+   "installed": "sha256-dos-manifest-v1:471529d41195e3bc54af93209068786ec143b725f0c3c9513091d2d18fa6ee5c",
+   "installer": "sha256-dos-clickteam-v1:2246fa4a963547bb7929960357f87738b13c11b7e8e25be9c44d41b6d1b6a311",
+   "match": "exact",
+   "title": "A.D. Cop"
+  },
+  "ADE": {
+   "game": "dos:678b30600f44a786",
+   "installed": "sha256-dos-manifest-v1:a178f6131fe1f8f09e6a19230ebf0c5610e1b86e88473756c1a4855e1b2d0dda",
+   "installer": "sha256-dos-clickteam-v1:189206a2eaa6b5da41990bd83c223740e99073ecea83dfffc144c625f2e4c3ef",
+   "match": "main",
+   "title": "Angel Devoid"
+  },
+  "ADOM": {
+   "game": "dos:a9ff051d8d95e111",
+   "installed": "sha256-dos-manifest-v1:b5b2ff785a614a24cec5ab4fac13435425d09ec44e5baed94d2eaefd4692a695",
+   "installer": "sha256-dos-clickteam-v1:2e79d0d06c21a87747a61da4f4a707e03867b5bf741b204808d0f4ce4924754e",
+   "match": "main",
+   "title": "A.D Cop - Overseas Mission"
+  },
+  "AIM": {
+   "installed": "sha256-dos-manifest-v1:dc04ddf54f04c2cbc706c5625cbdf88bb669f5242fd7d824c160daccbd29b032",
+   "installer": "sha256-dos-clickteam-v1:a68dc6c868caba915d5689da789520a5bbb17acc2d0521d57d39ee3835503db8",
+   "title": "Alice - An Interactive Museum"
+  },
+  "ALI": {
+   "game": "dos:387cb39e44c3c489",
+   "installed": "sha256-dos-manifest-v1:aba111f74ef7ed739336f218f9c03ac2e68e319a91807c7f1058e6583b93fa0c",
+   "installer": "sha256-dos-clickteam-v1:c9e6fe13152459f3c5afda2ab65d66b8c9570c69b5c42a59421d3c878a2ad066",
+   "match": "exact",
+   "title": "Alien Incident"
+  },
+  "ALT": {
+   "game": "dos:9c7ca7b48c37e8ab",
+   "installed": "sha256-dos-manifest-v1:fe39e17b4ce61312afb70ce0365b4aec84006913c67da42d8ef5c04182328efa",
+   "installer": "sha256-dos-clickteam-v1:fb1c19a7d9f9691e84d74888a100bf6a77b52d82ed7bd9b96ee2eab3a7a54d33",
+   "match": "exact",
+   "title": "Alien Trilogy"
+  },
+  "AMF": {
+   "installed": "sha256-dos-manifest-v1:03c0d6a4241a540cb2baba2ca64c8bd82f76d6151f9b1094880e54b0aebe8e04",
+   "installer": "sha256-dos-clickteam-v1:8f76bae916860377c97bd1eb2f15c341e771252ca51ab48364df9c9b58274d47",
+   "title": "Atmosfear"
+  },
+  "AMK": {
+   "game": "dos:ed4a7752c2dbe927",
+   "installed": "sha256-dos-manifest-v1:40a89a3dd82ed4ba2ddb30084b31ad625278fe4fd6d4b706d015c3c301583b89",
+   "installer": "sha256-dos-clickteam-v1:affa52766199a168ab8649b03271f9fcc48719ade4a381577496fc686df9a4f7",
+   "match": "exact",
+   "title": "AMOK"
+  },
+  "AML": {
+   "installed": "sha256-dos-manifest-v1:8acf88bf6a6b94877b95dee48574e9c93e1e388c5f28dfd6c87ab2ee38efd75b",
+   "installer": "sha256-dos-clickteam-v1:a5e6872c63c6bc0b9eb8c18d86a76175dedf78404d07d0a8ddf7703b658e754a",
+   "title": "Alice in Music Land"
+  },
+  "AOD": {
+   "game": "dos:59363b0bf0653f72",
+   "installed": "sha256-dos-manifest-v1:8b7ae858aa86d515ffe9f43f853ed7f03fa49520626735101004f61cd9889f8f",
+   "installer": "sha256-dos-clickteam-v1:060b0657f90f8c3c7b48e4d61dff629a0f00e328d992a25b401ff9d2352a5d60",
+   "match": "exact",
+   "title": "Alien Odyssey"
+  },
+  "AOL": {
+   "game": "dos:1fd8a32214c8acf3",
+   "installed": "sha256-dos-manifest-v1:01764969079ba6a7b212a78ab22868d9654a673c7bd5f91f8ccababc3113e38f",
+   "installer": "sha256-dos-clickteam-v1:cd3ecaced1d9b7f0893ac52f95e9ba423d1cfed3071095327a7ca1ee4535cae6",
+   "match": "exact",
+   "title": "Alien Olympics"
+  },
+  "AOT": {
+   "game": "dos:1fe84a216a5a2fa5",
+   "installed": "sha256-dos-manifest-v1:fa3aa813f22527c687e634f6204b8930688f93f269a327dd62daa6974239d713",
+   "installer": "sha256-dos-clickteam-v1:90cce265d3b0a0f3e41944daf04873c298db39b5949393ce4d8260a2524301df",
+   "match": "exact",
+   "title": "Ark of Time"
+  },
+  "AP1": {
+   "game": "dos:ade93aa521244dca",
+   "installed": "sha256-dos-manifest-v1:e395360793590a800e150eb4b86e6a5d2f247fbce72d2ed4c7a24820a3d122f7",
+   "installer": "sha256-dos-clickteam-v1:101a8e67cba68c744956635f9594d87e881ef4087aa2616c0874f725ee10bd36",
+   "match": "exact",
+   "title": "Abandoned Places - A Time for Heroes"
+  },
+  "AVI": {
+   "game": "dos:f0cfac14f4b5dd16",
+   "installed": "sha256-dos-manifest-v1:e268cfab5b8fbd40e2a947c1e7864c4f4f179d071935d96f668effe059c31a31",
+   "installer": "sha256-dos-clickteam-v1:7cdce5be049d13f3347d19ec55b97b3b9329315267939b78d81d34cbf6c46918",
+   "match": "exact",
+   "title": "Alien Virus"
+  },
+  "AWW": {
+   "installed": "sha256-dos-manifest-v1:f050a6e39eb912b949c825cfe9f473c7f3ac87cb0bcfe2fd707e2798f9929e9e",
+   "installer": "sha256-dos-clickteam-v1:9c0a84db22c165b7a092ab834840b3f97ddec50fb0c1f8e560e57a5241aac470",
+   "title": "Aquaman - War of the Water Worlds"
+  },
+  "AYA": {
+   "game": "dos:8b878d1ff801b205",
+   "installed": "sha256-dos-manifest-v1:6c03a7a019be19dc7bf22533dd1f624353f081bbf948d4d983e308dd1c383b1e",
+   "installer": "sha256-dos-clickteam-v1:eb0f81ecb33e951f82d889d8597c3740d86a69d817f71950b91bf3c925083c5d",
+   "match": "reviewed",
+   "title": "Are You Afraid of the Dark"
+  },
+  "B13": {
+   "game": "dos:1f20557abf1c0428",
+   "installed": "sha256-dos-manifest-v1:b76852c2e886507d2093cc3c400b2cadc1b681d3e04f966d7b2adddd602553ed",
+   "installer": "sha256-dos-clickteam-v1:f7c07739e7c57b81be48ce81f1a0fd9b76031ac6519afa5118eba34a276fd31a",
+   "match": "exact",
+   "title": "Bureau 13"
+  },
+  "BAW": {
+   "installed": "sha256-dos-manifest-v1:de59881e5c99f41c7d2103e7d575785388ca73cace63ad78809668bcec8a5d5a",
+   "installer": "sha256-dos-clickteam-v1:63ccb21f10b5415d3fc72d6215096b7ed186ef5af3257e2f96280fbefb89ad97",
+   "title": "Blown Away"
+  },
+  "BBE": {
+   "installed": "sha256-dos-manifest-v1:b30e7934d29b6861be3eba28fdfcf7f9ee30160908d6918fd0f15f6253b6c176",
+   "installer": "sha256-dos-clickteam-v1:194498ed36a51b582c6db7e40f39e06c4cfd7683bbf8210885fc3d7867b0a5a6",
+   "title": "Battle Beast"
+  },
+  "BBL": {
+   "game": "dos:5c3fd8a31a4b8c98",
+   "installed": "sha256-dos-manifest-v1:02d149f65263c3eecd64910e7b9794c2ceed670fabe3100326fbe5ba436ba35e",
+   "installer": "sha256-dos-clickteam-v1:ed7558e6c41160792515370d4368f4dc2e3e2a1d7a415936643aa6bd22f9744b",
+   "match": "exact",
+   "title": "Bad Blood"
+  },
+  "BBU": {
+   "game": "dos:81649fac2476b905",
+   "installed": "sha256-dos-manifest-v1:6e4de1e55f58987b5aac60169d06b723de484f6672f094256a18f1093ad08a2f",
+   "installer": "sha256-dos-clickteam-v1:0426341cc59a947048f2232c3b1da2d4d4c5dc661c552d5801a757a1b4557ad4",
+   "match": "exact",
+   "title": "Bush Buck - Global Treasure Hunter"
+  },
+  "BCC": {
+   "game": "dos:0e74e5b8cd724e8e",
+   "installed": "sha256-dos-manifest-v1:4c9b1eb1a4ccb4d5c42162b335778aaad23fc10bb16a3db8ca9af82ee93d7e54",
+   "installer": "sha256-dos-clickteam-v1:3d3f7883af7b6f3c9de330fdd0f7c2104de415b23d4dd9751656f0eb1ac0b14a",
+   "match": "exact",
+   "title": "Batman - The Caped Crusader"
+  },
+  "BCR": {
+   "game": "dos:b001a62a6ed495e7",
+   "installed": "sha256-dos-manifest-v1:ce5545dab19d7e10a24d3e42ccc2ee57379851686d2f2a6b9dbf11a30ab50c3e",
+   "installer": "sha256-dos-clickteam-v1:57c3b33a7eb500a38677e8f3ed0c8a3d76402a371ef5bedeba01c05eee248a52",
+   "match": "close",
+   "title": "B.C. Racers"
+  },
+  "BD3": {
+   "game": "dos:4534bf214e436f2d",
+   "installed": "sha256-dos-manifest-v1:c7818e8d84ec900e0ec49eccca3f38a87fa715c372a3996ba954ac38a5bc079c",
+   "installer": "sha256-dos-clickteam-v1:12d28f06842f096bec21fa6908c90542d6df0a067ff789d0a5781f495bdb4bd1",
+   "match": "close",
+   "title": "Braindead 13"
+  },
+  "BGA": {
+   "game": "dos:b3a1a9eab101e097",
+   "installed": "sha256-dos-manifest-v1:07d832b6c3c7c57f9d50dabc3e9db6d86d35cd24fd5f0d7125db2e1d1fe38542",
+   "installer": "sha256-dos-clickteam-v1:8b0d72222d4e4a627a50148a72ed4af8cca57e3f1eca37f2fc6cbecb902338c2",
+   "match": "close",
+   "title": "Birthright - The Gorgon Alliance "
+  },
+  "BHB": {
+   "installed": "sha256-dos-manifest-v1:09d2409d21d385d574ff4c2f92d4eb16be3e75fbae6f2c5a5397af34d3c88090",
+   "installer": "sha256-dos-clickteam-v1:04e0fdc9410ec6ba40cf8e25885f9363319d3c2d76ec716c744b951120427026",
+   "title": "Braveheart - Interactive CD-ROM"
+  },
+  "BHB (Beverly Hillbillies)": {
+   "game": "dos:4920c824e4265b5d",
+   "installed": "sha256-dos-manifest-v1:29765523f043b8f44f8e4953d800404fca96513d5a04fc854aa1bee3bbed8eec",
+   "installer": "sha256-dos-clickteam-v1:1e038efea270065da37453a7b6e40916a9971a7c65a9bfc0501a7e15a1c6ecb6",
+   "match": "exact",
+   "title": "Beverly Hillbillies"
+  },
+  "BLH": {
+   "installed": "sha256-dos-manifest-v1:053883143e94934e283964227c7cb234fec00ba882c4ad5a47a606f080484ece",
+   "installer": "sha256-dos-clickteam-v1:ebfaef2c4cf273747a9bee4bf804e230071115738ffa31b152106e3a1a7a2f05",
+   "title": "Blue Heat"
+  },
+  "BLI": {
+   "game": "dos:b735d4bdd016305d",
+   "installed": "sha256-dos-manifest-v1:f1c66c626c00ce3b4ef826ec29d61351cf947dfc727d629a84e04d69059c8488",
+   "installer": "sha256-dos-clickteam-v1:4f8b7f32d468ff86acc8ee90f0b5051a11af2fd65bb38445f7147b44277a8857",
+   "match": "exact",
+   "title": "Blue Ice"
+  },
+  "BLM": {
+   "game": "dos:ee86527f41931535",
+   "installed": "sha256-dos-manifest-v1:7b22ed69cdad53601b214c97b4225af7984b7010db38a70907d1d488187e0b0d",
+   "installer": "sha256-dos-clickteam-v1:2beb84765fd5def24d2fbf5bf7f3e75e936f5e8b495a65883c837adc254c7eaa",
+   "match": "exact",
+   "title": "Bedlam"
+  },
+  "BLS": {
+   "game": "dos:f02aa07c6d73be69",
+   "installed": "sha256-dos-manifest-v1:3a73f67cc61b92e39e68f4815fb1c2846fb3dae020f0bdcfc3477761ad1dc5af",
+   "installer": "sha256-dos-clickteam-v1:be1dff7fc21a8c036a6e9a2608ba845f65ee6717157c2fa417db8f2e63c846ae",
+   "match": "exact",
+   "title": "Black Sect"
+  },
+  "BMAC": {
+   "installed": "sha256-dos-manifest-v1:9b9daf428916770888906e0d6b07394508fec23adf771300857f6b9f8ac9bd69",
+   "installer": "sha256-dos-clickteam-v1:375b8d3cd2565333675666a363398fb202c3eebc7eb1015ef5d4aa8205accc8c",
+   "title": "Adventures of Batman & Robin - Activity Centre"
+  },
+  "BMH": {
+   "game": "dos:540d27f35999dcab",
+   "installed": "sha256-dos-manifest-v1:64ece9b7658159295569c21eb718ca56c864309d051a8351072b45722fb2498c",
+   "installer": "sha256-dos-clickteam-v1:dae683f100a96f4a5b901da7983f336ad8d1b413ca6d743f1a7c9d29a1786b4b",
+   "match": "exact",
+   "title": "Blam! Machinehead"
+  },
+  "BMR": {
+   "game": "dos:4ece8161770fdb82",
+   "installed": "sha256-dos-manifest-v1:a4893c9aedc56fecc5ec66c20d5e9e7c9dfee8975f261be1152a7f2c68c18645",
+   "installer": "sha256-dos-clickteam-v1:d5387ccf980c04ee1e2f46b64cb98e3a828c9acc46e885f64027f55544acf67a",
+   "match": "exact",
+   "title": "Batman Returns"
+  },
+  "BPK": {
+   "installed": "sha256-dos-manifest-v1:df1ea231842cd7f981942ed3d077b2c1f80e9a1dd7e27dc866423b435e38a35e",
+   "installer": "sha256-dos-clickteam-v1:928767da8d9aa14c56816ec21f844778ebb9c18619ae3e6002b0366a641eb8b0",
+   "title": "Backpacker - The Lost Florence Gold Mine "
+  },
+  "BPP": {
+   "installed": "sha256-dos-manifest-v1:f1d4f52c710fa21ff7425ef4d79c7c6d6640fe6516cc39f67322f6ac3b275400",
+   "installer": "sha256-dos-clickteam-v1:3382b9c2ac429b3c3517da1dd54d8c31991ef9899f408d5ab27840e821696c97",
+   "title": "Batman - Partners in Peril"
+  },
+  "BRR": {
+   "game": "dos:96c5fbb558c13faf",
+   "installed": "sha256-dos-manifest-v1:ea5f964ad11324c880f4fbdcacd05f8b7cd68bf43d7df3961531fbf288bf1424",
+   "installer": "sha256-dos-clickteam-v1:843d6a0eccd68409002476abe0da4bf3a5f44235e950838a735e646da7b224c5",
+   "match": "exact",
+   "title": "Big Red Racing"
+  },
+  "BSY": {
+   "installed": "sha256-dos-manifest-v1:d432bbb0a004512b5fa6ba93dd568d44fd511824584670b9cf003ccd49e9b5e4",
+   "installer": "sha256-dos-clickteam-v1:2aef3393700b35e73d7530fde7b6a8793d1b4d21fe210c9d610a55c7a68b560e",
+   "title": "Bermuda Syndrome"
+  },
+  "BT1": {
+   "game": "dos:e5b8d57558bf3660",
+   "installed": "sha256-dos-manifest-v1:da2b3fb1693d85988b976dfc7c76eae9371bd55280bce281a9a12a50b9f35abd",
+   "installer": "sha256-dos-clickteam-v1:0ed698b7ba86da5d02286eef36f2aec81bb0cd7867320b542e9947001a96ca58",
+   "match": "exact",
+   "title": "B.A.T."
+  },
+  "BT2": {
+   "game": "dos:2ebc90dbde0a0af1",
+   "installed": "sha256-dos-manifest-v1:41261030a8b3d8345bef5d7dfb392a4085128f9dbbfc29dc4414303d0c201025",
+   "installer": "sha256-dos-clickteam-v1:7a16569774092aca8aae8abf5e050bf3c9cbcbfd559a96a98d686fdf44e75ed5",
+   "match": "exact",
+   "title": "B.A.T. II - The Koshan Conspiracy"
+  },
+  "BWP": {
+   "game": "dos:aee0b54bd6966636",
+   "installed": "sha256-dos-manifest-v1:1301f99b356982a4663211b3db5b9708d42f2f49fde0f39b1eecfbf4072d6e69",
+   "installer": "sha256-dos-clickteam-v1:2a417b847a45e8944e7f7995e4cf99b98c86f77b98acd942fa6debe791be1522",
+   "match": "exact",
+   "title": "Bloodwings - Pumpkinhead's Revenge"
+  },
+  "C2K": {
+   "game": "dos:9da0dc36d6199976",
+   "installed": "sha256-dos-manifest-v1:72e83987465a6427a300dfd5496bf763a1c9960834e199c0d2f7161c70115cff",
+   "installer": "sha256-dos-clickteam-v1:607c6a4bb18c519dbce7643e45045c51be3570e84bf8a7fa51d6d63f29f5958b",
+   "match": "reviewed",
+   "title": "C.I.T.Y. 2000 London"
+  },
+  "CBM": {
+   "game": "dos:9b39434e2010fe73",
+   "installed": "sha256-dos-manifest-v1:206ee322f6efdb469687ad21919b6398da18d047f16f8adf91c1aa15ed69d277",
+   "installer": "sha256-dos-clickteam-v1:d4395e685c84202ada3d3dd1b59e59fc9afb51a42cf3c9e75b053870f9d64ac0",
+   "match": "exact",
+   "title": "CyberMage - Darklight Awakening"
+  },
+  "CBV": {
+   "game": "dos:4d9b123f636d9c36",
+   "installed": "sha256-dos-manifest-v1:164de4ec9a1b29984a639640beeb4e0123625732bf8b48e30160d43a140e0517",
+   "installer": "sha256-dos-clickteam-v1:46db2a3f473d70e3bfdc9de91992f9063b430bd353c2661d69d984b4df254ff0",
+   "match": "exact",
+   "title": "CyberBykes - Shadow Racer VR"
+  },
+  "CC3": {
+   "game": "dos:8e183b9d32435a26",
+   "installed": "sha256-dos-manifest-v1:aeb1b4d78c01005d74adb5087cfcdc0448474cf601136e5dae7645476ac8c375",
+   "installer": "sha256-dos-clickteam-v1:98504179db142f31f9d177cb41d996432a7994782081fe9834380d284d394fbf",
+   "match": "exact",
+   "title": "Cybercon III"
+  },
+  "CCK": {
+   "installed": "sha256-dos-manifest-v1:d0b9de427ecb09a23a89779ee627ec2484030823809b04a94e28825a398e503a",
+   "installer": "sha256-dos-clickteam-v1:37f5cf94ae31a4378f99cca6d9724804cc133ee1f8b1f44ae6cceab38d4839b0",
+   "title": "Crusader - A Conspiracy in the Kingdom of Jerusalem"
+  },
+  "CCS": {
+   "game": "dos:122a3eba44bd0db6",
+   "installed": "sha256-dos-manifest-v1:106aaab92300e0cc0217b409614298e409651e39d5d3e0216bef532a94ab00dc",
+   "installer": "sha256-dos-clickteam-v1:16aaae8b057c6d7b5110f863eae30d6f747c595b1488e916f673451300206142",
+   "match": "exact",
+   "title": "Callahan's Crosstime Saloon"
+  },
+  "CCY": {
+   "game": "dos:4ff73b10936ca662",
+   "installed": "sha256-dos-manifest-v1:e26a0e7b0915fb6492ac009b6503e24d25353740052a297483379d81e9faef70",
+   "installer": "sha256-dos-clickteam-v1:2fd01040c5e041e06cf3079af2595154023a1c6450f59c95a87c2faefd478bed",
+   "match": "exact",
+   "title": "Cyril Cyberpunk"
+  },
+  "CED": {
+   "game": "dos:0434b56f16510e29",
+   "installed": "sha256-dos-manifest-v1:faece7f539e3223967a66b5ab5a94c18e13f2281351ee88b142a43cdf1425c8b",
+   "installer": "sha256-dos-clickteam-v1:7863990c90ffaddd299629534d0bd9265844f7defd5da09cb4744b626323d3a9",
+   "match": "exact",
+   "title": "Circuit's Edge"
+  },
+  "CEG": {
+   "installed": "sha256-dos-manifest-v1:2c75aad471bf98be6da5861cd88e9733c91b225c7b0823df9bc87e8c5b83d47a",
+   "installer": "sha256-dos-clickteam-v1:e94caa4332b76dbb1535a891bcb461eb9ebfdcf96306f3cddfa27b1ca4e83b79",
+   "title": "Chuckie Egg Collection"
+  },
+  "CF5": {
+   "game": "dos:4557bbe269a6838a",
+   "installed": "sha256-dos-manifest-v1:8252126ea05d0703fe1119daf40a71fffea999f8d572691d9067b2ccac4003e3",
+   "installer": "sha256-dos-clickteam-v1:a9d6d837f0031e4ba4f52ddc8981c70a78d6ab2deb7540369aa40bbef8da1395",
+   "match": "exact",
+   "title": "Chewy ESC from F5"
+  },
+  "CFA": {
+   "installed": "sha256-dos-manifest-v1:e431b6ee05b80c7037aba8f17d90584f9f7420bcddda84c105958092d82d3a69",
+   "installer": "sha256-dos-clickteam-v1:ed553d1c4f6aceff9359e8ba849bcaaa2bdcfc949240ac7bb0dd9c9472c9f45b",
+   "title": "Chaos - A Fantasy Adventure Game"
+  },
+  "CFC": {
+   "game": "dos:a4d3a311b131082d",
+   "installed": "sha256-dos-manifest-v1:2642be7549f04134cc7b9580f03d9e6e213f9afeb5488b5c337122a65c52cf78",
+   "installer": "sha256-dos-clickteam-v1:6643df0437c523eb24f8329a39b65105087a3bfb4f20bffa760697503cf1b948",
+   "match": "exact",
+   "title": "Cruise for a Corpse"
+  },
+  "CJU": {
+   "game": "dos:9ebd794356719e1b",
+   "installed": "sha256-dos-manifest-v1:eb8489a0627a18e1355af2da4d2a734c68689e75a623d98f38adac1e075e8a9a",
+   "installer": "sha256-dos-clickteam-v1:4339f66627ee8b8a93b7c93e450c8f781a0446d7c3f821505e2797f92fb171f7",
+   "match": "reviewed",
+   "title": "Cyber Judas - Shadow President 2"
+  },
+  "CLC": {
+   "game": "dos:e79672b4d815bb0f",
+   "installed": "sha256-dos-manifest-v1:8dfc317125ded14ddf4c238ea799d7a5caea3fdd7f238b3eae50c391c0dbc968",
+   "installer": "sha256-dos-clickteam-v1:a59ce5067de7af50ee131193b6cc312ad6dfaf191f9015fa70153899ed88ed4f",
+   "match": "exact",
+   "title": "City of Lost Children"
+  },
+  "CLO": {
+   "game": "dos:6ffc3d3159879b26",
+   "installed": "sha256-dos-manifest-v1:02ca7994754fad576227db69d817f4c55336a3346ecd424ba7852dcf6dd77876",
+   "installer": "sha256-dos-clickteam-v1:7b575dcd3656b131aa361b59180b1adb0902dcb5aac048a05b834f09763d207f",
+   "match": "exact",
+   "title": "Clue!"
+  },
+  "COA": {
+   "game": "dos:c421744268ee6e52",
+   "installed": "sha256-dos-manifest-v1:a036d46521c7e371ee638ac912394a921b4ca36dbc3d39c70a29c8e225791b6f",
+   "installer": "sha256-dos-clickteam-v1:c212675ed6e2620ec44aae4941cfcc8c7ffbc96b8c79232e12475a0f58199b59",
+   "match": "exact",
+   "title": "Coaster"
+  },
+  "COE": {
+   "game": "dos:fa29fb55d0989014",
+   "installed": "sha256-dos-manifest-v1:9c0e9eb3d28dd2040273665442a98dbe42e020ad0581e1662664b28951b710c8",
+   "installer": "sha256-dos-clickteam-v1:37c19e6e1e72de64e7b59ead80dd9193005b0d22ba4c76fe920d96bbdd1f5901",
+   "match": "exact",
+   "title": "Curse of Enchantia"
+  },
+  "COK": {
+   "installed": "sha256-dos-manifest-v1:a71fed92d4519d0cadc4fafb56c7484583ee9662180ca410f7a0298e74a3a15f",
+   "installer": "sha256-dos-clickteam-v1:4ff4a14f88c0f1806dfd4c7b501a2621b931767819b52c1ba15d2ad6364321aa",
+   "title": "Cosmology of Kyoto"
+  },
+  "COS": {
+   "game": "dos:8ddcebb5dd8f5312",
+   "installed": "sha256-dos-manifest-v1:f64a9b8841b6c0ccd39aa36b91e127754ad859255719085558390f3806367bd3",
+   "installer": "sha256-dos-clickteam-v1:fe9e76ef7c7eadfb7c560c556919921d800b1c58c6db52f316cbd8df9caac728",
+   "match": "exact",
+   "title": "Chronicles of the Sword"
+  },
+  "CP1": {
+   "game": "dos:383277aae666a2c1",
+   "installed": "sha256-dos-manifest-v1:ba07a53bf755a33ce102377ce00b7397b6abfdfbaa163126cf504ab5a1c04d0e",
+   "installer": "sha256-dos-clickteam-v1:403cddb47c0c1d6949facb6f42bac98e5f77b74aaa41e23033f6e8d81531dae7",
+   "match": "exact",
+   "title": "Captive"
+  },
+  "CPA": {
+   "installed": "sha256-dos-manifest-v1:5a458ff662f23d0b60e9a5c6f84608a82d99e221b5c68556f2009d00ccfb0699",
+   "installer": "sha256-dos-clickteam-v1:c0ff3367fe8077d28a30ff80ffded401e5c57325227c5cf532210ca6207c4141",
+   "title": "Critical Path"
+  },
+  "CRE": {
+   "installed": "sha256-dos-manifest-v1:3ad8cc02f6422c5842270ffbac04dcd274fdc328ca7ba904c410ced2ac143440",
+   "installer": "sha256-dos-clickteam-v1:1e667b05e6f49ff22afb75a9ae88cb0a6057cb8702dd26a65701953f18bd0b12",
+   "title": "Creepers + Christmas Creepers"
+  },
+  "CRM": {
+   "game": "dos:e93e9ca9ec0572fb",
+   "installed": "sha256-dos-manifest-v1:24e7df5be1659ce6e4c1ab6ee9f4cceb5337ca2abadca006dc9884b8754baeb6",
+   "installer": "sha256-dos-clickteam-v1:c772115a59336ab9a656c17b5669478fd9891625ea5895d2bd15a8bc552a6e14",
+   "match": "exact",
+   "title": "The Crystal Maze"
+  },
+  "CSH": {
+   "game": "dos:00e33baa84a22b16",
+   "installed": "sha256-dos-manifest-v1:7085de7d3bd198fc20931c814002404cbec383865a3de3fe930896dd31c29cca",
+   "installer": "sha256-dos-clickteam-v1:deb30402a0bad2f933de576e33afb0b0ee618499a0954cb537b48478ffffafa2",
+   "match": "exact",
+   "title": "Creature Shock"
+  },
+  "CSK": {
+   "installed": "sha256-dos-manifest-v1:982f9b35129201f882535cf80b8a93b4a48f22a8bc09cc4df74d06f5dddff0e3",
+   "installer": "sha256-dos-clickteam-v1:c014adbd01f198c9c8b9270040a4179278db2a228af61e80bd012056acd94813",
+   "title": "The Crystal Skull"
+  },
+  "CSS": {
+   "installed": "sha256-dos-manifest-v1:159d3e3fd9967dfc4b0aa04e0b16f624255310dc752503cb935d40c00b6b3b16",
+   "installer": "sha256-dos-clickteam-v1:011439b50274c3f80b9589028ac9dc3a59ebc4937d01674e9eb254f56c18c20a",
+   "title": "Comedy Central's Sports Shorts"
+  },
+  "CVW": {
+   "game": "dos:037b2325b340eb99",
+   "installed": "sha256-dos-manifest-v1:9f59122ac0425871c98c7392372aa5653e3bc7a55208b65568688b74712c1e73",
+   "installer": "sha256-dos-clickteam-v1:aa6143a798c584786aafd68c5605b2a15ce2523014d903cdcc794819f563cd2d",
+   "match": "exact",
+   "title": "CaveWars"
+  },
+  "DAAC": {
+   "installed": "sha256-dos-manifest-v1:6d914689c0df6e47b32aee069c2a85179d1c6ef45545a18f81f832f9a8d245c7",
+   "installer": "sha256-dos-clickteam-v1:48635681da6316111f50893f2918df22c00b74450493e8e4e7ee84a26f799716",
+   "title": "Disney's Aladdin - Activity Center"
+  },
+  "DAE": {
+   "installed": "sha256-dos-manifest-v1:81f53dc2c954ae2e1aa08d8fa25cf0df0ab9544190123f789b559b66d56f07c2",
+   "installer": "sha256-dos-clickteam-v1:4dc164ebfd991a1d5b33b6c5371bb18ff77baf5d29e6e99d3c527327e97781a6",
+   "title": "Daedalus Encounter"
+  },
+  "DAMB": {
+   "installed": "sha256-dos-manifest-v1:ca321d35be92c1d33ca94110b7cc38c9161217e3d4c5d9449a8b0933119581d6",
+   "installer": "sha256-dos-clickteam-v1:bb633b55b49230dee061711cade165fb20b67631258d962a3ba55635138267c0",
+   "title": "All Dogs Go to Heaven 2 - Animated MovieBook"
+  },
+  "DASD": {
+   "installed": "sha256-dos-manifest-v1:a34578b8a1b2405fb1797151a152d93a44af88caff79defe56c0a37c3cda5aca",
+   "installer": "sha256-dos-clickteam-v1:9bc6a86fa326d20a83b21036a654197900230af5b2dc019d74dcaef7801a7ef3",
+   "title": "Disney's Animated Storybook - 101 Dalmatians"
+  },
+  "DASH": {
+   "installed": "sha256-dos-manifest-v1:24cf7bc58fe8a8a20a5d6fd3a51b6dc15be8de6a7f94b744d45921d3d4d76e0b",
+   "installer": "sha256-dos-clickteam-v1:b7f44d63264bb1937d6ef7ef0ed4e6c5611036a00b82c2d94df29232d72f440c",
+   "title": "Disney's Hercules - Animated Storybook"
+  },
+  "DASL": {
+   "installed": "sha256-dos-manifest-v1:285d4362103531d1fa993c60ce762bdae22cf2e7f34bd08cabc33ea430df70ca",
+   "installer": "sha256-dos-clickteam-v1:83b80942d8e0a63b35386ded2f8ddcc44a84975f6f5791ffcabf35f6730501f1",
+   "title": "Disney's Animated Storybook - The Lion King"
+  },
+  "DASN": {
+   "installed": "sha256-dos-manifest-v1:17f05a87ff42b951dadaca0d3ec539aa635bc331e34c610c2ec41e258d26ab0b",
+   "installer": "sha256-dos-clickteam-v1:c829fab125d51d39d486313836bc92c716f16fd0bac79129f778456ec42b30a7",
+   "title": "Disney's Animated Storybook - The Hunchback of Notre Dame"
+  },
+  "DASP": {
+   "installed": "sha256-dos-manifest-v1:8a49bf11f194fd123b6b31480ca038cfbc87bd198c1994e6cb83d75875ca8f1a",
+   "installer": "sha256-dos-clickteam-v1:03fa5be3db481a366315fcbe845f88c7f90716cfd4a49fde0a45028484041666",
+   "title": "Disney's Animated Storybook - Pocahontas"
+  },
+  "DASS": {
+   "installed": "sha256-dos-manifest-v1:064c86e68c5f998963a667d91782de10365a65b01f82de51c1ff38795772aed0",
+   "installer": "sha256-dos-clickteam-v1:e71f2b155f98b2fe4057b00622c610efce27555e271daa375216b90a92676526",
+   "title": "Disney Presents Ariel's Story Studio"
+  },
+  "DAST": {
+   "installed": "sha256-dos-manifest-v1:baf3bf709cb7ec0b0f703c0c60e2502ac11b9116d8a271199f08b769e9181e3d",
+   "installer": "sha256-dos-clickteam-v1:5dc5f19da5649d9a1fa9905c097d73380179d1e3e32930f5610e97cb4f6b144c",
+   "title": "Disney's Animated Storybook - Toy Story"
+  },
+  "DASW": {
+   "installed": "sha256-dos-manifest-v1:795b82e364e3ecef80869c14935017fac9d48d106d23b0d40af5903ec4ce990d",
+   "installer": "sha256-dos-clickteam-v1:3b4f13e2f6064293407ae62fdf1f2a7782abc35945b94dc7dadca7a1a2924921",
+   "title": "Disney's Animated Storybook - Winnie the Pooh"
+  },
+  "DAZZ": {
+   "installed": "sha256-dos-manifest-v1:dbb2df5c71b9e890ed8af136d42e135ce6455d577bdf0e63c94f9eeade5b71cf",
+   "installer": "sha256-dos-clickteam-v1:34d5ddedf96a727c1818821a52529f9c3e692e1eaa7cafa5b6f584984abcf654",
+   "title": "Dazzeloids"
+  },
+  "DBOG": {
+   "installed": "sha256-dos-manifest-v1:992c8d08d8cb0574415ec72e6fdebdc3c73ae12a7d2953ca7bb83768bd676370",
+   "installer": "sha256-dos-clickteam-v1:d2efd51d404c7106e3fb596c9ff6bdb204876b1193116a84a7fd8cb2bf17abfe",
+   "title": "Be Our Guest"
+  },
+  "DC5": {
+   "game": "dos:3ceac49be8d0dc5c",
+   "installed": "sha256-dos-manifest-v1:62f99ed8ee2c9ba5d039fa05ee35789ef154d0da1f0a94baf9e49ff400fc8eba",
+   "installer": "sha256-dos-clickteam-v1:623271ab310b2fac3c8088d8dddf663a61d69480cabf447933f26de68caceb11",
+   "match": "exact",
+   "title": "Defcon 5"
+  },
+  "DD1": {
+   "game": "dos:afa3cd064d982e66",
+   "installed": "sha256-dos-manifest-v1:a641634c68f81777109f8c17f09b0664acab01386ef7d31d6b84574e550dcc76",
+   "installer": "sha256-dos-clickteam-v1:e64cb16af16dc0c0b537ca61af34d6c74e2a1e53216dd1444c1d78037e83f538",
+   "match": "exact",
+   "title": "Dylan Dog - The Murderers"
+  },
+  "DDS": {
+   "game": "dos:338b4b627841315c",
+   "installed": "sha256-dos-manifest-v1:3202cbbc974292f51abb4bc9c59f218c50ad21be3a9697b456ed363f1adbeb7a",
+   "installer": "sha256-dos-clickteam-v1:dc6d69876328ddfbb134a214cea9e70dc70d1bf95ef1d9adf1790045e883891c",
+   "match": "exact",
+   "title": "Death by Dark Shadows"
+  },
+  "DEDM": {
+   "installed": "sha256-dos-manifest-v1:9af17ff15382dc1e4c67d2079488b69836e9125b23f1e244c2e5a325b3d44816",
+   "installer": "sha256-dos-clickteam-v1:4489320215d513449e8ef1f7863c88e69a6a5153f808fd27ff2ab1b0193ee417",
+   "title": "101 Dalmatians - Escape from DeVil Manor"
+  },
+  "DGA": {
+   "game": "dos:517a635c8fed7971",
+   "installed": "sha256-dos-manifest-v1:590daf5085e97d5e82596a23455cceca4367054359d7269e145411120c3d062e",
+   "installer": "sha256-dos-clickteam-v1:aa32d643627086f4001a7cab9708c14f785e43c48d29990d55cee89522cd1ef8",
+   "match": "exact",
+   "title": "Don't Go Alone"
+  },
+  "DGO": {
+   "game": "dos:09e40fe1472ae685",
+   "installed": "sha256-dos-manifest-v1:5281701f99aed1e021a89d5a493bc9e8037ae5d718b0507f230dfe669912ee29",
+   "installer": "sha256-dos-clickteam-v1:ec5ae8511f60c0e430329b921f36d473de92d461761993def482645f2b4416bc",
+   "match": "exact",
+   "title": "Dusk of the Gods"
+  },
+  "DGR": {
+   "installed": "sha256-dos-manifest-v1:607bcdda12503ae25b9e372ebffa1677e298f8d7fa8c871329454f36d79ee0a0",
+   "installer": "sha256-dos-clickteam-v1:09be2b4c68b2841bd7777c00f7a0e1bd33124396f93c782c5b1c221c5b315e4d",
+   "title": "Dagger's Rage"
+  },
+  "DHC": {
+   "installed": "sha256-dos-manifest-v1:0e1c9bf25dc92ac9612b437ece63a880f336bca2793a4f9526a5cc7b551c5cb7",
+   "installer": "sha256-dos-clickteam-v1:c0ad23e97e38be1e2d1d891a9bae74d0e7782ed2fa9c51b0d0a7dbe5940aee52",
+   "title": "Die Hard Collection"
+  },
+  "DID": {
+   "game": "dos:7f2292e4bd82e1e7",
+   "installed": "sha256-dos-manifest-v1:067e3db43653e3813e18aa5c95db65e2cada444b81098c73bab1421e8d8108b2",
+   "installer": "sha256-dos-clickteam-v1:443f1eb64e6d55080b150d619acd4fd539f65d3600d4070c31eb199e232832ef",
+   "match": "exact",
+   "title": "Down in the Dumps"
+  },
+  "DKH": {
+   "game": "dos:a06d2d82d4fb4993",
+   "installed": "sha256-dos-manifest-v1:9ce738edc85ad7030331900191a1762200f1885362b2817d2dcda534dcdc7bd6",
+   "installer": "sha256-dos-clickteam-v1:7a8e572ceee1bb4d10b056703d0eff0c7d81a2e3e3fb5677066ecc61be2932e9",
+   "match": "exact",
+   "title": "The Dark Half"
+  },
+  "DKR": {
+   "game": "dos:5a1a16c5aeb758a9",
+   "installed": "sha256-dos-manifest-v1:f1408a6a1f962247b99c0db8e8be5383eddb0bf2a2759b6d7f5a1a518de588a7",
+   "installer": "sha256-dos-clickteam-v1:5d5b92020a655c1efea1e03c88e4a72cbc95837b38ec1a935fa83159863d961a",
+   "match": "exact",
+   "title": "Darker"
+  },
+  "DLAC": {
+   "installed": "sha256-dos-manifest-v1:0e7df588e522afeb741602bc76f8d4278909eedeebabaae36227ed5aa612dfcd",
+   "installer": "sha256-dos-clickteam-v1:75b0a626ab8d6c0ab71b302288babfe379daa851981b3e00af067042d0ad8a02",
+   "title": "Disney's The Lion King - Activity Center"
+  },
+  "DLC": {
+   "game": "dos:656a782ab7f9a511",
+   "installed": "sha256-dos-manifest-v1:72eaaa43c4ed47a2c8968485860a4776151c689fff7122a8b448ce2bedc5876b",
+   "installer": "sha256-dos-clickteam-v1:8137e2f468f9dfe78f014d5b850607f3c773dbc8c668625ed69c37cd2bfddc5c",
+   "match": "exact",
+   "title": "Darklight Conflict"
+  },
+  "DLV": {
+   "game": "dos:d100d4bdc686d6d7",
+   "installed": "sha256-dos-manifest-v1:e25fb252ab7e02e7fc79d8676c4d8a3280fb25f54464c862ad911d89498584fb",
+   "installer": "sha256-dos-clickteam-v1:695499cc4d42ba3b2d2a5f1bbea62cee05b088a83d083ba0fa5ddb5efe8fbe06",
+   "match": "exact",
+   "title": "Delta V"
+  },
+  "DMC": {
+   "installed": "sha256-dos-manifest-v1:3788f438a679298d2a9f40bf201a1b3616383dc91b58e1fe4dba7f920d9297d2",
+   "installer": "sha256-dos-clickteam-v1:29210ab46d1a8f77c26d19a9322aad0b50252048bb32838f54f29727c0db1844",
+   "title": "Dr. Drago's Madcap Chase"
+  },
+  "DN1": {
+   "game": "dos:5fe60d65feadc73c",
+   "installed": "sha256-dos-manifest-v1:361b030094ca0a38b9dc7665bce2cf108fae5f33a9e0c114572a06ee23ac0c64",
+   "installer": "sha256-dos-clickteam-v1:979a93a13a2ab7879703a192ede485fb7e21fba6e7f4dc279fdb725551310fa1",
+   "match": "exact",
+   "title": "Dune"
+  },
+  "DN2": {
+   "game": "dos:7efcf079a9bb0024",
+   "installed": "sha256-dos-manifest-v1:390769f5da2bf4fe82b6aad4c54b71cf66b1875b56655d0dca3a7c59cff6a208",
+   "installer": "sha256-dos-clickteam-v1:0b636d09a72d4a2de1ae4fa4e7cdb3ffb8632ca45cab938fe7b1acfd33b7d16b",
+   "match": "main",
+   "title": "Dune 2"
+  },
+  "DPT": {
+   "game": "dos:8f5a5cdaeb4e6b3a",
+   "installed": "sha256-dos-manifest-v1:029bbd91c9945728ec0bb247d470136574886c8892f7a991dee5e7f8a30feaf7",
+   "installer": "sha256-dos-clickteam-v1:a8ea389e8b231425322a99b2e0f3bb27b7a0ba449cc059d131558e9b66028e28",
+   "match": "exact",
+   "title": "DinoPark Tycoon"
+  },
+  "DS1": {
+   "game": "dos:9ff1fbc5ecd85ab0",
+   "installed": "sha256-dos-manifest-v1:949c16b336431c77f24e256641b7103602fe62e7e3d5f0bb5f8d8962648bf9d7",
+   "installer": "sha256-dos-clickteam-v1:94ddf414d57c3be3d429a1b17d8e48c6147fef808be5c081eaa6e8fd385e21f4",
+   "match": "exact",
+   "title": "Dark Seed"
+  },
+  "DS2": {
+   "installed": "sha256-dos-manifest-v1:fff5049aaa34564a8a084047473f40042be8cb4059635cbeae9bf94894502445",
+   "installer": "sha256-dos-clickteam-v1:e87de70af1e60183d888f936f8811b3066da283208e7e6bd2051ca7d45b6df24",
+   "title": "Dark Seed II"
+  },
+  "DSE": {
+   "installed": "sha256-dos-manifest-v1:937cec36ebeddc0ee05764b77e1ea2a4a02d63cccf9c0ac3f88434ecd9a0aaa0",
+   "installer": "sha256-dos-clickteam-v1:658d6ac3d6102381a5c87163f27a1324754b37b85e2518213afbbee33625e9c8",
+   "title": "Dracula's Secret"
+  },
+  "DSP": {
+   "installed": "sha256-dos-manifest-v1:7f670915722c24ea9790875c8af15db8473842988e6b2ca878eab4945110e7d5",
+   "installer": "sha256-dos-clickteam-v1:4430fb50c3bbb316951a61a825487a4ff7167896ea18d26f6f53cba32ececeaf",
+   "title": "DEVO Presents Adventures of the Smart Patrol"
+  },
+  "DTPJ": {
+   "installed": "sha256-dos-manifest-v1:015cadc32984999226a18f3ab1a6b62d046a008626944e66a35ee2686984a8d1",
+   "installer": "sha256-dos-clickteam-v1:cc75300c9d26cae4e6b70bf70af65dd934e10c6cd5f90512764030bd9ce65ce1",
+   "title": "Timon & Pumbaa's Jungle Games"
+  },
+  "DTTG": {
+   "installed": "sha256-dos-manifest-v1:576fd1b81f8ef2c4d9df17512f51c942a73537a885d1de83ed790ebb8b204d3b",
+   "installer": "sha256-dos-clickteam-v1:c5c0aff27d75b201bea09411d0edb0f217372c523c03ad9a24378c7ae82ca9df",
+   "title": "Topsy Turvey Games"
+  },
+  "DUD": {
+   "game": "dos:0d885f9d0d843810",
+   "installed": "sha256-dos-manifest-v1:6787e3a7475021c3a7763cdf41bd6b7e02cb85cbe9c47d4583efbf4b55220700",
+   "installer": "sha256-dos-clickteam-v1:03a1e131fffbf5d822d256b193162622b6d7f96b9f34c242259843658c796f19",
+   "match": "exact",
+   "title": "Adventures of Down Under Dan"
+  },
+  "DUS": {
+   "installed": "sha256-dos-manifest-v1:e60f66c84e8c3b6c60de2d7a1c87774d142a4a0c0023d949553d58798a4086b4",
+   "installer": "sha256-dos-clickteam-v1:a186953ada4d68ad8378516f70199ecb5ef30ea6b59e8bbe366b41e84122ea02",
+   "title": "Dust - A Tale of the Wired West"
+  },
+  "DWF": {
+   "game": "dos:1a2bc5495ec1a0ba",
+   "installed": "sha256-dos-manifest-v1:7208a2b2229e2818694181f638b2a066dd4ff0224e2137e5940f12d6ae44e1ca",
+   "installer": "sha256-dos-clickteam-v1:fd8d3ad9cfee777a52348cbe9450ef18c468db8dda11804a0bcaa219cf313938",
+   "match": "exact",
+   "title": "David Wolf - Secret Agent"
+  },
+  "EFD": {
+   "game": "dos:56bb8e190b7ba05e",
+   "installed": "sha256-dos-manifest-v1:5a177a7b59c443b2671eb5ae2ffb05bd3b45730a45cb7f5a814fb34a7d5deaae",
+   "installer": "sha256-dos-clickteam-v1:92e205e6fd5c3def90610b2af94d601dd15f80b4927a97cdf479aa22df3e0918",
+   "match": "close",
+   "title": "Escape From Delerium"
+  },
+  "ELV": {
+   "game": "dos:8f1193f63e45759f",
+   "installed": "sha256-dos-manifest-v1:bae8e3181cdd96184413cb776edf4e596a30653cde104ea884b9ec3ea18120f0",
+   "installer": "sha256-dos-clickteam-v1:f730e04de20ec3b916f762cfb9840a486915a636cfe0e8d0e4de5f76befd3748",
+   "match": "exact",
+   "title": "Elvira - The Arcade Game"
+  },
+  "EM1": {
+   "installed": "sha256-dos-manifest-v1:ba3e054b9c0d8b61b1764abd87dd523a7460ee519ea72486fa2e4e02c498bce5",
+   "installer": "sha256-dos-clickteam-v1:d9c698a7b7884c0d4e4ca30060b598b619c3c5a0c015629fb0206d1109898beb",
+   "title": "Eastern Mind - The Lost Souls of Tong-Nou"
+  },
+  "EM2": {
+   "installed": "sha256-dos-manifest-v1:549cefadb6789b8c4bb5ee6a7fe8d5d497ea69b758dba72ecec88a66bd5c91b5",
+   "installer": "sha256-dos-clickteam-v1:883dbbe81084d97301e65cd5c33a18cad6b28d2337d9e37701f9f3c99ef84530",
+   "title": "Eastern Mind 2 - Middle Heaven Chu-Teng"
+  },
+  "END": {
+   "installed": "sha256-dos-manifest-v1:d29607b39e98f787503c59e48a29eb4fb6440c6a1c9f3cd2ebd606519005fb63",
+   "installer": "sha256-dos-clickteam-v1:26f1fb3360ab1a106497d421be4e2e41886cf64022a4c1245ea654bc6225a55d",
+   "title": "Endorfun"
+  },
+  "EOH": {
+   "game": "dos:1ce183cd1e4f1362",
+   "installed": "sha256-dos-manifest-v1:76a2030573ad913e3f72cc96c59b74de73a1c1262355df3e588b653216710a64",
+   "installer": "sha256-dos-clickteam-v1:255d787c14371c0d7142c346ccbbc9e4f7c35be208c5a4914a790eb6d9f099b2",
+   "match": "exact",
+   "title": "Eye of Horus"
+  },
+  "ERS": {
+   "game": "dos:6b28525c5e69d85f",
+   "installed": "sha256-dos-manifest-v1:b84dc2aa1a6279e0bc19d1cbb059f997eb3f42bd4e293a1f74a966b74191fd81",
+   "installer": "sha256-dos-clickteam-v1:e36b094fdceef1088d20ab7afa815d2da16ae017c845de0f87371227ae73d7d3",
+   "match": "exact",
+   "title": "Earthrise"
+  },
+  "EXA": {
+   "game": "dos:34128822743e648c",
+   "installed": "sha256-dos-manifest-v1:7488e9d67e4d5141978a12402b5f3222e48f81015fe8ea70262ee8583241c3f4",
+   "installer": "sha256-dos-clickteam-v1:4143114e748e05fea2454dbdc82481c3de470e7a91b0964f4a8f225fd15d7946",
+   "match": "exact",
+   "title": "Extreme Assault"
+  },
+  "F13": {
+   "game": "dos:5f8a3b8896ff81a1",
+   "installed": "sha256-dos-manifest-v1:f2f380284031584cf02dd8c23dedd7cf2afd5b9eb02f8b4cfa35cb998ca4ddce",
+   "installer": "sha256-dos-clickteam-v1:7a8f20a74a1080cea8010f628b6d70150a20242f082e61619385a1b0eb75e6e2",
+   "match": "exact",
+   "title": "Floor 13"
+  },
+  "F2B": {
+   "game": "dos:432fcfe8c0df5d8b",
+   "installed": "sha256-dos-manifest-v1:8dc0fdcd571812817c3f77d42d20b2c7850c23fd6fe18b0d8854c6474083055c",
+   "installer": "sha256-dos-clickteam-v1:076d69d8a107c5631aaca5057b3245c7874d5a5ccfa6d6ea312d464623950ce0",
+   "match": "exact",
+   "title": "Fade to Black"
+  },
+  "F96": {
+   "game": "dos:d5f083842a927f01",
+   "installed": "sha256-dos-manifest-v1:0f3467c9282e531a5ce0c8bb05981784d575a49488229f445a3152dbc21d519a",
+   "installer": "sha256-dos-clickteam-v1:c7a0724b6fd62490a44064b79fb698ec9d48b84f138313f78dc23630d6cdcd9c",
+   "match": "exact",
+   "title": "Fable"
+  },
+  "FAT": {
+   "installed": "sha256-dos-manifest-v1:9cd5ff1d89c4c6a80c71315892f8214598acb5899a71a70b0be2235ca43193c4",
+   "installer": "sha256-dos-clickteam-v1:a5badd2aa4d5886f487600f1e6381b3108f10f365bb53da6c8ffa120ad3ba94b",
+   "title": "Fatal Racing"
+  },
+  "FDC": {
+   "game": "dos:141c107563fce6cf",
+   "installed": "sha256-dos-manifest-v1:ea68acdf0ed1b5ec80bd9b9e117a53f0a309ea6f25cd4690840c91ac25309770",
+   "installer": "sha256-dos-clickteam-v1:2ced616c5cf93efda3dd5915d9582445b8626e04f86de2ad969eedda9c55ccc0",
+   "match": "exact",
+   "title": "Free D.C!"
+  },
+  "FEM": {
+   "installed": "sha256-dos-manifest-v1:e8e718081258bf648af38c65cb1d8649f3175db4032cd8ce131128edac4f0d28",
+   "installer": "sha256-dos-clickteam-v1:40a3f06c943437489bdd3941497323f03483862688475c9eca319035c3a24aa5",
+   "title": "Frankenstein - Through the Eyes of the Monster"
+  },
+  "FFC": {
+   "installed": "sha256-dos-manifest-v1:dc3d6584924223b3393542b3049f4e30ef80a62aa5677a2bfe022e63e171aedc",
+   "installer": "sha256-dos-clickteam-v1:7931c9b4edc7ce066460913f375ceb2265d0a53d396368a7694c6f9ddc034c93",
+   "title": "Fantastic Four - Interactive CD-ROM Comic Book"
+  },
+  "FOD": {
+   "game": "dos:a3e5f8de4db6c895",
+   "installed": "sha256-dos-manifest-v1:707494eafefb10ba280d87826dfd7087b0cbdb29133980bbf6d3dd7f149c3cac",
+   "installer": "sha256-dos-clickteam-v1:4389a984f65136d9a80439710a62b6eea09df6a912f92995861abdf23b5e411d",
+   "match": "exact",
+   "title": "Fountain of Dreams"
+  },
+  "FPL": {
+   "installed": "sha256-dos-manifest-v1:c7c6fac20b2dc18152b629f1d12dd32d0c58732d3f773deef52a8ed3f959ec5c",
+   "installer": "sha256-dos-clickteam-v1:2e45e20b481db83fa5df39e6e1fada08b5245551006dabccb2096495da5c0b5b",
+   "title": "Foul Play - Mystery at Awkward Manor"
+  },
+  "FT1": {
+   "installed": "sha256-dos-manifest-v1:39f7df9ef345e4d885f63b558f003c07edf70f85ab08d367963397a44d8e509a",
+   "installer": "sha256-dos-clickteam-v1:63890322132d9fabc35ba66353e76016b007c6c8da38bec00efdede62b82f57a",
+   "title": "Full Tilt Pinball"
+  },
+  "FT2": {
+   "installed": "sha256-dos-manifest-v1:c46043bfe02850cc9e478c9734bea8f71f9463b3f423f44d2363b02abbf9f80e",
+   "installer": "sha256-dos-clickteam-v1:6454053696ce1c66e53e0efc790534457b9414671de4a2b244d416a577550685",
+   "title": "Full Tilt! Pinball 2"
+  },
+  "FU3": {
+   "installed": "sha256-dos-manifest-v1:0a343f33300aa06317c4890b1776e92300556a288aedce00340d6a2443f859f0",
+   "installer": "sha256-dos-clickteam-v1:3db56d66552c00531adbebfe0f43e53822f71d86c0f1f7d238cbed71a8265880",
+   "title": "Fury3"
+  },
+  "GB0C": {
+   "installed": "sha256-dos-manifest-v1:b0f557677f7c885d17d01c017f669707dd9918f540c366af34eaa6c60e264770",
+   "installer": "sha256-dos-clickteam-v1:6616027241b7ea5002dbc47fb01881f311307a7dedd154473c100400f163c3e5",
+   "title": "Ghostbusters Collection"
+  },
+  "GDK": {
+   "installed": "sha256-dos-manifest-v1:378aa317631b73b2a508250470a07ec24f6cfe9b8da746b6aff52082b3cc5058",
+   "installer": "sha256-dos-clickteam-v1:511b2f941150340e45af19fdbf2bc8ea4656ec1fdda6de4e81459097aba36242",
+   "title": "Gord@k"
+  },
+  "GF1": {
+   "game": "dos:b9ab7a73cb1ef7b3",
+   "installed": "sha256-dos-manifest-v1:a2df34128df869287823106e7a7b9c61816aa36680962b7c0169cf75973ec2ea",
+   "installer": "sha256-dos-clickteam-v1:c6a3a751d7ee9e962d26f687c1362b37b114a2caa2e84772a3af8d4fa2e4426b",
+   "match": "exact",
+   "title": "The Godfather"
+  },
+  "GHO": {
+   "installed": "sha256-dos-manifest-v1:542cb880df536b483479764489100af191316fbeacd028873d9200e9e7751597",
+   "installer": "sha256-dos-clickteam-v1:edac0e3f19fe28a4f1f04fcd72c3b1e2bf6942ca3aef9878e6382861a5e45c1d",
+   "title": "Ghosts"
+  },
+  "GML": {
+   "installed": "sha256-dos-manifest-v1:5554fc82968025fcbb4cb5edaeceb86e9ddca960d2d126c2a71758ed63cd8290",
+   "installer": "sha256-dos-clickteam-v1:f5da0953dc4fc515f0f0047fffffb47e0c479268ed1ea82a60d7c4a44eba1ec3",
+   "title": "Great Myths and Legends"
+  },
+  "GMN": {
+   "game": "dos:0b8d6ac9ada924ea",
+   "installed": "sha256-dos-manifest-v1:303a6639d9f06f1355f81ee9dadfdb37ef5e48adb1f508d9e7ef6b31b03e6495",
+   "installer": "sha256-dos-clickteam-v1:8eee6c6aad0a06cdfb5e28c07848e1596f47c5fb3da5e7ef94921519c7b4a54b",
+   "match": "exact",
+   "title": "The Gene Machine"
+  },
+  "GNG": {
+   "game": "dos:7bfb731c294462fb",
+   "installed": "sha256-dos-manifest-v1:f1cee77ab49f32b4bbaef6ff370319a725be310a1fc7b90f305076dd17e157cd",
+   "installer": "sha256-dos-clickteam-v1:883b6192a54a1071f888d5bbf40611eea2574c9069b14357f922806fab0dbe69",
+   "match": "exact",
+   "title": "Guts 'n' Garters in DNA Danger"
+  },
+  "GRMC": {
+   "installed": "sha256-dos-manifest-v1:58183e895beacf586afd474f1590fd8dc045462e17ac99a3675ebe20421525ad",
+   "installer": "sha256-dos-clickteam-v1:caf03e3c459f4dc9470b0004fca390570e6044bcdb8e3ada7d4dff7d89d7b65c",
+   "title": "Gremlins Collection"
+  },
+  "GRS": {
+   "installed": "sha256-dos-manifest-v1:50ce9f415fee2b0f27299dd35f6e50d4879d5f4a229642d4b994fcc13dd84a70",
+   "installer": "sha256-dos-clickteam-v1:3df9a27ac46735b7bd8bda6a8fd537f8857024130fbb6e6d62cf9a02606fa2b9",
+   "title": "Grossology"
+  },
+  "GSY": {
+   "game": "dos:a3d6ec51a5ed5b8d",
+   "installed": "sha256-dos-manifest-v1:134303fa19c678f302c98e495a6f2ba9d0f5174e2c9fbcfffd33edd3c755c325",
+   "installer": "sha256-dos-clickteam-v1:bd9af161abc3be7758599adab84a6ee08ac0f0325a0444631eebafa2f8f9e6a9",
+   "match": "exact",
+   "title": "Guy Spy and the Crystals of Armageddon"
+  },
+  "GW0": {
+   "game": "dos:e42f862cc16464e5",
+   "installed": "sha256-dos-manifest-v1:07b98b344c2073c43a233b25cac2dcbd03ab043459bd8db6ec0b013ca44d1725",
+   "installer": "sha256-dos-clickteam-v1:7ca78a3e22fe95228c587237a57c025d6adf71ab5f6e2d1da9313920be753470",
+   "match": "exact",
+   "title": "Gender Wars"
+  },
+  "GWA": {
+   "game": "dos:edd76af47b0c427d",
+   "installed": "sha256-dos-manifest-v1:a5179b2822ade914d91a9c17228591aa8a34edc4559df6d8fec89579d6de35b5",
+   "installer": "sha256-dos-clickteam-v1:8a279a4f74e219dac4af31154c342cb7210879234ecc52ecaa5fc4f93545fb93",
+   "match": "exact",
+   "title": "GeneWars"
+  },
+  "HCB": {
+   "installed": "sha256-dos-manifest-v1:78c2540c5f3123708bf6a6856c48a9e31146371cf8e8c9bc91bf7c11651bf7b3",
+   "installer": "sha256-dos-clickteam-v1:bb1f84fe682a91349ff39db20e22f4dc98ead6e2f50e20ecd7a310503ab5582e",
+   "title": "Hell Cab"
+  },
+  "HCT": {
+   "game": "dos:3746845bea659a6c",
+   "installed": "sha256-dos-manifest-v1:949fcc3389670ee953e762d27956632a4e69f0642a9a99f5fad3616385a0aa3e",
+   "installer": "sha256-dos-clickteam-v1:2220f66ecd9cd4ecc4dd0f8789db96ee6492162940a65fe3e121d8dfa5219de2",
+   "match": "exact",
+   "title": "Hell - A Cyberpunk Thriller"
+  },
+  "HD1/Install-HD1.exe": {
+   "game": "dos:14ee21bb242fb47e",
+   "installed": "sha256-dos-manifest-v1:026dd714ea16f7f06d2aebf833fb800fcb083acc2eb144c613ab21d64c59502b",
+   "installer": "sha256-dos-clickteam-v1:19e869b2954479b3dbd77d4182f62dc3f455900b187b5bfa958bbe6e74c780ad",
+   "match": "exact",
+   "title": "Hades"
+  },
+  "HD1/Install-HD1_v2.exe": {
+   "game": "dos:1ecda9c9504b7174",
+   "installed": "sha256-dos-manifest-v1:0ef3df91c46e0a9e206cfe37ca1a281067678ca402820223c0ff9b940e8c1ba7",
+   "installer": "sha256-dos-clickteam-v1:eee88ed4eb6f7ef584a6d12e721eb56161014062f8a431f3fb69ccf3e000a235",
+   "match": "exact",
+   "title": "Heimdall"
+  },
+  "HD2": {
+   "game": "dos:c4aa3e6f744714b2",
+   "installed": "sha256-dos-manifest-v1:8d47c999afe78c5affda6e6b745a148da15551ded9301c7e4ce9a894c44bd4ec",
+   "installer": "sha256-dos-clickteam-v1:cd4d84060a10abd9446c7d0219968831e77e8dc99902d553f93915aa5cc6ed7f",
+   "match": "exact",
+   "title": "Heimdall 2 - Into the Hall of Worlds"
+  },
+  "HDN": {
+   "game": "dos:a15e86955d8c7275",
+   "installed": "sha256-dos-manifest-v1:c4425d92a9f939cc16ce923e2c99bfe12233dabfdf3fdd4c813f77a8ce381315",
+   "installer": "sha256-dos-clickteam-v1:85558a94e04a8d3f631106b8bd40783e65c4216da715cc53996ea99505cb16b4",
+   "match": "exact",
+   "title": "Heaven's Dawn"
+  },
+  "HFZ": {
+   "game": "dos:805a88b9f15b9520",
+   "installed": "sha256-dos-manifest-v1:80d8a58c5fd32ddc37e0098a3232df813a1ba8f2ee29817397da587bfc967700",
+   "installer": "sha256-dos-clickteam-v1:1ed57469327af73eddb32bbf7f6d739e146141b3e9db995da711bbd5bc2461ab",
+   "match": "exact",
+   "title": "Hellfire Zone"
+  },
+  "HGC": {
+   "installed": "sha256-dos-manifest-v1:aa4d4a905e504adbf564b57124c7f770a9b78ca46721a884ed01fffb8bbd85a8",
+   "installer": "sha256-dos-clickteam-v1:4bc9f7934a160160c27fc33179fdf9b1af48c5eaae36ef61c4ba397100240cfa",
+   "title": "Hitchhiker's Guide Collection"
+  },
+  "HIO": {
+   "game": "dos:8a4a21ac234d3b8e",
+   "installed": "sha256-dos-manifest-v1:ab0b0e9890330dea1cc653bad68bdc57d284a2cc9b4f73e42e04fcbdf858c416",
+   "installer": "sha256-dos-clickteam-v1:ff06e525a19deaa6ecbd0c8d6f7f042cb97e10638ff6542e213de196dd447c7d",
+   "match": "exact",
+   "title": "Hi-Octane"
+  },
+  "HLI": {
+   "game": "dos:7de411131d613b59",
+   "installed": "sha256-dos-manifest-v1:80e218f1fd7894f24ce7de98f9121fa597a018ba46aef8a2e57e6f56274e328e",
+   "installer": "sha256-dos-clickteam-v1:31481bae8ccebf12ce5bec414ac0054816fb343e5fb804791ea16589a8abac96",
+   "match": "exact",
+   "title": "Hardline"
+  },
+  "HMP": {
+   "game": "dos:eeceb0354e6059f0",
+   "installed": "sha256-dos-manifest-v1:c6fe2bcedfd0a65045fcdc4f9c5f88f093c096a11f9518a7c9130f1f8617836d",
+   "installer": "sha256-dos-clickteam-v1:ac8ea3de800682f179113f8c155a645b5332370dba126f22baceb06b4d291e40",
+   "match": "exact",
+   "title": "Hello Mr. President"
+  },
+  "HOI": {
+   "installed": "sha256-dos-manifest-v1:40157ae8a96187f2a1d1e94ee98b09ebb5eb76f2eb2c96a7f71a8155919be883",
+   "installer": "sha256-dos-clickteam-v1:c9fe77b81b400780b028c455f06d96f3af400945ecead0ba7a4ecb744550dd5f",
+   "title": "Holiday Island"
+  },
+  "HUR": {
+   "game": "dos:6347a57649236d55",
+   "installed": "sha256-dos-manifest-v1:7ff572fea0ea36cdf45abab2b57a793aefe25344a8d0049236b8574803640e21",
+   "installer": "sha256-dos-clickteam-v1:48d07eb98b7eca475378ddda89fc805a1a23c194634e9f0b0b2aca70c0a6e6e5",
+   "match": "exact",
+   "title": "Hurlements"
+  },
+  "HXX": {
+   "game": "dos:26fc802599649b36",
+   "installed": "sha256-dos-manifest-v1:c9245ea8b4a2b266d0548f20885a082a12184be0a9196933cfc5087f55d9f19d",
+   "installer": "sha256-dos-clickteam-v1:e10cfe953f97bbfd693465782a3c506a46c157b402d7b7b2aa550da02f916585",
+   "match": "exact",
+   "title": "Hexx - Heresy of the Wizard"
+  },
+  "HZC": {
+   "game": "dos:be760fb4d8389def",
+   "installed": "sha256-dos-manifest-v1:0d48e2779a96b3d089778d21245dacf5aa9d5f89165cf8485298315ee2526cb4",
+   "installer": "sha256-dos-clickteam-v1:71e34f4bf149b1f6b63bfcbccf0f4d3329b381eb1f2d37a5c7b53d87d755569e",
+   "match": "exact",
+   "title": "Horror Zombies from the Crypt"
+  },
+  "IAF": {
+   "installed": "sha256-dos-manifest-v1:d8493b6576447f2dbc2647604de17d92403a789b2ed52854ee3b2d9b03cb930e",
+   "installer": "sha256-dos-clickteam-v1:f5f464d0a2be930ab49794040e20db3f19b1818685c601c7ac2ad84fd89c4ce4",
+   "title": "Ice & Fire"
+  },
+  "IAS": {
+   "game": "dos:1e0c795c9efa0f48",
+   "installed": "sha256-dos-manifest-v1:beb79c96ef0dbfbcb4d2004356b3f63c80fac636007c5dcf6c62ece3fb8559a1",
+   "installer": "sha256-dos-clickteam-v1:b0de14fc4b913d7dbe076caf420fac6ca68e54a6312e2e17202ab90b7df15660",
+   "match": "exact",
+   "title": "Iron Assault"
+  },
+  "IHF": {
+   "installed": "sha256-dos-manifest-v1:4ad6907ac62641deb7951f3742c3f1b33ebf85fb0b1534def8cbe3b29ed6a9ff",
+   "installer": "sha256-dos-clickteam-v1:3b4b1ee6d0f6c4a9fd78a2dbf1e629fe51ea62f1ef1d792b1a97ef2a4e77b300",
+   "title": "The Interactive History of Frankenstein"
+  },
+  "IJAC": {
+   "installed": "sha256-dos-manifest-v1:6deeacd9f3d82cbb4e890ed3183a5156a22a07667b757392c97d2832d616ae05",
+   "installer": "sha256-dos-clickteam-v1:00896c435d1dc8532fa081f3cae545739ee143a938b12b85c5196122381a52d3",
+   "title": "Indiana Jones - The Action Games"
+  },
+  "IJD": {
+   "installed": "sha256-dos-manifest-v1:d902e1b9290a2d2b708d6854c92274307165a73de1f31963c16b2b168b774948",
+   "installer": "sha256-dos-clickteam-v1:80a986f4a365cb1a86c868e8989287417c362ceb87edcc7ed1d1b36777b0a525",
+   "title": "Indiana Jones and his Desktop Adventures"
+  },
+  "IMC": {
+   "installed": "sha256-dos-manifest-v1:f1b1f309e95519a437a9076ca501e955e454cd4b00fb271f5839494d624ce215",
+   "installer": "sha256-dos-clickteam-v1:03e056b5a36a20e34046acb22315f839d8fa179fc0a1d3e7bedc80e6e1b21654",
+   "title": "Iron Man - Interactive CD-ROM Comic Book"
+  },
+  "IMM": {
+   "game": "dos:72cabd5fb3c20844",
+   "installed": "sha256-dos-manifest-v1:fe85492fcd00bb0ffb13d96c42a72929091423c2827724d4ad8d69b71434e90e",
+   "installer": "sha256-dos-clickteam-v1:a03e9e0c4fd6c83bef4d78109b0f9b01d42fa6850bf4b08d17a28045f80a67da",
+   "match": "exact",
+   "title": "I.M. Meen"
+  },
+  "IN1": {
+   "game": "dos:93281ed571f6bc47",
+   "installed": "sha256-dos-manifest-v1:7b5f2ac6c11593ad071111346ca6f8cb152940cb9d7d4a49b884d75bac47d7ee",
+   "installer": "sha256-dos-clickteam-v1:de9f6cd5ca47935783359c6e7a9d0c9e197ab8de59faa73c1d9a5040eb395902",
+   "match": "exact",
+   "title": "Inca"
+  },
+  "IN2": {
+   "game": "dos:4281431c14e9c595",
+   "installed": "sha256-dos-manifest-v1:b24ce479525ece20e7ccddaa592c3b5cc9ecaf719bf6dc7e48110b171ad9a388",
+   "installer": "sha256-dos-clickteam-v1:5c0a709415392501cf832265c1f03faf358d35f427bc55d739b18ea754e8f82f",
+   "match": "main",
+   "title": "Inca 2 - Wiracocha"
+  },
+  "IOD": {
+   "game": "dos:f0e652f02367bdc6",
+   "installed": "sha256-dos-manifest-v1:96a228fcacc31407f915e23f85d66da49fcfc65ffab99815e72cc452171385c6",
+   "installer": "sha256-dos-clickteam-v1:f5ad17ef32c6e1b82e1b763b5969ab1400101a805118002f32629b099dea8c5b",
+   "match": "exact",
+   "title": "Isle Of The Dead"
+  },
+  "IPG": {
+   "game": "dos:7810f2c7fc0d7f79",
+   "installed": "sha256-dos-manifest-v1:385a6f3d4865b1143b59cf074b3bebba80ed806ee753fdc334484db93da7d2b6",
+   "installer": "sha256-dos-clickteam-v1:745b63875637363c6cedd0aa5970dcb375a1442149aeab3fe6593c6997101857",
+   "match": "exact",
+   "title": "In Pursuit Of Greed"
+  },
+  "IRB": {
+   "game": "dos:1306ca54ebb21583",
+   "installed": "sha256-dos-manifest-v1:b7cf1de9d827d8f262741089e8c7a2605ffa19cae2be279018eb4719659d12b1",
+   "installer": "sha256-dos-clickteam-v1:d587970dde929e7ef069f9c394d246cad61dcbdb729d1b802c4a0c9712a35d98",
+   "match": "exact",
+   "title": "Iron & Blood - Warriors of Ravenloft"
+  },
+  "IUC": {
+   "game": "dos:c7d29e15a7563244",
+   "installed": "sha256-dos-manifest-v1:f22bf4453e91afef54cc166c573bcf8b73a30a8d04a89a9d074ac4971820aca8",
+   "installer": "sha256-dos-clickteam-v1:29703269aad86845a1f060738d1b160bb294192858f56a4e93a287c376584e03",
+   "match": "exact",
+   "title": "Innocent Until Caught"
+  },
+  "IUG": {
+   "game": "dos:9d9d2a41bd2b1aa7",
+   "installed": "sha256-dos-manifest-v1:52ff51e0bb08b3b66802411650d940f12bccdcb72ad4b7dbc4fd7110063424d2",
+   "installer": "sha256-dos-clickteam-v1:5ea55c9f9d98bbf44f2a0d129310ad9e3481d784f4ec064292e06efec3056b2b",
+   "match": "main",
+   "title": "Innocent Until Caught 2 - Guilty"
+  },
+  "JB1": {
+   "installed": "sha256-dos-manifest-v1:a2c1b8bef19655a6165e919076b34ce6385be1f7858bbdf3d925f4695e83d070",
+   "installer": "sha256-dos-clickteam-v1:64f71d3e2f43f9fee190b35818948eaadeb51e136f32f10e3c228910c0e8fcd7",
+   "title": "The Jungle Book"
+  },
+  "JBZ": {
+   "game": "dos:15b41742382b491b",
+   "installed": "sha256-dos-manifest-v1:d00cc2c092d08847a7f0cadbf89136b6de2c1c30330924f1294e5434d53b2485",
+   "installer": "sha256-dos-clickteam-v1:82b6b12982fd187aac040bceb31066c76f6dc7a45ba1a51140ce7d39bb26dc59",
+   "match": "exact",
+   "title": "Johnny Bazookatone"
+  },
+  "JDB": {
+   "installed": "sha256-dos-manifest-v1:15632b8ea00ef1ce92a506b62a92af6972be6a1f4b101381c68daa5b12456440",
+   "installer": "sha256-dos-clickteam-v1:8a676fe864b0415e589ab544431f3903075f6274442840adfd9a40e5e1462f29",
+   "title": "JUMP - David Bowie Interactive"
+  },
+  "JGP": {
+   "installed": "sha256-dos-manifest-v1:43e9f73d4afdffacff2f00d0a8c6d7f1c9a2fe622cc3b33884acb7e7570a92cc",
+   "installer": "sha256-dos-clickteam-v1:864623671f194069fdf4ca83a2a0dca2b16d2ae08d4086d7b3227f5fcb08191b",
+   "title": "Jumanji - A Jungle Adventure Game Pack"
+  },
+  "JMN": {
+   "installed": "sha256-dos-manifest-v1:f2547c89ff6c0d846246d634808dbe32ef83326e9357e9afe74d5f8598af2df4",
+   "installer": "sha256-dos-clickteam-v1:eb22f7ddbea2920055a9947a68a642d6a905f3e0d27c4148763ef8f5b9f6b67e",
+   "title": "Johnny Mneumonic"
+  },
+  "JP1": {
+   "game": "dos:1db38e1ccfb24952",
+   "installed": "sha256-dos-manifest-v1:303d3ccec4208796843a8ff42692d6d4793c6b5860b4bb55a38e15244b59bacf",
+   "installer": "sha256-dos-clickteam-v1:420dca76dfe09fa413c5d9871c21398d865615c5a098262f92eeae07ca6d0a3a",
+   "match": "reviewed",
+   "title": "Jurassic Park Volume 1"
+  },
+  "JRA": {
+   "installed": "sha256-dos-manifest-v1:aab012e0fe5b1791f906ab112355e5278aa7ebd284bf44d681bba7b7afd89401",
+   "installer": "sha256-dos-clickteam-v1:ac2555a96d8586a15d736c39034a17e53cfb25f6138399a2d8ed80661bd7188d",
+   "title": "Jump Raven"
+  },
+  "JW1": {
+   "installed": "sha256-dos-manifest-v1:9c78d99396a0e4d4b7b45eae0c3b2fffbfed34055eb016bbd91ebec49d04c72e",
+   "installer": "sha256-dos-clickteam-v1:5bc3c10a6bc31d878d195e71c45decbfa0456da5aecac23afe848c83319c5c1c",
+   "title": "Jewels of the Oracle"
+  },
+  "KB0": {
+   "game": "dos:4ad5193bbf28f68b",
+   "installed": "sha256-dos-manifest-v1:5d151cdb838d2c8948945e05a6a67b8a97ba73655c21096f09801c15a2423f7f",
+   "installer": "sha256-dos-clickteam-v1:75277ff4548af423f6971472c6e36f3aa46cf843b917cf2ddc3a5b2557dfcb94",
+   "match": "reviewed",
+   "title": "King's Bounty Classic"
+  },
+  "KCC": {
+   "installed": "sha256-dos-manifest-v1:023d9dd74a0ad57967169210d24d7c420ebf1a0c84d2fcd55e3cdd7b3792a8bc",
+   "installer": "sha256-dos-clickteam-v1:718c5a4a75fef2bd8e7abbcdb43bb8770d3a2d55421ffed5a7e825abeeb6b6c7",
+   "title": "Karma - Curse of the 12 Caves"
+  },
+  "KNP": {
+   "game": "dos:7f779019a15bc65c",
+   "installed": "sha256-dos-manifest-v1:4957061a8a8fa1fd67c272c6e7a1af600d3c2b24f8fca5aea9fcea24d06f1415",
+   "installer": "sha256-dos-clickteam-v1:f2e435c7a6eae080eae98271a572cc6de5a456b3e9fe3be3da28acc5de47d55b",
+   "match": "exact",
+   "title": "Kronolog - The Nazi Paradox"
+  },
+  "KOL": {
+   "installed": "sha256-dos-manifest-v1:e25885ae340ce0c7796acc0e31a2498ddfd186e29ae76d556463b2f3329124d4",
+   "installer": "sha256-dos-clickteam-v1:71387d33fe90756730deb8422f7f33e26979025d758de8b149e05172262c0312",
+   "title": "Koala Lumpur - Journey to the Edge"
+  },
+  "KOM": {
+   "game": "dos:b55fd7c654f29113",
+   "installed": "sha256-dos-manifest-v1:b0419aaaf78f6d9cd49358d984d40ef5e2a721c12174f7b734a2954df75e03af",
+   "installer": "sha256-dos-clickteam-v1:1484f6858159b26119c1ea3cdc83895776c7743251aaf7658f3f6050b08987d1",
+   "match": "exact",
+   "title": "Kingdom O' Magic"
+  },
+  "L3D": {
+   "game": "dos:5d730da7058ac118",
+   "installed": "sha256-dos-manifest-v1:4feea58ec7076a1f49d1a7a2da21d61e4cfd55e9fb6dda05e1030be7347468d5",
+   "installer": "sha256-dos-clickteam-v1:8eee70b337c6d19bf71fa4df65a33870f8e96dcb434bf35a62f264828964014c",
+   "match": "exact",
+   "title": "Lemmings 3D"
+  },
+  "LA0": {
+   "game": "dos:0b260818753ca985",
+   "installed": "sha256-dos-manifest-v1:c7937c4d8521b76a7bc9b70561cd532163ec665774f3638e6e39c356e6e50d08",
+   "installer": "sha256-dos-clickteam-v1:cebd99e70c5401e0af7a2a76386e999a6496f4cc5cbd6ca93d5e862a71dbba51",
+   "match": "close",
+   "title": "LA Blaster"
+  },
+  "LAM": {
+   "game": "dos:f2dec499b8504fdd",
+   "installed": "sha256-dos-manifest-v1:3c64012d1b5e3861b9edaef9109deedc4b16122a1d250062a8eb7b4624693100",
+   "installer": "sha256-dos-clickteam-v1:55f5509f6a742825c4af2d3bdd66ecbb5cc05a2e6acf9f03ecc5f2a080f36013",
+   "match": "exact",
+   "title": "L'affaire Morlov"
+  },
+  "LAMB": {
+   "installed": "sha256-dos-manifest-v1:70a61144a3ba949d8258881a20293af97cd31840cd526bc795d41f52a8cb956b",
+   "installer": "sha256-dos-clickteam-v1:489d120a956f9f91ba95925248219f42f48015a29c3a672fc76cb5ce811f9bae",
+   "title": "Land Before Time - Animated MovieBook"
+  },
+  "LCA": {
+   "game": "dos:ed8e8dbcb12ecec7",
+   "installed": "sha256-dos-manifest-v1:53c7c7f4ed9c293e6728428f141386e3c15fb36dc6b766bdda67a05e85d5dfe0",
+   "installer": "sha256-dos-clickteam-v1:3e6d0f786c75d99ccd2dfa93a30cedee450a11f7bc4ddcfe0c4f2123573d1fec",
+   "match": "exact",
+   "title": "Lost City of Atlantis"
+  },
+  "LDY": {
+   "installed": "sha256-dos-manifest-v1:0a825ce89956e0c6ac8e39e762b74aba21b3cbea2f2be51e95710b7f9d6991f9",
+   "installer": "sha256-dos-clickteam-v1:4836bc6fdd22f0fef753aba7bd41dfb4a8c34731ff5c07d353c8bd6138585f99",
+   "title": "Last Dynasty"
+  },
+  "LEMT": {
+   "installed": "sha256-dos-manifest-v1:0f084a4e3f0ee82249ab1d8add692034c3a17c321e31007d7628344f1e1f1eec",
+   "installer": "sha256-dos-clickteam-v1:b080d1008f4a7ca966746db0d323625bf3300e0a242f00d553e061a1636fe928",
+   "title": "Lemmings Trilogy +"
+  },
+  "LFC": {
+   "installed": "sha256-dos-manifest-v1:364b12ded245adfec911d6ea42a45cb9390b7af50519013fd423ef7c1a2c7151",
+   "installer": "sha256-dos-clickteam-v1:807c2674b23a1c98ee103b9527a01b275a50d6415f5e1b58680864fc1795c04c",
+   "title": "Legend - The Four Crystals of Trazere"
+  },
+  "LFM": {
+   "game": "dos:e723ac4cb0aea830",
+   "installed": "sha256-dos-manifest-v1:11facb39b396ae8b5e53751cb68d07ca25910af244341db59e71c9a30b8a02da",
+   "installer": "sha256-dos-clickteam-v1:62440d126efd5f40b64b4d7c0a783c184bfb657e40ff3338a2fc6671353c6978",
+   "match": "exact",
+   "title": "Le Fetiche Maya"
+  },
+  "LGP": {
+   "game": "dos:75cc0400c9612731",
+   "installed": "sha256-dos-manifest-v1:22bf81501843f2f6379b59fd6438470645d0d5ad55bfa593bbdda9f711276dae",
+   "installer": "sha256-dos-clickteam-v1:04d97ca390fcedf5f8f0145b856fba70a57c518703faa966554096cde21ac2b0",
+   "match": "reviewed",
+   "title": "Leather Goddesses of Phobos 2+"
+  },
+  "LIO": {
+   "game": "dos:1b43437519bf90c6",
+   "installed": "sha256-dos-manifest-v1:3c097df6e9c48ee9c71d08ce1eb5db6035f45baee680a3dcd12987cffd48cfd7",
+   "installer": "sha256-dos-clickteam-v1:7c8b17a06e23e1ed98a7cd8af3aef9348186aeab120b5f5e10a85f2762adc803",
+   "match": "exact",
+   "title": "Lion"
+  },
+  "LIO/Install-LIO.exe": {
+   "game": "dos:1b43437519bf90c6",
+   "installed": "sha256-dos-manifest-v1:3c097df6e9c48ee9c71d08ce1eb5db6035f45baee680a3dcd12987cffd48cfd7",
+   "installer": "sha256-dos-clickteam-v1:7c8b17a06e23e1ed98a7cd8af3aef9348186aeab120b5f5e10a85f2762adc803",
+   "match": "exact",
+   "title": "Lion"
+  },
+  "LOC": {
+   "game": "dos:4543361b826e6666",
+   "installed": "sha256-dos-manifest-v1:16e41c71457f773f2bc8af068bce252d47efe19b208bcf175b28fe81724f054f",
+   "installer": "sha256-dos-clickteam-v1:6e1d506385fac1d428a34b06ab55371f514df80c2b3bb05c99e0c9e36807a5ec",
+   "match": "exact",
+   "title": "Locus"
+  },
+  "LOM": {
+   "installed": "sha256-dos-manifest-v1:a80c54f4a33ce3864c829969b6a49cb54800bf27f6e690b83d198dfe4b6f1f0f",
+   "installer": "sha256-dos-clickteam-v1:a1c193e6aec04014171de1395f3fcd2c7c154c0a4eb63f3780875b9bd8556333",
+   "title": "Lords of Midnight III - The Citadel"
+  },
+  "LWC": {
+   "game": "dos:83902a46ba9952d6",
+   "installed": "sha256-dos-manifest-v1:4aede77ac96646a8704045a08ffce85c155783667efb6ea4080ca020bdbd3671",
+   "installer": "sha256-dos-clickteam-v1:01bd2b4dd09d12393c0040b4290c36894a7cdd7778c0da2b4593e5f4de216bfc",
+   "match": "main",
+   "title": "Lethal Weapon - The Collection"
+  },
+  "MAG": {
+   "installed": "sha256-dos-manifest-v1:922a1155c1d8fd107b0f92225a5fc7e1dd077e79f43542b056236c39dba0f1a3",
+   "installer": "sha256-dos-clickteam-v1:0cd955d9aa01b5cc8e4980f85e43c3533666e71ed949a4fd5f68e1a11f3ab828",
+   "title": "Museum of Anything Goes"
+  },
+  "MBD": {
+   "game": "dos:1d7383420a40b20a",
+   "installed": "sha256-dos-manifest-v1:a963df61f7ef3c7be779d01c7b929628a6b767ebd0ffb594f29dddca6f535bba",
+   "installer": "sha256-dos-clickteam-v1:34a7ed432de9cd5b7feeabf0bd4ffa07a6e2ea57949fb1c72419f3bd367e1cd9",
+   "match": "exact",
+   "title": "Metaltech Battledrome"
+  },
+  "MBM": {
+   "installed": "sha256-dos-manifest-v1:3cd56e1ab0a42f729fa136892627dcabe7e914a79efeec718bd4a593da0ea233",
+   "installer": "sha256-dos-clickteam-v1:338a0322c8091f01de9bde6a93b94e424f6cc0064e23d5fc73bc114953539b5a",
+   "title": "Math Blaster Mystery - Pre-Algebra"
+  },
+  "MCO": {
+   "game": "dos:8e1c0698804590fe",
+   "installed": "sha256-dos-manifest-v1:4166515676dff051f306e29ce0e71951b42733ad9bc82217cd8adaa4f2f66241",
+   "installer": "sha256-dos-clickteam-v1:2b7232818f8e218009ebee12e1732098125a29909d308c7f1b501f7953a7774a",
+   "match": "exact",
+   "title": "Mortal Coil - Adrenalin Intelligence"
+  },
+  "ME1": {
+   "game": "dos:0922132c933d1403",
+   "installed": "sha256-dos-manifest-v1:b042027d94c5ee314da841776a0ca054d7b72b949889ae2824afe9c1db4b5da6",
+   "installer": "sha256-dos-clickteam-v1:c32ed330f4edae77041f9c0fff27aa6dbf96ce2b18cb9c2d0649b51e9f71ce89",
+   "match": "exact",
+   "title": "Metaltech - EarthSiege"
+  },
+  "MG1": {
+   "installed": "sha256-dos-manifest-v1:d37695e2ae3faec20bdbc8a200b6761a1705cddbbbaed85fd69cea1de5b1956e",
+   "installer": "sha256-dos-clickteam-v1:94fb3aecfe289f3aeb4c083a3223ca8ce5ef5935f2f4f73be230fd1ad0cc52ff",
+   "title": "Mystery At Greveholm"
+  },
+  "MIR": {
+   "installed": "sha256-dos-manifest-v1:3b5ca0a44c52fceb46aa33510c3603e5dbbcec53c3644a95ea383ebc3fb22fad",
+   "installer": "sha256-dos-clickteam-v1:cce6c35273cb6ea441b3585020df8bfea830db866732fed1656f4eca358af15e",
+   "title": "Mysterious Island - A Race Against Time And Hot Lava"
+  },
+  "MJ1": {
+   "installed": "sha256-dos-manifest-v1:35cdce954c4fd45b3955dbe2aae02b6217d0b4557830859323701a553947cbe0",
+   "installer": "sha256-dos-clickteam-v1:6af5f4e67a76ee52a635611a8dd929f24e72a2a9298f9b23b464e2edebb06e93",
+   "title": "Majestic Part 1 - Alien Encounter"
+  },
+  "MJM": {
+   "game": "dos:99f4860007a2ccf4",
+   "installed": "sha256-dos-manifest-v1:8c11a526cd2dfe7db416b1b87241ba2c6c97268d34ba2c210e625a21c1d25982",
+   "installer": "sha256-dos-clickteam-v1:c53a24a0970155f70ef53d413a31417d7ae6daceacbac37ada08d990b7ea65a5",
+   "match": "exact",
+   "title": "Moonwalker"
+  },
+  "MOW": {
+   "game": "dos:d6e917e5c4adbf0c",
+   "installed": "sha256-dos-manifest-v1:5fd9f30a1f20c6d2c413d7d410c4775b28210b6174cfcf5d2441f4305550e609",
+   "installer": "sha256-dos-clickteam-v1:902bd17c6e48e6391e9c221ac4ad17802d8b71ec0e496745ab17ea734cf08645",
+   "match": "exact",
+   "title": "Man of War"
+  },
+  "MPCW": {
+   "installed": "sha256-dos-manifest-v1:0e33c79b046b9e937a18d482cc7a9a5adc90f3be9ad8583dfbb9048acbcc1663",
+   "installer": "sha256-dos-clickteam-v1:4f33e2b6daa363e36ccba75e15c73943bfaec27309802531da10a47ab0d0bd08",
+   "title": "Monty Python's Complete Waste of Time"
+  },
+  "MPFC": {
+   "game": "dos:71a0e8f77470fca8",
+   "installed": "sha256-dos-manifest-v1:16a4cc8f0033410b4cd20f6180d0b2460f7c63c84a340b54cc35146dec8434b7",
+   "installer": "sha256-dos-clickteam-v1:d5d2bbf5402f1701c33767a8a5896df43d1ca1ff204e51e8e7f02ab24ef529ed",
+   "match": "exact",
+   "title": "Monty Python's Flying Circus"
+  },
+  "MPHG": {
+   "installed": "sha256-dos-manifest-v1:e470cac36313a94ba067f343914997507a750979e734617cedbc35a269862e78",
+   "installer": "sha256-dos-clickteam-v1:9c82b7e7a53a5e020d0b5448f312b14cf54aca86f6c8b25b009cee342ca0e551",
+   "title": "Monty Python and the Quest for the Holy Grail"
+  },
+  "MRA": {
+   "game": "dos:caadd2cde245e4d1",
+   "installed": "sha256-dos-manifest-v1:9290af988edb16ff0b20b3f18e25e9a3aab07ce0732def0fb356885fabcefa05",
+   "installer": "sha256-dos-clickteam-v1:5ef7ee07e3def099955ffd989e62fffdde64537f516d7f1b93b6dcbcfcf14d11",
+   "match": "exact",
+   "title": "Metal Rage - Defender of the Earth"
+  },
+  "MRK": {
+   "game": "dos:3af15a7af986af6c",
+   "installed": "sha256-dos-manifest-v1:01b5880df2e4856783ec1839ad39d311d30347ac6b5be8c68c8880bb28118724",
+   "installer": "sha256-dos-clickteam-v1:a987de0278b5833463a06827a0e2dac32356fd5318600f4cad334cd7bc40a9fd",
+   "match": "exact",
+   "title": "Maximum Roadkill"
+  },
+  "MTI": {
+   "installed": "sha256-dos-manifest-v1:7529e0f3b9983b98e5ae775b82713d80d1e366d78a7bda6d97e377ab528bf457",
+   "installer": "sha256-dos-clickteam-v1:8559451235c944c83435d271d26478f4123117314c7c433b6917f0a18f61d8cd",
+   "title": "Muppet Treasure Island"
+  },
+  "MTP": {
+   "installed": "sha256-dos-manifest-v1:361db06ac113fda5ee495a37f4aed4660de006425d9f92dad46de0d797c1e328",
+   "installer": "sha256-dos-clickteam-v1:851584e43dcf7c68dac7bc5fe54deab56502192292a18e878f9a3b2fa69ebb93",
+   "title": "The Mummy - Tomb Of The Pharaoh"
+  },
+  "MW1": {
+   "game": "dos:1813f2d47038ef7e",
+   "installed": "sha256-dos-manifest-v1:34b5d312e9ba2235e2486bbde3d3c487ad116efab3ac3407ed80bdaf14f8e64a",
+   "installer": "sha256-dos-clickteam-v1:e12096ee87669927597cf8e30f2ef687c6246dcee92350450de30ec4f6e6c00a",
+   "match": "exact",
+   "title": "Mechwarrior"
+  },
+  "MZR": {
+   "game": "dos:61244d6919909842",
+   "installed": "sha256-dos-manifest-v1:1e120851f0aa8213931e1db614fe15af7311b30c6c49e35289b10857dcb8c5ad",
+   "installer": "sha256-dos-clickteam-v1:9c2427634204d7f9e45ef6dd134c596b8f612dcd1d1c2460965f45288e138c1c",
+   "match": "exact",
+   "title": "Montezuma's Return"
+  },
+  "NBD": {
+   "installed": "sha256-dos-manifest-v1:331ef2b725ee48d8f5669d5e7de3e16def4b357ab73c32bf15a6cd69a985dbde",
+   "installer": "sha256-dos-clickteam-v1:3aa3c192a58d9799446a0530a709b11e87efdecafbfda6c16f21c00f6d428c07",
+   "title": "National Lampoon's Blind Date"
+  },
+  "NHU": {
+   "game": "dos:3a84fbd915e7e83a",
+   "installed": "sha256-dos-manifest-v1:0fe2f5d2591f988fef4c7ff8f970fcab596768190a7ab243af30ddbd3e01795f",
+   "installer": "sha256-dos-clickteam-v1:05dbc61c2128ef82a1369e13bf21a0620fbafeb5caee360a088ee2e9280c8eb0",
+   "match": "exact",
+   "title": "NeoHunter"
+  },
+  "NOR": {
+   "installed": "sha256-dos-manifest-v1:59df16e95a570676b25d4f2e8fe36d16d81948720e99b8923ef13fdaa646d15d",
+   "installer": "sha256-dos-clickteam-v1:5e0ccc6bb4b2ac3e84bc64b531c426109a66977bd915b8275056921fffc59fd0",
+   "title": "Noir - A Shadowy Thriller"
+  },
+  "NQ1": {
+   "game": "dos:940e9ce6629e8a02",
+   "installed": "sha256-dos-manifest-v1:8592ab8cd634c1d932325696d842af47b1ac443329520c794ef411ee511cb941",
+   "installer": "sha256-dos-clickteam-v1:07a49f3e631a3d09f5bab3c167228749cc33b195cf2bf9df5475f743f5fd28e3",
+   "match": "exact",
+   "title": "Network Q RAC Rally"
+  },
+  "NQ2": {
+   "game": "dos:6223af71dde3f64d",
+   "installed": "sha256-dos-manifest-v1:0722afb345f4599a30cd1e7baf8165bee9c3f431a312aaa13590135ad35b01c7",
+   "installer": "sha256-dos-clickteam-v1:75896cd8916fee56bd7ca52f96fd1ed868d4ff4be870805c3910f1027e9380be",
+   "match": "exact",
+   "title": "Network Q RAC Rally Championship"
+  },
+  "NR1": {
+   "game": "dos:84c1c2194af8dd72",
+   "installed": "sha256-dos-manifest-v1:2751d850cb17ed2ed42e44ad24d262b9d924da820709882a850c9cfb9f28bb94",
+   "installer": "sha256-dos-clickteam-v1:eff9376c666b4cef9774dae2086697d9aa7c4c290f4cbe18a707196c68f904be",
+   "match": "exact",
+   "title": "NASCAR Racing"
+  },
+  "NR2": {
+   "game": "dos:09dc745c5c93da01",
+   "installed": "sha256-dos-manifest-v1:cc97832bce3e8bdb9994ac2c1d350f4f4e1737a0b03880dd6155ba64f5766447",
+   "installer": "sha256-dos-clickteam-v1:6b999bb46aa01024346a70a857ccadc983605eaefdfa6e8d6e2ef8b9823df235",
+   "match": "exact",
+   "title": "NASCAR Racing 2"
+  },
+  "NS1": {
+   "game": "dos:8a1b6be9ae955a25",
+   "installed": "sha256-dos-manifest-v1:e0232203415b74071a569cf6a9cf53e2dd7f94f04404ac0f4177d4600abe7152",
+   "installer": "sha256-dos-clickteam-v1:e890b5884f2ece6966c4db6dcfbfb77f21989235b6e9580716f06461c5e84c54",
+   "match": "exact",
+   "title": "Need for Speed"
+  },
+  "NSI": {
+   "game": "dos:e50a8dc40d124f25",
+   "installed": "sha256-dos-manifest-v1:ec6fd6cada593107fd83e1ddf749723e3f5a4e5756232c786591306c93640d17",
+   "installer": "sha256-dos-clickteam-v1:a2f21269508eb5494faea06ac29d8367cab8cb5b6b238230de3d9878cde1d014",
+   "match": "exact",
+   "title": "Nippon Safes Inc"
+  },
+  "NZN": {
+   "game": "dos:2f9ce3593a8d00ef",
+   "installed": "sha256-dos-manifest-v1:fd9e878bcbc3d9e37f19288f99da222ee855bc449ed77195c473af0ba7bd5f8d",
+   "installer": "sha256-dos-clickteam-v1:e8b9395a681ccfe5d937d628f161fea4e879bcbe03e33f9504e471f7ae67ca1c",
+   "match": "close",
+   "title": "NETZone"
+  },
+  "OBU": {
+   "game": "dos:bc0cc9fd27a35777",
+   "installed": "sha256-dos-manifest-v1:7eb9830b1111057ddaef1fc7dfd1bfcaf284f8aac2281e6cc7d22a8d98c72063",
+   "installer": "sha256-dos-clickteam-v1:77de2688f29cee7c609906b73b4a91268d3034a04725adc0f39b28b9818989e7",
+   "match": "exact",
+   "title": "Orion Burger"
+  },
+  "OCO": {
+   "game": "dos:9acf04cc6c768596",
+   "installed": "sha256-dos-manifest-v1:a1563461d7980da17b070f41f519bacdc99809dbe5a5c2aacf9574aef70cf8e2",
+   "installer": "sha256-dos-clickteam-v1:f79dc39ac55fba40b028ffd5954cdbba7c32904ba5643492273ba612f9938458",
+   "match": "exact",
+   "title": "Orion Conspiracy"
+  },
+  "OFF": {
+   "game": "dos:ad4c00cef5be871b",
+   "installed": "sha256-dos-manifest-v1:e524f1324ecbb1c4325f3c155f03081dd8072f25f36a2ec25a510bcfe028ba7b",
+   "installer": "sha256-dos-clickteam-v1:5548b8ef0dd59ac6f0d615e1072898b03cafcdd0c2c5e5718e4a92f7f4af766c",
+   "match": "exact",
+   "title": "Offensive "
+  },
+  "OGAS": {
+   "installed": "sha256-dos-manifest-v1:45f6f23faaf1f7f9323b324f236aa44cb80a958c194660e8901cd7ac372948d0",
+   "installer": "sha256-dos-clickteam-v1:495ce8799c253063f14dea877712fce298225e679f240981f9742c4d42d706db",
+   "title": "Atlanta 1996 - Olympic Games + Soccer"
+  },
+  "OMF": {
+   "game": "dos:654b9169d1a41f7f",
+   "installed": "sha256-dos-manifest-v1:07a33195924bb3a2f90607d2752ad7b52ee6d40ad6b02382287fddd33f65c533",
+   "installer": "sha256-dos-clickteam-v1:5e9ea856e6afa8ae40e276d41b632e93bbf831834916e0e8282de225f41ab3e1",
+   "match": "exact",
+   "title": "One Must Fall 2097"
+  },
+  "OMN": {
+   "game": "dos:0bd0defd3e78ba21",
+   "installed": "sha256-dos-manifest-v1:12fae83ce09ab5ad28c1e8b04a1ced9293203c937bd0566c2a468110118708c8",
+   "installer": "sha256-dos-clickteam-v1:09c456bf80813f9d60ae1ce171dacbd2d92dba0780965ed3cb38ef9c68857f2b",
+   "match": "exact",
+   "title": "Omnicron Conspiracy"
+  },
+  "OUF": {
+   "game": "dos:2f097ede5377e4d7",
+   "installed": "sha256-dos-manifest-v1:d47b4cb8568614904586d85e37346970ad1f59d706707dfc089a684a2ebc77c8",
+   "installer": "sha256-dos-clickteam-v1:8dab3f5a3b4c97f30e95b8cccb44183fa55af99ecfb7ee0f5c6602faa7067689",
+   "match": "exact",
+   "title": "Once Upon a Forest"
+  },
+  "P88": {
+   "game": "dos:e5e49fcb52390636",
+   "installed": "sha256-dos-manifest-v1:ed5b041ace8402f71aaf043da771c69070d0863f841fbc20f8284656ecad678d",
+   "installer": "sha256-dos-clickteam-v1:551f4c96c2f974d1585beac8ce9f640a7a2e2a36f9bda55e717b62ec8f2cc794",
+   "match": "exact",
+   "title": "President Elect - 1988 Edition"
+  },
+  "P9O": {
+   "game": "dos:1a9d8053f3618ec2",
+   "installed": "sha256-dos-manifest-v1:9ed541456e3db7d820976adb44737e631d380131c84fdf85cdb6919bafa81238",
+   "installer": "sha256-dos-clickteam-v1:b67ddee06b04c1ec97a562240b8d070c0b7633c312a569cee2cb1ca22263e762",
+   "match": "exact",
+   "title": "Plan 9 From Outer Space"
+  },
+  "PEY": {
+   "installed": "sha256-dos-manifest-v1:a151dd48a8f2a567bf27098ed956a701c9894b76793d4b185af20b538202922a",
+   "installer": "sha256-dos-clickteam-v1:54767b5b1226913818b9be27e4a992f89684fac786ac9483addbb4d0764c0021",
+   "title": "Private Eye - Philip Marlowe"
+  },
+  "PGM": {
+   "installed": "sha256-dos-manifest-v1:0ac4fb1aba0b29feefe6bad699b1b727384499a79c38bf8925bca11e6cc09506",
+   "installer": "sha256-dos-clickteam-v1:3ae80f0d514408f5d0768ed9a7850ea6e1c1278ab2e594002f6d2afd4eef7847",
+   "title": "Pagemaster"
+  },
+  "PKI": {
+   "game": "dos:fdbe40ce282aeb54",
+   "installed": "sha256-dos-manifest-v1:eb4d7cb53e7a82aa3d7c9aa97541d64af7673e21f441760cebed74598075890f",
+   "installer": "sha256-dos-clickteam-v1:b59b42f8269a79ad0d263ef7a07eb195ffbe9354898ec9890c6bf32bb9bfec17",
+   "match": "exact",
+   "title": "Psycho Killer"
+  },
+  "PMM": {
+   "game": "dos:ccee5e64f2ed53f1",
+   "installed": "sha256-dos-manifest-v1:3e8ca8d0e504629b539ffe4a6e7814b27aaeffdf61c15f3ef2c33fed4c16eb04",
+   "installer": "sha256-dos-clickteam-v1:1f1fe00dec95964b9696d665bc87f1f638e6abcf3b63bb223c81d69184feba48",
+   "match": "close",
+   "title": "Plague - In the Maze of the Mind"
+  },
+  "POM": {
+   "game": "dos:fc8c9a9139691cfe",
+   "installed": "sha256-dos-manifest-v1:bc5b1278fd90b1cc451321e25dfa9a25eb6a03152a9398fb3e6e3b8cdb8d8c2f",
+   "installer": "sha256-dos-clickteam-v1:35c11c0187aadeb63d346e0ef54274ae8989a0575ddc79ce4532889d0db80b36",
+   "match": "exact",
+   "title": "Powermonger"
+  },
+  "PPD": {
+   "installed": "sha256-dos-manifest-v1:8c11202029b3932645b834430249877357e208585aa8f2d48c10ce12c260ef5c",
+   "installer": "sha256-dos-clickteam-v1:9e54a111f6b8ec388ccf32db0c94cd3b7a86ef098a2e499f9245a670a6ad2479",
+   "title": "Pyramid - Challenge Of The Pharaoh's Dream"
+  },
+  "PPO": {
+   "installed": "sha256-dos-manifest-v1:e3e3bf3b32430b481e16413428ebeabbe0d4d2a9961e9d356cb066635fc7bbe8",
+   "installer": "sha256-dos-clickteam-v1:c4325d500daa642b0648a2eb7741a12c9b502c4ce61f77612cae895e27a07dd2",
+   "title": "Power Politics"
+  },
+  "PRI": {
+   "installed": "sha256-dos-manifest-v1:90298ce654f656308e738580be9edc4e3ed4c238b79b33e08c982cc184fcd700",
+   "installer": "sha256-dos-clickteam-v1:b0ac728c7ee90e802eebee061a42e7160c62d78b29f1a5b6cb0b292e9a53d790",
+   "title": "Prince Interactive"
+  },
+  "PSY": {
+   "game": "dos:7b667a71b139e075",
+   "installed": "sha256-dos-manifest-v1:b0ed60b3bb01879d5a808dabcbfeddb81f4806f79ba753b0ece82aca60035c45",
+   "installer": "sha256-dos-clickteam-v1:b2e0729d65cb38639a783f18a08c0248ce000dd4999b314e2cae00d4faa61c43",
+   "match": "exact",
+   "title": "Psycho"
+  },
+  "PYL": {
+   "game": "dos:75cb05a0d3379dcb",
+   "installed": "sha256-dos-manifest-v1:9cdcf1fea1830fb74de1c59eff0d584cbde8a014c08b47656783afbe52301741",
+   "installer": "sha256-dos-clickteam-v1:afac58c3193b509d71d43be93c6b18db1bbd0249533529b73961fbd9de088389",
+   "match": "reviewed",
+   "title": "PYL"
+  },
+  "PYS": {
+   "installed": "sha256-dos-manifest-v1:e43856cf325e19516f8cd030885cdd54a0cb84ab24328d0c48b64ace2fed1942",
+   "installer": "sha256-dos-clickteam-v1:ffe16adff45723eaba2436092ec62182e86aae98e601b38d6017334a1d73bc5e",
+   "title": "PYST"
+  },
+  "PYT": {
+   "game": "dos:0eb12738d789c82e",
+   "installed": "sha256-dos-manifest-v1:de2a7cf5d8646e421dbdf963d9c97bfd673c91733f86e0dda0845dcf3e53c92b",
+   "installer": "sha256-dos-clickteam-v1:790093f4b47789f6cbdad8f0fe96018e7d9715dac3fe1e3f90216ffb01059d43",
+   "match": "exact",
+   "title": "Pyrotechnica"
+  },
+  "QAD": {
+   "game": "dos:0987cccf4fcbd125",
+   "installed": "sha256-dos-manifest-v1:c834b59b1ca0bf8c0e3bb5d3b4807e65921fb0b11eb8df65aee54ac2cef58b62",
+   "installer": "sha256-dos-clickteam-v1:2bb424d2d37e99f8b445cd7b18c52f45386f6528e1ec6201a29135ffdbbaa856",
+   "match": "close",
+   "title": "Q.A.D. - Quintessential Art Of Destruction"
+  },
+  "QG1": {
+   "installed": "sha256-dos-manifest-v1:81a0b75c200e96365e667cbc994efe60ad472f467aa4eaef3f4e263fbd0e29a1",
+   "installer": "sha256-dos-clickteam-v1:5652c525fc771498e8ce3b5e52f9180bbac7e8e2429cd15d28718285e6364a15",
+   "title": "Quantum Gate - The Saga Begins"
+  },
+  "QG2": {
+   "installed": "sha256-dos-manifest-v1:23558921b8b57b5d252b513051e07ff03cf82df5c210a39c2763158e8c04cd17",
+   "installer": "sha256-dos-clickteam-v1:09e8268bea7daf8d7386e3e78a5e919cf0b5e283ea803baa668846ac14f78dcb",
+   "title": "Quantum Gate II - The Vortex"
+  },
+  "QIN": {
+   "installed": "sha256-dos-manifest-v1:ba4c1b7a236fe1a16759b542c5b6156c4799ae524b7a076742bb7cbc40316ad5",
+   "installer": "sha256-dos-clickteam-v1:99ca5a0aa7cbf313af1a77c9f66b3f0e9dc18804c2c30290070cb365ef708218",
+   "title": "Qin - Tomb of the Middle Kingdom"
+  },
+  "QPL": {
+   "installed": "sha256-dos-manifest-v1:64970886f1521c250c9eced038ddfb59d940746126e568411c10d78782106fd5",
+   "installer": "sha256-dos-clickteam-v1:a23f7c096488dca1734c585b6b10d08064f6c3812ffc97f74f74b81c82d9520d",
+   "title": "Queensrÿche's Promised Land"
+  },
+  "QTR": {
+   "game": "dos:aa7ec35bc783abbe",
+   "installed": "sha256-dos-manifest-v1:84e59fd140a6ec0204de0e188f7b1dd08c2a814affc855f34a2fef8e53c23638",
+   "installer": "sha256-dos-clickteam-v1:fce9ed19faa6103e2872e94775e9aad426198676bd154c370d087da902eb18c1",
+   "match": "exact",
+   "title": "Quik the Thunder Rabbit"
+  },
+  "QTS": {
+   "game": "dos:71b82e44e9e6fd14",
+   "installed": "sha256-dos-manifest-v1:9b7e825d98d25518441d048ed05f1fd9947af2be0f55eda697367ab4c63f6626",
+   "installer": "sha256-dos-clickteam-v1:d3aa41786fb29aaedcb6d0366139615ce9ee7c281e6592be89166116a8404bdf",
+   "match": "exact",
+   "title": "Quarky & Quaysoo's Turbo Science"
+  },
+  "QU1": {
+   "game": "dos:7fc3d616e6526a91",
+   "installed": "sha256-dos-manifest-v1:6500b4bdbb5391751a92f9a98d36face8ccf049cec80828b9a5fc7e0fed6d6b8",
+   "installer": "sha256-dos-clickteam-v1:3b8710e9abba17b957b2fd59dbaef2ae46fb88ce1157dbee10d357ae2156831c",
+   "match": "exact",
+   "title": "Quarantine"
+  },
+  "QU2": {
+   "game": "dos:f26ba0360844b253",
+   "installed": "sha256-dos-manifest-v1:c9e838a28b8544b49d0f6fad5ffe85ea1c1aa2d52e3a85b813e1f8264f89fbf1",
+   "installer": "sha256-dos-clickteam-v1:ef54d029f58dec3101a6919cc4faf244647b278bbc2d7954219350d208a23975",
+   "match": "exact",
+   "title": "Quarantine 2 - Road Warrior"
+  },
+  "QUE": {
+   "game": "dos:aa8b579f81960246",
+   "installed": "sha256-dos-manifest-v1:90f986427c61dd52c06ba7a27953a7d7fa895967745ab62164887f223d16ed35",
+   "installer": "sha256-dos-clickteam-v1:5c2dd72e92103a137a39bfd6084593ea7090ace2bec9b1d672ad0eca5ded7137",
+   "match": "exact",
+   "title": "Queen - The eYe"
+  },
+  "RAM": {
+   "game": "dos:2dbdaced27091bb7",
+   "installed": "sha256-dos-manifest-v1:a1ecb2736e916bb475a72d4477d33889c59a8f193f4ab667f4d68ad83816bf30",
+   "installer": "sha256-dos-clickteam-v1:07b39529a5b3d145f09ce7a95017c88bfe14ec16a1005e518b5aa907b7a1d91b",
+   "match": "exact",
+   "title": "RAMA"
+  },
+  "RBD": {
+   "installed": "sha256-dos-manifest-v1:4ed7da0bc7efc9950383197993427e4738cbd13790b005e50acb8aa94e53550e",
+   "installer": "sha256-dos-clickteam-v1:3b75435e44763e93e77d23b1c140f8a695715d92b948cd5e91a9c3b794dbaf10",
+   "title": "The Residents - Bad Day on the Midway"
+  },
+  "RDX": {
+   "game": "dos:7cfadfb5a0fbbb38",
+   "installed": "sha256-dos-manifest-v1:377ef747f3e65bf71d80bd624b7a38a552d1cdc30a2ec351f0cb515d6d4b3ad8",
+   "installer": "sha256-dos-clickteam-v1:5f10161334693f1d98ab47631544122ffff37786229f6c943399ce0373e55a9d",
+   "match": "exact",
+   "title": "Radix - Beyond the Void"
+  },
+  "RFS": {
+   "installed": "sha256-dos-manifest-v1:860f83ba11d320a1a7b3a4b1db49a41a60b08b905448a6aca6c42f583cd3ec9b",
+   "installer": "sha256-dos-clickteam-v1:154ea719415460652df085096dffafd08e4d1c2955496bdd1093788955b8e1ea",
+   "title": "The Residents - Freak Show"
+  },
+  "RFSC": {
+   "game": "dos:4a7f8b20b6f4040b",
+   "installed": "sha256-dos-manifest-v1:526719abdbe82ebda30b1fcd43a9fc43783a7107c649db2bf352824e4d96ef58",
+   "installer": "sha256-dos-clickteam-v1:3c6071b5c60412e367cafc4dc31c7be1caa0336abea837ae9dd1c59faaf15017",
+   "match": "exact",
+   "title": "Rodney's Funscreen"
+  },
+  "RLL": {
+   "game": "dos:b3e4c90bbf17cbe7",
+   "installed": "sha256-dos-manifest-v1:f91297bcc419416f3a7177f8d52575cdea0fccdd508604cf5631e469f44f7eb7",
+   "installer": "sha256-dos-clickteam-v1:d5bc60ccba340eb167a941a84401b506b54724c83b4dd83d5d5be2b5a52cb07a",
+   "match": "exact",
+   "title": "Rumpelstiltskin's Labyrinth of the Lost"
+  },
+  "RM1": {
+   "game": "dos:9f03437597fdd2c9",
+   "installed": "sha256-dos-manifest-v1:9a5dbccea7daf4537fffa7e4002e9e690acfd9ab887f16351c01272359761175",
+   "installer": "sha256-dos-clickteam-v1:ee641e84e1bc20da9b172984676f520222d61be806836f513378897eee92c85c",
+   "match": "exact",
+   "title": "Rebel Moon"
+  },
+  "RMA": {
+   "game": "dos:471dc985ed56aeb9",
+   "installed": "sha256-dos-manifest-v1:449652e503b98cc5cbf34e05512838388dce2b6509ef2906216d1aa1f1780378",
+   "installer": "sha256-dos-clickteam-v1:54426e387b4fd61fd9dae70270c1eb2b6f03cbfcc4eb97eab2b76a039a2cf04d",
+   "match": "exact",
+   "title": "Race Mania"
+  },
+  "RML": {
+   "installed": "sha256-dos-manifest-v1:a91012f4bc9a0033fd3af8543027363add5038e98d5798cc7487d7e1d873c3e3",
+   "installer": "sha256-dos-clickteam-v1:8a284ba37bf9b867122be949c4c75c2989613cbb7c75eed0a1e66aa4f5025ec8",
+   "title": "Riddle of Master Lu"
+  },
+  "ROM": {
+   "game": "dos:4c1ec113d31064c8",
+   "installed": "sha256-dos-manifest-v1:bfd40dc46486c649ef0f3a2b8277e96842373f99cffec9987b03e6f1381a43e2",
+   "installer": "sha256-dos-clickteam-v1:691e8940d326cfcdd148fd27c7ca1fcef618acef0d493f7ff6f00ffa12944780",
+   "match": "exact",
+   "title": "Romantic Blue"
+  },
+  "RPA": {
+   "game": "dos:d556e7d83dd17246",
+   "installed": "sha256-dos-manifest-v1:1c884cd02027b7df84ce594d2d42bbc98bef2a4a42fa2792d0b3f97a43588530",
+   "installer": "sha256-dos-clickteam-v1:b46b8adfa7f11e822c9c5c268eb56e6f222b63be36b0a8f3e63eaf0c027f5a93",
+   "match": "exact",
+   "title": "Rapid Assault"
+  },
+  "RPR/Install-RPR.exe": {
+   "game": "dos:7acd761b7ee77f60",
+   "installed": "sha256-dos-manifest-v1:2d8313f728078885b845cc29ebb163caae0f5797ecab8ec13d405b662c9b9833",
+   "installer": "sha256-dos-clickteam-v1:d6a6517d26955e0d7da413c2f68dd2ae48873882c3bd9acb1eb99bdc1e5aa57b",
+   "match": "exact",
+   "title": "Raven Project"
+  },
+  "RRU": {
+   "game": "dos:845a543aa82d25b8",
+   "installed": "sha256-dos-manifest-v1:251398340384da95f403dc743d1a5447f9870c41c0b53519219eaffe4e5e435a",
+   "installer": "sha256-dos-clickteam-v1:55404983be7783ebb6fa429774b64ba0f558a86705f48b57473e345893652cca",
+   "match": "exact",
+   "title": "Rebel Runner - Operation Digital Code"
+  },
+  "RVL": {
+   "installed": "sha256-dos-manifest-v1:ab5f0a87cd0e062187b6d3683829c88ed531c68dd832442e5b42f57c0f27cdfd",
+   "installer": "sha256-dos-clickteam-v1:f3a16e028c7655e95a62dd66e7361998c1aa3e6441a57125def9c30b5e1cf13b",
+   "title": "Rolling Stones Voodoo Lounge"
+  },
+  "RVT": {
+   "installed": "sha256-dos-manifest-v1:e07e9c76d979db442ed790b627e1f2e4f7ddfe09622c012a2a03a9495104f942",
+   "installer": "sha256-dos-clickteam-v1:9ed04a32351029493cf14bc824ae34447601626a78a7090e4138db67bb8e5a4e",
+   "title": "RoboCop vs The Terminator Collection"
+  },
+  "RVX": {
+   "game": "dos:0c843d36d4672c0d",
+   "installed": "sha256-dos-manifest-v1:9344e7e1d485727a9400ca0f4f5aefc2ab893d33eb717d5165b1a8d81bab509a",
+   "installer": "sha256-dos-clickteam-v1:31aab8f10d46c4eb5af0ec874c4d897aa6e3e853061a1a3388231d09d3ffc906",
+   "match": "exact",
+   "title": "Revolution X"
+  },
+  "RWH": {
+   "game": "dos:2f844fad0abdbc9a",
+   "installed": "sha256-dos-manifest-v1:8c21613e91f863198487829d08a3400806d150398b6bdee574b8b8c4fd76a523",
+   "installer": "sha256-dos-clickteam-v1:58ec3e0c172c7663b75248523124246e727558ed7dd4e414e4f27163bb9761c2",
+   "match": "exact",
+   "title": "Rosemary West's House of Fortunes"
+  },
+  "RWWI": {
+   "installed": "sha256-dos-manifest-v1:4151e88a1efe24d979181f01f9d195c647f17c1dc2413f953bfd7c5d30897670",
+   "installer": "sha256-dos-clickteam-v1:e34f8946ea287631f2f50368249937d395b5d056dd70bae01210134b26a47b26",
+   "title": "Rodney's Wonder Window"
+  },
+  "SAN": {
+   "game": "dos:073d974b54c897af",
+   "installed": "sha256-dos-manifest-v1:31c5c84b6065814dd49c1aabb3dd6422e743f070999348e3c529e7b534530054",
+   "installer": "sha256-dos-clickteam-v1:9ded6ef1858e06cba53d25c70bfa11dbfebe4499db9c157a269f08fb8fd44ad6",
+   "match": "exact",
+   "title": "SimAnt"
+  },
+  "SCA": {
+   "game": "dos:77bcf2168cb05f96",
+   "installed": "sha256-dos-manifest-v1:c0c673a6030edbf101b0daef0331c8582eddc4bde900daa47a3247fd48048982",
+   "installer": "sha256-dos-clickteam-v1:74d0d59abe0bf6f0a5ff709bd653061d1965c0389ae6461175ad209dc72a5d79",
+   "match": "exact",
+   "title": "ShadowCaster"
+  },
+  "SCO": {
+   "game": "dos:4dc4ccb0caf61c4c",
+   "installed": "sha256-dos-manifest-v1:417b26e743add967d952c40c2f8ad0df84e1809bf6be9334b50f72de469193de",
+   "installer": "sha256-dos-clickteam-v1:d4fb59c193fe8619d8369e79e89ddc2ce43b1b5b65051f0825c9f4a2b2268e46",
+   "match": "exact",
+   "title": "Scorcher"
+  },
+  "SCR": {
+   "game": "dos:caf551043b039d59",
+   "installed": "sha256-dos-manifest-v1:10c6057d98fd4646c0154c5311379fe86d748559f517f46dc72ba9ea1feb439f",
+   "installer": "sha256-dos-clickteam-v1:3e799b0683953a72e762fa6691d819b8c6b63d78b2b80fe470cb5d365106b13a",
+   "match": "exact",
+   "title": "Screamer Rally"
+  },
+  "SDC": {
+   "installed": "sha256-dos-manifest-v1:a2e5c519789435cd057e5dcc8399b3ed01ca898b0115608b8406e0107c954961",
+   "installer": "sha256-dos-clickteam-v1:daae7d1fd207d65f04766ec01b72778a1a3179f75e682c0f3b4ad8d70ca5ebea",
+   "title": "Steven Spielberg's Director's Chair"
+  },
+  "SDU": {
+   "game": "dos:3e3fe8ba139b55b1",
+   "installed": "sha256-dos-manifest-v1:5de9d888e6f9f084dfdb6e2ef1a26b652d13fc966c00e270614dc6573d009b30",
+   "installer": "sha256-dos-clickteam-v1:618d35209fe2dac8c9d858395f57fc82390c953aee970a8187580d1258f02fad",
+   "match": "exact",
+   "title": "Space Dude"
+  },
+  "SEA": {
+   "game": "dos:6caf59ccbfa9be2e",
+   "installed": "sha256-dos-manifest-v1:cdf40dc65992c981886f0db42271b2acfe035c0a9a81e9dc808b6036efeec6a3",
+   "installer": "sha256-dos-clickteam-v1:b5200286127fa0f00e61ff7fa1f94723650dc30a10b9678081363aa032d2a96c",
+   "match": "close",
+   "title": "SimEarth - The Living Planet"
+  },
+  "SEI": {
+   "game": "dos:18e612857b888b02",
+   "installed": "sha256-dos-manifest-v1:05ee94835e18298697e93d29bf06939c1588d2519d000745329201f892be13cf",
+   "installer": "sha256-dos-clickteam-v1:eb5c0dc3ae5b5cf713b50506ce6b8961dc25ddff327edfff7e532d43451fb896",
+   "match": "main",
+   "title": "Sentient - Explore the Infinite"
+  },
+  "SF1": {
+   "game": "dos:598bc57f2bd04fa3",
+   "installed": "sha256-dos-manifest-v1:8ab5d9c93ee19f02676cd56ac8317bf2314408ffc3e5de11af7484fbeceaa3fb",
+   "installer": "sha256-dos-clickteam-v1:0ef02090f197d2de0b23c7a011ed94d9f5313019d797af33a9a1a0f45d62d1f0",
+   "match": "exact",
+   "title": "Santa Fe Mysteries - Elk Moon Murder"
+  },
+  "SF2": {
+   "game": "dos:521a6f6f6970bdc6",
+   "installed": "sha256-dos-manifest-v1:d0a36d06fe90c07265f5c733511001e61fc2a03984b43c7f9b56edbf3062a784",
+   "installer": "sha256-dos-clickteam-v1:104e8fd30ef7e7e4d47d2f0b3ca5178fc6248b82e674c836983138f976036b4d",
+   "match": "exact",
+   "title": "Santa Fe Mysteries - Sacred Ground"
+  },
+  "SFA": {
+   "game": "dos:203a8454c8578ef8",
+   "installed": "sha256-dos-manifest-v1:95a789f5864ff51a583722abe4eb2870fe41897d8e2c242e6b07ed6468e98808",
+   "installer": "sha256-dos-clickteam-v1:3e3232dd31e35e101a67f0fd99823e3715c08889362122bd0093459600882e9c",
+   "match": "close",
+   "title": "SimFarm"
+  },
+  "SFO": {
+   "game": "dos:fd35f7e58100fc97",
+   "installed": "sha256-dos-manifest-v1:c35438d8eb596236d78037ff489d445ef35e00d310b7ba54115fabcefd910410",
+   "installer": "sha256-dos-clickteam-v1:5d38109dc20fad6e10c5b048603c45aaa28962a9a616f1f32b3487dd636b7d54",
+   "match": "exact",
+   "title": "Special Forces"
+  },
+  "SHA": {
+   "game": "dos:e9bd8e78ebe1440c",
+   "installed": "sha256-dos-manifest-v1:ff9476a767937cb17640098b72948edf14c6997a328ecdbbb7556daae9bc5c85",
+   "installer": "sha256-dos-clickteam-v1:d00aff7fad6d4789a1087dd9a9314da78a6c64a8aeb2a3bf36b6f4b6d187ede5",
+   "match": "exact",
+   "title": "Shannara"
+  },
+  "SHE": {
+   "game": "dos:1a72843b904988f7",
+   "installed": "sha256-dos-manifest-v1:edf829dcf50e718859f5e36225e16916768bd7b265e2440bf2fe07f5390a73e9",
+   "installer": "sha256-dos-clickteam-v1:93992dc0a0479a05c5b6d2ac4384c615bedfd91184f5bc4146be78e6e6012b79",
+   "match": "main",
+   "title": "SimHealth - The National Health Care System"
+  },
+  "SIS": {
+   "game": "dos:03e8ecd0f7b0c524",
+   "installed": "sha256-dos-manifest-v1:6e86880d98c8dd127e79dc404c8dbcfe36a4dd8dd54ac3f1b9c45f500c396b5b",
+   "installer": "sha256-dos-clickteam-v1:eb33a61ac71b069fbf52c57d511dd2df45e57a5fd829013ca798e57d6861eecc",
+   "match": "exact",
+   "title": "SimIsle - Missions in the Rainforest"
+  },
+  "SJM": {
+   "game": "dos:77f95d0de5bee22c",
+   "installed": "sha256-dos-manifest-v1:045c7706811fa8c8f417c31ec8b6055888e67848fa7ea6ab733f035a7a7f0e4e",
+   "installer": "sha256-dos-clickteam-v1:9f2ea52d8c0387db45900678f9f349ca434d3490a93e97975bb50b6e44273cf2",
+   "match": "exact",
+   "title": "Space Jam"
+  },
+  "SKI": {
+   "game": "dos:ac92f00c857099a3",
+   "installed": "sha256-dos-manifest-v1:0ba44b69552d26ae1f1b950bca6775dc653d0fdc57be91be766bdbd1995a745c",
+   "installer": "sha256-dos-clickteam-v1:151c84383a166dc1868db375c4816cdd9138f0e469e07831771db1ee1336e449",
+   "match": "exact",
+   "title": "SpaceKids"
+  },
+  "SKY": {
+   "game": "dos:04d1b6427d9092d0",
+   "installed": "sha256-dos-manifest-v1:96c403a8c1c2e3e264d7cb91eed4be94af8c5eb5826e73cc70b71ea03ea059fa",
+   "installer": "sha256-dos-clickteam-v1:1e321ce5ae6c18ef4af2befde81d13b6f4e51f69dd5f40b7dc8dd9eb50684d54",
+   "match": "main",
+   "title": "SkyRoads - The Kosmonaut Collection"
+  },
+  "SLF": {
+   "game": "dos:7a1d41a62e158369",
+   "installed": "sha256-dos-manifest-v1:d55c9e847f02b52b0e8a8f19131d247223a889ad143d94355fbf67ec77da7f49",
+   "installer": "sha256-dos-clickteam-v1:e2f314664e8e5f55b3789074a8ed43b48d3fb0b74a65518d3875cfed429cff19",
+   "match": "exact",
+   "title": "SimLife"
+  },
+  "SM6": {
+   "installed": "sha256-dos-manifest-v1:27066e11b1d0ed675656b255584c19de2886c61518f28bb6a80b40648d2c1b0e",
+   "installer": "sha256-dos-clickteam-v1:557ed9be89962ed1a4845fe5a24d343dc3c23ca1cf0fe3a913558364c411b284",
+   "title": "Spider-Man - Sinister Six"
+  },
+  "SMAC": {
+   "installed": "sha256-dos-manifest-v1:d5dbd87cf4e95f9623e7930e9dad573224b112ec2c71f89153ccb488e877d186",
+   "installer": "sha256-dos-clickteam-v1:0a356dd94909834b1c4b0080065099f990bfb32d60ffec55222ef840024538d1",
+   "title": "Superman - Activity Centre"
+  },
+  "SMI": {
+   "game": "dos:3315066c2fca1123",
+   "installed": "sha256-dos-manifest-v1:0a2cd10f060652510dc6b217ddff215e3d4aa53caea65c00eb74c89593ec7ae6",
+   "installer": "sha256-dos-clickteam-v1:3491960754c15dce74e861644709c7c91ece7b2c126b7995a9788e12aa63be22",
+   "match": "exact",
+   "title": "Secret Mission"
+  },
+  "SMK": {
+   "installed": "sha256-dos-manifest-v1:6ac043c9bf9b534325da4dd2a47ec4da7b0f250ad02486367cb0f650f49c4d5c",
+   "installer": "sha256-dos-clickteam-v1:bd158830f2af1ef6057b3e2475e3f3d1d9247492873c17e5978ca728c0f3d394",
+   "title": "Sacred Mirror of Kofun"
+  },
+  "SMM": {
+   "installed": "sha256-dos-manifest-v1:3d2432420fc2e796b882e3602b9ecb88f0b232a96780f787928fcd83bce60540",
+   "installer": "sha256-dos-clickteam-v1:aa9f308186e329cceea1b29b6a81279cf2668df244dc63a683aa388636f021a7",
+   "title": "Superman - The Mysterious Mr Mist"
+  },
+  "SOU": {
+   "game": "dos:5456e868273b2046",
+   "installed": "sha256-dos-manifest-v1:e79f6068fe5eb0862e5eaf4db246dad448a4abab5f8ed4986e9b57a98b82f80a",
+   "installer": "sha256-dos-clickteam-v1:5e9dc4db49fec613acbc1fd1348f05cc800919494bcffb240c72e3db1c0c1b8b",
+   "match": "exact",
+   "title": "S.C.OUT"
+  },
+  "SPC": {
+   "game": "dos:94d68848bdeb9ccd",
+   "installed": "sha256-dos-manifest-v1:8f3fdb54ed3ad7c8ee626a63dfc0e582945d1d11a21c6092cf055b2390d5d98d",
+   "installer": "sha256-dos-clickteam-v1:4e5202ea9d0f0ffa96b60eb8beda71a233afcf1f24d090cefbc2f9c0f92cb7e0",
+   "match": "exact",
+   "title": "Shufflepuck Cafe"
+  },
+  "SPK": {
+   "installed": "sha256-dos-manifest-v1:8e8803470f3abbad84dbf1cc217ed988fb5e398e50ce14b4c3a8a8d947d72ada",
+   "installer": "sha256-dos-clickteam-v1:2bc9530a2dfe3b73c692edde7fe761a3bc2d8e9bc885512e08b6397f363b6a66",
+   "title": "SimPark"
+  },
+  "SPQ": {
+   "installed": "sha256-dos-manifest-v1:111642a4459453d49a0c022ab941beb506181cfbb63905a21baf25b922bc47a5",
+   "installer": "sha256-dos-clickteam-v1:f011bc0ef15d2c54cf496d929fb7a56bf650ce8c61f19c302036d6d7175a7fab",
+   "title": "SPQR - The Empire's Darkest Hour"
+  },
+  "SPR": {
+   "game": "dos:0ff2e591f025aa21",
+   "installed": "sha256-dos-manifest-v1:0c55f74163d94016f6cb9a433bfa74debeb77e5bc16d4c02b244a2c3e3bb0345",
+   "installer": "sha256-dos-clickteam-v1:477003115b61235fb22aea32c4b0fb741725e4017b4f6d7334e5590c19ab9674",
+   "match": "exact",
+   "title": "Shadow President"
+  },
+  "SSC": {
+   "installed": "sha256-dos-manifest-v1:ddf57c8298f81e719e949a749e72be667fac0dee6cadd3dd06bbda6eb9e979d2",
+   "installer": "sha256-dos-clickteam-v1:c529bcef6724a106b929571d2897c357f0d7fb192c5fbd3351aa6da2ad0e4f2c",
+   "title": "Silver Surfer - Interactive CD-ROM Comic Book"
+  },
+  "SSS": {
+   "installed": "sha256-dos-manifest-v1:f6affeafcea901a2f351b76026e2729c2c777fc6e47efa0ab25700c5bb3df275",
+   "installer": "sha256-dos-clickteam-v1:a5ee0686a068910ea282f89faf914c084117c9a14aef4a179603ffde2ba8a0b3",
+   "title": "Superboy - Spies from Outer Space"
+  },
+  "STFC": {
+   "game": "dos:6b17de3e0d9f2fb8",
+   "installed": "sha256-dos-manifest-v1:54ea4f123f6e7e82f86879e2e06f3ebb5268eef72d81dcabf330614038d84222",
+   "installer": "sha256-dos-clickteam-v1:2a8a808d40423f402d411169e3530773c4789cdfe3243b523caa5e8b1257b601",
+   "match": "exact",
+   "title": "Star Trek - First Contact"
+  },
+  "STFF": {
+   "game": "dos:3e418db2eb507b50",
+   "installed": "sha256-dos-manifest-v1:6e06c9db96e5ca18cf8f69c6a5283cb82a9148ff67e844010add118da45dedb4",
+   "installer": "sha256-dos-clickteam-v1:98add374bb1775a6f77aed603d5d82941ab6c574812eff4b72deccf5c992613b",
+   "match": "exact",
+   "title": "Star Trek V - The Final Frontier"
+  },
+  "STFU": {
+   "game": "dos:9521e7bddd97b771",
+   "installed": "sha256-dos-manifest-v1:876f5f1b9087299d52054ce7b6529ef1fa7fa1184da8d84929a04e468ec5b75c",
+   "installer": "sha256-dos-clickteam-v1:5315567a428d24ade82c6965a00356e9818b0a1b6360dce52fea73e48e1a47d1",
+   "match": "exact",
+   "title": "Star Trek - The Next Generation - A Final Unity"
+  },
+  "STHA": {
+   "game": "dos:1b95e2c0ac0694de",
+   "installed": "sha256-dos-manifest-v1:0ff6cc8a411a7bfa9d9ec582fc245d8c63da9173b431765412c71043f2ce94c4",
+   "installer": "sha256-dos-clickteam-v1:04bccba062ad4f86bdaf78c1cfaf37bfbc7f8181d4ba7f1264ae3d2ce398b215",
+   "match": "reviewed",
+   "title": "Star Trek DS9 - Harbinger"
+  },
+  "STKL": {
+   "installed": "sha256-dos-manifest-v1:8c63542483a2a9a0e170ce7b4a75b0ab90974a890b2ec2db3aac14a34dd3d524",
+   "installer": "sha256-dos-clickteam-v1:56dbcf2bbc92b6e3eab1414562e7d1382bc2a1e12af895774e43a1441aa48c2b",
+   "title": "Star Trek - Klingon"
+  },
+  "STN": {
+   "game": "dos:13a1f37c0b43b6eb",
+   "installed": "sha256-dos-manifest-v1:ed7d5548f24efe18841915facefa637e6eefcffaaf408b2d4e790f196c6f5e35",
+   "installer": "sha256-dos-clickteam-v1:7115fe47189966b5b221107e23bb48c29ac18ce5cfd28600043f691719395e34",
+   "match": "exact",
+   "title": "Satan"
+  },
+  "STO": {
+   "installed": "sha256-dos-manifest-v1:aba8dffa08d318c4d5bad6251d5ab6c762655ad3bfa8f1f74a5e6035e443a7fd",
+   "installer": "sha256-dos-clickteam-v1:3e9f48ef554a14bd38e33e51472ab1321e3abf34b8ad9e31b09f7865261eb8e1",
+   "title": "Stay Tooned!"
+  },
+  "STPB": {
+   "game": "dos:50465945696b0a00",
+   "installed": "sha256-dos-manifest-v1:b3aaea9dc4496d7955855ed1613d89e64a3addd3670465223ca573313fd2ea42",
+   "installer": "sha256-dos-clickteam-v1:62a95500faa7f5b50289297536ebe6b301e3a2028e893253dae8f97889134b3e",
+   "match": "exact",
+   "title": "Star Trek Pinball"
+  },
+  "STTC": {
+   "installed": "sha256-dos-manifest-v1:8972c324bcd63456abd39b5b9ff1f805a3b1c1189f413ae7b7b9cd8d2888b10d",
+   "installer": "sha256-dos-clickteam-v1:49cce9425d7ad91ef86142fe301295a4a0e80ba60b84a9e8f75c703a7ea8884c",
+   "title": "Star Trek TNG - The Transinium Challenge"
+  },
+  "STU": {
+   "installed": "sha256-dos-manifest-v1:d37772922403acc27b958ea78381f105f70bfd28df8742140c0e05926a19f25f",
+   "installer": "sha256-dos-clickteam-v1:e0785d7268f7a38c27dd9594936d4f85caf192a08088b6362ed96d952087394d",
+   "title": "SimTunes"
+  },
+  "STW": {
+   "installed": "sha256-dos-manifest-v1:ce2eb01e9bae2473e9ffeeba22520b3d8431ae4d284a9f52794d904a3ef1951c",
+   "installer": "sha256-dos-clickteam-v1:c0e7046414c9acb3690c064b3739d8210caaf6623a2f3c9c54d806d6f483f5a8",
+   "title": "SimTown - The Town You Build Yourself"
+  },
+  "SVL": {
+   "game": "dos:8cb697dcd45e1501",
+   "installed": "sha256-dos-manifest-v1:d958445b30189e854ab795f924eb8cc67151c4f722805a4b9111c55952520bd7",
+   "installer": "sha256-dos-clickteam-v1:8adfe39df0e036626e8e6113eaab0e6d53dd9c128494a494f6c2cdf89787216f",
+   "match": "exact",
+   "title": "Silverload"
+  },
+  "SWA": {
+   "game": "dos:ef327a074be69da3",
+   "installed": "sha256-dos-manifest-v1:695f71c34f04789c51a525ee7e047778a3e652a6ec05f469264f017c8af69b6a",
+   "installer": "sha256-dos-clickteam-v1:5516a8f46f8ab909375d4c2db4351833e1b143e438ac50d5d72d768ebf2b88bf",
+   "match": "exact",
+   "title": "Sandwarriors"
+  },
+  "SWC": {
+   "installed": "sha256-dos-manifest-v1:c14fd7adaf7306fe485f05dd00033d52131811de190936d3383db2171fd50f87",
+   "installer": "sha256-dos-clickteam-v1:7dd9b85b5cbe6ef34b7cb285fb7c6e0199fb550aafb3fc63f9200f6e5c554e7d",
+   "title": "Star Wars Chess"
+  },
+  "SWMM": {
+   "game": "dos:2019bb45361af888",
+   "installed": "sha256-dos-manifest-v1:d016afa7580169ca0c1b37da2cbc0aa7cc8aaf3c099ddf0700cba9c1148dd770",
+   "installer": "sha256-dos-clickteam-v1:0332571fdf316e530451c41321cb91c99115ab183c957f46e9c69e85446ab267",
+   "match": "exact",
+   "title": "Star Wars - Making Magic"
+  },
+  "SWP": {
+   "installed": "sha256-dos-manifest-v1:99a957b691951157a66c47a72145d876a0a67e9046d0e722bcc1fbef19cd3114",
+   "installer": "sha256-dos-clickteam-v1:ff6209397af9baddadeee79c2d42d481fdac71c8dab83a3bb5d65385f53b9328",
+   "title": "Star Warped"
+  },
+  "SYG": {
+   "game": "dos:d94474e990a511b4",
+   "installed": "sha256-dos-manifest-v1:d9ef00306e27ad42c4b66ade009c555175f86acc45eaf2619dbc4abd86f98965",
+   "installer": "sha256-dos-clickteam-v1:ce940628840d4b530dd3b5cd692d5637e4792ea75c918f09d0335228054a3b2a",
+   "match": "exact",
+   "title": "Synnergist"
+  },
+  "SYN": {
+   "installed": "sha256-dos-manifest-v1:cd0e2585edc24cae35a5ef8c764d4fea3f3c9132f4d9ccaa29fedb9e99d1bfe2",
+   "installer": "sha256-dos-clickteam-v1:2e4ec8057fae9d35e569e9cf32a6be7dee3d6d41c7ad0d21b799c2bc378965f3",
+   "title": "Syn-Factor"
+  },
+  "SYY": {
+   "game": "dos:0c405243dd7dafa0",
+   "installed": "sha256-dos-manifest-v1:0aba1ea883e719f5d3c3378429eac16d70b46ab025d6171518d61cd4d8904434",
+   "installer": "sha256-dos-clickteam-v1:0bef1f41f6ac1c06dbd776cf30dd869e6df8ec1d77099ccdea8af30442d6334c",
+   "match": "exact",
+   "title": "Syyrah - The Warp Hunter"
+  },
+  "TBB": {
+   "game": "dos:cb396975f063b9e1",
+   "installed": "sha256-dos-manifest-v1:17d5d45ffb70ce0fff8d1e68e4bd4dd85df6970f474935f9255186a737e17e63",
+   "installer": "sha256-dos-clickteam-v1:9f3a0fb74e6a5469854af04f26b9ed0e5f4401238a0c19035808fb6ad5257897",
+   "match": "exact",
+   "title": "Tequila & Boom Boom"
+  },
+  "TBP": {
+   "installed": "sha256-dos-manifest-v1:27cdc1778fa01186fe56f1b4bac43590935e7a77018aace760514165baf51b04",
+   "installer": "sha256-dos-clickteam-v1:ac03b929261f152e1f0cefe19b8ad43183e7fe8630ab9feda5a655ad674463c0",
+   "title": "Take A Break! Pinball"
+  },
+  "TBS": {
+   "installed": "sha256-dos-manifest-v1:8ec6b6a0b5d63fdfa72eac5dcba84ce19334700afdbca84e8eb96274deb2ceb7",
+   "installer": "sha256-dos-clickteam-v1:fc2518561d3bd568911e7d186491cd1343190085878570ba16c8c7c84a286a6f",
+   "title": "Take Your Best Shot"
+  },
+  "TC1": {
+   "installed": "sha256-dos-manifest-v1:56b13db7a5f1f20cca5dfaded6047d55af909cb2d1d047a6364492a6f362d6f0",
+   "installer": "sha256-dos-clickteam-v1:7e89538e4e6271af1907ba1566c73d62544d1f8786ed50f80eba3be0407dda46",
+   "title": "The Terminator Collection"
+  },
+  "THA": {
+   "installed": "sha256-dos-manifest-v1:5a8c91a5efac3605d788d43e7410fc9afaaa7dd47774c7935677039ec9d796cd",
+   "installer": "sha256-dos-clickteam-v1:83bf436548e48d2c83b2c76be07eec0528545b3f318f39015f0ea5ad8b4a0ca0",
+   "title": "Thor's Hammer Trilogy"
+  },
+  "TLT": {
+   "game": "dos:d1e13283c1a5069a",
+   "installed": "sha256-dos-manifest-v1:d9a79fec8c165b14ba97146ccef59a26e0ee638a22c7fd91f296bcedce7c5191",
+   "installer": "sha256-dos-clickteam-v1:52bb078d3a1a4efc0b03ca7dcecd56bf009f4e9486b9336d4fd904a0dfa2ff36",
+   "match": "exact",
+   "title": "Hyper 3-D Pinball"
+  },
+  "TMY": {
+   "installed": "sha256-dos-manifest-v1:3c5828f251001e1133cb3763af0056259658a6b93a9fde8a7ac7a7040e5395f8",
+   "installer": "sha256-dos-clickteam-v1:054d27308e72b389e5f32415f274ea532aff23cf2f67eb21e47be9ee4760adbb",
+   "title": "Tommy - The Interactive Adventure"
+  },
+  "TOD": {
+   "game": "dos:26a0f31d55a6ec9b",
+   "installed": "sha256-dos-manifest-v1:3bca7585d0d2ab9a49ffb3fdd859581a6de793cb0045c1311fb29579f9d74a5a",
+   "installer": "sha256-dos-clickteam-v1:cc5c70716824294ef2b82023f4a71e4b8ebda0fad223ec79fb4189178635fcfb",
+   "match": "exact",
+   "title": "Theatre of Death"
+  },
+  "TOS": {
+   "game": "dos:49e148dccd8ac18d",
+   "installed": "sha256-dos-manifest-v1:19f5cfd657b301eab4fb672ee4ec0bb7a03b80e10a39c43b8bfc408208ad155d",
+   "installer": "sha256-dos-clickteam-v1:04f22c11f6bad66f1a5fdf93e078bd438398b9b6fca2224a9c42360e859c5650",
+   "match": "exact",
+   "title": "Tower of Souls"
+  },
+  "TRQ": {
+   "installed": "sha256-dos-manifest-v1:64cd38698401cf9f88d7965145f2b4c1b386c31fcee1acc472fad7d6e82aaeea",
+   "installer": "sha256-dos-clickteam-v1:51c0f960996352c66f32a9c0a2fa6b16056c93bb5f1751ff1bdecf9a8d07ca30",
+   "title": "Treasure Quest"
+  },
+  "TT2": {
+   "game": "dos:c3df0628c59fa56c",
+   "installed": "sha256-dos-manifest-v1:92d9eab9720116d2a9ef4e75325ba06f7050dfcf630a6ed60a22b5301902c29f",
+   "installer": "sha256-dos-clickteam-v1:9190d799ff2a99d9bd12987911705540b3105f53724a28ac416b432e09355499",
+   "match": "exact",
+   "title": "Tintin in Tibet"
+  },
+  "TT3": {
+   "installed": "sha256-dos-manifest-v1:ad8bead21441cd6a31b5207b8a5c16196e7af664ed951adc5d6ee5b0966ca9e5",
+   "installer": "sha256-dos-clickteam-v1:54a870b23ac7ade58a9c583f714a3d6aea41009b88f139d5eb58726e031372ee",
+   "title": "Tintin - Prisoners of the Sun"
+  },
+  "TTB": {
+   "game": "dos:1f6d1c4525d2db15",
+   "installed": "sha256-dos-manifest-v1:171a54740c3eaa68f0c33115a372ecacb4cf696b74a9cee37aab37b43bcfe39a",
+   "installer": "sha256-dos-clickteam-v1:e0999f5a451b4fc58e0e92800f566da61fdad763451c481fba4d39a881cbdd17",
+   "match": "main",
+   "title": "Tiny Toon Adventures - Buster and The Beanstalk"
+  },
+  "TTX": {
+   "installed": "sha256-dos-manifest-v1:61024c23eede5bfab12fa3f39034a1b4f06edf616b623164421cc4b943562d8f",
+   "installer": "sha256-dos-clickteam-v1:9cfc57fb13511791c9e806068bd2a8609973db63e7ccee257da46958d1f4d66a",
+   "title": "Terror T.R.A.X."
+  },
+  "UHH": {
+   "installed": "sha256-dos-manifest-v1:2341afd62734e04c5c79b5472e6ec48e63493dac4c5776dd77c85278efeb8efa",
+   "installer": "sha256-dos-clickteam-v1:19308f228f745dfdb83868a49380cce49374638e9df595bd914c80acf758ae46",
+   "title": "Gahan Wilson's Ultimate Haunted House"
+  },
+  "UNI": {
+   "game": "dos:4406c37348ae3877",
+   "installed": "sha256-dos-manifest-v1:2bf9fc37d1530a12b0dfa778e3250d503b2289992463de9798943fa69cd6d6c6",
+   "installer": "sha256-dos-clickteam-v1:bc03feee817c1c9322ad11b0532e7dbe277e2074c0adc174548d042ae74e96e5",
+   "match": "exact",
+   "title": "Universe"
+  },
+  "UNR": {
+   "game": "dos:0e19ebe039884aa8",
+   "installed": "sha256-dos-manifest-v1:ff20b72d2be7bf764833ac1e54bd1a96b4766dcaaa658bc88c09d2f5be4d0d2d",
+   "installer": "sha256-dos-clickteam-v1:7bc9e94a5abb8d3042b2b3a634d0041019ea90f9f87c138afa292df20016177f",
+   "match": "exact",
+   "title": "Unreal"
+  },
+  "VAX": {
+   "game": "dos:54e540052f4c8deb",
+   "installed": "sha256-dos-manifest-v1:3aae71b045a8a505858071dc5c93cb56a6e9dedff5510fbcf81b7ad57390aa21",
+   "installer": "sha256-dos-clickteam-v1:b545b3fc4c46a7eaeade6e715acb6155198cabcd8b211035a9dc70428d0a59f2",
+   "match": "exact",
+   "title": "Vaxine"
+  },
+  "VSO": {
+   "installed": "sha256-dos-manifest-v1:4272f10e364a285a93b747f4c8afa958a52d95871ab4b7a935d714a2da186fd5",
+   "installer": "sha256-dos-clickteam-v1:8d952e2541b2737025f07a2c99766651d8e8388ed856a533df8e3df8a0ad2958",
+   "title": "Virtual Surgeon - Open Heart"
+  },
+  "VSO (Virtuoso)": {
+   "game": "dos:5b3dff91edb380cb",
+   "installed": "sha256-dos-manifest-v1:96f0ab1d5061d0e09c91db76b5db61570368d5f2a7661395dc5f0f094c1dc4e9",
+   "installer": "sha256-dos-clickteam-v1:c7768214eddc64f496f3043a5ba08546b400db2266cd95d24797e23f40b3bc1c",
+   "match": "exact",
+   "title": "Virtuoso"
+  },
+  "VSU": {
+   "installed": "sha256-dos-manifest-v1:43cd0c00703774a99fac711d936155df8cf3200654be04f9193b302d8442b926",
+   "installer": "sha256-dos-clickteam-v1:2717e556af17ee76142852abcfa78b0e9d6736ca1b841bf5c5305f9f5ef3ad61",
+   "title": "Vikings - The Strategy of Ultimate Conquest"
+  },
+  "VTV": {
+   "game": "dos:521d7c3fa975846e",
+   "installed": "sha256-dos-manifest-v1:8af10710b9690c30785c2b9224fda78b9657fa8f8fd189ec0fac8503dd5b8e15",
+   "installer": "sha256-dos-clickteam-v1:8cfc702bd04d0b1bddf71604ae8d2c418ab2eac92dcb87db492130722f4c2b3b",
+   "match": "exact",
+   "title": "Vigilance on Talos V"
+  },
+  "WEF": {
+   "installed": "sha256-dos-manifest-v1:9e68908d930dce9db64e9328651560e91324fd26e7381a31b0a428b6eb03a38e",
+   "installer": "sha256-dos-clickteam-v1:594b3247f897393537805fe2375483ab9edf8430be305dbe617ce5977649d7cd",
+   "title": "Woodspell"
+  },
+  "WEI": {
+   "installed": "sha256-dos-manifest-v1:524d6c28245116d9fd59eac195763a2468074ad3a13647b9c5d743f1a3f7e987",
+   "installer": "sha256-dos-clickteam-v1:9dab3be28dc6dfe87d9a5df2322dc08ab75c8e7d6e88562b60f571475dbf3b44",
+   "title": "Weird - Truth is Stranger than Fiction"
+  },
+  "WFE": {
+   "game": "dos:efd45a9edc80580b",
+   "installed": "sha256-dos-manifest-v1:06537948df712104a32c4e9d6f14cc9c88235370f47a58ee471959d64cd843c1",
+   "installer": "sha256-dos-clickteam-v1:863970aa900f737703f7c226395cbab680f0c7b894777344d7897d68a3b0bac5",
+   "match": "exact",
+   "title": "WWF European Rampage Tour"
+  },
+  "WFH": {
+   "game": "dos:3e448735888f4f5b",
+   "installed": "sha256-dos-manifest-v1:eeedb5af6edd2060a4c641b25f704cd8998d709e304cbcf3d6b3c74c8ebf13f2",
+   "installer": "sha256-dos-clickteam-v1:f00c1307a3fadc0dee6d6aa133606b1d5d71e3a3e7dcaf3855dc61bd02526a09",
+   "match": "exact",
+   "title": "WWF In Your House"
+  },
+  "WFL": {
+   "installed": "sha256-dos-manifest-v1:764c94d7e2e507640cede078a5a2e89d98c8fc5ec4f5917ba6d7d953750cd6a7",
+   "installer": "sha256-dos-clickteam-v1:813f56b2283603a6373700e761a22166796f686c8fc27310a9b9d929b1dd92ff",
+   "title": "Who's Fat Lou"
+  },
+  "WFW": {
+   "game": "dos:60b8178dd516d0e2",
+   "installed": "sha256-dos-manifest-v1:ea955e7f6f01290b6cf7e4285e5a27a5565f308d4f2b934db3b1001791e8ab13",
+   "installer": "sha256-dos-clickteam-v1:9d3248f28debc91f2392a012c343776d8bc8f78f0694e160a9a9474c0210d578",
+   "match": "exact",
+   "title": "WWF Wrestlemania"
+  },
+  "WIZ": {
+   "installed": "sha256-dos-manifest-v1:03135886f2f03da454e49f41292365a9f0c89f7fb256d3ef4f06798c2b32a680",
+   "installer": "sha256-dos-clickteam-v1:7e53b0023f77203ca75b75353f514b020d44a143a0ac085a32d1ca5782618ed5",
+   "title": "Wizball Collection"
+  },
+  "WLS": {
+   "game": "dos:b224038150604240",
+   "installed": "sha256-dos-manifest-v1:04d33b6f6c6d3866a15ecc20c1efb6948cea776ad38f19e86cc5fb4c4e12d1cc",
+   "installer": "sha256-dos-clickteam-v1:4ba3ede9c228571935ccbc174bf7071b37522b5e48873e94f80d801ca54e604d",
+   "match": "exact",
+   "title": "Worlds of Legend - Son of the Empire"
+  },
+  "WOE": {
+   "game": "dos:d4a8ce3117822840",
+   "installed": "sha256-dos-manifest-v1:db1aca208708309632845db2b781aff4851dbf41c2be693c82def8070a29597a",
+   "installer": "sha256-dos-clickteam-v1:f953b9acc98ffa7f1650a7214220d9506a9f63fb733306b2aa66cd0234e25921",
+   "match": "exact",
+   "title": "Wrath of Earth"
+  },
+  "WOG": {
+   "installed": "sha256-dos-manifest-v1:f91d6bccb96457526b239935a9145dc7e336b1a0487a3667b8d0e52b780742f4",
+   "installer": "sha256-dos-clickteam-v1:20a20da14227206acb587a1734873a7c380737760b84ea33bcaf821d445f93a4",
+   "title": "Wrath of the Gods"
+  },
+  "WV1": {
+   "game": "dos:d37783c43541e90a",
+   "installed": "sha256-dos-manifest-v1:b01e4fb7419a96655623a8ea7a4305b0ff07df8c8651a5b493cc5a42574d3cbd",
+   "installer": "sha256-dos-clickteam-v1:71deeaeb063893f5a08e886338a5542db65aaf2431a2d7e7610ea81125bab9ef",
+   "match": "exact",
+   "title": "Whale's Voyage"
+  },
+  "WV2": {
+   "game": "dos:7767e8b47f9e0ad0",
+   "installed": "sha256-dos-manifest-v1:4304deab21f037540c13a5f373ca2083ce9e2f016e9d9d00e58bc70f4d1cd585",
+   "installer": "sha256-dos-clickteam-v1:33b7330fe6ce42d6bd2d34ef9f198a789d18fd6ef68355e26976911f536bfbd8",
+   "match": "main",
+   "title": "Whale's Voyage II"
+  },
+  "WWF": {
+   "game": "dos:f73ccc3d884f940d",
+   "installed": "sha256-dos-manifest-v1:4471cb8b22c5ae2ff8557ae417233880963d827cf1de9aa1fa80c2da036b1319",
+   "installer": "sha256-dos-clickteam-v1:82cb23610e0231e43c1def76dd542acb96386c7ab24d443bd6d654b9c3eb10a4",
+   "match": "exact",
+   "title": "WWF WrestleMania - The Arcade Game"
+  },
+  "WWH": {
+   "game": "dos:5140973f6801a598",
+   "installed": "sha256-dos-manifest-v1:732e35d92d4231606dbda3d3ce59b27a7a7962af97a5fe4415eccf4a14b3fbe9",
+   "installer": "sha256-dos-clickteam-v1:067f0bcf8d6deba85e49cc428656125b26b9b8f96c28422855fa9dcfb57da6f6",
+   "match": "exact",
+   "title": "Wild Wheels"
+  },
+  "WWR": {
+   "game": "dos:8ea0e282ceb657da",
+   "installed": "sha256-dos-manifest-v1:50bd25817e28b016acd3f456935307b188f1afceee666bb04521ba62998b814f",
+   "installer": "sha256-dos-clickteam-v1:27c9ad1f5729ba945bb6e63dec4f562589da29b268dd4b2fee9300de42799899",
+   "match": "main",
+   "title": "Waterworld - The Quest for Dry Land"
+  },
+  "XCR": {
+   "game": "dos:88f096e4b3ef2521",
+   "installed": "sha256-dos-manifest-v1:61dda82c421cf470cec53daa73fdb42251d586e70c54dd9c4bd05275b51495ad",
+   "installer": "sha256-dos-clickteam-v1:df4cfa33913d57dae030198df7ae4964119a380d94cc9be662f50d0c0addd169",
+   "match": "exact",
+   "title": "XCar - Experimental Racing"
+  },
+  "XGN": {
+   "game": "dos:a00a3ef53c943733",
+   "installed": "sha256-dos-manifest-v1:b4423d7a1a80451a1f74738f4d217a45577f99f31a656884fc6f40cf77628d5a",
+   "installer": "sha256-dos-clickteam-v1:e55a41b82d07c8fbf967553bb9ecc049f38ce26bb18ec612742177588409d13f",
+   "match": "exact",
+   "title": "Xargon"
+  },
+  "XMP": {
+   "game": "dos:7a61bb0c87bc6681",
+   "installed": "sha256-dos-manifest-v1:317852b3478cc06f3f2d9578e7f1001ede8e2e8b5b7479631af076b06232c5d3",
+   "installer": "sha256-dos-clickteam-v1:87335eacac070983e0e905419b021374ba62ab5ab196ce803251948668dfd26f",
+   "match": "exact",
+   "title": "Xenomorph"
+  },
+  "XSS": {
+   "game": "dos:221b558fb1176766",
+   "installed": "sha256-dos-manifest-v1:2be7a372e20723a069be255b4733ab94d6c081dade3e1d7823034e0f5256effa",
+   "installer": "sha256-dos-clickteam-v1:7c918fd6888081b110e77142eb0ce533bdee9e7cdddbd569e7063779989fc666",
+   "match": "main",
+   "title": "XS - Shield Up Fight Back"
+  },
+  "YBR": {
+   "installed": "sha256-dos-manifest-v1:93e5b0381822a41543f8eab3985c23a2aa71bffbc797ea0b9f80e2e22584727e",
+   "installer": "sha256-dos-clickteam-v1:7318ca0990902563a541f0c6f6bc4f0a2f33191ed80bde20a42f5245b9d14639",
+   "title": "Yellow Brick Road I"
+  },
+  "YPM": {
+   "game": "dos:c306e0e5c080d325",
+   "installed": "sha256-dos-manifest-v1:ce2665430052d871913ec075c71605c95e9ddef7cbeb9a5f97b7640b77d0937f",
+   "installer": "sha256-dos-clickteam-v1:471b8643cf7f0c087b2fb444e46c3f820a33778300436f46404b3e8246407442",
+   "match": "exact",
+   "title": "Yes, Prime Minister"
+  },
+  "Z66": {
+   "game": "dos:c327248aa3fb8fb9",
+   "installed": "sha256-dos-manifest-v1:96e0a2209878dca641578f308ea7248feadae44d88dff5bdf33f4186b77a95b2",
+   "installer": "sha256-dos-clickteam-v1:53db57be303ac3a8ef8712e66566d7fb41806354db7f4ca51a7d9308f24ea67e",
+   "match": "close",
+   "title": "Zone66"
+  },
+  "ZBI": {
+   "game": "dos:d58e85d9133b3bf1",
+   "installed": "sha256-dos-manifest-v1:c69bf9142d0c5eec9d2a896fb41d7fd21db202656c83e55454fba17e7766ef6a",
+   "installer": "sha256-dos-clickteam-v1:e4f46fd226567d870810930dd34ca8b4877f3b163a3c559df42f96bcc3d2c573",
+   "match": "exact",
+   "title": "Zombi"
+  },
+  "ZN0": {
+   "game": "dos:7f1f702ed52e86ea",
+   "installed": "sha256-dos-manifest-v1:e71cac8fb7ef46a2b3e04ef68a6174399fd3929108dca6fefda34756cc3b6c44",
+   "installer": "sha256-dos-clickteam-v1:6f6850c92b8b8ebe25ae268f80835380012ac0e43e7636835fd7bd0fd34053db",
+   "match": "exact",
+   "title": "Zona 0"
+  }
+ },
+ "schemaVersion": 1
+}

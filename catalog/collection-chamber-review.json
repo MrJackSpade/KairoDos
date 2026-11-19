@@ -1,0 +1,45 @@
+{
+ "schemaVersion": 1,
+ "installers": {
+  "AYA": {
+   "exodos": "sha256-dos-manifest-v1:8b878d1ff801b205f6d51a5d63afd4f7c0835c98deb4933ec3e188935e50a026",
+   "reason": "The same 1994 game; the installer drops its subtitle."
+  },
+  "C2K": {
+   "exodos": "sha256-dos-manifest-v1:9da0dc36d6199976b7caa4b544ecd1fbaf3f9629c0b14f096ed5294140659cce",
+   "reason": "C.I.T.Y. 2000 London is the 1993 game's London edition."
+  },
+  "CJU": {
+   "exodos": "sha256-dos-manifest-v1:9ebd794356719e1b89714ebd923fd2ca0539f7f89485bcc60ed7275aefb86932",
+   "reason": "The installer titles CyberJudas (1996) as Shadow President 2."
+  },
+  "DAAC": {
+   "exodos": null,
+   "reason": "Disney's Aladdin Activity Center is an educational activity program; eXoDOS's Disney's Aladdin is Virgin's 1994 platformer."
+  },
+  "FEM": {
+   "exodos": null,
+   "reason": "Frankenstein: Through the Eyes of the Monster is a 1995 adventure; eXoDOS's Frankenstein is a 1994 platform game."
+  },
+  "JP1": {
+   "exodos": "sha256-dos-manifest-v1:1db38e1ccfb24952e376e076c4d0580d7038b34a5d30cd13d3ebff9d5a790fba",
+   "reason": "Ocean's 1993 Jurassic Park; the installer calls it Volume 1."
+  },
+  "KB0": {
+   "exodos": "sha256-dos-manifest-v1:4ad5193bbf28f68b255cf04e6ac6f7ca34217efb5e76cedca1f940230e0e5726",
+   "reason": "King's Bounty Classic is New World Computing's 1990 King's Bounty."
+  },
+  "LGP": {
+   "exodos": "sha256-dos-manifest-v1:75cc0400c96127312bc5a50d37884478c5f5e4dc67d180e53f83e70c774ad4a7",
+   "reason": "The installer is Leather Goddesses of Phobos 2 with the first game added (2+)."
+  },
+  "PYL": {
+   "exodos": "sha256-dos-manifest-v1:75cb05a0d3379dcb85ec6c4571661e4b51b2905b126ea5f835f4297744283fda",
+   "reason": "The installer spells Pył (1999) without its Polish ł."
+  },
+  "STHA": {
+   "exodos": "sha256-dos-manifest-v1:1b95e2c0ac0694de35bf988d8d7d494ea98b0d95c2ab640c3307154eba129920",
+   "reason": "DS9 abbreviates Deep Space Nine; the same 1996 game."
+  }
+ }
+}

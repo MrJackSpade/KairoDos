@@ -324,19 +324,17 @@ class DosLibrary(private val context: Context,
     }
 
     /**
-     * The Collection Chamber installers among [files], with their parts beside them. A program is
-     * read only when it could be one: the only program in its folder, or one with a `.D01` part
-     * beside it; its bytes decide ([installerProbes] keeps the answer).
+     * The Collection Chamber installers among [files], with their parts beside them. Every
+     * program's bytes decide, a few small reads ([installerProbes] keeps the answer, so a later
+     * scan reads only new or changed programs): a folder may hold several installers.
      */
     private fun installers(files: List<DocumentTreeWalker.FileEntry>, cancelled: AtomicBoolean): List<ScanWork.Installer> {
         val found = ArrayList<ScanWork.Installer>()
         for (members in files.groupBy { it.path.substringBeforeLast('/', "") }.values) {
             val siblings = members.associateBy { it.path.substringAfterLast('/').lowercase(Locale.ROOT) }
-            val programs = members.filter { extension(it.path) in executableExtensions }
-            for (program in programs) {
+            for (program in members) {
                 if (extension(program.path) != "exe") continue
                 val parts = DosClickteam.parts(program.path.substringAfterLast('/'), siblings)
-                if (programs.size > 1 && parts.isEmpty()) continue
                 require(!cancelled.get()) { "Cancelled" }
                 // A program that cannot be read is listed as an installer, whose inspection then
                 // fails with why, on its own entry; it is not kept, so the next scan reads it again.

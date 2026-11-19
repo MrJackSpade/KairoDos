@@ -14,7 +14,8 @@ import dos_artwork
 
 APP = "kairodos"
 PLATFORMS = ("dos",)
-KINDS = {"dos-manifest"}
+# Game archives and folders (DosContentHash), and Collection Chamber installers (DosClickteam).
+KINDS = {"dos-manifest", "dos-clickteam"}
 # KairoDos's own artwork references (dos_artwork.py): images served from this repository or
 # downloaded from LaunchBox. The research names each game's reviewed pick, never image URLs.
 ARTWORK_CODE = None

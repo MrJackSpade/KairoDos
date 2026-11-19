@@ -80,6 +80,28 @@ def research_game(record, images):
     return game
 
 
+def apply_collection_chamber(games):
+    """The Collection Chamber's installers (catalog/collection-chamber-v1.json, tools/collection_chamber.py):
+    each installer, and the archive it installs, is another medium of its eXoDOS game, or a game of
+    its own titled as the installer names it. Their launch comes from their own files (the app's
+    files layer), so they add none here."""
+    source = ROOT / "catalog/collection-chamber-v1.json"
+    if not source.exists():
+        return
+    data = json.loads(source.read_text(encoding="utf-8"))
+    assert data.get("schemaVersion") == 1, "invalid collection-chamber-v1.json"
+    for code, installer in sorted(data["installers"].items()):
+        media = [installer["installer"]] + ([installer["installed"]] if installer.get("installed") else [])
+        key = installer.get("game") or "dos:" + installer["installer"].split(":", 1)[1][:16]
+        if installer.get("game"):
+            assert key in games, f"collection-chamber-v1.json: {code} names unknown game {key}"
+        else:
+            assert key not in games, f"collection-chamber-v1.json: {code}'s key {key} is taken"
+            games[key] = {"title": installer["title"], "contentIds": []}
+        game = games[key]
+        game["contentIds"] = game["contentIds"] + [m for m in media if m not in game["contentIds"]]
+
+
 def apply_machine(games):
     """Each game's reviewed machine settings (catalog/research/machine-v1.json) as its "machine"."""
     review = json.loads((ROOT / "catalog/research/machine-v1.json").read_text(encoding="utf-8"))
@@ -133,6 +155,7 @@ def build():
         if members:
             game["diskCollection"] = {medium: members for medium in media}
         games[key] = game
+    apply_collection_chamber(games)
     apply_machine(games)
     catalog_descriptions.apply(ROOT / "catalog/research", games)
     folders = {"schemaVersion": 1, "folders": files["folders.json"]}
