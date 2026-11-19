@@ -146,8 +146,8 @@
    "reason": "Version: its \"NASCAR Racing 2 (Direct 3D)\" shortcut's dosbox-D3D.conf (N2.BAT, on the emulated Voodoo); dosbox.conf, which sorts first, is its \"(3Dfx)\" shortcut's N23DFX.BAT, for DOSBox Glide passthrough, which Staging does not have (\"Cannot determine glide port\")."
   },
   "PYL": {
-   "exodos": "sha256-dos-manifest-v1:75cb05a0d3379dcb85ec6c4571661e4b51b2905b126ea5f835f4297744283fda",
-   "reason": "The installer spells Pył (1999) without its Polish ł."
+   "version": "dosboxSFT.conf",
+   "reason": "Version: its \"PYL - SOFTWARE\" shortcut's dosboxSFT.conf; cheats.conf, which sorts first, is its cheat launcher's, and the two Glide shortcuts' need DOSBox Glide passthrough, which Staging does not have (\"unable to load DLL\")."
   },
   "PYS": {
    "page": "https://collectionchamber.blogspot.com/p/pyst.html",
